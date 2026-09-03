@@ -794,3 +794,115 @@ Next-phase priorities (for the 15-min reviewer):
    "farm this set" jump that opens the map focused on a 2/3 set's stages.
 6. Gacha rotation is date-seeded client-side (deterministic per day) — fine for a replica; a
    server-side rotation table would only matter for cross-device fairness.
+
+---
+
+## Session Round — PODIUM/POOL OVERFLOW FIXES + TREASURE FARM JUMP + SHRINE KEEPER COSTUMES (Task: autonomous QA → fix → features)
+
+### Current project status (assessment at round start)
+- Fresh session at v22: clean boot (title, t advancing), zero console/page errors, dev.log clean.
+- Golden-path E2E re-verified with REAL pointer input at 1280x720: title → home → chapters → EoC1
+  map → stage modal (mb1) → battle (correct dock0 click position = (464,569)) → sustained deploy
+  + speed → WIN with PERFECT 1200/1200 base HP (3 crowns) → rewards (xp 1305, rank 2, cleared,
+  crowns 3) → map. One LOST battle first (deploy clicks at a wrong position — test error, not a
+  game bug; see QA gotchas below).
+- 18-screen sweep: all non-blank, zero console errors.
+- VLM review (zoom-crop-first protocol) found 2 REAL bugs this round: leaderboard podium text
+  collisions + shrine blessing-pool row overflow.
+
+### Completed modifications this round
+
+**1. FIXED (VLM + code-math confirmed) — leaderboard podium text collisions:**
+- Old layout: '#N' rank baseline at -h/2+44 CROSSED the name baseline (y=6) on the 68px silver/
+  bronze cards (44-34=10 > 6!); score (y=28) also overlapped stage (h/2-10 = 24).
+- New layout (ui.js drawLeaderboard): big rank number (20px #1 / 15px #2-3) flanked by two medal
+  glyphs at ±30/±21, then name (big?5:2) / score (big?25:16) / stage (big?38:28) — every pair of
+  adjacent baselines now has a safe gap. VLM zoom re-review: "no overlap… distinct separation".
+
+**2. FIXED — shrine blessing-pool MEGA row cut off at the panel bottom:**
+- Old: 8 rows at 26px spacing starting y=478 in a 438..660 panel → row 7 (MEGA) spanned 660..684,
+  fully below the edge (VLM saw "a tiny purple sliver"). Right column re-laid out: stats strip
+  226..334 (h 94→108), PRAY button 328→342, pool 438..660→432..660 with rows at 462+i*24.5 —
+  every row now inside. VLM zoom re-review: MEGA row "fully visible… not cut off".
+
+**3. NEW FEATURE — TREASURE 'FARM SET' JUMP (closes old unresolved #5, completes the radar loop):**
+- ui.js drawTreasure: each of the 9 set panels gains a FARM button (x+286,y+36,100x26) — gold
+  pulsing '1 LEFT · FARM!' when own===2, tan 'FARM SET' otherwise, grey 'LOCKED' when no stage of
+  that set is unlocked.
+- farmJump(ch,setI): picks the HIGHEST unlocked stage with idx%9===setI (best treasure odds),
+  sets G.chapter + G.mapFocusIdx + mapFor=null, push('map') + toast.
+- drawMap camera init now prefers nodes[G.mapFocusIdx] (when unlocked) over the current node;
+  chapter buttons + chapter-cycle arrows clear mapFocusIdx.
+- Dismissible gold 'FARM: <set>' banner on the map (diamond icon + 'gold ◇ nodes drop its
+  pieces' + red × close, id 'farmx'); shows '1 PIECE LEFT — ' prefix when own===2.
+- E2E REAL-pointer verified: tfarm0 click → map (chapter eoc1, focusIdx 0, cam 0,0, stage visible,
+  banner present) → banner text VLM-verified → farmx dismisses → with seeded 2/3 set the banner
+  shows '1 PIECE LEFT — FARM: Idol of Empire' and the treasure button shows the hot gold state
+  (VLM: "fully visible, no overlap") → stage modal opens from the focused node → battle starts +
+  deploy + retreat all regression-free.
+
+**4. NEW FEATURE — SHRINE KEEPER COSTUME TRACK (5 MEGA milestones, pure-cosmetic):**
+- data.js: SHRINE_COSTUMES=[Bell Collar@1, Vermilion Cape@2, Fox Mask@3, Golden Crown@5, Divine
+  Halo@10] + shrineCostumes(megaN); derived from megaN → NO save migration needed.
+- shrineApply: on a MEGA blessing, compares costume count before/after and stamps
+  res.newCostume; the blessing modal renders a pulsing purple 'NEW KEEPER COSTUME: <name>!'
+  ribbon (with crown glyph) between the streak line and the toss-type line.
+- ui.js drawShrine scene: the keeper cat now dresses up — cape + divine aura drawn BEHIND the
+  cat, bell collar (red band + gold bell) / tilted fox mask on the head / gold crown / glowing
+  halo with 3 orbiting sparks ON TOP; all bob-synced with the cat.
+- Right column: 'KEEPER'S DRESS' row (5 diamond pips with milestone numbers, newest unlock
+  pulses, right-aligned 'next: <name> at N MEGA' or 'FULLY DRESSED — the keeper is divine!').
+- E2E: seeded megaN 0/3/10 → VLM confirmed collar+cape+mask at 3 and +crown+halo at 10, "cleanly
+  drawn… not floating". Pixel probes: pips empty at megaN=0, gold-filled at 10. Seeded pity=9 →
+  free toss → forced MEGA (megaN 0→1, pity→0, +CF/XP/rare) → costume ribbon in modal VLM-verified
+  → after close the collar is on the scene cat (VLM: yes). Stage modal treasure-card + battle
+  regressions: none.
+
+**5. STYLING (leaderboard layout balance — VLM's 'empty right void'):**
+- NEW 'WORLD DOJO FEED' panel at (866,232,372x106): title + pulsing green LIVE chip + subtitle
+  + the moved refresh button (lbrefresh) + synced/offline note. VLM: "no clipping… no overlap…
+  balanced".
+- Left void: trainee cat on a lit pedestal + 'TRAINING FOR NO.4' caption beside the podium
+  (zoom-verified: reads as decoration, not a 4th card — full-screen VLM misread it once).
+
+**6. Cache-bust v22 → v23** (index.html ×9 scripts + page.tsx, bumped AFTER all edits).
+
+### Verification results (all REAL pointer input, 1280x720, v23)
+- Boot: clean (title, t advancing, zero console/page errors).
+- Golden path: full WIN with perfect 1200/1200 HP + 3 crowns at v22 pre-edit; post-edit battle
+  (start, deploy, retreat) regression-free; retreat flow (pause → quit → mb0=RETREAT) verified.
+- 18-screen sweep at v23: all non-blank, ZERO console errors.
+- VLM zoom re-reviews: podium CLEAN (no overlap), feed panel CLEAN, farm banner CLEAN, hot FARM
+  button CLEAN, pool MEGA row inside, dress row + note inside, keeper costumes CLEAN ×3 states,
+  MEGA modal ribbon CLEAN. Full-screen shrine 8/10 (nits disproven by zoom), leaderboard 7/10
+  (the 'missing 1st card' was the trainee-cat misread, disproven by zoom).
+- node --check 9/9 game JS files; bun run lint 0 errors / 12 benign warnings; dev.log clean.
+- QA screenshots: tests/shots/r13-* (title, battle-start, defeat [test error], victory,
+  lb-new, treasure-farm, treasure-hot, map-farmbanner, map-hotbanner, stagemodal-farm,
+  shrine-c0/c3/c10/after, mega-costume-modal) + sweep-* (18 screens @v23).
+
+### QA GOTCHAS learned this round (important for next rounds)
+1. agent-browser viewport: use `agent-browser set viewport 1280 720` (NOT `resize`/`viewport` —
+   unknown commands). If the browser resets to about:blank, re-open. ALWAYS verify innerHeight
+   before clicking: with a 1280x577 viewport the game scales SC=0.8 and game-coord clicks MISS
+   (this caused the fake 'deploys not working' defeat this round).
+2. Battle dock0 (first cat) center is (464,569) at SC=1 — do NOT guess; probe
+   G.hits.find(h=>h.id==='dock0') first.
+3. Stage-modal buttons are mb0/mb1 (NOT 'attack' — that id belongs to the map screen behind the
+   modal). RETREAT confirm is mb0 (mb1 = CANCEL).
+4. MultiEdit is NOT atomic (earlier edits in a failed batch still apply) and one earlier failure
+   was caused by my own old_str having an extra ')' — when an edit 'mysteriously' fails, dump the
+   exact bytes with od/cat -A before retrying.
+
+### Unresolved / next-phase priorities
+1. Missions 'up' hook still only counts upgrade-screen purchases (unchanged, low priority).
+2. Scout prestige maxes at ★3 — consider ★∞ or prestige-only ticket expeditions if wanted.
+3. 28MB WAV bank load time — re-encode if it becomes a complaint.
+4. Farm jump currently targets the highest unlocked stage of the set; could add a mini stage-
+   picker (all 5 stages of the set with odds listed) — the stage-modal treasure card already
+   shows the odds, so this is polish-level.
+5. Shrine costume could go further: name the keeper (customizable in settings) or add a
+   "keeper's blessing" small bonus per costume piece (e.g. +1% MEGA weight each) — currently
+   purely cosmetic by design.
+6. Consider a TREASURE screen summary of which sets are at 2/3 across ALL chapters (a 'radar
+   digest' row) now that farm jumps exist.

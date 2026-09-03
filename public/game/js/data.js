@@ -513,6 +513,15 @@ const SHRINE_MAX_EXTRA=3;               // paid tosses per day beyond the free o
 const SHRINE_COST=50;                   // Cat Food per paid toss
 const SHRINE_PITY_MAX=10;               // guaranteed MEGA blessing within this many non-MEGA tosses
 const SHRINE_STREAK_MAX=10;             // prayer streak caps at 10 days (+40% rewards)
+/* keeper-cat costume track: each MEGA blessing count milestone dresses the shrine keeper
+   (purely cosmetic, derived from megaN — no save migration needed) */
+const SHRINE_COSTUMES=[
+ {mega:1,n:'Bell Collar'},
+ {mega:2,n:'Vermilion Cape'},
+ {mega:3,n:'Fox Mask'},
+ {mega:5,n:'Golden Crown'},
+ {mega:10,n:'Divine Halo'}];
+function shrineCostumes(megaN){return SHRINE_COSTUMES.map(c=>({...c,got:megaN>=c.mega}))}
 const SHRINE_BLESSINGS=[
  {id:'xp',   n:'Wisdom of the Ancients', col:'#7fd0ff', icon:'up',      w:22, jackpot:false,
   line:r=>'+'+fmt(r.n)+' XP — the shrine cats shared their scrolls!'},
@@ -567,7 +576,10 @@ function shrineApply(res){
   else if(res.id==='gold')SV.tickets.gold++;
   else if(res.id==='mega'){addCF(res.cf);addXP(res.xp);SV.tickets.rare++}
   const S=SV.shrine;S.total++;S.todayN++;S.lastBless=res.n;S.lastId=res.id;
-  if(res.jackpot)S.megaN++;
+  if(res.jackpot){const wasC=shrineCostumes(S.megaN||0).filter(c=>c.got).length;
+    S.megaN++;
+    const nowC=shrineCostumes(S.megaN).filter(c=>c.got).length;
+    res.newCostume=nowC>wasC?SHRINE_COSTUMES[nowC-1].n:null} // new costume milestone crossed
   S.pity=res.jackpot?0:Math.min(SHRINE_PITY_MAX,(S.pity||0)+1); // pity: MEGA resets, otherwise builds
   persist();
   if(typeof trophyCheckAll==='function')trophyCheckAll();

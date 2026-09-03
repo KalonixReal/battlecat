@@ -475,7 +475,7 @@ function drawChapters(dt){
       cx.save();cx.translate(20,yy);
       cx.fillStyle=unl?'#ffffff':'#d8cfb8';rr(cx,0,0,1240,60,12);cx.fill();
       cx.lineWidth=unl?3:2;cx.strokeStyle=unl?'#3a3a44':'#a89a78';rr(cx,1.5,1.5,1237,57,12);cx.stroke();
-      if(unl)BTN('ch'+i,20,yy,1240,60,()=>{G.chapter=c.id;G.mapSub=0;push('map');SFX.click()},{flat:true,nohov:true});
+      if(unl)BTN('ch'+i,20,yy,1240,60,()=>{G.chapter=c.id;G.mapSub=0;G.mapFocusIdx=null;push('map');SFX.click()},{flat:true,nohov:true});
       cx.globalAlpha=unl?1:.55;
       if(c.id==='eoc1')ART.catIcon('cat',36,30,17);else if(c.id==='itf1')ART.catIcon('lizard',36,30,17);else if(c.id==='cotc1')ART.catIcon('gao',36,30,17);else if(c.kind==='sol')ART.catIcon('gross',36,30,17);else if(c.kind==='ul')ART.catIcon('luza',36,30,17);else if(c.kind==='aku')ART.enemyIcon('akumother',36,30,17);else if(c.kind==='dojo')ART.catIcon('kungfu',36,30,17);else ART.catIcon('mr',36,30,17);
       txt(cx,c.n,66,24,19,unl?'#e8a020':'#8a8272','left',4,'#fff',700);
@@ -528,8 +528,8 @@ function drawMap(dt){const c=CHMAP[G.chapter];
     else{ev=G.lastEvents[i];if(ev){label=ev.s.name;energy=ev.s.energy;boss=false;
       done=!!(SV.eventsDone&&SV.eventsDone['clr:'+ev.s.evtId]);unl=true;cur=!done&&i===0;tap=()=>openEventModal(ev)}}
     return{p,label,energy,boss,done,cur,unl,endless,ev,tap}});
-  // ---- camera: focus the current node, clamp, drag-to-pan both axes ----
-  if(G.mapFor!==c.id||!G.mapCam){const f=nodes.find(n=>n.cur)||nodes[0];
+  // ---- camera: focus the current node (or the FARM SET target), clamp, drag-to-pan both axes ----
+  if(G.mapFor!==c.id||!G.mapCam){const f=(G.mapFocusIdx!=null&&nodes[G.mapFocusIdx]&&nodes[G.mapFocusIdx].unl)?nodes[G.mapFocusIdx]:(nodes.find(n=>n.cur)||nodes[0]);
     G.mapCam={x:clamp(f.p.x-624,0,Math.max(0,mapW-1248)),y:clamp(f.p.y-330,0,Math.max(0,mapH-634))};G.mapFor=c.id}
   G.mapCam.x=clamp(G.mapCam.x,0,Math.max(0,mapW-1248));G.mapCam.y=clamp(G.mapCam.y,0,Math.max(0,mapH-634));
   if(G.pdown&&!G.mapDrag)G.mapDrag={sx:G.pdown.x,sy:G.pdown.y,cx:G.mapCam.x,cy:G.mapCam.y};
@@ -625,6 +625,20 @@ function drawMap(dt){const c=CHMAP[G.chapter];
   // white cat marker stands on the current node
   if(markerNode)catMarker(cx,markerNode.p.x,markerNode.p.y-16,30,G.t);
   cx.restore(); // un-clip + un-translate
+  // ---- FARM TARGET banner (from the treasure screen FARM SET jump): dismissible overlay chip ----
+  if(G.mapFocusIdx!=null&&c.kind==='story'&&CHSETS[c.id]){const fs2=CHSETS[c.id][G.mapFocusIdx%9];
+    if(fs2){const own2=tCount(c.id,G.mapFocusIdx%9);
+      const bw2=456,bx2=16,by2=78;
+      const pu=0.5+0.5*Math.sin(G.t*4);
+      cx.save();cx.shadowColor='rgba(255,200,40,'+(0.22+pu*0.28).toFixed(2)+')';cx.shadowBlur=8+pu*6;
+      cx.fillStyle='rgba(255,238,180,.97)';rr(cx,bx2,by2,bw2,34,17);cx.fill();cx.restore();
+      cx.lineWidth=2;cx.strokeStyle='#e8951f';rr(cx,bx2,by2,bw2,34,17);cx.stroke();
+      cx.save();cx.translate(bx2+22,by2+17);cx.scale(1+Math.sin(G.t*5)*0.1,1+Math.sin(G.t*5)*0.1);
+      cx.fillStyle='#ffd23f';cx.beginPath();cx.moveTo(0,-7);cx.lineTo(6,0);cx.lineTo(0,7);cx.lineTo(-6,0);cx.closePath();cx.fill();
+      cx.lineWidth=1.6;cx.strokeStyle='#8a5a10';cx.stroke();cx.restore();
+      txt(cx,(own2===2?'1 PIECE LEFT — ':'')+'FARM: '+fs2.n,bx2+38,by2+17,13,'#5a3b16','left',2.5,'#fff',700);
+      txt(cx,'gold ◇ nodes drop its pieces',bx2+38,by2+29,9,'#8a6a3a','left',2,'#fff',400);
+      BTN('farmx',bx2+bw2-40,by2+3,30,28,()=>{G.mapFocusIdx=null;SFX.click()},{col:'#e85840',outline:'#8a1a10',label:'×',fs:12,r:14})}}
   // ---- dark wood frame around the map ----
   woodFrame(0,54,1280,666,16);
   // progress label (story)
@@ -643,7 +657,7 @@ function drawMap(dt){const c=CHMAP[G.chapter];
   // ---- chapter cycle arrows on the frame (official side arrows) ----
   const chIdx=CHAPTERS.indexOf(c);
   const cyc=dir=>{for(let k=1;k<=CHAPTERS.length;k++){const nc=CHAPTERS[(chIdx+dir*k+CHAPTERS.length*2)%CHAPTERS.length];
-    if(chapterUnlocked(nc.id)){G.chapter=nc.id;G.mapFor=null;SFX.click();break}}};
+    if(chapterUnlocked(nc.id)){G.chapter=nc.id;G.mapFor=null;G.mapFocusIdx=null;SFX.click();break}}};
   [[36,388,-1,'chprev'],[1244,388,1,'chnext']].forEach(([ax,ay,dir,id])=>{
     cx.fillStyle='rgba(58,40,16,.88)';cx.beginPath();cx.arc(ax,ay,24,0,TAU);cx.fill();
     cx.strokeStyle='#c8913a';cx.lineWidth=3;cx.beginPath();cx.arc(ax,ay,24,0,TAU);cx.stroke();
@@ -1453,9 +1467,28 @@ function drawTreasure(dt){drawTopBar('TREASURE COLLECTION',true);
         cx.fillStyle=t===0?'#cd7f32':t===1?'#c0c0c0':'#ffd700';cx.beginPath();cx.arc(0,0,16,0,TAU);cx.fill();cx.strokeStyle='#5a3b16';cx.lineWidth=2.5;cx.stroke();cx.fillStyle='rgba(255,255,255,.5)';cx.beginPath();cx.arc(-5,-5,6,0,TAU);cx.fill();cx.restore()}
       else txt(cx,'?',tx+59,ty+30,24,'#b8a884','center');
       txt(cx,['Bronze','Silver','Gold'][t],tx+59,ty+62,10,got?'#8a6a10':'#a89878','center')}
+    // FARM SET jump (closes the radar loop: treasure screen → map focused on this set's stages)
+    {const farmStages=[0,9,18,27,36].map(k=>i+k).filter(idx=>idx<48&&stageUnlocked(c.id,idx));
+      const farmable=farmStages.length>0,hot=own===2&&farmable;
+      const pu=hot?1+Math.sin(G.t*5)*0.05:1;
+      cx.save();if(hot){cx.translate(x+336,y+49);cx.scale(pu,pu);cx.translate(-x-336,-y-49);
+        cx.shadowColor='rgba(255,180,30,.55)';cx.shadowBlur=10}
+      BTN('tfarm'+i,x+286,y+36,100,26,()=>farmJump(c.id,i),
+        {col:farmable?(hot?'#ffd23f':'#e8c37f'):'#d8ccb0',outline:'#8a5a10',
+         label:farmable?(hot?'1 LEFT · FARM!':'FARM SET'):'LOCKED',
+         fs:hot?10:10.5,r:13,disabled:!farmable,tcol:'#4a2f10'});
+      cx.restore()}
   }
   txt(cx,'Total attack multiplier: ×'+treasureMult('atk').toFixed(2)+'  ·  HP ×'+treasureMult('hp').toFixed(2)+'  ·  Wallet ×'+treasureMult('wallet').toFixed(2),640,650,14,'#ffe9b0','center',3,'#5a3b16',700);
   brownBottomBar()}
+/* FARM SET jump: focus the chapter map on the highest-odds unlocked stage of this treasure
+   set (chance grows with stage index) — pairs with the map's gold ◇ radar pings */
+function farmJump(ch,setI){
+  const stages=[0,9,18,27,36].map(k=>setI+k).filter(idx=>idx<48&&stageUnlocked(ch,idx));
+  if(!stages.length){toast('Clear more stages to unlock this set\'s farms!','#ffb060');SFX.error();return}
+  G.chapter=ch;G.mapSub=0;G.mapFocusIdx=stages[stages.length-1];G.mapFor=null;
+  push('map');SFX.click();
+  toast('Farming '+CHSETS[ch][setI].n+' — gold ◇ nodes drop its pieces!','#ffd23f')}
 
 /* ============================== SCREEN: ENEMY GUIDE ============================== */
 function drawGuide(dt){drawTopBar('ENEMY GUIDE — BESTIARY',true);
@@ -1766,23 +1799,35 @@ function drawLeaderboard(dt){lbEnter();
   txt(cx,String(own),174,146,46,'#ffd23f','center',6,'#3a2810',700);
   txt(cx,'Endless waves survived',174,178,11,'#c9b28a','center',2,'#141a2c',400);
   txt(cx,'Commander: '+(SV.cmdName||'CAT COMMANDER'),174,200,12,'#9fd8ff','center',2.5,'#141a2c',700);
-  // ---- top-3 podium ----
+  // ---- top-3 podium (restacked QA fix: old '#N' baseline -h/2+44 collided with the name
+  //   baseline at y=6 on the 68px cards and crossed it; score 28 vs stage h/2-10 also crossed.
+  //   New layout: big rank number flanked by medal glyphs, then name/score/stage each clear) ----
   const es=(D&&D.entries)||[];
-  const podium=[[{x:640,y:150,w:120,h:90,c:'#ffd700',r:1},{x:488,y:172,w:110,h:68,c:'#c0c0c0',r:2},{x:792,y:172,w:110,h:68,c:'#cd7f32',r:3}]][0];
+  const podium=[[{x:640,w:120,h:90,c:'#ffd700',r:1},{x:488,w:110,h:68,c:'#c0c0c0',r:2},{x:792,w:110,h:68,c:'#cd7f32',r:3}]][0];
   if(es.length>=1){
     podium.forEach(pd=>{
       const e=es[pd.r-1];if(!e)return;
+      const big=pd.r===1;
       cx.save();cx.translate(pd.x,340-pd.h/2);
       cx.shadowColor='rgba(0,0,0,.4)';cx.shadowBlur=10;
       const pg=cx.createLinearGradient(0,-pd.h/2,0,pd.h/2);pg.addColorStop(0,shade(pd.c,.35));pg.addColorStop(1,shade(pd.c,-.25));
       cx.fillStyle=pg;rr(cx,-pd.w/2,-pd.h/2,pd.w,pd.h,8);cx.fill();cx.shadowColor='transparent';
       cx.lineWidth=2.5;cx.strokeStyle=shade(pd.c,-.5);rr(cx,-pd.w/2+1.5,-pd.h/2+1.5,pd.w-3,pd.h-3,7);cx.stroke();
-      glyph(cx,'medal',0,-pd.h/2+22,15,pd.c,shade(pd.c,-.3));
-      txt(cx,'#'+pd.r,0,-pd.h/2+44,12,shade(pd.c,-.55),'center',2.5,'#fff',700);
-      txt(cx,e.name.slice(0,12),0,6,11,'#fff','center',2.5,shade(pd.c,-.6),700);
-      txt(cx,String(e.score),0,28,17,'#fff','center',3,shade(pd.c,-.6),700);
-      txt(cx,e.stage,0,pd.h/2-10,8.5,'rgba(255,255,255,.8)','center',2,shade(pd.c,-.6),400);
-      cx.restore()})}
+      // rank: big number + flanking medals (baselines: #1 → 5 / 25 / 38 · #2,3 → 2 / 16 / 28)
+      const ry=-pd.h/2+26,mfx=big?30:21;
+      glyph(cx,'medal',-mfx,ry-3,big?10:8,pd.c,shade(pd.c,-.3));
+      glyph(cx,'medal', mfx,ry-3,big?10:8,pd.c,shade(pd.c,-.3));
+      txt(cx,'#'+pd.r,0,ry+(big?7:5),big?20:15,shade(pd.c,-.55),'center',2.5,'#fff',700);
+      txt(cx,e.name.slice(0,12),0,big?5:2,big?11.5:10,'#fff','center',2.5,shade(pd.c,-.6),700);
+      txt(cx,String(e.score),0,big?25:16,big?17:13.5,'#fff','center',3,shade(pd.c,-.6),700);
+      txt(cx,e.stage,0,pd.h/2-(big?7:6),big?8.5:7.5,'rgba(255,255,255,.85)','center',2,shade(pd.c,-.6),400);
+      cx.restore()})
+    // left void decor: dojo trainee cat on a lit pedestal (fills the gap beside the podium)
+    cx.fillStyle='rgba(0,0,0,.35)';cx.beginPath();cx.ellipse(378,344,30,9,0,0,TAU);cx.fill();
+    cx.fillStyle='rgba(255,248,232,.10)';rr(cx,352,318,52,26,7);cx.fill();
+    cx.lineWidth=1.5;cx.strokeStyle='rgba(255,210,63,.4)';rr(cx,352,318,52,26,7);cx.stroke();
+    ART.catIcon('cat',378,312,26,0.92);
+    txt(cx,'TRAINING FOR NO.4',378,368,8.5,'#8a92a8','center',2,'#141a2c',700)}
   // ---- rows 4..20 ----
   const rowX=340,rowY=386,rowW=916,rowH=29;
   txt(cx,'ALL COMMANDERS — TOP 20',rowX,372,12.5,'#e8c890','left',3,'#141a2c',700);
@@ -1800,8 +1845,17 @@ function drawLeaderboard(dt){lbEnter();
     txt(cx,String(e.score),rowX+rowW-140,y,13.5,'#ffd23f','right',3,'#141a2c',700);
     txt(cx,e.stage,rowX+rowW-16,y,10.5,'#8a92a8','right',2,'#141a2c',400);
     if(isOwn)txt(cx,'YOU',rowX+rowW-260,y,10.5,'#9fd8ff','right',2,'#141a2c',700)});
-  // refresh + hint
-  BTN('lbrefresh',rowX+rowW-130,322,130,38,()=>{G.lbData=null;lbFetch();SFX.click()},{col:'#ffd23f',outline:'#8a5a20',label:D&&D.entries?('⟳ '+(Math.round((now()-D.ts)/1000))+'s ago').slice(0,12):'⟳ RETRY',fs:11.5});
+  // ---- WORLD DOJO FEED panel (fills the right void; hosts the refresh button) ----
+  {const fx2=866,fy2=232,fw2=372,fh2=106;
+    cx.fillStyle='rgba(255,248,232,.06)';rr(cx,fx2,fy2,fw2,fh2,14);cx.fill();
+    cx.lineWidth=2;cx.strokeStyle='rgba(127,208,255,.45)';rr(cx,fx2+1,fy2+1,fw2-2,fh2-2,13);cx.stroke();
+    txt(cx,'WORLD DOJO FEED',fx2+20,fy2+24,12.5,'#9fd8ff','left',3,'#141a2c',700);
+    {const pu=0.5+0.5*Math.sin(G.t*3); // LIVE chip: pulsing green dot + label
+      cx.fillStyle='rgba(58,188,106,'+(0.75+pu*0.25).toFixed(2)+')';cx.beginPath();cx.arc(fx2+fw2-84,fy2+20,5,0,TAU);cx.fill();
+      txt(cx,'LIVE',fx2+fw2-44,fy2+22,10.5,'#3abc6a','center',2,'#141a2c',700)}
+    txt(cx,'Endless survival — waves cleared per run',fx2+20,fy2+44,10.5,'#8a92a8','left',2,'#141a2c',400);
+    BTN('lbrefresh',fx2+14,fy2+58,168,36,()=>{G.lbData=null;lbFetch();SFX.click()},{col:'#ffd23f',outline:'#8a5a20',label:D&&D.entries?('⟳ '+(Math.round((now()-D.ts)/1000))+'s ago').slice(0,12):'⟳ RETRY',fs:11.5});
+    txt(cx,D&&D.entries?'world scores synced':'offline — retry above',fx2+fw2-14,fy2+66,10,'#8a92a8','right',2,'#141a2c',400)}
   txt(cx,'Scores post automatically when an Endless Dojo run ends. Set your commander name in SETTINGS!',640,690,11.5,'#c9b28a','center',2.5,'#141a2c',400)}
 
 /* ============================== SCREEN: TROPHY STAND ============================== */
@@ -1987,9 +2041,52 @@ function drawShrine(dt){bgSky();drawTopBar('CAT SHRINE',true);
       sg.addColorStop(1,'rgba(220,210,236,0)');
       cx.fillStyle=sg;cx.beginPath();cx.arc(px,py,pr,0,TAU);cx.fill()}
     // ---- shrine keeper cat (sitting, bobbing) beside the offering box ----
+    // costume overlays dress the keeper as lifetime MEGA count grows (KEEPER'S DRESS track)
     {const kx=obx-118,ky=gy+58+Math.sin(G.t*2.6)*3;
+      const mg=si.megaN||0;
+      const C=i=>mg>=SHRINE_COSTUMES[i].mega; // C(0) collar · C(1) cape · C(2) mask · C(3) crown · C(4) halo
       cx.fillStyle='rgba(20,14,10,.3)';cx.beginPath();cx.ellipse(kx,gy+72,20,6,0,0,TAU);cx.fill();
-      ART.cat({x:kx,y:ky,s:1.05,id:'cat',t:G.t,e:{anim:'idle'}})}
+      if(C(4)){ // divine aura (behind everything)
+        const au=cx.createRadialGradient(kx,ky-40,4,kx,ky-40,58);
+        au.addColorStop(0,'rgba(255,216,90,.35)');au.addColorStop(0.6,'rgba(196,106,223,.16)');au.addColorStop(1,'rgba(196,106,223,0)');
+        cx.fillStyle=au;cx.beginPath();cx.arc(kx,ky-40,58,0,TAU);cx.fill()}
+      if(C(1)){ // vermilion cape (behind the cat)
+        cx.save();cx.translate(kx,ky-52);cx.rotate(-0.06);
+        cx.fillStyle='#c83830';cx.beginPath();
+        cx.moveTo(-15,0);cx.quadraticCurveTo(-24,26,-19,50);
+        cx.lineTo(19,50);cx.quadraticCurveTo(24,26,15,0);cx.closePath();cx.fill();
+        cx.lineWidth=2;cx.strokeStyle='#8a2018';cx.stroke();
+        cx.fillStyle='rgba(255,255,255,.14)';cx.beginPath();
+        cx.moveTo(-11,2);cx.quadraticCurveTo(-18,24,-14,46);cx.lineTo(-6,46);cx.quadraticCurveTo(-9,24,-6,2);cx.closePath();cx.fill();
+        cx.restore()}
+      ART.cat({x:kx,y:ky,s:1.05,id:'cat',t:G.t,e:{anim:'idle'}});
+      if(C(0)){ // bell collar: red neck band + gold bell
+        cx.strokeStyle='#e84030';cx.lineWidth=4.5;
+        cx.beginPath();cx.arc(kx,ky-44,13.5,Math.PI*0.15,Math.PI*0.85);cx.stroke();
+        cx.fillStyle='#ffd23f';cx.beginPath();cx.arc(kx,ky-36,4.6,0,TAU);cx.fill();
+        cx.lineWidth=1.4;cx.strokeStyle='#8a5a10';cx.stroke();
+        cx.beginPath();cx.moveTo(kx,ky-39);cx.lineTo(kx,ky-34);cx.stroke()}
+      if(C(2)){ // fox mask worn tilted on the head (face stays visible)
+        cx.save();cx.translate(kx+14,ky-76);cx.rotate(0.32);
+        cx.fillStyle='#e89040';cx.beginPath();cx.ellipse(0,0,10,12,0,0,TAU);cx.fill();
+        cx.lineWidth=1.8;cx.strokeStyle='#8a5a20';cx.stroke();
+        cx.beginPath();cx.moveTo(-9,-4);cx.lineTo(-12,-15);cx.lineTo(-3,-9);cx.closePath();cx.fill();cx.stroke();
+        cx.beginPath();cx.moveTo(9,-4);cx.lineTo(12,-15);cx.lineTo(3,-9);cx.closePath();cx.fill();cx.stroke();
+        cx.fillStyle='#fff4e0';cx.beginPath();cx.ellipse(0,5,5.5,4.2,0,0,TAU);cx.fill();
+        cx.fillStyle='#5a3b16';
+        cx.beginPath();cx.ellipse(-4.5,-2,1.6,2.4,0.3,0,TAU);cx.fill();
+        cx.beginPath();cx.ellipse(4.5,-2,1.6,2.4,-0.3,0,TAU);cx.fill();
+        cx.restore()}
+      if(C(3)){ // golden crown above-left (clear of the mask)
+        glyph(cx,'crown',kx-13,ky-87,12,'#ffd23f','#8a5a10')}
+      if(C(4)){ // divine halo + orbiting sparks
+        cx.save();cx.shadowColor='rgba(255,216,90,.9)';cx.shadowBlur=10;
+        cx.strokeStyle='#ffe89a';cx.lineWidth=3;
+        cx.beginPath();cx.ellipse(kx,ky-99,15,4.6,0,0,TAU);cx.stroke();cx.restore();
+        for(let i2=0;i2<3;i2++){const a2=G.t*1.6+i2*TAU/3;
+          const sxp=kx+Math.cos(a2)*20,syp=ky-99+Math.sin(a2)*6.5;
+          cx.fillStyle='rgba(255,232,140,'+(0.65+0.35*Math.sin(G.t*4+i2)).toFixed(2)+')';
+          star(cx,sxp,syp,4,1.8);cx.fill()}}}
     // ---- coin toss animation → flash → reveal ----
     if(anim){
       anim.t+=dt;
@@ -2034,7 +2131,14 @@ function drawShrine(dt){bgSky();drawTopBar('CAT SHRINE',true);
               glyph(cx,res.icon,0,0,20,'#fff',shade(res.col,.62));cx.restore();
               txt(cx,shrineBlessLine(res),mx+mw/2,my+126,17,res.jackpot?'#c46adf':'#5a3b16','center',4,'#fff',700);
               if(res.streakMul>1)txt(cx,'prayer streak bonus +'+Math.round((res.streakMul-1)*100)+'% applied',mx+mw/2,my+146,11.5,'#d05a28','center',2.5,'#fff',700);
-              txt(cx,anim.free?'(free daily toss)':'(paid toss — '+SHRINE_COST+' CF)',mx+mw/2,my+170,11,'#8a6a3a','center',2,'#fff',400)})}}}
+              if(res.newCostume){const pu=1+Math.sin(G.t*5)*0.06; // MEGA milestone: keeper dress-up
+                cx.save();cx.translate(mx+mw/2,my+172);cx.scale(pu,pu);
+                cx.fillStyle='#c46adf';rr(cx,-190,-13,380,26,13);cx.fill();
+                cx.lineWidth=2;cx.strokeStyle='#8a2aa8';rr(cx,-190,-13,380,26,13);cx.stroke();
+                glyph(cx,'crown',-166,0,11,'#ffd23f','#c46adf');
+                txt(cx,'NEW KEEPER COSTUME: '+res.newCostume+'!',22,0.5,12.5,'#fff','center',2.5,'#6a1a8a',700);
+                cx.restore()}
+              txt(cx,anim.free?'(free daily toss)':'(paid toss — '+SHRINE_COST+' CF)',mx+mw/2,my+200,11,'#8a6a3a','center',2,'#fff',400)})}}}
     cx.restore()}
   /* ---- RIGHT: status panel + pray controls + pool preview ---- */
   const rx=784,rw2=476;
@@ -2054,8 +2158,8 @@ function drawShrine(dt){bgSky();drawTopBar('CAT SHRINE',true);
       txt(cx,'blessing rewards +'+Math.round(si.streakBonus*100)+'% (+'+(sk<SHRINE_STREAK_MAX?'4% each new day':'max streak!)')+')',rx+70,188,10,sk>=SHRINE_STREAK_MAX?'#d05a28':'#8a6a3a','left',2,'#fff',400)}
     else{txt(cx,'PRAYER STREAK',rx+70,170,11.5,'#a89878','left',2,'#fff',700);
       txt(cx,'pray daily — each day adds +4% blessing rewards',rx+70,188,10,'#a89878','left',2,'#fff',400)}}
-  // stats strip
-  creamPanel(rx,226,rw2,94);
+  // stats strip (+ KEEPER'S DRESS costume track row — derived from megaN, no save change)
+  creamPanel(rx,226,rw2,108);
   txt(cx,'Lifetime tosses: '+fmt(si.total)+'   ·   MEGA blessings: '+si.megaN,rx+24,250,12.5,'#5a3b16','left',2.5,'#fff',700);
   {const lastB=SHRINE_BLESSINGS.find(b=>b.id===si.lastId);
     if(lastB){txt(cx,'LAST BLESSING:',rx+24,278,10.5,'#a89878','left',2,'#fff',700);
@@ -2077,10 +2181,26 @@ function drawShrine(dt){bgSky();drawTopBar('CAT SHRINE',true);
       cx.restore()}
     if(pL<=1)txt(cx,'NEXT TOSS: GUARANTEED MEGA!',rx+rw2-24,306,10.5,'#c46adf','right',2.5,'#fff',700);
     else txt(cx,'MEGA in ≤'+pL+' tosses',rx+rw2-24,306,10.5,'#8a6a3a','right',2,'#fff',400)}
+  // KEEPER'S DRESS: 5 costume milestones unlocked by lifetime MEGA count (dresses the scene cat)
+  {const cs=shrineCostumes(si.megaN);const gotN=cs.filter(c=>c.got).length;
+    const next=cs.find(c=>!c.got);
+    txt(cx,'KEEPER\'S DRESS',rx+24,326,10.5,'#a89878','left',2,'#fff',700);
+    cs.forEach((c,i)=>{const px=rx+126+i*26,py=326;
+      const on=c.got;
+      const pu=on&&next&&i===gotN-1?1+Math.sin(G.t*5)*0.14:1; // newest unlock pulses
+      cx.save();cx.translate(px,py);cx.scale(pu,pu);
+      cx.fillStyle=on?'#ffd23f':'rgba(255,210,63,.18)';
+      cx.beginPath();cx.moveTo(0,-7);cx.lineTo(6.2,0);cx.lineTo(0,7);cx.lineTo(-6.2,0);cx.closePath();cx.fill();
+      if(on){cx.lineWidth=1.6;cx.strokeStyle='#8a5a10';cx.stroke();
+        cx.fillStyle='#5a3b16';cx.font=FONT(6.5,700);cx.textAlign='center';cx.fillText(String(c.mega),0,2.4)}
+      else{cx.lineWidth=1.2;cx.strokeStyle='rgba(138,106,58,.4)';cx.stroke()}
+      cx.restore()});
+    if(next)txt(cx,next.n+' at '+next.mega+' MEGA',rx+rw2-24,326,10,gotN?'#8a6a3a':'#b8a884','right',2,'#fff',400);
+    else txt(cx,'FULLY DRESSED — the keeper is divine!',rx+rw2-24,326,10,'#d05a28','right',2,'#fff',700)}
   // PRAY buttons (disabled mid-animation / when modal up)
   {const canFree=si.freeLeft&&!anim;
     const canPaid=!si.freeLeft&&si.extraLeft>0&&SV.cf>=SHRINE_COST&&!anim;
-    const py2=328;
+    const py2=342;
     if(si.freeLeft)BTN('prayfree',rx,py2,rw2,64,()=>{shrineStart(true)},{col:'#ffd23f',outline:'#8a5a20',label:anim?'TOSSING…':'PRAY — FREE TODAY',fs:17,tcol:'#4a2f10',disabled:!!anim,
       draw:(c,hov)=>{if(hov&&!anim){c.fillStyle='rgba(255,200,90,.25)';rr(c,0,0,rw2,64,16);c.fill()}
         if(!anim){const pu=0.6+0.4*(1+Math.sin(G.t*4))/2;
@@ -2094,19 +2214,20 @@ function drawShrine(dt){bgSky();drawTopBar('CAT SHRINE',true);
         if(!anim)txt(c,'daily luck · jackpot x2',rw2/2+16,52,10,'#8a6a3a','center',2,'#fff',400)}});
     else BTN('praypaid',rx,py2,rw2,64,()=>{shrineStart(false)},{col:si.extraLeft>0&&SV.cf>=SHRINE_COST?'#ffb060':'#d8ccb0',outline:'#8a5a20',label:'PRAY — '+SHRINE_COST+' CF ('+si.extraLeft+' left)',fs:15,tcol:'#4a2f10',disabled:!!anim});
     txt(cx,'Extra tosses reset each day · blessings scale with User Rank',rx+rw2/2,py2+82,10.5,'#a89878','center',2,'#fff',400)}
-  // blessing pool preview
-  creamPanel(rx,438,rw2,222);
-  txt(cx,'POSSIBLE BLESSINGS',rx+18,460,13,'#b06a10','left',3,'#fff',700);
+  // blessing pool preview (QA fix: 8 rows at 24.5px spacing — the old 26px layout pushed the
+  //   MEGA row below the panel's bottom edge; now every row stays inside)
+  creamPanel(rx,432,rw2,228);
+  txt(cx,'POSSIBLE BLESSINGS',rx+18,452,13,'#b06a10','left',3,'#fff',700);
   SHRINE_BLESSINGS.forEach((b,i)=>{
-    const bx=rx+18,by=478+i*26;
+    const bx=rx+18,by=462+i*24.5;
     cx.fillStyle=i%2?'rgba(90,59,22,.05)':'rgba(255,244,214,.45)';
-    rr(cx,bx,by,rw2-36,24,8);cx.fill();
-    cx.fillStyle=b.col;cx.beginPath();cx.arc(bx+16,by+12,10,0,TAU);cx.fill();
+    rr(cx,bx,by,rw2-36,23,8);cx.fill();
+    cx.fillStyle=b.col;cx.beginPath();cx.arc(bx+14,by+11.5,9.5,0,TAU);cx.fill();
     cx.lineWidth=1.8;cx.strokeStyle=shade(b.col,.55);cx.stroke();
-    glyph(cx,b.icon,bx+16,by+12,10,'#fff',shade(b.col,.62));
-    txt(cx,b.n,bx+36,by+12,12,'#5a3b16','left',2,'#fff',700);
+    glyph(cx,b.icon,bx+14,by+11.5,9.5,'#fff',shade(b.col,.62));
+    txt(cx,b.n,bx+32,by+12,11.5,'#5a3b16','left',2,'#fff',700);
     if(b.jackpot){const pu=1+Math.sin(G.t*5)*0.06;
-      cx.save();cx.translate(bx+rw2-66,by+12);cx.scale(pu,pu);
+      cx.save();cx.translate(bx+rw2-66,by+11.5);cx.scale(pu,pu);
       cx.fillStyle='#c46adf';rr(cx,-26,-9,52,18,9);cx.fill();
       txt(cx,'JACKPOT',0,0.5,9,'#fff','center',2,'#6a1a8a',700);cx.restore()}
     else txt(cx,'+',bx+rw2-50,by+12,11,'#8a6a3a','right')});
