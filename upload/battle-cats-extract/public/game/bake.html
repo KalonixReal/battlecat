@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Audio Bake Pass</title>
+<style>body{background:#111;color:#9f9;font:13px monospace;padding:16px}#log{white-space:pre-wrap}</style>
+</head>
+<body>
+<div id="log">bake pass starting…</div>
+<script src="js/audio.js?v=bake1"></script>
+<script>
+/* ================= OFFLINE AUDIO BAKE PASS =================
+   Renders every SFX (bank) + all 16 BGM themes to WAV files in
+   assets/audio/ using the REAL game synth (audio.js) inside an
+   OfflineAudioContext — so the shipped game plays pre-recorded
+   audio instead of synthesizing at runtime.
+   Run once per asset change: open /game/bake.html, files POST to
+   /api/audio-bake which writes them into public/game/assets/audio/.
+============================================================ */
+const LOG=document.getElementById('log');
+function say(s){LOG.textContent+=('\n'+s);console.log(s)}
+window.__BAKE_STATUS={done:false,error:null,n:0,total:0};
+
+/* --- minimal globals audio.js expects from core.js --- */
+const clamp=(v,a,b)=>v<a?a:v>b?b:v;
+const SV={settings:{bgm:true,sfx:true}};
+const toast=()=>{};
+
+/* --- capture the BGM scheduler pump (audio.js uses setInterval) --- */
+const PUMP=[];
+window.setInterval=(fn,ms)=>{PUMP.push(fn);return PUMP.length};
+window.clearInterval=()=>{};
+
+/* --- AudioContext shim: hand audio.js the current offline context --- */
+let CUR_OC=null,FAKE_T=0;
+window.AudioContext=function(){return CUR_OC};
+window.webkitAudioContext=window.AudioContext;
+
+/* --- slot table must match audio.js BK_SFX_SLOT --- */
+const SLOTS={basehit:0,burrow:1,capsule:2,cdie:3,cannon:4,click:5,deploy:6,edie:7,error:8,guard:9,hit_cat:10,hit_enemy:11,kb:12,lose:13,shock:14,start:15,surge:16,thunder:17,up:18,warn:19,wave:20,beam:21,win:22,win2:23};
+const SLOT_LEN=2.0;
+
+/* ---------- WAV encoder (16-bit PCM mono) ---------- */
+function wav16(buf,sr){
+  const ch0=buf.getChannelData(0),n=ch0.length;
+  const out=new ArrayBuffer(44+n*2),v=new DataView(out);
+  const ws=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i))};
+  ws(0,'RIFF');v.setUint32(4,36+n*2,true);ws(8,'WAVE');ws(12,'fmt ');
+  v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);
+  v.setUint32(24,sr,true);v.setUint32(28,sr*2,true);v.setUint16(32,2,true);
+  v.setUint16(34,16,true);ws(36,'data');v.setUint32(40,n*2,true);
+  for(let i=0;i<n;i++){let s=Math.max(-1,Math.min(1,ch0[i]));v.setInt16(44+i*2,s<0?s*32768:s*32767,true)}
+  return new Uint8Array(out);
+}
+function b64(u8){let s='';for(let i=0;i<u8.length;i+=0x8000)s+=String.fromCharCode.apply(null,u8.subarray(i,i+0x8000));return btoa(s)}
+async function post(name,u8){
+  const r=await fetch('/api/audio-bake',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({name,b64:b64(u8)})});
+  if(!r.ok)throw new Error(name+' POST '+r.status);
+  window.__BAKE_STATUS.n++;
+  say('✓ '+name+' ('+Math.round(u8.length/1024)+' KB)');
+}
+
+/* ---------- SFX bank render (44100 Hz mono, 24 slots × 2.0s) ---------- */
+async function bakeSFX(){
+  const SR=44100,DUR=Object.keys(SLOTS).length*SLOT_LEN+1.0;
+  CUR_OC=new OfflineAudioContext(1,Math.ceil(SR*DUR),SR);
+  Object.defineProperty(CUR_OC,'currentTime',{get:()=>FAKE_T,configurable:true});
+  FAKE_T=0;__bakeReset();AudioUnlock();
+  for(const k in SFX){
+    const key=k==='hit'?'hit_cat':k;FAKE_T=0.4+SLOTS[key]*SLOT_LEN;
+    SFX[k](k==='hit'?true:undefined); // hit(true) schedules the cat variant; hit_enemy variant below
+  }
+  FAKE_T=0.4+SLOTS.hit_enemy*SLOT_LEN;SFX.hit(false);
+  say('rendering sfx_bank ('+DUR.toFixed(1)+'s @'+SR+')…');
+  const buf=await CUR_OC.startRendering();
+  await post('sfx_bank.wav',wav16(buf,SR));
+}
+
+/* ---------- BGM theme render (22050 Hz mono, N full patterns) ---------- */
+const SRB=22050;
+function bgmLoopLen(th){const spb=60/th.bpm/2;const plen=32*spb;const N=Math.max(3,Math.ceil(30/plen));return{N,plen,loop:N*plen}}
+async function bakeBGM(theme){
+  const th=BGM_THEMES[theme];const{N,loop}=bgmLoopLen(th);
+  const DUR=loop+1.2; // tail room for the delay bus past the loop point
+  CUR_OC=new OfflineAudioContext(1,Math.ceil(SRB*DUR),SRB);
+  Object.defineProperty(CUR_OC,'currentTime',{get:()=>FAKE_T,configurable:true});
+  FAKE_T=0;PUMP.length=0;__bakeReset();AudioUnlock();
+  AudioSetBgm(theme);            // captures the pump + seeds the composition
+  const pump=PUMP[PUMP.length-1];
+  for(let T=0.4;T<loop+0.4;T+=0.42){FAKE_T=T;pump()} // drive the lookahead scheduler deterministically
+  AudioSetBgm(null);
+  say('rendering bgm_'+theme+' ('+loop.toFixed(1)+'s loop @'+SRB+')…');
+  const buf=await CUR_OC.startRendering();
+  await post('bgm_'+theme+'.wav',wav16(buf,SRB));
+  return loop;
+}
+
+/* ---------- main ---------- */
+(async()=>{
+  try{
+    const bg={};
+    await bakeSFX();
+    for(const t of Object.keys(BGM_THEMES))bg[t]=await bakeBGM(t);
+    const bank={sfx:true,bgm:bg};
+    await post('bank.json',new TextEncoder().encode(JSON.stringify(bank)));
+    window.__BAKE_STATUS.done=true;
+    say('BAKE COMPLETE — '+window.__BAKE_STATUS.n+' files');
+  }catch(e){
+    window.__BAKE_STATUS.error=String(e&&e.message||e);
+    say('BAKE FAILED: '+window.__BAKE_STATUS.error);
+    console.error(e);
+  }
+})();
+</script>
+</body>
+</html>
