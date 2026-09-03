@@ -6,7 +6,7 @@ let B=null;
 const WORKER_COST=[40,120,280,560,1000,1600,2400],WORKER_MUL=[1,1.35,1.7,2.1,2.6,3.2,3.9,4.7];
 const WALLET_COST=[30,90,180,360,720,1440,2880],WALLET_MAX=[1,2,3,4,5,6,8,10];
 function startBattle(st){
-  const teamIds=SV.teams[SV.teamSel].filter(Boolean);
+  const teamIds=SV.teams[SV.teamSel].filter(id=>id&&CATMAP[id]); // tolerate invalid ids (imported/hand-edited saves)
   const combo=comboBonuses(teamIds);
   B={st,t:0,speed:1,paused:false,result:null,resultT:0,applied:false,
     wallet:Math.round(battleWalletMax()*0.4+combo.walletStart),walletLv:0,workerLv:0,
@@ -276,9 +276,24 @@ function updateBattle(dt){
 }
 function endBattle(win){
   if(B.result)return;B.result=win?'win':'lose';B.resultT=0;
+  if(G.modal)G.modal=null; // battle over: drop any open overlay (worker menu etc.) so the result screen is unblocked
   B.newRecord=!!(B.st.endless&&B.score>(SV.dojoBest||0)); // NEW RECORD flag captured BEFORE applyBattleResult updates the best (official result shows it above the Score band)
   if(win){SFX.win();B.fx.push({k:'baseboom',x:B.enemyBase.x,t:1.4,y:0});B.shake=16}
   else{SFX.lose();B.fx.push({k:'baseboom',x:B.catBase.x,t:1.4,y:0});B.shake=16}}
+/* endless dojo run ended: update local top-5, then fire-and-forget POST to the world
+   ranking (/api/leaderboard — Prisma SQLite). failures are silent (offline = local only). */
+function dojoRecordRun(){
+  SV.dojoBoard=SV.dojoBoard||[];
+  SV.dojoBoard.push({s:B.score,d:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'})});
+  SV.dojoBoard.sort((a,b)=>b.s-a.s);SV.dojoBoard=SV.dojoBoard.slice(0,5);
+  if(B.score>(SV.dojoBest||0))SV.dojoBest=B.score;
+  if(B.score>0&&B.newRecord){ // only post record-breaking runs — keeps the board meaningful
+    try{
+      fetch('/api/leaderboard',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({name:SV.cmdName||'CAT COMMANDER',score:B.score,stage:B.st.endless?'dojo':B.st.ch})})
+        .then(r=>r.json()).then(j=>{if(j&&j.ok&&j.entry)B.worldRank=j.entry.score})
+        .catch(()=>{});
+    }catch(e){}}}
 function applyBattleResult(){
   if(B.applied)return;B.applied=true;const st=B.st;
   const acc=1+0.15*(SV.base.account-1);
@@ -322,19 +337,25 @@ function applyBattleResult(){
       if(all3&&!SV.eventsDone['crown:'+st.ch]){
         SV.eventsDone['crown:'+st.ch]=1;addCF(750);addXP(25000);
         B.crownBonusCF=750;B.crownBonusXP=25000;
-        toast('ALL CROWNS! Chapter bonus 750 Cat Food + 25,000 XP!','#ffd94a')}}
+        toast('ALL CROWNS! Chapter bonus 750 Cat Food + 25,000 XP!','#ffd94a')}
+      // ===== CROWN LADDER: every 24 crowns banked → milestone reward (repeating) =====
+      let totalCr=0;for(const ck2 in SV.crowns)for(const sk2 in SV.crowns[ck2])totalCr+=SV.crowns[ck2][sk2];
+      B.crownLadder=[];
+      const goal2=24;
+      const maxMile=Math.floor(totalCr/goal2);
+      for(let m2=1;m2<=maxMile;m2++){
+        if(SV.eventsDone['crownladder:'+m2])continue;
+        SV.eventsDone['crownladder:'+m2]=1;
+        addCF(30);addXP(3000);
+        B.crownLadder.push({n:m2,cf:30,xp:3000});
+        toast('CROWN LADDER M'+m2+'! +30 Cat Food +3,000 XP ('+totalCr+' crowns total)','#ffd94a');
+        B.fx.push({k:'crown',x:640+B.cam,y:0,t:1.6})}}
     // endless dojo grading: the run score counts whether you survive or fall (local top-5 board)
-    if(st.endless){SV.dojoBoard=SV.dojoBoard||[];
-      SV.dojoBoard.push({s:B.score,d:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'})});
-      SV.dojoBoard.sort((a,b)=>b.s-a.s);SV.dojoBoard=SV.dojoBoard.slice(0,5);
-      if(B.score>(SV.dojoBest||0))SV.dojoBest=B.score}
+    if(st.endless)dojoRecordRun();
     if(SV.missions)SV.missions.clear=(SV.missions.clear||0)+1; // daily mission hook
     persist();
   }else{
-    if(st.endless){SV.dojoBoard=SV.dojoBoard||[];
-      SV.dojoBoard.push({s:B.score,d:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'})});
-      SV.dojoBoard.sort((a,b)=>b.s-a.s);SV.dojoBoard=SV.dojoBoard.slice(0,5);
-      if(B.score>(SV.dojoBest||0))SV.dojoBest=B.score}
+    if(st.endless)dojoRecordRun();
     persist()}
   AudioSetBgm(null)}
 /* ---------- battle UI ---------- */
@@ -696,6 +717,7 @@ function drawResult(b){
   if(drops.length&&bA>0){cx.globalAlpha=bA;
     const hasCrowns=win&&b.crowns;
     if(hasCrowns&&B.crownBonusCF)drops.push('ALL-CROWN BONUS: +'+B.crownBonusCF+' Cat Food + '+fmt(B.crownBonusXP)+' XP!');
+    if(B.crownLadder&&B.crownLadder.length)B.crownLadder.forEach(cm=>drops.push('CROWN LADDER M'+cm.n+': +'+cm.cf+' Cat Food + '+fmt(cm.xp)+' XP!'));
     const pw2=790,ph2=34+drops.length*30+22,px2=640-pw2/2,py2=hasCrowns?458:438;
     cx.fillStyle='rgba(38,38,24,.94)';rr(cx,px2,py2,pw2,ph2,6);cx.fill();
     cx.lineWidth=3.5;cx.strokeStyle='#e8e4d4';rr(cx,px2,py2,pw2,ph2,6);cx.stroke();

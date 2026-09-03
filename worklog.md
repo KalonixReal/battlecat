@@ -159,3 +159,106 @@ Next-phase priorities (for the 15-min reviewer):
 3. The 28MB WAV audio bank load time — consider re-encoding if it matters.
 4. Consider a Crown-progress reward ladder (e.g. every 48 crowns → CF) instead of only the
    full-144 bonus.
+
+---
+
+## Session Round — CRITICAL BALANCE BUG + 3 NEW SYSTEMS (Task: autonomous round: QA → fix → features)
+
+### Current project status (assessment at round start)
+- Game booted clean, all 14 screens rendered, zero console errors (fresh-session sweep).
+- Golden-path E2E with real pointer clicks at 1280x720 worked (title → home → chapters → map →
+  stage modal → battle → deploy/cannon/speed → result → map).
+- HOWEVER: stage-1 battles with the starting team kept LOSING in ways that felt wrong, which led
+  to discovering a critical enemy-data bug (below). Also found a stuck-state bug and a crash path.
+
+### Completed modifications this round
+
+**BUG FIXES (priority — all verified E2E with real pointer input):**
+1. **FIXED (CRITICAL): enemy range/speed arg swap in EF signature.** All 60 enemies were defined
+   with wiki order (rate, SPEED, RANGE) but EF declared (rate, RANGE, SPEED) — every enemy ran at
+   2–5× intended speed (Doge 337px/s effective, faster than Giraffe Cats) with a ~9px attack
+   reach, causing them to blitz the field then traffic-jam at the cat base forever (rateT draining
+   to −30, never striking). One-line signature swap in data.js + explanatory comment. After fix:
+   Doge range=45/speed=9 (→67px/s, crosses field in ~35s — authentic pacing), early stages
+   properly winnable with the starting team. Battle trace before/after verified live.
+2. **FIXED: Worker Cat modal blocked the battle result screen.** Opened mid-battle and left open,
+   the generic modal kept drawing over the result panel and its mb*-only pointer filter swallowed
+   the OK click (result screen stuck, verified live). endBattle() now drops any open modal
+   (`if(G.modal)G.modal=null`) the moment a result is set. Regression-tested: modal left open
+   through a full win → auto-closed → OK works.
+3. **FIXED: invalid team ids crash the battle screen every frame.** A hand-edited/imported save
+   with unknown cat ids (e.g. 'ninja', 'vale') made catStats() throw → boot.js catch painted the
+   red "UI ERROR" overlay forever (battle.png was 99% #300 dark red). Now: boot.js sanitizes team
+   slots against CATMAP after loadSave(); startBattle() filters team ids defensively. Verified:
+   tampered team auto-cleaned to empty slots on reload, battle renders clean.
+4. Synced wrapper iframe cache-bust (page.tsx ?v=6 → ?v=12, matching index.html).
+
+**NEW FEATURE 1 — SCOUT EXPEDITIONS (Gamatoto-style idle meta):**
+- data.js: EXPD table (5 destinations: Sunny Meadow 3m → Storm Fortress 60m, danger 1–5, XP/CF/
+  ticket/fruit chances); expdToday() 3-of-5 daily rotation (date-seeded); expdStart/Collect with
+  rank + Accounting scaling; random ticket/fruit bonus rolls.
+- core.js: DEF_SAVE `expedition:{active,runs}` + hard normalization (bad active trips dropped).
+- ui.js: full drawExpedition screen — terrain swatch cards with hills/sun, claw-mark danger pips,
+  reward preview, DEPLOY buttons; live tracker with bezier road scene, goal flag, animated scout
+  cat walking along the path (progress-mapped), paw prints, progress bar, countdown, pulsing
+  COLLECT button, results modal. Home menu gained an EXPEDITIONS item with a green READY! badge
+  (like the missions badge). New glyph kinds: compass/flag/medal.
+- Verified E2E: deploy → progress strip → forced timer completion → COLLECT → rewards modal
+  (+2,616 XP +91 CF) → runs counter → state cleared.
+
+**NEW FEATURE 2 — CROWN LADDER (milestone rewards):**
+- battle.js applyBattleResult: total crowns counted across all chapters; every 24 crowns → +30 CF
+  +3,000 XP milestone (eventsDone['crownladder:N'], repeating forever). Fires with toast + crown
+  FX; result drop panel appends "CROWN LADDER Mn: …" lines.
+- Verified E2E: set 26 crowns → won story stage with 3-crown → M1 fired (xp 3816→7394, cf
+  391→421, flag set), result panel line shown, screenshot qa3-crown-ladder.png.
+
+**NEW FEATURE 3 — WORLD DOJO RANKING (first true fullstack feature):**
+- prisma/schema.prisma: new LeaderboardEntry model (name/score/stage/createdAt); db:push run.
+- src/app/api/leaderboard/route.ts: GET (top-N, ordered) + POST (hard-validated: name ≤18 chars,
+  score 0–1M, stage ≤32; keeps only each commander's best per stage — upsert-style).
+- battle.js dojoRecordRun(): on endless-run end (win OR defeat) updates local top-5, then
+  fire-and-forget POST of record-breaking runs using SV.cmdName.
+- ui.js drawLeaderboard screen: navy starfield bg, top-3 podium (gold/silver/bronze + medal
+  glyph), rows 4–20 with own-row highlight + YOU tag, own-best panel, REFRESH button, offline
+  fallback text. Reached via new WORLD RANKING button on the Dojo map record board.
+- Settings: COMMANDER NAME row (EDIT → modal with real DOM input overlay; Enter saves; sanitized
+  to 18 chars). New helpers nameFocus/nameBlur (hidden <input> over canvas, keyboard-driven).
+- Verified E2E: curl POST/GET; in-game leaderboard fetch renders seeded entries; endless-run end
+  auto-posted CAT COMMANDER:77 (best-per-commander replaced old 3); name editor typed "SCOUT ACE"
+  via real keystrokes + Enter → saved + modal closed.
+
+**STYLING / POLISH (mandatory):**
+- Toasts: slide-in with cubic ease + spring overshoot, drop shadow, colored icon dot with glossy
+  highlight, left-aligned text (was: static centered plain chip).
+- Modals: pop-in scale animation (0.18s cubic-out + overshoot) + backdrop fade + title ribbon
+  shadow. Hit rects stay in final design space (visual-only transform) — verified clicks still
+  land during/after animation.
+- Title screen: attract-mode pulsing glow + breathing scale on the PLAY button.
+- Home: EXPEDITIONS menu item + animated READY! badge dot.
+- Dojo map: record board restyled taller with WORLD RANKING button + "global board" caption.
+
+### Verification results
+- Fresh browser session: 14-screen sweep (tests/screen-qa.sh) → zero console errors, all screens
+  non-blank (tests/verify-shots.ts); battle screen no longer dark-red error wash.
+- Golden path re-verified post-fixes: title → home → chapters → map → stage modal → battle
+  (deploy ×N, cannon, speed toggle) → legit WIN at t=112s with 94% base HP → 3 crowns → OK → map.
+  (Defeat flow also verified earlier in the round.)
+- Expedition / leaderboard / name editor / crown ladder / auto-POST all E2E verified (above).
+- Aspect ratios: 1920x800 letterboxed ✓, 390x844 portrait dark rotate-prompt ✓, 1280x720 primary.
+- `node --check`: all 9 game JS files pass. `bun run lint`: 0 errors / 12 benign warnings
+  (expression-style warnings in game JS incl. upload/ copies — not served).
+- dev.log: clean; API routes 200; Prisma queries logged without error.
+- New QA screenshots: tests/shots/qa3-*.png (title-pulse, expedition, exp-active, exp-collect,
+  leaderboard, leaderboard2, crown-ladder, victory-crowns, battle-check, 1920x800, portrait).
+
+### Unresolved / next-phase priorities
+1. **Crown ladder M2+ needs save testing at scale** — M1 verified; deeper milestones only reachable
+   via long play (or another seeded-crown QA run).
+2. Leaderboard has no auth/rate-limit (canvas game, trusted-ish) — consider a lightweight per-session
+   POST cap server-side if abuse matters.
+3. VLM visual review still blocked by API 429 in this environment — pixel probes used instead
+   (tests/probe.ts coordinates documented in worklog history).
+4. Consider expedition "scout level" progression (trips increase a scout rank → small reward
+   multipliers) and a second concurrent slot unlocked at Rank 30.
+5. The 28MB WAV bank load time — re-encode if it matters.

@@ -1,6 +1,6 @@
 'use strict';
 /* ============================== BOOT / MAIN LOOP ============================== */
-const SCREENS={title:drawTitle,home:drawHome,chapters:drawChapters,map:drawMap,submap:drawSubmap,equip:drawEquip,upgrade:drawUpgrade,gacha:drawGacha,treasure:drawTreasure,guide:drawGuide,base:drawBase,settings:drawSettings,store:drawStore,battle:drawBattle};
+const SCREENS={title:drawTitle,home:drawHome,chapters:drawChapters,map:drawMap,submap:drawSubmap,equip:drawEquip,upgrade:drawUpgrade,gacha:drawGacha,treasure:drawTreasure,guide:drawGuide,base:drawBase,settings:drawSettings,store:drawStore,battle:drawBattle,expedition:drawExpedition,leaderboard:drawLeaderboard};
 let lastTs=0,persistT=0,energyT=0;
 function loop(ts){const dt=Math.min(0.05,(ts-lastTs)/1000||0.016);lastTs=ts;G.t+=dt;
   energyT+=dt;if(energyT>1){energyT=0;regenEnergy()}
@@ -19,7 +19,11 @@ function loop(ts){const dt=Math.min(0.05,(ts-lastTs)/1000||0.016);lastTs=ts;G.t+
   if(G.hoverId)G.hits.forEach(h=>{});
   cx.restore();
   requestAnimationFrame(loop)}
-loadSave();ensureMissions();
+loadSave();
+// sanitize team slots against the live roster: an invalid id (edited/imported save) would crash
+// catStats() every battle frame — drop it to an empty slot instead
+SV.teams=SV.teams.map(t=>t.map(id=>id&&CATMAP[id]?id:''));
+ensureMissions();
 AudioBakeProbe(); // pre-rendered SFX bank + BGM loops (assets/audio/) — synth fallback stays
 AudioSetBgm('menu');
 G.lastEvents=eventStages();G.eventKey='ev'+new Date().toDateString();

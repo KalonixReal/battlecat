@@ -35,6 +35,7 @@ const DEF_SAVE={ver:2,created:now(),xp:1200,cf:300,tickets:{rare:1,gold:0,plat:0
   cannons:{standard:{pwr:1,rch:1}},cannonSel:'standard',
   base:{wallet:1,worker:1,cpow:1,crch:1,bhp:1,research:1,account:1},
   bestiary:{},settings:{bgm:true,sfx:true},dupeXp:0,eventsDone:{},dojoBest:0,dojoBoard:[],
+  expedition:{active:null,runs:0},cmdName:'CAT COMMANDER',
   dailyStreak:0,dailyLast:'',missions:{date:'',clear:0,pull:0,up:0,claimed:{}},
   gachaSteps:{},pendingPull:null,pendingBattle:null,saveStats:{writes:0,fails:0,lastWrite:0}};
 let SV=null;
@@ -89,6 +90,16 @@ function _svNormalize(o){ // shape/number hardening AFTER defaults-merge (unknow
     for(let i=1;i<=3;i++)if(c['ev'+i])e['ev'+i]=true; // preserve explicit evolution flags (they ARE the form state)
     o.cats[id]=e}
   if(!Array.isArray(o.dojoBoard))o.dojoBoard=[];
+  // expedition: {active:{dest,start,dur}|null, runs} — active is validated against the live EX table at boot
+  if(!o.expedition||typeof o.expedition!=='object'||Array.isArray(o.expedition))o.expedition=JSON.parse(JSON.stringify(DEF_SAVE.expedition));
+  const exo=o.expedition;
+  if(exo.active&&(typeof exo.active!=='object'||Array.isArray(exo.active)))exo.active=null;
+  if(exo.active){const ea=exo.active;
+    ea.dest=String(ea.dest||'');ea.start=num(ea.start,0);ea.dur=num(ea.dur,60);
+    if(!ea.dest||ea.dur<=0||ea.dur>86400||ea.start<=0||ea.start>now())exo.active=null}
+  exo.runs=clamp(Math.floor(num(exo.runs,0)),0,1e6);
+  if(typeof o.cmdName!=='string'||!o.cmdName.trim())o.cmdName='CAT COMMANDER';
+  o.cmdName=o.cmdName.replace(/[\u0000-\u001f<>]/g,'').trim().slice(0,18)||'CAT COMMANDER';
   o.dojoBoard=o.dojoBoard.filter(e=>e&&typeof e==='object'&&isFinite(Number(e.s))).slice(0,5).map(e=>({s:Math.floor(num(e.s,0)),d:String(e.d||'')}));
   for(const fk in o.fruit)o.fruit[fk]=clamp(Math.floor(num(o.fruit[fk],0)),0,1e9);
   for(const ck in o.crowns){const cc=o.crowns[ck]; // crowns: {chapter:{stageIdx:1..3}} — hard-clamp each pip

@@ -30,3 +30,12 @@ model Post {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+// Catclaw Dojo world ranking — endless survival scores posted from the game client
+model LeaderboardEntry {
+  id        String   @id @default(cuid())
+  name      String
+  score     Int
+  stage     String
+  createdAt DateTime @default(now())
+}

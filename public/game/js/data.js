@@ -62,7 +62,10 @@ C('moneko','special',{rank:4},[F('Moneko',300,60,1.2,150,10,3,100,4)]);
 C('neneko','special',{rank:12},[F('Neneko',500,40,0.9,160,12,3,150,6)]);
 
 /* ============================== ENEMY DATA (canonical wiki values) ============================== */
-const EF=(n,tr,hp,atk,rate,range,speed,kb,money,abil,o)=>Object.assign({n,tr:tr||[],hp,atk,rate,range,speed,kb,money,abil:abil||[],boss:false},o||{});
+// NOTE: all E() calls pass wiki order (rate, SPEED, RANGE, kb, money) — the two middle slots were
+// historically declared swapped, which made every enemy run at 2-5× intended speed with a ~9px
+// attack reach (they traffic-jammed at the base and never struck it). Signature now matches the data.
+const EF=(n,tr,hp,atk,rate,speed,range,kb,money,abil,o)=>Object.assign({n,tr:tr||[],hp,atk,rate,range,speed,kb,money,abil:abil||[],boss:false},o||{});
 const ENEMIES=[];const ENEMAP={};
 function E(id,def){def.id=id;ENEMIES.push(def);ENEMAP[id]=def;return def}
 E('doge',EF('Doge',[],90,8,1.6,9,45,3,15));
@@ -341,3 +344,34 @@ const CANNON_TYPES=[
  {id:'holy',n:'Holy Blast Cannon',d:'Heavy damage to Floating & Angel',col:'#c8a030',ring:'#fff2b0',unlock:{ch:'cotc2',st:47}},
  {id:'breaker',n:'Breakerblast Cannon',d:'Breaks barriers & Aku shields',col:'#a83a3a',ring:'#ff9a6a',unlock:{ch:'cotc3',st:47}}];
 function cannonUnlocked(id){const t=CANNON_TYPES.find(c=>c.id===id);if(!t||!t.unlock)return true;const cc=SV.cleared[t.unlock.ch];return !!(cc&&cc[String(t.unlock.st)])}
+
+/* ============================== EXPEDITIONS (Scout Cat) ============================== */
+/* Gamatoto-style idle meta: send your scout cat on timed trips for XP/CF/tickets/fruit.
+   3 of the 5 destinations rotate daily (date-seeded) so there's always a fresh spread. */
+const EXPD=[
+ {id:'meadow', n:'Sunny Meadow',    mins:3,  danger:1, xp:400,   cf:15,  tk:0.10, tkr:'rare', fruit:0.10, terr:'#7fc86a', blurb:'Rolling grassland — easy pickings, quick turnaround.'},
+ {id:'woods',  n:'Whispering Woods',mins:8,  danger:2, xp:1100,  cf:40,  tk:0.18, tkr:'rare', fruit:0.16, terr:'#5a8a4a', blurb:'Hushed pines full of catnip and stray treasure.'},
+ {id:'peaks',  n:'Howling Peaks',   mins:15, danger:3, xp:2600,  cf:90,  tk:0.25, tkr:'rare', fruit:0.25, terr:'#9aa8b8', blurb:'Bitter winds guard a rich hoard of supplies.'},
+ {id:'cavern', n:'Sunken Caverns',  mins:30, danger:4, xp:6000,  cf:180, tk:0.30, tkr:'gold', fruit:0.32, terr:'#7a6a9a', blurb:'Dripping depths where gold tickets glitter.'},
+ {id:'fort',   n:'Storm Fortress',  mins:60, danger:5, xp:15000, cf:400, tk:0.14, tkr:'plat', fruit:0.50, terr:'#8a5a5a', blurb:'The scouts legend — only the boldest return loaded.'}];
+function expdToday(){ // 3-of-5 daily rotation (deterministic per date)
+  const R=rnd((new Date().toDateString().length*9103+new Date().getDate()*7717)>>>0);
+  return EXPD.slice().sort(()=>R()-0.5).slice(0,3)}
+function expdActive(){const a=SV.expedition.active;return a?{...EXPD.find(d=>d.id===a.dest),...a}:null}
+function expdDone(){const a=SV.expedition.active;if(!a)return false;return now()>=a.start+a.dur*1000}
+function expdStart(destId){const d=EXPD.find(x=>x.id===destId);if(!d||SV.expedition.active)return false;
+  SV.expedition.active={dest:destId,start:now(),dur:d.mins*60};persist();return true}
+/* collect rewards: scale with account upgrades + small rank bonus; returns summary lines */
+function expdCollect(){
+  const a=SV.expedition.active;if(!a||!expdDone())return null;
+  const d=EXPD.find(x=>x.id===a.dest)||{xp:0,cf:0,tk:0,tkr:'rare',fruit:0,n:'?',danger:1};
+  const rankMul=1+Math.min(1,SV.rank*0.006); // up to +60% at rank 100
+  const acc=1+0.15*(SV.base.account-1);
+  const xp=Math.round(d.xp*rankMul*acc),cf=Math.round(d.cf*rankMul);
+  addXP(xp);addCF(cf);
+  const lines=['+'+fmt(xp)+' XP','+'+cf+' Cat Food'];
+  if(d.tk&&Math.random()<d.tk){SV.tickets[d.tkr]++;persist();lines.push('+1 '+({rare:'Rare',gold:'Gold',plat:'Platinum'})[d.tkr]+' Ticket!')}
+  const fruits=Object.keys(SV.fruit).filter(k=>k!=='epic'&&k!=='ancient');
+  if(d.fruit&&Math.random()<d.fruit){const f=fruits[Math.floor(Math.random()*fruits.length)];SV.fruit[f]++;persist();lines.push('+1 '+f[0].toUpperCase()+f.slice(1)+' Catfruit!')}
+  SV.expedition.active=null;SV.expedition.runs++;persist();
+  return lines}
