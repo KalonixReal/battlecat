@@ -509,3 +509,102 @@ Next-phase priorities (for the 15-min reviewer):
 6. Mission modal drawExtra coordinate quirk (my-94 vs modal-top) is now documented above —
    future modal layouts should always compute against the drawExtra-passed (mx,my,mw,mh),
    never the modal's own geometry.
+
+---
+
+## Session Round — CAT SHRINE + SCOUT PRESTIGE + FIRST VLM REVIEW (Task: autonomous QA → features)
+
+### Current project status (assessment at round start)
+- Fresh browser session at v18: clean boot (title, t advancing), zero console errors, dev.log clean.
+- Golden-path E2E re-verified with REAL pointer input at 1280x720: title → home → chapters → map →
+  stage modal → battle (deploy ×N, speed, kills/dmg tracked via getB()) → WIN → result → OK → map.
+- **VLM VISUAL REVIEW WORKED FOR THE FIRST TIME in 7+ sessions** (z-ai vision CLI, glm-5v-turbo,
+  previously always 429). Ran 8 reviews across the round on home/battle/victory/shrine/trophies.
+- QA harness notes re-learned: agent-browser `set viewport 1280 720` is REQUIRED before click.ts
+  (design-space letterboxing); `agent-browser reload` can blank the page — use `open` instead.
+
+### VLM findings at round start (all fixed this round)
+1. Home "YOUR CATS" strip: cat icons overlapped each other (icons are r*3.6 wide but spaced 42px).
+2. Home catalog Catfruit row: bare em-dash looked clipped/misaligned.
+3. Battle stage name floated with no background (readability).
+4. Battle worker "+" pip had no container ("floating icon").
+5. Victory medal caption overlapped the score band; CROWNS label misaligned with pips.
+
+### Completed modifications this round
+
+**1. NEW FEATURE — CAT SHRINE (daily blessing meta, 17th screen):**
+- data.js: SHRINE_BLESSINGS table (8 weighted blessings: XP/CF/energy-refill/rare-ticket/
+  catfruit/NP/gold-ticket/MEGA jackpot; rank-scaled, free toss doubles jackpot weight);
+  shrineRoll/shrineApply/shrineInfo/shrinePray; free toss daily + 3 extra tosses at 50 CF.
+- core.js: DEF_SAVE `shrine:{day,freeUsed,todayN,total,megaN,lastId,lastBless}` + hard
+  normalization (day-rollover resets freeUsed/todayN; counters clamped).
+- ui.js drawShrine: fully drawn dusk scene (torii gate w/ kasagi+plaque, shrine hut w/ glowing
+  slit, saisen-bako offering box, pulsing lanterns, radial-gradient incense smoke, sitting keeper
+  cat, moon+stars) + coin-toss parabola animation w/ spinning coin → landing flash + star burst →
+  auto-apply + BLESSING! modal (icon medallion, jackpot rays, reward line, free/paid tag).
+  Right column: NYANKO SHRINE header w/ torii glyph, status line, lifetime stats + LAST BLESSING
+  chip, big pulsing PRAY button (free→paid states), POSSIBLE BLESSINGS pool preview w/ JACKPOT tag.
+- Home menu: CAT SHRINE item (torii icon, pink) with FREE! badge when the daily toss is up
+  (menu now 12 items — scroll rail auto-adapts).
+- New glyph kinds: 'torii' + 'bolt'.
+- boot.js: shrine registered in SCREENS. SFX.up on reveal; toast on blessing.
+
+**2. NEW FEATURE — SCOUT PRESTIGE (post-MYTHIC star ranks):**
+- data.js: SCOUT_PRESTIGE_MAX=3; scoutPrestige() (MYTHIC → reset scoutXP, +1 star, +10%
+  permanent bonus); scoutInfo() now returns prestige/stars and bonus = 0.06*(lv-1)+0.10*prest
+  (name gains ★ suffix).
+- core.js: expedition.prestige field + normalize clamp 0..3.
+- ui.js expedition: purple pulsing PRESTIGE button (maxed only, stars remaining) → confirm modal
+  (before/after bonus math) → toast; ★N stars + "+10% each · permanent" label otherwise;
+  XP-bar label switches to "MAX RANK — prestige for a star".
+
+**3. NEW FEATURE — SHRINE DEVOTEE trophy group (11th group, 34→37 trophies):**
+- data.js TROPHY_GROUPS: 3 tiers (pray 3/15 times, receive a MEGA blessing; gold-ticket top
+  reward); trophyProg case 'sh' reads SV.shrine.total / megaN; shrineApply calls trophyCheckAll.
+
+**4. FIX (from unresolved list) — per-battle loot chip scoping:**
+- battle.js startBattle snapshots `treasureBase` (session treasure total); HUD chip now shows
+  THIS battle's drops (total − base) instead of session-wide count.
+
+**5. STYLING (VLM-driven fixes + polish):**
+- Battle stage name → dark rounded chip w/ gold rim (VLM: readability).
+- Worker affordable pip → contained 'LV UP' pill badge w/ pulse + gloss (VLM).
+- Victory medal raised to (952,234) — caption clears the score band, wreath clears the title
+  tail (VLM). Victory title y 262→250 (bottom clears the XP band).
+- CROWNS band label/stat line baselines optically centered against pips (VLM).
+- Home cat strip: 11 icons at 51px spacing, r=14 (no overlap — VLM re-verified "cleanly spaced").
+- Home Catfruit row: `||'none yet'` (readable, right-aligned like siblings).
+- Shrine scene: moon repositioned clear of the right lantern; smoke puffs → radial gradients.
+
+**6. Cache-bust v18 → v19** (index.html ×9 scripts + page.tsx wrapper in sync).
+
+### Verification results (all REAL pointer input, 1280x720)
+- Shrine E2E: home → CAT SHRINE (hm5, new index) → PRAY — FREE → coin flight (t:2.92 anim) →
+  auto-apply (+1,093 XP, freeUsed, total=1, lastId=xp) → BLESSING! modal → NICE! closes (anim
+  cleared) → button switches to paid → PRAY (50 CF: 300→250) → 2nd blessing (+1 Rare Ticket,
+  tickets.rare 1→2) → modal OK. Day-rollover: set day to yesterday + reload → freeUsed=false,
+  todayN=0, total preserved; shrineInfo() rolls the key forward.
+- Scout prestige E2E: seeded scoutXP=900 (MYTHIC) → PRESTIGE button present → modal (before/after
+  bonus) → PRESTIGE! → scoutXP=0, prestige=1, toast + ★1 label rendered.
+- Shrine trophies: SHRINE DEVOTEE group renders w/ 2/3 progress (VLM-verified).
+- Battles: 3 full E2E wins this round (incl. one w/ 3-crown on stage 2). Final victory layout
+  VLM-verified: medal clears title AND band, title clears band, CROWNS band aligned. Stage chip
+  renders (VLM), LV UP pill "cleanly contained" (VLM + 1,918 green px), loot chip baseline=3 with
+  3 seeded session treasures → shows this-battle count only.
+- 16-screen sweep (incl. new shrine): ALL non-blank, ZERO console errors.
+- VLM ratings: shrine 8/10; home re-review post-fix: "no obvious visual bugs".
+- node --check 9/9 game JS files pass; `bun run lint` 0 errors / 12 benign warnings; dev.log clean.
+- QA screenshots: tests/shots/qa8-*.png (shrine, shrine-coin, shrine-modal, shrine-paid,
+  home-after, home-fix, expd-prestige, expd-starred, battle-chip, battle-lvup, victory,
+  victory-final, trophies-shrine, sweep-<16 screens>).
+
+### Unresolved / next-phase priorities
+1. VLM review now WORKS — make it a standard step for every new screen (z-ai vision CLI with
+   -i screenshot; see /tmp/vlm-*.json patterns used this round).
+2. Shrine could add: blessing "pity" tracking (guaranteed MEGA within N tosses), shrine cat
+   costume unlocks per MEGA count, or a prayer-chain daily streak bonus.
+3. Missions 'up' hook still only counts upgrade-screen purchases (unchanged, low priority).
+4. Scout prestige maxes at ★3 — consider ★∞ or prestige-only ticket expeditions if more depth.
+5. 28MB WAV bank load time — re-encode if it becomes a complaint.
+6. Consider second save slot / cloud-save export of the shrine + prestige state (savesys has
+   export/import already — new fields ride along automatically).

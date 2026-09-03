@@ -1,6 +1,6 @@
 'use strict';
 /* ============================== BOOT / MAIN LOOP ============================== */
-const SCREENS={title:drawTitle,home:drawHome,chapters:drawChapters,map:drawMap,submap:drawSubmap,equip:drawEquip,upgrade:drawUpgrade,gacha:drawGacha,treasure:drawTreasure,guide:drawGuide,base:drawBase,settings:drawSettings,store:drawStore,battle:drawBattle,expedition:drawExpedition,leaderboard:drawLeaderboard,trophies:drawTrophies};
+const SCREENS={title:drawTitle,home:drawHome,chapters:drawChapters,map:drawMap,submap:drawSubmap,equip:drawEquip,upgrade:drawUpgrade,gacha:drawGacha,treasure:drawTreasure,guide:drawGuide,base:drawBase,settings:drawSettings,store:drawStore,battle:drawBattle,expedition:drawExpedition,leaderboard:drawLeaderboard,trophies:drawTrophies,shrine:drawShrine};
 let lastTs=0,persistT=0,energyT=0;
 function loop(ts){const dt=Math.min(0.05,(ts-lastTs)/1000||0.016);lastTs=ts;G.t+=dt;
   energyT+=dt;if(energyT>1){energyT=0;regenEnergy()}

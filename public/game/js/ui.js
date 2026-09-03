@@ -104,6 +104,8 @@ function glyph(c,kind,x,y,s,col,bg){c.save();c.translate(x,y);c.scale(s/10,s/10)
   else if(kind==='medal'){c.beginPath();c.arc(0,0,8,0,TAU);c.stroke();c.beginPath();c.moveTo(-6.5,6.5);c.lineTo(-3.5,3.5);c.moveTo(6.5,6.5);c.lineTo(3.5,3.5);c.stroke();c.fillStyle=col;c.beginPath();c.arc(0,0,4.6,0,TAU);c.fill();c.fillStyle=bg;c.beginPath();c.arc(0,0,2,0,TAU);c.fill()}
   else if(kind==='trophy'){c.beginPath();c.moveTo(-6,-8);c.lineTo(6,-8);c.lineTo(4.6,2);c.lineTo(-4.6,2);c.closePath();c.fill();c.beginPath();c.moveTo(-6,-7);c.quadraticCurveTo(-9,-4,-4.5,-1.5);c.stroke();c.beginPath();c.moveTo(6,-7);c.quadraticCurveTo(9,-4,4.5,-1.5);c.stroke();c.fillRect(-2,2,4,4);c.fillRect(-6,6,12,2.5);c.fillStyle=bg;c.fillRect(-4.6,-7,9.2,1.6)}
   else if(kind==='crown'){c.beginPath();c.moveTo(-8,5);c.lineTo(-8,-4);c.lineTo(-3.5,0.5);c.lineTo(0,-6);c.lineTo(3.5,0.5);c.lineTo(8,-4);c.lineTo(8,5);c.closePath();c.fill();c.fillStyle=bg;c.beginPath();c.arc(0,1.5,2,0,TAU);c.fill();c.fillRect(-8,5,16,2.5)}
+  else if(kind==='bolt'){c.beginPath();c.moveTo(2,-9);c.lineTo(-5,1);c.lineTo(-1,1);c.lineTo(-2.5,9);c.lineTo(5,-2);c.lineTo(0.5,-2);c.closePath();c.fill()}
+  else if(kind==='torii'){c.lineWidth=2.2;c.beginPath();c.moveTo(-9,-7.5);c.lineTo(9,-7.5);c.moveTo(-9.5,-3.5);c.lineTo(9.5,-3.5);c.moveTo(-6.5,-6);c.lineTo(-6.5,9);c.moveTo(6.5,-6);c.lineTo(6.5,9);c.stroke();c.lineWidth=1.8;c.beginPath();c.moveTo(-9,-7.5);c.quadraticCurveTo(0,-10.5,9,-7.5);c.stroke();c.beginPath();c.moveTo(-6.5,6);c.lineTo(6.5,6);c.stroke()}
   c.restore()}
 /* small drawn padlock (replaces emoji padlocks everywhere — art rule: no emoji) */
 function drawPadlock(c,x,y,s,col){c.save();c.translate(x,y);c.scale(s/10,s/10);
@@ -273,7 +275,7 @@ function drawTitle(dt){
 function drawHome(dt){bgSky();drawTopBar('');
   ensureMissions();
   const mDone=MISSIONS.filter(m=>missionDone(m.id)&&!missionClaimed(m.id)).length;
-  const items=[['BATTLE','#ffd94a','swords',()=>{G.mapSub=0;push('chapters')}],['EQUIP / TEAMS','#7fd0ff','cat',()=>push('equip')],['IMPROVE CATS','#7fe8a0','up',()=>{G.selCat=null;push('upgrade')}],['GACHA','#ff9ad5','capsule',()=>push('gacha')],['TREASURES','#e8c37f','chest',()=>push('treasure')],['EXPEDITIONS','#8fe0b8','compass',()=>push('expedition')],['TROPHIES','#c9a8e8','trophy',()=>push('trophies')],['ENEMY GUIDE','#c9c9d6','doge',()=>push('guide')],['CAT BASE','#a0e8d0','cannon',()=>push('base')],['MISSIONS','#ffb060','scroll',()=>openMissionsModal()],['SETTINGS','#b8b8c8','gear',()=>push('settings')]];
+  const items=[['BATTLE','#ffd94a','swords',()=>{G.mapSub=0;push('chapters')}],['EQUIP / TEAMS','#7fd0ff','cat',()=>push('equip')],['IMPROVE CATS','#7fe8a0','up',()=>{G.selCat=null;push('upgrade')}],['GACHA','#ff9ad5','capsule',()=>push('gacha')],['TREASURES','#e8c37f','chest',()=>push('treasure')],['CAT SHRINE','#ff9ad5','torii',()=>push('shrine')],['EXPEDITIONS','#8fe0b8','compass',()=>push('expedition')],['TROPHIES','#c9a8e8','trophy',()=>push('trophies')],['ENEMY GUIDE','#c9c9d6','doge',()=>push('guide')],['CAT BASE','#a0e8d0','cannon',()=>push('base')],['MISSIONS','#ffb060','scroll',()=>openMissionsModal()],['SETTINGS','#b8b8c8','gear',()=>push('settings')]];
   G.hits.push({id:'homescroll',x:20,y:200,w:600,h:466,scroll:true,off:()=>G.scrollHome,setOff:v=>G.scrollHome=v,max:()=>Math.max(0,items.length*74-466),cb:null});
   creamPanel(20,70,1240,120,'#c8913a');
   txt(cx,'THE BATTLE CATS',40,112,34,'#e8951f','left',6,'#fff',700);
@@ -305,6 +307,10 @@ function drawHome(dt){bgSky();drawTopBar('');
     if(it[0]==='MISSIONS'&&mDone>0){const bw2=26;cx.save();c.translate(w-24,14);c.rotate(Math.sin(G.t*5)*0.12);
       c.fillStyle='#e84030';c.beginPath();c.arc(0,0,bw2/2,0,TAU);c.fill();c.lineWidth=2;c.strokeStyle='#7a1a10';c.stroke();
       txt(c,String(mDone),0,0.5,13,'#fff','center',2,'#7a1a10',700);c.restore()}
+    if(it[0]==='CAT SHRINE'&&shrineInfo().freeLeft){c.save();c.translate(w-24,14);c.rotate(Math.sin(G.t*5)*0.12);
+      c.fillStyle='#ffd23f';c.beginPath();c.arc(0,0,12,0,TAU);c.fill();c.lineWidth=2;c.strokeStyle='#8a5a10';c.stroke();
+      glyph(c,'torii',0,0,11,'#5a3b16','#ffd23f');c.restore();
+      txt(c,'FREE!',w-56,33,11,'#b06a10','left',2,'#fff',700)}
     if(it[0]==='EXPEDITIONS'&&expdAnyDone()){c.save();c.translate(w-24,14);c.rotate(Math.sin(G.t*5)*0.12);
       c.fillStyle='#3abc6a';c.beginPath();c.arc(0,0,11,0,TAU);c.fill();c.lineWidth=2;c.strokeStyle='#1e5a2a';c.stroke();
       glyph(c,'flag',0,0,10,'#fff','#3abc6a');c.restore();
@@ -326,7 +332,7 @@ function drawHome(dt){bgSky();drawTopBar('');
   creamPanel(640,210,600,440);
   txt(cx,'CATALOG',660,240,20,'#b06a10','left',4,'#fff',700);
   const owned=CATS.filter(c=>catOwned(c.id)).length;
-  const lines=[['Cats owned:',owned+' / '+CATS.length],['Forms maxed:',CATS.filter(c=>catOwned(c.id)&&catFormUnlockedCount(c.id)>=c.forms.length).length+' / '+CATS.reduce((a,c)=>a+c.forms.length,0)],['Chapters cleared:',Object.keys(SV.cleared).length+' / '+CHAPTERS.length],['User Rank:',SV.rank+'  (XP total '+fmt(SV.xpTotal)+')'],['NP:',fmt(SV.np)],['Cat Food:',fmt(SV.cf)],['Tickets:','R:'+SV.tickets.rare+' G:'+SV.tickets.gold+' P:'+SV.tickets.plat],['Catfruit:',Object.entries(SV.fruit).filter(([,v])=>v).map(([k,v])=>k[0].toUpperCase()+':'+v).join(' ')||'\u2014']];
+  const lines=[['Cats owned:',owned+' / '+CATS.length],['Forms maxed:',CATS.filter(c=>catOwned(c.id)&&catFormUnlockedCount(c.id)>=c.forms.length).length+' / '+CATS.reduce((a,c)=>a+c.forms.length,0)],['Chapters cleared:',Object.keys(SV.cleared).length+' / '+CHAPTERS.length],['User Rank:',SV.rank+'  (XP total '+fmt(SV.xpTotal)+')'],['NP:',fmt(SV.np)],['Cat Food:',fmt(SV.cf)],['Tickets:','R:'+SV.tickets.rare+' G:'+SV.tickets.gold+' P:'+SV.tickets.plat],['Catfruit:',Object.entries(SV.fruit).filter(([,v])=>v>0).map(([k,v])=>k[0].toUpperCase()+':'+v).join(' ')||'none yet']];
   lines.forEach((l,i)=>{txt(cx,l[0],660,278+i*34,15,'#8a7a5a','left');txt(cx,String(l[1]),1220,278+i*34,16,'#4a3a24','right')});
   const done=CATS.filter(c=>catOwned(c.id));
   cx.strokeStyle='rgba(176,138,80,.5)';cx.lineWidth=1.5;cx.beginPath();cx.moveTo(660,540);cx.lineTo(1220,540);cx.stroke();
@@ -342,8 +348,8 @@ function drawHome(dt){bgSky();drawTopBar('');
       txt(cx,'NEXT TROPHY: '+nxt.n.slice(0,30)+(nxt.n.length>30?'…':''),hx+22,hy+1,10.5,'#8a4a9a','left',2,'#fff',700);
       txt(cx,Math.round(fr*100)+'%',1224,hy+1,11,'#c46adf','right',2,'#fff',700)}}
   let bx=660,by=600;
-  done.slice(0,13).forEach(c=>{ART.catIcon(c.id,bx,by,20);bx+=42});
-  if(owned>13)txt(cx,'+'+(owned-13)+' more',bx+6,by,12,'#a89878','left');
+  done.slice(0,11).forEach(c=>{ART.catIcon(c.id,bx,by,14);bx+=51});
+  if(owned>11)txt(cx,'+'+(owned-11)+' more',bx+4,by,12,'#a89878','left');
   // completion progress bar under the cat strip: % of the full collection owned
   {const pw2=560,px2=660,py2=632;
     cx.fillStyle='rgba(90,59,22,.16)';rr(cx,px2,py2,pw2,10,5);cx.fill();
@@ -1550,7 +1556,21 @@ function drawExpedition(dt){bgSky();drawTopBar('SCOUT EXPEDITIONS',true);
     const g=cx.createLinearGradient(bx,0,bx+bw,0);g.addColorStop(0,'#7fd0ff');g.addColorStop(1,'#4a9ae8');
     cx.fillStyle=g;rr(cx,bx,by,Math.max(10,bw*fr),10,5);cx.fill();
     cx.lineWidth=1.5;cx.strokeStyle='#8a5a20';rr(cx,bx,by,bw,10,5);cx.stroke();
-    txt(cx,scout.maxed?'MAX RANK':(scout.cur+'/'+scout.need+' Scout XP — next: '+SCOUT_NAMES[scout.lv]),bx+bw/2,by-3,9.5,'#5a3b16','center',2,'#fff',700)}
+    txt(cx,scout.maxed?(scout.prest>=SCOUT_PRESTIGE_MAX?'MAX RANK + MAX STARS':'MAX RANK — prestige for a star'):(scout.cur+'/'+scout.need+' Scout XP — next: '+SCOUT_NAMES[scout.lv]),bx+bw/2,by-3,9.5,'#5a3b16','center',2,'#fff',700)}
+  // prestige button: only when MYTHIC + stars remain (confirm modal — resets scout XP)
+  if(scout.maxed&&scout.prest<SCOUT_PRESTIGE_MAX){const pu=0.6+0.4*(1+Math.sin(G.t*4))/2;
+    cx.save();cx.shadowColor='rgba(196,106,223,'+(0.25+pu*0.35).toFixed(2)+')';cx.shadowBlur=8+pu*8;
+    BTN('sprest',rx+rw2-198,86,92,48,()=>{
+      openModal('SCOUT PRESTIGE',[
+        'Reset scout XP to zero and claim a permanent ★.',
+        'Each star adds +10% expedition rewards — forever.',
+        'Current: +'+Math.round(scout.bonus*100)+'% → after: +'+Math.round((scout.bonus+0.10)*100)+'%'],[
+        {n:'PRESTIGE!',col:'#c46adf',cb:()=>{if(scoutPrestige()){toast('SCOUT PRESTIGE! ★'+SV.expedition.prestige+' — bonus now +'+Math.round(scoutInfo().bonus*100)+'%','#c46adf')}}},
+        {n:'LATER',cb:()=>{}}])},
+      {col:'#c46adf',outline:'#6a1a8a',label:'PRESTIGE',fs:11,tcol:'#fff'});
+    cx.restore()}
+  else if(scout.prest>0){txt(cx,'★'.repeat(scout.prest)+' prestige stars',rx+rw2-136,96,10,'#c46adf','right',2,'#fff',700);
+    txt(cx,'+10% each · permanent',rx+rw2-136,110,9,'#a86ac4','right',2,'#fff',400)}
   // slot pips (right side)
   for(let s=0;s<2;s++){const sx=rx+rw2-64,sy=88+s*26;const unlocked=s<slots;const inUse=!!actList[s];
     cx.fillStyle=inUse?'#3abc6a':(unlocked?'#ffd94a':'#d8ccb0');cx.beginPath();cx.arc(sx,sy,9,0,TAU);cx.fill();
@@ -1787,6 +1807,199 @@ function drawTrophies(dt){bgSky();drawTopBar('TROPHY STAND',true);
       else if(cl)txt(cx,'DONE',x+colW-45,ry+22,10.5,'#3a9a5a','center',2,'#fff',700);
       else BTN('tinfo'+t.id,x+colW-78,ry+6,66,30,()=>{toast(t.n+' — '+fmt(Math.min(prog,t.goal))+'/'+fmt(t.goal)+' · reward '+RW_TXT(t.rw),'#ffb060');SFX.click()},{col:'#e8d8b0',outline:'#8a7a5a',label:Math.round(fr*100)+'%',fs:11,tcol:'#8a6a3a'})})});
   txt(cx,'Trophies track your whole adventure — crowns, summons, scouting, treasures and more!',640,700,11.5,'#8a6a3a','center',2.5,'#fff',400)}
+
+
+/* ============================== SCREEN: CAT SHRINE ============================== */
+/* Daily blessing meta: one free coin toss per day (+3 paid at 50 CF). A coin arcs into the
+   offering box, then the blessing reveals in a modal. Scene is fully drawn (torii, lanterns,
+   smoke particles) — no emoji, data-driven from SHRINE_BLESSINGS. */
+function shrineBlessLine(res){const b=SHRINE_BLESSINGS.find(x=>x.id===res.id)||SHRINE_BLESSINGS[0];
+  return b.line(res)}
+function drawShrine(dt){bgSky();drawTopBar('CAT SHRINE',true);
+  const si=shrineInfo();
+  const anim=G.shrineAnim;
+  /* ---- LEFT: the shrine scene (evening sky, torii, hut, offering box, lanterns, smoke) ---- */
+  const sx=20,sw=744,sy=64,sh=596;
+  creamPanel(sx,sy,sw,sh,'#c8913a');
+  { // scene viewport: dusk gradient inside a rounded frame
+    const vx=sx+10,vy=sy+10,vw=sw-20,vh=sh-20;
+    const sky2=cx.createLinearGradient(0,vy,0,vy+vh);
+    sky2.addColorStop(0,'#3a2450');sky2.addColorStop(0.55,'#7a4a7a');sky2.addColorStop(1,'#c88a5a');
+    cx.fillStyle=sky2;rr(cx,vx,vy,vw,vh,14);cx.fill();
+    cx.save();rr(cx,vx,vy,vw,vh,14);cx.clip();
+    // moon + stars (moon kept clear of the right lantern — VLM QA fix)
+    cx.fillStyle='#fff8e8';cx.beginPath();cx.arc(vx+vw-64,vy+56,24,0,TAU);cx.fill();
+    cx.fillStyle='rgba(200,138,90,.9)';cx.beginPath();cx.arc(vx+vw-52,vy+48,20,0,TAU);cx.fill();
+    for(let i=0;i<14;i++){const stx=vx+40+((i*163)% (vw-80)),sty=vy+16+((i*97)%150);
+      const tw=0.4+0.6*Math.abs(Math.sin(G.t*1.4+i*1.7));
+      cx.fillStyle='rgba(255,255,255,'+(tw*0.8).toFixed(2)+')';cx.beginPath();cx.arc(stx,sty,1.6,0,TAU);cx.fill()}
+    // stone ground + steps
+    const gy=vy+vh-120;
+    cx.fillStyle='#8a8494';cx.fillRect(vx,gy,vw,vh-gy);
+    cx.fillStyle='rgba(255,255,255,.10)';cx.fillRect(vx,gy,vw,7);
+    for(let s2=0;s2<3;s2++){cx.fillStyle=s2%2?'#7a7484':'#847e8e';
+      cx.fillRect(vx+vw/2-170-s2*26,gy+22+s2*26,340+s2*52,24)}
+    // ---- torii gate (big, centered) ----
+    const txc=vx+vw/2,tyy=gy-238;
+    cx.fillStyle='#d8483a';
+    cx.fillRect(txc-96,tyy+14,20,238);            // left pillar
+    cx.fillRect(txc+76,tyy+14,20,238);            // right pillar
+    cx.fillStyle='#b8382c';cx.fillRect(txc-96,tyy+96,20,10);cx.fillRect(txc+76,tyy+96,20,10); // base collars
+    cx.fillStyle='#c84034';rr(cx,txc-118,tyy,236,18,7);cx.fill();      // nuki (lower lintel)
+    cx.save();cx.translate(txc,tyy-14);           // kasagi (curved top lintel) + black cap
+    cx.fillStyle='#1e1a24';cx.beginPath();cx.moveTo(-132,10);cx.quadraticCurveTo(0,-12,132,10);cx.lineTo(132,16);cx.quadraticCurveTo(0,-6,-132,16);cx.closePath();cx.fill();
+    cx.fillStyle='#d8483a';cx.beginPath();cx.moveTo(-124,4);cx.quadraticCurveTo(0,-16,124,4);cx.lineTo(124,12);cx.quadraticCurveTo(0,-8,-124,12);cx.closePath();cx.fill();
+    cx.fillStyle='#ffd23f';cx.fillRect(-16,8,32,16); // name plaque
+    cx.fillStyle='#8a2018';cx.fillRect(-12,11,24,10);
+    cx.restore();
+    // ---- shrine hut behind the gate (dark wood, gold trim) ----
+    {const hx=txc,hyy=gy-252,hw=300,hh=132;
+      cx.fillStyle='#4a3426';rr(cx,hx-hw/2,hyy+42,hw,hh-42,8);cx.fill();
+      cx.fillStyle='#2e2018';rr(cx,hx-hw/2+16,hyy+56,hw-32,hh-62,6);cx.fill(); // inner shadow
+      cx.fillStyle='#ffd23f';rr(cx,hx-9,hyy+86,18,26,3);cx.fill();             // offering glow slit
+      cx.save();cx.shadowColor='rgba(255,210,63,.8)';cx.shadowBlur=18;
+      cx.fillStyle='#ffe89a';rr(cx,hx-9,hyy+86,18,26,3);cx.fill();cx.restore();
+      // curved roof
+      cx.fillStyle='#3a2a20';cx.beginPath();
+      cx.moveTo(hx-hw/2-26,hyy+44);cx.quadraticCurveTo(hx,hyy-14,hx+hw/2+26,hyy+44);
+      cx.lineTo(hx+hw/2+18,hyy+56);cx.quadraticCurveTo(hx,hyy+2,hx-hw/2-18,hyy+56);cx.closePath();cx.fill();
+      cx.strokeStyle='#c8a030';cx.lineWidth=2.5;cx.beginPath();
+      cx.moveTo(hx-hw/2-24,hyy+45);cx.quadraticCurveTo(hx,hyy-12,hx+hw/2+24,hyy+45);cx.stroke()}
+    // ---- offering box (saisen-bako) in front ----
+    const obx=txc,oby=gy+56;
+    cx.fillStyle='#7a5a3a';rr(cx,obx-64,oby,128,58,7);cx.fill();
+    cx.fillStyle='#5a4028';rr(cx,obx-64,oby,128,14,7);cx.fill();
+    cx.fillStyle='#1e1610';rr(cx,obx-38,oby+18,76,10,5);cx.fill();   // coin slot
+    cx.strokeStyle='#c8a030';cx.lineWidth=2;rr(cx,obx-64,oby,128,58,7);cx.stroke();
+    cx.fillStyle='rgba(255,255,255,.12)';rr(cx,obx-58,oby+3,44,8,4);cx.fill();
+    // ---- hanging lanterns (pulsing warm glow) ----
+    for(const lx2 of[vx+120,vx+vw-120]){
+      cx.strokeStyle='#5a4a3a';cx.lineWidth=2;cx.beginPath();cx.moveTo(lx2,vy+8);cx.lineTo(lx2,vy+46);cx.stroke();
+      const pu=0.6+0.4*Math.sin(G.t*2.2+lx2*0.02);
+      cx.save();cx.shadowColor='rgba(255,190,80,'+(0.4+pu*0.5).toFixed(2)+')';cx.shadowBlur=12+pu*10;
+      cx.fillStyle='#ffb060';rr(cx,lx2-16,vy+46,32,40,9);cx.fill();cx.restore();
+      cx.strokeStyle='#8a4a10';cx.lineWidth=2;rr(cx,lx2-16,vy+46,32,40,9);cx.stroke();
+      cx.strokeStyle='rgba(90,30,10,.55)';cx.lineWidth=1.4;
+      cx.beginPath();cx.moveTo(lx2-16,vy+60);cx.lineTo(lx2+16,vy+60);cx.moveTo(lx2-16,vy+74);cx.lineTo(lx2+16,vy+74);cx.stroke();
+      cx.fillStyle='#8a4a10';rr(cx,lx2-5,vy+40,10,7,3);cx.fill();rr(cx,lx2-5,vy+85,10,6,3);cx.fill()}
+    // ---- incense smoke: soft radial-gradient puffs (VLM QA fix: no flat circles) ----
+    for(let i=0;i<7;i++){
+      const ph=G.t*0.5+i/7, cyc=(ph%1);
+      const px=obx+52+Math.sin(ph*TAU+i*2.1)*14;
+      const py=oby-cyc*88;
+      const pr=6+cyc*10;
+      const sg=cx.createRadialGradient(px,py,1,px,py,pr);
+      sg.addColorStop(0,'rgba(232,224,244,'+(0.40*(1-cyc)).toFixed(2)+')');
+      sg.addColorStop(0.65,'rgba(224,214,238,'+(0.18*(1-cyc)).toFixed(2)+')');
+      sg.addColorStop(1,'rgba(220,210,236,0)');
+      cx.fillStyle=sg;cx.beginPath();cx.arc(px,py,pr,0,TAU);cx.fill()}
+    // ---- shrine keeper cat (sitting, bobbing) beside the offering box ----
+    {const kx=obx-118,ky=gy+58+Math.sin(G.t*2.6)*3;
+      cx.fillStyle='rgba(20,14,10,.3)';cx.beginPath();cx.ellipse(kx,gy+72,20,6,0,0,TAU);cx.fill();
+      ART.cat({x:kx,y:ky,s:1.05,id:'cat',t:G.t,e:{anim:'idle'}})}
+    // ---- coin toss animation → flash → reveal ----
+    if(anim){
+      anim.t+=dt;
+      const T=1.05,fr=Math.min(1,anim.t/T);
+      const sx2=anim.from.x,sy2=anim.from.y,ex2=obx,ey2=oby+22;
+      const bx2=sx2+(ex2-sx2)*fr, byy=sy2+(ey2-sy2)*fr-Math.sin(fr*Math.PI)*150;
+      if(fr<1){ // spinning coin
+        cx.save();cx.translate(bx2,byy);cx.rotate(anim.t*9);
+        const cw2=Math.abs(Math.cos(anim.t*9))*9+2.5;
+        cx.fillStyle='#ffd23f';cx.beginPath();cx.ellipse(0,0,cw2,11,0,0,TAU);cx.fill();
+        cx.lineWidth=2;cx.strokeStyle='#8a5a10';cx.stroke();
+        cx.fillStyle='rgba(255,255,255,.5)';cx.beginPath();cx.ellipse(-cw2*0.3,-4,2.5,3.4,0,0,TAU);cx.fill();
+        cx.restore()}
+      else{ // landing flash + sparkles
+        const f=clamp((anim.t-T)/0.45,0,1);
+        cx.globalAlpha=1-f;
+        cx.fillStyle='#fff2c0';cx.beginPath();cx.arc(obx,oby+22,10+f*46,0,TAU);cx.fill();
+        cx.globalAlpha=1;
+        for(let i=0;i<8;i++){const a=i*TAU/8+f*1.6;
+          const px=obx+Math.cos(a)*(16+f*58),py=oby+22+Math.sin(a)*(12+f*40);
+          cx.fillStyle='rgba(255,220,120,'+(1-f).toFixed(2)+')';star(cx,px,py,5,2.2);cx.fill()}
+        if(!anim.revealed){anim.revealed=true; // apply ONCE at the flash
+          shrineApply(anim.res);
+          SFX.up();
+          toast('SHRINE BLESSING: '+anim.res.name,'#ffd23f');
+          const res=anim.res;
+          openModal(res.jackpot?'MEGA BLESSING!':'BLESSING!',[res.name],[
+            {n:'NICE!',col:'#ffd23f',cb:()=>{G.shrineAnim=null}}],
+            (mx,my,mw,mh)=>{ // medallion + reward line (drawExtra space)
+              const ccx=mx+mw/2,ccy=my+52;
+              const pu=1+Math.sin(G.t*4)*0.05;
+              cx.save();cx.translate(ccx,ccy);cx.scale(pu,pu);
+              if(res.jackpot){ // jackpot rays behind the medallion
+                cx.save();cx.rotate(G.t*0.6);
+                for(let i=0;i<10;i++){cx.rotate(TAU/10);
+                  cx.fillStyle='rgba(255,210,80,.16)';
+                  cx.beginPath();cx.moveTo(0,0);cx.lineTo(70,-9);cx.lineTo(70,9);cx.closePath();cx.fill()}
+                cx.restore()}
+              cx.fillStyle=res.col;cx.beginPath();cx.arc(0,0,34,0,TAU);cx.fill();
+              cx.lineWidth=3.5;cx.strokeStyle=shade(res.col,.5);cx.stroke();
+              cx.fillStyle='rgba(255,255,255,.35)';cx.beginPath();cx.arc(-9,-11,9,0,TAU);cx.fill();
+              glyph(cx,res.icon,0,0,20,'#fff',shade(res.col,.62));cx.restore();
+              txt(cx,shrineBlessLine(res),mx+mw/2,my+126,17,res.jackpot?'#c46adf':'#5a3b16','center',4,'#fff',700);
+              txt(cx,anim.free?'(free daily toss)':'(paid toss — '+SHRINE_COST+' CF)',mx+mw/2,my+156,11,'#8a6a3a','center',2,'#fff',400)})}}}
+    cx.restore()}
+  /* ---- RIGHT: status panel + pray controls + pool preview ---- */
+  const rx=784,rw2=476;
+  creamPanel(rx,64,rw2,150,'#c8913a');
+  glyph(cx,'torii',rx+42,104,26,'#ffd23f','#8a4a10');
+  txt(cx,'NYANKO SHRINE',rx+80,90,19,'#5a3b16','left',4,'#fff',700);
+  txt(cx,'Toss a coin — the shrine god blesses daily visitors!',rx+80,114,11.5,'#8a6a3a','left',2.5,'#fff',400);
+  {const stat=si.freeLeft?['FREE TOSS READY!','#1e7a3a']:['Free toss used today — extra tosses '+si.extraLeft+'/'+SHRINE_MAX_EXTRA,'#a89878'];
+    txt(cx,stat[0],rx+80,138,12,stat[1],'left',2.5,'#fff',700)}
+  // stats strip
+  creamPanel(rx,226,rw2,84);
+  txt(cx,'Lifetime tosses: '+fmt(si.total)+'   ·   MEGA blessings: '+si.megaN,rx+24,254,12.5,'#5a3b16','left',2.5,'#fff',700);
+  {const lastB=SHRINE_BLESSINGS.find(b=>b.id===si.lastId);
+    if(lastB){txt(cx,'LAST BLESSING:',rx+24,286,10.5,'#a89878','left',2,'#fff',700);
+      cx.fillStyle='rgba(255,244,214,.7)';rr(cx,rx+120,274,rw2-146,26,13);cx.fill();
+      cx.lineWidth=1.4;cx.strokeStyle='rgba(176,138,80,.5)';rr(cx,rx+120,274,rw2-146,26,13);cx.stroke();
+      glyph(cx,lastB.icon,rx+140,287,10,lastB.col,'#fff');
+      txt(cx,lastB.n,rx+158,287,11,'#b06a10','left',2,'#fff',700)}
+    else txt(cx,'No blessings yet — toss your first coin today!',rx+24,286,11,'#a89878','left',2,'#fff',400)}
+  // PRAY buttons (disabled mid-animation / when modal up)
+  {const canFree=si.freeLeft&&!anim;
+    const canPaid=!si.freeLeft&&si.extraLeft>0&&SV.cf>=SHRINE_COST&&!anim;
+    const py2=328;
+    if(si.freeLeft)BTN('prayfree',rx,py2,rw2,64,()=>{shrineStart(true)},{col:'#ffd23f',outline:'#8a5a20',label:anim?'TOSSING…':'PRAY — FREE TODAY',fs:17,tcol:'#4a2f10',disabled:!!anim,
+      draw:(c,hov)=>{if(hov&&!anim){c.fillStyle='rgba(255,200,90,.25)';rr(c,0,0,rw2,64,16);c.fill()}
+        if(!anim){const pu=0.6+0.4*(1+Math.sin(G.t*4))/2;
+          c.save();c.shadowColor='rgba(255,180,20,'+(0.25+pu*0.35).toFixed(2)+')';c.shadowBlur=10+pu*10;
+          c.fillStyle='#ffd23f';rr(c,0,0,rw2,64,16);c.fill();c.restore();
+          c.lineWidth=3;c.strokeStyle='#8a5a20';rr(c,1.5,1.5,rw2-3,61,15);c.stroke()}
+        else{c.fillStyle='#d8ccb0';rr(c,0,0,rw2,64,16);c.fill()}
+        c.lineWidth=1.5;c.strokeStyle='rgba(255,255,255,.55)';rr(c,5,5,rw2-10,54,12);c.stroke();
+        glyph(c,'cat',34,32,16,'#5a3b16','#ffd23f');
+        txt(c,anim?'TOSSING…':'PRAY — FREE TODAY',rw2/2+16,32,17,anim?'#a89878':'#4a2f10','center',3.5,'#fff',700);
+        if(!anim)txt(c,'daily luck · jackpot x2',rw2/2+16,52,10,'#8a6a3a','center',2,'#fff',400)}});
+    else BTN('praypaid',rx,py2,rw2,64,()=>{shrineStart(false)},{col:si.extraLeft>0&&SV.cf>=SHRINE_COST?'#ffb060':'#d8ccb0',outline:'#8a5a20',label:'PRAY — '+SHRINE_COST+' CF ('+si.extraLeft+' left)',fs:15,tcol:'#4a2f10',disabled:!!anim});
+    txt(cx,'Extra tosses reset each day · blessings scale with User Rank',rx+rw2/2,py2+82,10.5,'#a89878','center',2,'#fff',400)}
+  // blessing pool preview
+  creamPanel(rx,438,rw2,222);
+  txt(cx,'POSSIBLE BLESSINGS',rx+18,460,13,'#b06a10','left',3,'#fff',700);
+  SHRINE_BLESSINGS.forEach((b,i)=>{
+    const bx=rx+18,by=478+i*26;
+    cx.fillStyle=i%2?'rgba(90,59,22,.05)':'rgba(255,244,214,.45)';
+    rr(cx,bx,by,rw2-36,24,8);cx.fill();
+    cx.fillStyle=b.col;cx.beginPath();cx.arc(bx+16,by+12,10,0,TAU);cx.fill();
+    cx.lineWidth=1.8;cx.strokeStyle=shade(b.col,.55);cx.stroke();
+    glyph(cx,b.icon,bx+16,by+12,10,'#fff',shade(b.col,.62));
+    txt(cx,b.n,bx+36,by+12,12,'#5a3b16','left',2,'#fff',700);
+    if(b.jackpot){const pu=1+Math.sin(G.t*5)*0.06;
+      cx.save();cx.translate(bx+rw2-66,by+12);cx.scale(pu,pu);
+      cx.fillStyle='#c46adf';rr(cx,-26,-9,52,18,9);cx.fill();
+      txt(cx,'JACKPOT',0,0.5,9,'#fff','center',2,'#6a1a8a',700);cx.restore()}
+    else txt(cx,'+',bx+rw2-50,by+12,11,'#8a6a3a','right')});
+  brownBottomBar()}
+/* kick off a toss: rolls the blessing and starts the coin-flight animation */
+function shrineStart(free){
+  const got=shrinePray();
+  if(!got)return;
+  G.shrineAnim={t:0,res:got.res,free:got.free,revealed:false,from:{x:990,y:360}};
+  SFX.click()}
 
 
 /* ============================== SCREEN: SETTINGS ============================== */

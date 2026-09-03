@@ -15,7 +15,8 @@ function startBattle(st){
     enemyBase:{hp:st.baseHp,maxHp:st.baseHp,x:ENEMY_BASE_X,alarm:0},
     cam:0,shake:0,warn:null,warnT:0,triggerDone:false,endlessK:0,endlessT:8,score:0,
     cannon:{t:0,charge:cannonChargeBase(),type:SV.cannonSel,fired:0},
-    cds:{},teamIds,combo,dmgDealt:0,kills:0};
+    cds:{},teamIds,combo,dmgDealt:0,kills:0,
+    treasureBase:((G.sessionTreasure&&Object.values(G.sessionTreasure).reduce((a,v)=>a+v,0))||0)}; // loot chip counts THIS battle's drops
   const tier=(typeof CHMAP!=='undefined'&&CHMAP[st.ch]&&CHMAP[st.ch].tier)||1;B.costMul=tier<=1?1:(tier===2?1.5:2); // official cost scaling: Ch2 x1.5, Ch3+ x2
   const wm=battleWalletMax()*WALLET_MAX[0];B.walletMax=battleWalletMax();
   teamIds.forEach(id=>B.cds[id]=0);
@@ -580,11 +581,16 @@ function drawBattleHUD(b,dt){
   // boss name (yellow w/ outline) beside the pause button while a boss is on the field
   const bossU=b.units.find(u=>u.side==='enemy'&&u.def.boss&&u.state!=='die'&&u.state!=='burrow');
   if(bossU&&!b.result)txt(cx,ENEMAP[bossU.id].n,122,32,18,'#ffd23f','left',4.5,'rgba(60,20,4,.95)',700);
-  // stage name center-top
-  txt(cx,b.st.name+(b.st.endless?'  \u2014 SCORE '+b.score:''),640,58,15,'rgba(255,255,255,.85)','center',4,'rgba(30,30,44,.9)',700);
-  /* ===== session loot chip (top-center, under stage name): kills + treasure drops this battle ===== */
+  // stage name center-top — dark chip so it reads against any sky (VLM QA fix: no more floating text)
+  {const sname=b.st.name+(b.st.endless?'  \u2014 SCORE '+b.score:'');
+    cx.font=FONT(15,700);const snw=cx.measureText(sname).width+36;
+    const snx=640-snw/2,sny=42;
+    cx.fillStyle='rgba(15,18,30,.62)';rr(cx,snx,sny,snw,26,13);cx.fill();
+    cx.lineWidth=1.5;cx.strokeStyle='rgba(255,215,120,.4)';rr(cx,snx,sny,snw,26,13);cx.stroke();
+    txt(cx,sname,640,sny+13.5,15,'#fff','center',4,'rgba(30,30,44,.9)',700)}
+  /* ===== session loot chip (top-center, under stage name): kills + treasure drops THIS battle ===== */
   {
-    const sessT=(G.sessionTreasure&&Object.values(G.sessionTreasure).reduce((a,v)=>a+v,0))||0;
+    const sessT=Math.max(0,((G.sessionTreasure&&Object.values(G.sessionTreasure).reduce((a,v)=>a+v,0))||0)-(b.treasureBase||0));
     const label=b.kills+' kills'+(sessT>0?' · '+sessT+' treasure':'');
     cx.font=FONT(12,700);const lw2=cx.measureText(label).width+58;
     const lx=640-lw2/2,ly=70;
@@ -626,10 +632,14 @@ function drawBattleHUD(b,dt){
   txt(cx,wNum,bx-4,by+56,19,'#ffd23f','right',4,'rgba(20,16,4,.95)',700);
   drawCent(cx,bx-wnW+1,by+55,7,'#ffd23f','rgba(20,16,4,.95)',3.5);
   const wkCost=WORKER_COST[b.workerLv];
-  if(b.workerLv<7&&b.wallet>=wkCost){ // affordable worker upgrade pip
-    cx.fillStyle='#5ad84a';cx.beginPath();cx.arc(bx+30,by-30,9,0,TAU);cx.fill();
-    cx.lineWidth=2;cx.strokeStyle='#1e5a14';cx.stroke();
-    txt(cx,'+',bx+30,by-29,13,'#fff','center',2,'#1e5a14',700)}
+  if(b.workerLv<7&&b.wallet>=wkCost){ // affordable worker upgrade — contained pill badge (VLM QA fix)
+    cx.save();cx.translate(bx+34,by-34);
+    const pu=1+Math.sin(G.t*5)*0.07;cx.scale(pu,pu);
+    cx.shadowColor='rgba(0,0,0,.35)';cx.shadowBlur=5;cx.shadowOffsetY=2;
+    cx.fillStyle='#5ad84a';rr(cx,-21,-11,42,22,11);cx.fill();cx.shadowColor='transparent';
+    cx.lineWidth=2;cx.strokeStyle='#1e5a14';rr(cx,-21,-11,42,22,11);cx.stroke();
+    cx.fillStyle='rgba(255,255,255,.4)';rr(cx,-17,-8.5,14,6,3);cx.fill();
+    txt(cx,'LV UP',0,0.5,10.5,'#fff','center',2,'#1e5a14',700);cx.restore()}
   BTN('workerbadge',bx-40,by-64,80,124,()=>{if(B.result)return;openWorkerMenu(b)},{flat:true,nohov:true});
   /* ===== BOTTOM-RIGHT: Fire!! cannon button — magenta glow when ready (R8/R9) ===== */
   const c=b.cannon;const ready=c.t<=0;const fx=1190,fy=636;
@@ -722,7 +732,7 @@ function drawResult(b){
   /* ===== EXACT official result composition (refs result_a/result_b/treasure_a): =====
      battle scene stays visible; huge white result word drops in; full-width navy bands
      carry 'Score N' + 'Gained N XP!!'; drop-reward panel lists the drop; Ok + Post to SNS. */
-  const ty=lerp(-180,262,e);
+  const ty=lerp(-180,250,e);
   cx.save();cx.translate(640,ty);cx.rotate(Math.sin(G.t*2.6)*0.008);
   cx.font=FONT(92,700);cx.textAlign='center';cx.textBaseline='middle';cx.lineJoin='round';
   const title=win?'Victory!':'Defeat...';
@@ -731,7 +741,7 @@ function drawResult(b){
   cx.fillStyle='#fff';cx.fillText(title,0,0);cx.restore();
   /* ===== rank medal (Victory only): laurel-wreath chip with the commander's User Rank ===== */
   if(win&&b.resultT>0.15){const mA=clamp((b.resultT-0.15)/0.3,0,1);
-    cx.save();cx.globalAlpha=mA;cx.translate(930,262);cx.rotate(-0.12);
+    cx.save();cx.globalAlpha=mA;cx.translate(952,234);cx.rotate(-0.12); // raised+shifted so the caption clears the score band (VLM QA fix)
     const pu=1+Math.sin(G.t*3)*0.03;cx.scale(pu,pu);
     // laurel wreath: two arcs of leaves
     cx.strokeStyle='#3a7a2a';cx.lineWidth=3;cx.lineCap='round';
@@ -772,7 +782,7 @@ function drawResult(b){
     // ===== CROWN BAND (story wins): 3 slots pop in + time/kills/damage stats (Gauntlet-style) =====
     if(win&&b.crowns){
       cx.fillStyle='rgba(15,18,36,.8)';cx.fillRect(0,by-28,1280,56);
-      txt(cx,'CROWNS',390,by+1,20,'#fff','center',4,'rgba(10,10,20,.9)',700);
+      txt(cx,'CROWNS',390,by+8,20,'#fff','center',4,'rgba(10,10,20,.9)',700); // baseline lowered to optically center against the pip row
       const ce=b.crowns.earned;
       for(let i=0;i<3;i++){ // sequential pop-in w/ overshoot ease
         const pop=clamp((b.resultT-0.4-i*0.14)/0.2,0,1);
@@ -784,7 +794,7 @@ function drawResult(b){
       if(b.crowns.improved)txt(cx,'CROWN UP!',540,by+2,14,'#7fe86a','left',3,'#061806',700);
       // battle stats right side
       const tsec=Math.max(0,Math.round(b.t));const mm=Math.floor(tsec/60),ss=String(tsec%60).padStart(2,'0');
-      txt(cx,'⏱ '+mm+':'+ss+'  ·  ☠ '+b.kills+'  ·  DMG '+fmt(Math.round(b.dmgDealt/1000))+'k',1150,by+1,18,'#9fd8ff','right',4,'rgba(10,10,20,.9)',700);
+      txt(cx,'⏱ '+mm+':'+ss+'  ·  ☠ '+b.kills+'  ·  DMG '+fmt(Math.round(b.dmgDealt/1000))+'k',1150,by+6,18,'#9fd8ff','right',4,'rgba(10,10,20,.9)',700);
       by+=66}
     cx.globalAlpha=1}
   // drop-reward panel (dark olive + white border, verbatim official lines)

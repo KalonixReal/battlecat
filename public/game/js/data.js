@@ -363,7 +363,9 @@ const SCOUT_NAMES=['ROOKIE','TRAINED','SEASONED','PATHFINDER','VETERAN','ELITE',
 function scoutInfo(){const xp=clamp(Math.floor((SV&&SV.expedition&&SV.expedition.scoutXP)||0),0,1e6);
   let lv=1;for(let i=1;i<SCOUT_T.length;i++){if(xp>=SCOUT_T[i])lv=i+1}
   const base=SCOUT_T[lv-1],next=lv<SCOUT_T.length?SCOUT_T[lv]:null;
-  return{xp,lv,name:SCOUT_NAMES[lv-1],cur:xp-base,need:next!==null?next-base:0,maxed:next===null,bonus:0.06*(lv-1)}}
+  const prest=clamp(Math.floor((SV&&SV.expedition&&SV.expedition.prestige)||0),0,typeof SCOUT_PRESTIGE_MAX==='number'?SCOUT_PRESTIGE_MAX:3);
+  const stars=prest>0?('\u2605'.repeat(prest)):'';
+  return{xp,lv,prest,stars,name:SCOUT_NAMES[lv-1]+(stars?' '+stars:''),cur:xp-base,need:next!==null?next-base:0,maxed:next===null,bonus:0.06*(lv-1)+0.10*prest}}
 function scoutBonus(){return 1+scoutInfo().bonus}
 function expdSlots(){return SV&&SV.rank>=30?2:1} // 2nd concurrent trip slot at User Rank 30
 function expdActives(){return (SV&&SV.expedition&&Array.isArray(SV.expedition.actives))?SV.expedition.actives:[]}
@@ -450,7 +452,11 @@ const TROPHY_GROUPS=[
  {id:'streak',n:'LOYAL COMMANDER',icon:'flame',col:'#e85840',list:[
    {id:'st1',n:'Log in 7 days in a row',goal:7,rw:{cf:80}},
    {id:'st2',n:'Log in 14 days in a row',goal:14,rw:{cf:150,ticket:'rare'}},
-   {id:'st3',n:'Log in 30 days in a row',goal:30,rw:{cf:400,ticket:'gold'}}]}];
+   {id:'st3',n:'Log in 30 days in a row',goal:30,rw:{cf:400,ticket:'gold'}}]},
+ {id:'shrine',n:'SHRINE DEVOTEE',icon:'torii',col:'#ffb0c8',list:[
+   {id:'sh1',n:'Pray at the Cat Shrine 3 times',goal:3,rw:{cf:60}},
+   {id:'sh2',n:'Pray at the Cat Shrine 15 times',goal:15,rw:{cf:150}},
+   {id:'sh3',n:'Receive a MEGA blessing',goal:1,rw:{cf:200,ticket:'gold'}}]}];
 function trophyList(){return TROPHY_GROUPS.flatMap(g=>g.list.map(t=>({...t,group:g})))}
 function trophyProg(t){switch(t.id.slice(0,2)){
   case 'ca':return Object.keys(SV.cats).length;
@@ -462,6 +468,7 @@ function trophyProg(t){switch(t.id.slice(0,2)){
   case 'tr':return treasuresTotal();
   case 'dj':return SV.dojoBest||0;
   case 'rk':return SV.rank;
+  case 'sh':return t.n.includes('MEGA')?(SV.shrine?SV.shrine.megaN||0:0):(SV.shrine?SV.shrine.total||0:0);
   default:return SV.dailyStreak||0}}
 function trophyDone(t){return trophyProg(t)>=t.goal}
 function trophyClaimable(t){return trophyDone(t)&&!SV.trophies.claimed[t.id]}
@@ -480,3 +487,85 @@ function trophyCheckAll(){let any=false;
       toast('TROPHY UNLOCKED: '+t.n+' — claim at the Trophy Stand!','#c46adf')}}
   if(any)persist();
   return any}
+
+/* ============================== CAT SHRINE (daily blessings) ============================== */
+/* Nyanko Shrine meta: toss a coin in the offering box once a day for free (extra tosses cost
+   Cat Food). Blessings scale with User Rank; the free toss carries a boosted jackpot weight.
+   Only flags/counters persist — rewards apply immediately on reveal. */
+const SHRINE_MAX_EXTRA=3;               // paid tosses per day beyond the free one
+const SHRINE_COST=50;                   // Cat Food per paid toss
+const SHRINE_BLESSINGS=[
+ {id:'xp',   n:'Wisdom of the Ancients', col:'#7fd0ff', icon:'up',      w:22, jackpot:false,
+  line:r=>'+'+fmt(r.n)+' XP — the shrine cats shared their scrolls!'},
+ {id:'cf',   n:'Offering Repaid',        col:'#ffd23f', icon:'cat',     w:20, jackpot:false,
+  line:r=>'+'+r.n+' Cat Food — twice your coin, back with a blessing!'},
+ {id:'en',   n:'Energy Surge',           col:'#54e0f0', icon:'bolt',    w:14, jackpot:false,
+  line:r=>'Energy fully restored ('+r.n+'/'+r.n+') — the lanterns glow bright!'},
+ {id:'rare', n:'Lucky Ticket Charm',     col:'#ffb060', icon:'scroll',  w:12, jackpot:false,
+  line:r=>'+1 Rare Ticket — a fortune slip fluttered down!'},
+ {id:'fruit',n:'Catfruit Harvest',       col:'#ff9ad5', icon:'capsule', w:10, jackpot:false,
+  line:r=>'+1 '+r.fruitLabel+' Catfruit — the offering tree bloomed overnight!'},
+ {id:'np',   n:'Insight of the Elders',  col:'#c9a8e8', icon:'compass', w:8, jackpot:false,
+  line:r=>'+'+r.n+' NP — the elders whispered their secrets!'},
+ {id:'gold', n:'Golden Fortune',         col:'#e8c37f', icon:'chest',   w:6, jackpot:false,
+  line:r=>'+1 Gold Ticket — a golden glint in the offering box!'},
+ {id:'mega', n:'MEGA BLESSING',          col:'#c46adf', icon:'trophy',  w:3, jackpot:true,
+  line:r=>'+'+r.cf+' Cat Food · +'+fmt(r.xp)+' XP · +1 Rare Ticket — THE SHRINE GOD SMILED!'}];
+/* roll one blessing (weighted; free toss doubles jackpot weight), compute rank-scaled rewards */
+function shrineRoll(free){
+  const pool=SHRINE_BLESSINGS.map(b=>({b,w:b.w*(b.jackpot&&free?2:1)}));
+  const tot=pool.reduce((a,p)=>a+p.w,0);
+  let r=Math.random()*tot,pick=pool[0].b;
+  for(const p of pool){r-=p.w;if(r<=0){pick=p.b;break}}
+  const rankMul=1+Math.min(1.5,SV.rank*0.012); // up to +150% at high rank
+  const res={id:pick.id,name:pick.n,col:pick.col,icon:pick.icon,jackpot:pick.jackpot,n:0};
+  if(pick.id==='xp')res.n=Math.round((900+SV.rank*180)*rankMul);
+  else if(pick.id==='cf')res.n=Math.round(90*rankMul);
+  else if(pick.id==='en')res.n=energyMax();
+  else if(pick.id==='rare')res.n=1;
+  else if(pick.id==='fruit'){const ks=Object.keys(SV.fruit).filter(k=>k!=='epic'&&k!=='ancient');
+    res.fruit=ks[Math.floor(Math.random()*ks.length)];res.fruitLabel=res.fruit[0].toUpperCase()+res.fruit.slice(1);res.n=1}
+  else if(pick.id==='np')res.n=Math.max(3,Math.round(2+SV.rank*0.25));
+  else if(pick.id==='gold')res.n=1;
+  else if(pick.id==='mega'){res.cf=Math.round(220*rankMul);res.xp=Math.round(2400*rankMul);res.n=0}
+  return res}
+/* apply a rolled blessing to the save; returns nothing (rewards already inside res) */
+function shrineApply(res){
+  if(res.id==='xp')addXP(res.n);
+  else if(res.id==='cf')addCF(res.n);
+  else if(res.id==='en'){SV.energy=energyMax();SV.energyTs=now()}
+  else if(res.id==='rare')SV.tickets.rare++;
+  else if(res.id==='fruit')SV.fruit[res.fruit]++;
+  else if(res.id==='np'){SV.np+=res.n}
+  else if(res.id==='gold')SV.tickets.gold++;
+  else if(res.id==='mega'){addCF(res.cf);addXP(res.xp);SV.tickets.rare++}
+  const S=SV.shrine;S.total++;S.todayN++;S.lastBless=res.n;S.lastId=res.id;
+  if(res.jackpot)S.megaN++;
+  persist();
+  if(typeof trophyCheckAll==='function')trophyCheckAll();
+  return true}
+/* state helpers: {day,freeUsed,todayN,total,megaN,lastId,lastBless} — day rolls reset counters */
+function shrineInfo(){const S=SV.shrine;
+  if(S.day!==todayKey()){S.day=todayKey();S.freeUsed=false;S.todayN=0}
+  const extraUsed=Math.max(0,S.todayN-(S.freeUsed?1:0));
+  return{freeLeft:!S.freeUsed,extraLeft:Math.max(0,SHRINE_MAX_EXTRA-extraUsed),
+    extraUsed,todayN:S.todayN,total:S.total,megaN:S.megaN||0,
+    cost:SHRINE_COST,lastId:S.lastId||null,lastBless:S.lastBless||0}}
+/* begin a pray: returns {res,free} on success, null when not allowed */
+function shrinePray(){
+  const si=shrineInfo();const free=si.freeLeft;
+  if(!free){ // paid toss
+    if(si.extraLeft<=0){toast('The shrine is resting — come back tomorrow!','#ffb060');SFX.error();return null}
+    if(SV.cf<SHRINE_COST){toast('Not enough Cat Food ('+SHRINE_COST+' CF needed)','#ff7a7a');SFX.error();return null}
+    SV.cf-=SHRINE_COST}
+  else SV.shrine.freeUsed=true;
+  const res=shrineRoll(free);
+  return{res,free}}
+/* ---- scout prestige: after MYTHIC (900 XP) reset XP for a permanent ★ bonus ---- */
+const SCOUT_PRESTIGE_MAX=3;
+function scoutPrestige(){const s=scoutInfo();
+  if(!s.maxed)return false;
+  const ex=SV.expedition;
+  ex.prestige=clamp(Math.floor(ex.prestige||0)+1,0,SCOUT_PRESTIGE_MAX);
+  ex.scoutXP=0;persist();SFX.up();
+  return true}
