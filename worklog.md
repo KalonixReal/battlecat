@@ -345,3 +345,75 @@ Next-phase priorities (for the 15-min reviewer):
 4. Battle B state is a top-level `let` (not reachable via window.__BC) — fine for players,
    but QA probes can't inspect it; consider adding B to the __BC hook for future testing.
 5. 28MB WAV audio bank — re-encode if load time becomes a complaint.
+
+---
+
+## Session Round — TROPHY STAND SYSTEM + VICTORY CONFETTI + QA HOOK (Task: autonomous QA → features)
+
+### Current project status (assessment at round start)
+- Pristine save booted clean (rank 1); zero console/page errors; dev.log clean.
+- Golden-path E2E with REAL pointer input re-verified at 1280x720: title → home → chapters →
+  map → stage modal → battle (deploy, speed x2) → WIN with perfect 3-crown clear → OK → map.
+- 15-screen sweep all non-blank; node --check 9/9; lint 0 errors / 12 benign warnings.
+- VLM visual review STILL 429-blocked (3 attempts this round) — pixel probes used instead.
+
+### Completed modifications this round
+
+**1. NEW META SYSTEM — TROPHY STAND (achievements, 34 trophies in 10 themed groups):**
+- data.js: TROPHY_GROUPS (Cat Collector / Story Veteran / Crown Chaser / Grand Summoner /
+  Scout Captain / Monster Hunter / Treasure Seeker / Dojo Master / Rising Star / Loyal
+  Commander) — 3-4 tiers each, rewards CF/XP/Rare+Gold tickets. Progress is COMPUTED LIVE
+  from save state via helpers (stageClearsTotal, crownsTotal, treasuresTotal) — zero drift;
+  only claim/notify flags persist. trophyProg/trophyDone/trophyClaimable/claimTrophy/
+  trophyCheckAll (toast per newly-claimable, deduped via notified flags).
+- core.js: DEF_SAVE + _svNormalize for `trophies:{claimed,notified}` (flag values forced to 1)
+  and `stats:{pulls,wins}` (lifetime counters clamped 0-1e7).
+- ui.js: full drawTrophies screen — sky bg, giant animated trophy-cup summary header
+  (claimed count + rewards earned + pulsing READY badge), 2-column scrollable group grid
+  (colored header bands + group icons), rows with status medallion (✓ green / pulsing gold
+  star when claimable / padlock), progress bars, reward chips, CLAIM/DONE/% buttons.
+  New glyph kinds: 'trophy' + 'crown'. Home menu gained TROPHIES item (purple) with a
+  purple COUNT badge when claimable. Registered in boot.js SCREENS.
+- Hooks (each calls trophyCheckAll): boot (post-loadSave), applyBattleResult (win path,
+  also counts SV.stats.wins), doPull + doGoldPull (stats.pulls += n), consumeGachaGrant
+  (cats-collected after grant), expdCollect, daily CF claim (streak).
+- Verified E2E (real input): seeded 5 cats + 12 pulls → 2 claimable + toasts + notified
+  flags set → home badge shows count → CLAIM cats1 (cf 300→350) + CLAIM sm1 (→400) →
+  DONE medallions render → info % button toast "Recruit 15 different cats — 4/15 · reward
+  100 CF" → wheel scroll (0→320) AND drag scroll (0→200) both work → post-battle
+  stats.wins=1 → gacha pull E2E: pulls 12→13, rare ticket consumed, pendingPull cleared.
+
+**2. NEW QA INFRA — window.__BC.getB()**: live battle state B exposed in the boot hook
+  (was a top-level let, unreachable before). Verified: getB() returns full state mid-battle
+  (st/t/units/bases), null outside battle. Future rounds can probe battle internals directly.
+
+**3. SCOUT BONUS LEGIBILITY** (from last round's unresolved list): expedition collect modal
+  now appends "Scout Rank bonus +N% applied" after the reward lines.
+
+**4. STYLING — VICTORY CONFETTI**: endBattle(win) spawns 42 streamers (5-color palette:
+  gold/pink/white/cyan/purple, deterministic rnd() seed, per-particle rot/vr/sway phase);
+  drawResult updates+draws them under the UI bands (text stays readable), gentle gravity,
+  recycle at bottom. Verified: 42 particles alive on result screen, 103 pixel-probe hits
+  with correct palette colors, victory screenshot qa6-victory-confetti.png.
+  Defeat shows none (correct).
+
+**5. Cache-bust v15 → v16** (index.html + page.tsx wrapper in sync).
+
+### Verification results
+- Fresh-save boot → title → home clean; save reset via live SV mutation + persist works.
+- 16-screen sweep (incl. new trophies screen) all non-blank (qa6b-*); zero console errors.
+- Battle E2E: full win with confetti + stats.wins counter + trophy hook (no errors).
+- Gacha pull E2E with new counter; expedition collect modal shows bonus line (code path).
+- A brace-balance syntax slip in the home-menu edit was caught by `node --check` and fixed
+  before browser testing; all 9 files pass after.
+- bun run lint: 0 errors / 12 benign warnings. dev.log clean.
+- QA screenshots: qa6-* and qa6b-* (home-trophy-item, trophies, trophies-claimed,
+  home-badge, victory-confetti, gacha-reveal, equip-check, trophies-scrolled, all screens).
+
+### Unresolved / next-phase priorities
+1. VLM visual review still 429-blocked (5+ sessions now) — screenshots ready in tests/shots/
+   (qa6b-* are freshest); retry when quota clears.
+2. Trophy progression display could add a "next reward hint" on the home CATALOG panel.
+3. Scout rank MYTHIC cap (900 XP) — prestige ranks or ticket-only expeditions if wanted.
+4. Consider a trophy SOUND distinct from SFX.up (minor).
+5. 28MB WAV bank — re-encode if load time becomes a complaint.

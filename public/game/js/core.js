@@ -36,6 +36,7 @@ const DEF_SAVE={ver:2,created:now(),xp:1200,cf:300,tickets:{rare:1,gold:0,plat:0
   base:{wallet:1,worker:1,cpow:1,crch:1,bhp:1,research:1,account:1},
   bestiary:{},settings:{bgm:true,sfx:true},dupeXp:0,eventsDone:{},dojoBest:0,dojoBoard:[],
   expedition:{actives:[],scoutXP:0,runs:0},cmdName:'CAT COMMANDER',
+  trophies:{claimed:{},notified:{}},stats:{pulls:0,wins:0},
   dailyStreak:0,dailyLast:'',missions:{date:'',clear:0,pull:0,up:0,claimed:{}},
   gachaSteps:{},pendingPull:null,pendingBattle:null,saveStats:{writes:0,fails:0,lastWrite:0}};
 let SV=null;
@@ -105,6 +106,14 @@ function _svNormalize(o){ // shape/number hardening AFTER defaults-merge (unknow
     .slice(0,2); // hard cap: max 2 concurrent trips (slot 2 unlocks at user Rank 30)
   exo.scoutXP=clamp(Math.floor(num(exo.scoutXP,0)),0,1e6);
   exo.runs=clamp(Math.floor(num(exo.runs,0)),0,1e6);
+  // trophies: {claimed:{id:1}, notified:{id:1}} — progress is computed live, only flags persist
+  if(!o.trophies||typeof o.trophies!=='object'||Array.isArray(o.trophies))o.trophies={claimed:{},notified:{}};
+  for(const k of['claimed','notified']){if(!o.trophies[k]||typeof o.trophies[k]!=='object'||Array.isArray(o.trophies[k]))o.trophies[k]={};
+    for(const tid in o.trophies[k])if(o.trophies[k][tid]!==1)delete o.trophies[k][tid]}
+  // stats: cumulative counters not derivable from save shape (gacha pulls, battle wins)
+  if(!o.stats||typeof o.stats!=='object'||Array.isArray(o.stats))o.stats={pulls:0,wins:0};
+  o.stats.pulls=clamp(Math.floor(num(o.stats.pulls,0)),0,1e7);
+  o.stats.wins=clamp(Math.floor(num(o.stats.wins,0)),0,1e7);
   if(typeof o.cmdName!=='string'||!o.cmdName.trim())o.cmdName='CAT COMMANDER';
   o.cmdName=o.cmdName.replace(/[\u0000-\u001f<>]/g,'').trim().slice(0,18)||'CAT COMMANDER';
   o.dojoBoard=o.dojoBoard.filter(e=>e&&typeof e==='object'&&isFinite(Number(e.s))).slice(0,5).map(e=>({s:Math.floor(num(e.s,0)),d:String(e.d||'')}));

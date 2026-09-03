@@ -102,6 +102,8 @@ function glyph(c,kind,x,y,s,col,bg){c.save();c.translate(x,y);c.scale(s/10,s/10)
   else if(kind==='compass'){c.beginPath();c.arc(0,0,8.6,0,TAU);c.stroke();c.save();c.rotate(-0.6);c.fillStyle=col;c.beginPath();c.moveTo(0,-6.5);c.lineTo(2.2,2.4);c.lineTo(0,0.8);c.lineTo(-2.2,2.4);c.closePath();c.fill();c.fillStyle=bg;c.beginPath();c.arc(0,0,2,0,TAU);c.fill();c.restore();c.fillStyle=col;c.beginPath();c.arc(0,-7.2,1.2,0,TAU);c.fill()}
   else if(kind==='flag'){c.beginPath();c.moveTo(-6,9);c.lineTo(-6,-8);c.stroke();c.fillStyle=col;c.beginPath();c.moveTo(-6,-8);c.quadraticCurveTo(1,-5,8,-7);c.quadraticCurveTo(3,1,-6,1);c.closePath();c.fill()}
   else if(kind==='medal'){c.beginPath();c.arc(0,0,8,0,TAU);c.stroke();c.beginPath();c.moveTo(-6.5,6.5);c.lineTo(-3.5,3.5);c.moveTo(6.5,6.5);c.lineTo(3.5,3.5);c.stroke();c.fillStyle=col;c.beginPath();c.arc(0,0,4.6,0,TAU);c.fill();c.fillStyle=bg;c.beginPath();c.arc(0,0,2,0,TAU);c.fill()}
+  else if(kind==='trophy'){c.beginPath();c.moveTo(-6,-8);c.lineTo(6,-8);c.lineTo(4.6,2);c.lineTo(-4.6,2);c.closePath();c.fill();c.beginPath();c.moveTo(-6,-7);c.quadraticCurveTo(-9,-4,-4.5,-1.5);c.stroke();c.beginPath();c.moveTo(6,-7);c.quadraticCurveTo(9,-4,4.5,-1.5);c.stroke();c.fillRect(-2,2,4,4);c.fillRect(-6,6,12,2.5);c.fillStyle=bg;c.fillRect(-4.6,-7,9.2,1.6)}
+  else if(kind==='crown'){c.beginPath();c.moveTo(-8,5);c.lineTo(-8,-4);c.lineTo(-3.5,0.5);c.lineTo(0,-6);c.lineTo(3.5,0.5);c.lineTo(8,-4);c.lineTo(8,5);c.closePath();c.fill();c.fillStyle=bg;c.beginPath();c.arc(0,1.5,2,0,TAU);c.fill();c.fillRect(-8,5,16,2.5)}
   c.restore()}
 /* small drawn padlock (replaces emoji padlocks everywhere — art rule: no emoji) */
 function drawPadlock(c,x,y,s,col){c.save();c.translate(x,y);c.scale(s/10,s/10);
@@ -269,7 +271,7 @@ function drawTitle(dt){
 function drawHome(dt){bgSky();drawTopBar('');
   ensureMissions();
   const mDone=MISSIONS.filter(m=>missionDone(m.id)&&!missionClaimed(m.id)).length;
-  const items=[['BATTLE','#ffd94a','swords',()=>{G.mapSub=0;push('chapters')}],['EQUIP / TEAMS','#7fd0ff','cat',()=>push('equip')],['IMPROVE CATS','#7fe8a0','up',()=>{G.selCat=null;push('upgrade')}],['GACHA','#ff9ad5','capsule',()=>push('gacha')],['TREASURES','#e8c37f','chest',()=>push('treasure')],['EXPEDITIONS','#8fe0b8','compass',()=>push('expedition')],['ENEMY GUIDE','#c9c9d6','doge',()=>push('guide')],['CAT BASE','#a0e8d0','cannon',()=>push('base')],['MISSIONS','#ffb060','scroll',()=>openMissionsModal()],['SETTINGS','#b8b8c8','gear',()=>push('settings')]];
+  const items=[['BATTLE','#ffd94a','swords',()=>{G.mapSub=0;push('chapters')}],['EQUIP / TEAMS','#7fd0ff','cat',()=>push('equip')],['IMPROVE CATS','#7fe8a0','up',()=>{G.selCat=null;push('upgrade')}],['GACHA','#ff9ad5','capsule',()=>push('gacha')],['TREASURES','#e8c37f','chest',()=>push('treasure')],['EXPEDITIONS','#8fe0b8','compass',()=>push('expedition')],['TROPHIES','#c9a8e8','trophy',()=>push('trophies')],['ENEMY GUIDE','#c9c9d6','doge',()=>push('guide')],['CAT BASE','#a0e8d0','cannon',()=>push('base')],['MISSIONS','#ffb060','scroll',()=>openMissionsModal()],['SETTINGS','#b8b8c8','gear',()=>push('settings')]];
   G.hits.push({id:'homescroll',x:20,y:200,w:600,h:466,scroll:true,off:()=>G.scrollHome,setOff:v=>G.scrollHome=v,max:()=>Math.max(0,items.length*74-466),cb:null});
   creamPanel(20,70,1240,120,'#c8913a');
   txt(cx,'THE BATTLE CATS',40,112,34,'#e8951f','left',6,'#fff',700);
@@ -304,7 +306,12 @@ function drawHome(dt){bgSky();drawTopBar('');
     if(it[0]==='EXPEDITIONS'&&expdAnyDone()){c.save();c.translate(w-24,14);c.rotate(Math.sin(G.t*5)*0.12);
       c.fillStyle='#3abc6a';c.beginPath();c.arc(0,0,11,0,TAU);c.fill();c.lineWidth=2;c.strokeStyle='#1e5a2a';c.stroke();
       glyph(c,'flag',0,0,10,'#fff','#3abc6a');c.restore();
-      txt(c,'READY!',w-56,33,11,'#1e7a3a','left',2,'#fff',700)}}});y+=ih+gap});
+      txt(c,'READY!',w-56,33,11,'#1e7a3a','left',2,'#fff',700)}
+    if(it[0]==='TROPHIES'){const tc=trophyClaimCount();
+      if(tc>0){c.save();c.translate(w-24,14);c.rotate(Math.sin(G.t*5)*0.12);
+        c.fillStyle='#c46adf';c.beginPath();c.arc(0,0,13,0,TAU);c.fill();c.lineWidth=2;c.strokeStyle='#6a1a8a';c.stroke();
+        txt(c,String(tc),0,0.5,12.5,'#fff','center',2,'#6a1a8a',700);c.restore();
+        txt(c,'CLAIM!',w-56,33,11,'#9a3ac4','left',2,'#fff',700)}}}});y+=ih+gap});
   creamPanel(640,210,600,440);
   txt(cx,'CATALOG',660,240,20,'#b06a10','left',4,'#fff',700);
   const owned=CATS.filter(c=>catOwned(c.id)).length;
@@ -1194,6 +1201,7 @@ function doPull(bannerId,n,cost,free){
   if(!results.length){toast('Nothing obtained?!','#ff7a7a');return}
   if(!free)SV.cf-=cost;
   if(SV.missions)SV.missions.pull=(SV.missions.pull||0)+1; // daily mission hook
+  SV.stats.pulls=(SV.stats.pulls||0)+n; // trophy/stat lifetime pull counter
   persist();SFX.click();
   savePendingPull(results,bannerId); // BUILDER C: results are durable the moment they're rolled — the grant itself happens exactly-once at the OK button (consumeGachaGrant in savesys.js) or, if the tab died first, at boot recovery
   G.gachaAnim={t:0,phase:0,results,banner:bannerId,best:bestRarity(results)}}
@@ -1215,6 +1223,7 @@ function doGoldPull(bannerId){
   const id=pick(pool,R).id;
   SV.tickets.gold--; // consume exactly one gold ticket, then persist BEFORE the reveal
   if(SV.missions)SV.missions.pull=(SV.missions.pull||0)+1;
+  SV.stats.pulls=(SV.stats.pulls||0)+1; // trophy/stat lifetime pull counter
   persist();SFX.click();
   savePendingPull([id],bannerId);
   G.gachaAnim={t:0,phase:0,results:[id],banner:bannerId,best:bestRarity([id])}}
@@ -1623,6 +1632,102 @@ function drawLeaderboard(dt){lbEnter();
   BTN('lbrefresh',rowX+rowW-130,322,130,38,()=>{G.lbData=null;lbFetch();SFX.click()},{col:'#ffd23f',outline:'#8a5a20',label:D&&D.entries?('⟳ '+(Math.round((now()-D.ts)/1000))+'s ago').slice(0,12):'⟳ RETRY',fs:11.5});
   txt(cx,'Scores post automatically when an Endless Dojo run ends. Set your commander name in SETTINGS!',640,690,11.5,'#c9b28a','center',2.5,'#141a2c',400)}
 
+/* ============================== SCREEN: TROPHY STAND ============================== */
+/* Achievement showcase: 10 themed group panels (2-column, scrollable). Progress is
+   computed live from save state; CLAIM grants CF/XP/tickets. Badge on the home menu. */
+function drawTrophies(dt){bgSky();drawTopBar('TROPHY STAND',true);
+  const all=trophyList();
+  const claimedN=all.filter(t=>SV.trophies.claimed[t.id]).length;
+  const claimableN=all.filter(trophyClaimable).length;
+  let cfEarned=0,xpEarned=0;all.forEach(t=>{if(SV.trophies.claimed[t.id]){cfEarned+=t.rw.cf||0;xpEarned+=t.rw.xp||0}});
+  // ---- summary header: giant cup + counts ----
+  creamPanel(20,64,1240,84,'#c8913a');
+  cx.save();cx.translate(76,106);cx.rotate(Math.sin(G.t*1.8)*0.04);
+  cx.fillStyle='#ffd23f';cx.beginPath();cx.moveTo(-24,-30);cx.lineTo(24,-30);cx.lineTo(18,6);cx.quadraticCurveTo(12,20,0,22);cx.quadraticCurveTo(-12,20,-18,6);cx.closePath();cx.fill();
+  cx.strokeStyle='#8a5a20';cx.lineWidth=3;cx.stroke();
+  cx.beginPath();cx.moveTo(-24,-26);cx.quadraticCurveTo(-38,-12,-14,-2);cx.stroke();
+  cx.beginPath();cx.moveTo(24,-26);cx.quadraticCurveTo(38,-12,14,-2);cx.stroke();
+  cx.fillStyle='#8a5a20';rr(cx,-7,22,14,10,3);cx.fill();rr(cx,-16,32,32,7,3);cx.fill();
+  cx.fillStyle='rgba(255,255,255,.5)';rr(cx,-15,-27,12,9,4);cx.fill();cx.restore();
+  txt(cx,claimedN+' / '+all.length+' trophies claimed',124,96,20,'#5a3b16','left',4,'#fff',700);
+  txt(cx,'Rewards earned: '+fmt(cfEarned)+' Cat Food'+(xpEarned?' · '+fmt(xpEarned)+' XP':''),124,124,12.5,'#8a6a3a','left',2.5,'#fff',700);
+  if(claimableN>0){const pulse=1+Math.sin(G.t*5)*0.05;
+    cx.save();cx.translate(1160,106);cx.scale(pulse,pulse);
+    cx.fillStyle='#e84030';cx.beginPath();cx.arc(0,0,20,0,TAU);cx.fill();cx.lineWidth=2.5;cx.strokeStyle='#8a1a10';cx.stroke();
+    txt(cx,String(claimableN),0,1,16,'#fff','center',2.5,'#8a1a10',700);
+    txt(cx,'READY TO CLAIM!',0,38,10.5,'#e84030','center',2.5,'#fff',700);cx.restore()}
+  else txt(cx,'All claimed — keep playing to unlock more!',1160,106,12,'#5a3b16','right',2.5,'#fff',700);
+  // ---- scrollable 2-column group grid ----
+  const colW=606,gap=16,colX=[20,20+colW+gap];
+  let colH=[0,0];
+  const placed=TROPHY_GROUPS.map(g=>{
+    const cI=colH[0]<=colH[1]?0:1;
+    const y=96+colH[cI];
+    const h=44+g.list.length*46+10;
+    colH[cI]+=h+gap;
+    return{g,cI,x:colX[cI],y,h}});
+  const contentH=Math.max(colH[0],colH[1]);
+  SCROLL('tsc',0,96,1280,574,()=>G.scrollTrophy||0,v=>G.scrollTrophy=clamp(v,0,Math.max(0,contentH-566)),Math.max(0,contentH-566));
+  const off=G.scrollTrophy||0;
+  placed.forEach(({g,cI,x,y,h})=>{
+    const sy=y-off;
+    if(sy+h<80||sy>660)return; // cull off-screen panels
+    creamPanel(x,sy,colW,h);
+    // group header band
+    cx.fillStyle=shade(g.col,.92);rr(cx,x+3,sy+3,colW-6,38,12);cx.fill();
+    cx.lineWidth=2;cx.strokeStyle=shade(g.col,.55);rr(cx,x+3,sy+3,colW-6,38,12);cx.stroke();
+    glyph(cx,g.icon,x+30,sy+22,13,'#fff',shade(g.col,.6));
+    txt(cx,g.n,x+52,sy+23,15.5,'#fff','left',3,'rgba(20,16,4,.8)',700);
+    const gDone=g.list.filter(t=>SV.trophies.claimed[t.id]).length;
+    txt(cx,gDone+'/'+g.list.length,x+colW-16,sy+23,12.5,'#fff','right',2.5,'rgba(20,16,4,.8)',700);
+    // trophy rows
+    g.list.forEach((t,i)=>{
+      const ry=sy+50+i*46;
+      const prog=Math.min(trophyProg(t),t.goal);
+      const done=trophyDone(t),cl=!!SV.trophies.claimed[t.id],can=done&&!cl;
+      // row plate
+      cx.fillStyle=can?'rgba(232,64,48,.08)':'rgba(90,59,22,.05)';
+      rr(cx,x+10,ry,colW-20,42,9);cx.fill();
+      // status medallion
+      const mx=x+28,my=ry+21;
+      if(cl){cx.fillStyle='#3a9a5a';cx.beginPath();cx.arc(mx,my,11,0,TAU);cx.fill();
+        cx.lineWidth=2;cx.strokeStyle='#1e5a2a';cx.stroke();
+        cx.strokeStyle='#fff';cx.lineWidth=2.6;cx.beginPath();cx.moveTo(mx-4.5,my+0.5);cx.lineTo(mx-1.5,my+3.5);cx.lineTo(mx+5,my-3.5);cx.stroke()}
+      else if(done){const pu=1+Math.sin(G.t*5)*0.08;
+        cx.save();cx.translate(mx,my);cx.scale(pu,pu);
+        cx.fillStyle='#ffd23f';star(cx,0,0,11,4.6);cx.fill();
+        cx.lineWidth=1.8;cx.strokeStyle='#8a5a20';cx.stroke();cx.restore()}
+      else{cx.fillStyle='#e2d4ae';cx.beginPath();cx.arc(mx,my,11,0,TAU);cx.fill();
+        cx.lineWidth=2;cx.strokeStyle='#c8b892';cx.stroke();
+        drawPadlock(cx,mx,my+1,6.5,'#a89878')}
+      // name + progress bar
+      txt(cx,t.n,x+46,ry+11,12,cl?'#8a7a5a':'#5a3b16','left',2.5,'#fff',cl?400:700);
+      const bw=colW-260;
+      cx.fillStyle='rgba(90,59,22,.14)';rr(cx,x+46,ry+20,bw,7,3.5);cx.fill();
+      const fr=clamp(prog/t.goal,0,1);
+      const pcol=done?(cl?'#7fc86a':'#ffd23f'):'#4a9ae8';
+      cx.fillStyle=pcol;rr(cx,x+46,ry+20,Math.max(8,bw*fr),7,3.5);cx.fill();
+      cx.lineWidth=1;cx.strokeStyle='rgba(90,59,22,.35)';rr(cx,x+46,ry+20,bw,7,3.5);cx.stroke();
+      txt(cx,fmt(Math.min(prog,t.goal))+' / '+fmt(t.goal),x+46+bw+8,ry+24.5,10.5,done?'#1e7a3a':'#8a6a3a','left',2,'#fff',700);
+      // reward chip
+      const rwTxt=RW_TXT(t.rw);
+      cx.fillStyle=cl?'rgba(58,154,90,.10)':'rgba(255,244,214,.75)';
+      rr(cx,x+colW-190,ry+6,104,30,8);cx.fill();
+      cx.lineWidth=1.2;cx.strokeStyle=cl?'rgba(58,154,90,.5)':'rgba(176,138,80,.5)';
+      rr(cx,x+colW-190,ry+6,104,30,8);cx.stroke();
+      txt(cx,rwTxt,x+colW-138,ry+22,9,cl?'#3a9a5a':'#b06a10','center',2,'#fff',700);
+      // claim button / claimed tag
+      if(can){const pu=0.6+0.4*(1+Math.sin(G.t*5))/2;
+        cx.save();cx.shadowColor='rgba(232,64,48,'+(0.3+pu*0.4).toFixed(3)+')';cx.shadowBlur=8+pu*8;
+        BTN('tcl'+t.id,x+colW-78,ry+6,66,30,()=>{
+          const res=claimTrophy(t.id);
+          if(res)toast('TROPHY CLAIMED! '+t.n+' — +'+RW_TXT(t.rw),'#7fe8a0')},
+          {col:'#e84030',outline:'#8a1a10',label:'CLAIM',fs:12,tcol:'#fff'});
+        cx.restore()}
+      else if(cl)txt(cx,'DONE',x+colW-45,ry+22,10.5,'#3a9a5a','center',2,'#fff',700);
+      else BTN('tinfo'+t.id,x+colW-78,ry+6,66,30,()=>{toast(t.n+' — '+fmt(Math.min(prog,t.goal))+'/'+fmt(t.goal)+' · reward '+RW_TXT(t.rw),'#ffb060');SFX.click()},{col:'#e8d8b0',outline:'#8a7a5a',label:Math.round(fr*100)+'%',fs:11,tcol:'#8a6a3a'})})});
+  txt(cx,'Trophies track your whole adventure — crowns, summons, scouting, treasures and more!',640,700,11.5,'#8a6a3a','center',2.5,'#fff',400)}
+
 
 /* ============================== SCREEN: SETTINGS ============================== */
 /* Builder C owns this function (Task 6): file export/import with real controls, hidden
@@ -1745,7 +1850,8 @@ function drawStore(dt){drawTopBar('CAT FOOD STORE',true);
   txt(cx,claimed?'Come back tomorrow to grow your streak!':'Log in daily: +25 CF per streak day (max +300)',220,324,11.5,'#8a7a5a','center');
   if(claimed)txt(cx,'✔ CLAIMED TODAY',220,366,15,'#5aa84a','center',3,'#fff',700);
   else BTN('dailycf',110,352,220,44,()=>{const st2=(SV.dailyLast===yesterKey())?(SV.dailyStreak||0):0;SV.dailyStreak=st2+1;SV.dailyLast=todayKey();SV.eventsDone[dayKey]=true;
-    const rw=150+25*Math.min(SV.dailyStreak-1,6);SV.cf+=rw;persist();SFX.win2();toast('+'+rw+' Cat Food! Streak '+SV.dailyStreak+'d','#e85840')},{col:'#e85840',outline:'#8a1a10',label:'CLAIM',fs:17,tcol:'#fff'});
+    const rw=150+25*Math.min(SV.dailyStreak-1,6);SV.cf+=rw;persist();SFX.win2();toast('+'+rw+' Cat Food! Streak '+SV.dailyStreak+'d','#e85840');
+    trophyCheckAll()},{col:'#e85840',outline:'#8a1a10',label:'CLAIM',fs:17,tcol:'#fff'});
   // 7-day streak calendar — visualizes the login-streak reward curve
   creamPanel(20,416,400,196,'#d8913a');
   txt(cx,'STREAK CALENDAR',220,442,14.5,'#e8951f','center',4,'#fff',700);

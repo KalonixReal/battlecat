@@ -278,7 +278,12 @@ function endBattle(win){
   if(B.result)return;B.result=win?'win':'lose';B.resultT=0;
   if(G.modal)G.modal=null; // battle over: drop any open overlay (worker menu etc.) so the result screen is unblocked
   B.newRecord=!!(B.st.endless&&B.score>(SV.dojoBest||0)); // NEW RECORD flag captured BEFORE applyBattleResult updates the best (official result shows it above the Score band)
-  if(win){SFX.win();B.fx.push({k:'baseboom',x:B.enemyBase.x,t:1.4,y:0});B.shake=16}
+  if(win){SFX.win();B.fx.push({k:'baseboom',x:B.enemyBase.x,t:1.4,y:0});B.shake=16;
+    // victory confetti: 42 streamers burst from the top, golds + pinks + whites (deterministic RNG)
+    B.confetti=[];const R2=rnd((now()&0x7fffffff)>>>0);
+    for(let i=0;i<42;i++)B.confetti.push({x:80+R2()*1120,y:-30-R2()*160,vx:(R2()-0.5)*40,vy:90+R2()*120,
+      rot:R2()*TAU,vr:(R2()-0.5)*6,w:7+R2()*6,h:3+R2()*4,ph:R2()*TAU,
+      col:['#ffd23f','#ff9ad5','#fdfdf8','#7fd0ff','#c46adf'][i%5]})}
   else{SFX.lose();B.fx.push({k:'baseboom',x:B.catBase.x,t:1.4,y:0});B.shake=16}}
 /* endless dojo run ended: update local top-5, then fire-and-forget POST to the world
    ranking (/api/leaderboard — Prisma SQLite). failures are silent (offline = local only). */
@@ -353,7 +358,9 @@ function applyBattleResult(){
     // endless dojo grading: the run score counts whether you survive or fall (local top-5 board)
     if(st.endless)dojoRecordRun();
     if(SV.missions)SV.missions.clear=(SV.missions.clear||0)+1; // daily mission hook
+    SV.stats.wins=(SV.stats.wins||0)+1; // lifetime wins (trophy/stat)
     persist();
+    if(typeof trophyCheckAll==='function')trophyCheckAll();
   }else{
     if(st.endless)dojoRecordRun();
     persist()}
@@ -676,6 +683,18 @@ function drawResult(b){
   applyBattleResult();
   const win=b.result==='win';
   const t=Math.min(1,b.resultT/0.6),e=1-Math.pow(1-t,3);
+  /* victory confetti (screen-space, drawn UNDER the UI bands so text stays readable) */
+  if(win&&b.confetti){
+    const d=Math.min(0.05,1/60); // fixed-ish step (drawResult runs once per frame)
+    for(const p of b.confetti){
+      p.x+=p.vx*d;p.y+=p.vy*d;p.rot+=p.vr*d;p.vy+=14*d; // gentle gravity
+      if(p.y>760){p.y=-24;p.x=80+Math.random()*1120;p.vy=90+Math.random()*120}
+      cx.save();cx.translate(p.x,p.y);cx.rotate(p.rot);
+      const sway=Math.sin(G.t*3+p.ph)*0.5+0.5;
+      cx.globalAlpha=0.75+sway*0.25;
+      cx.fillStyle=p.col;cx.fillRect(-p.w/2,-p.h*sway/2,p.w,p.h*sway);
+      cx.restore()}
+    cx.globalAlpha=1}
   /* ===== EXACT official result composition (refs result_a/result_b/treasure_a): =====
      battle scene stays visible; huge white result word drops in; full-width navy bands
      carry 'Score N' + 'Gained N XP!!'; drop-reward panel lists the drop; Ok + Post to SNS. */

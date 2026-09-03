@@ -395,5 +395,87 @@ function expdCollect(idx){
   const after=scoutInfo();
   lines.push('+'+sXP+' Scout XP');
   if(after.lv>before.lv){lines.push('SCOUT RANK UP! Now '+after.name+' (+'+Math.round(after.bonus*100)+'% rewards)')}
+  if(scoutInfo().bonus>0)lines.push('Scout Rank bonus +'+Math.round(scoutInfo().bonus*100)+'% applied');
   act.splice(idx||0,1);SV.expedition.runs++;persist();
+  if(typeof trophyCheckAll==='function')trophyCheckAll();
   return lines}
+
+/* ============================== TROPHY STAND ============================== */
+/* Achievement meta-layer: progress is COMPUTED LIVE from save state (no drift);
+   only claim/notify flags persist in SV.trophies. Grants CF/XP/tickets on claim. */
+function stageClearsTotal(){let n=0;for(const ch in SV.cleared){const c=SV.cleared[ch];if(c&&typeof c==='object')for(const k in c)if(c[k])n++}return n}
+function crownsTotal(){let n=0;for(const ch in SV.crowns){const c=SV.crowns[ch];if(c&&typeof c==='object')for(const k in c)n+=(c[k]||0)}return n}
+function treasuresTotal(){let n=0;for(const ch in CHSETS)for(let s=0;s<CHSETS[ch].length;s++)n+=tCount(ch,s);return n}
+const RW_TXT=rw=>{const p=[];if(rw.cf)p.push(fmt(rw.cf)+' CF');if(rw.xp)p.push(fmt(rw.xp)+' XP');if(rw.ticket)p.push({rare:'Rare',gold:'Gold',plat:'Platinum'}[rw.ticket]+' Ticket');return p.join(' + ')};
+const TROPHY_GROUPS=[
+ {id:'collect',n:'CAT COLLECTOR',icon:'cat',col:'#7fd0ff',list:[
+   {id:'cats1',n:'Recruit 5 different cats',goal:5,rw:{cf:50}},
+   {id:'cats2',n:'Recruit 15 different cats',goal:15,rw:{cf:100}},
+   {id:'cats3',n:'Recruit 30 different cats',goal:30,rw:{cf:200}},
+   {id:'cats4',n:'Recruit every single cat',goal:CATS.length,rw:{cf:500,ticket:'gold'}}]},
+ {id:'story',n:'STORY VETERAN',icon:'swords',col:'#ffd94a',list:[
+   {id:'cl1',n:'Clear 6 stages',goal:6,rw:{cf:60}},
+   {id:'cl2',n:'Clear 48 stages (a full chapter)',goal:48,rw:{cf:150}},
+   {id:'cl3',n:'Clear 120 stages',goal:120,rw:{cf:300}},
+   {id:'cl4',n:'Clear 144 EoC stages',goal:144,rw:{cf:750,ticket:'gold'}}]},
+ {id:'crown',n:'CROWN CHASER',icon:'crown',col:'#e8c37f',list:[
+   {id:'cr1',n:'Earn 12 crowns',goal:12,rw:{cf:80,xp:2000}},
+   {id:'cr2',n:'Earn 48 crowns',goal:48,rw:{cf:200,xp:8000}},
+   {id:'cr3',n:'Earn 144 crowns',goal:144,rw:{cf:400,xp:25000}}]},
+ {id:'summon',n:'GRAND SUMMONER',icon:'capsule',col:'#ff9ad5',list:[
+   {id:'sm1',n:'Pull the Gacha 10 times',goal:10,rw:{cf:50}},
+   {id:'sm2',n:'Pull the Gacha 60 times',goal:60,rw:{cf:120}},
+   {id:'sm3',n:'Pull the Gacha 200 times',goal:200,rw:{cf:300,ticket:'rare'}}]},
+ {id:'scout',n:'SCOUT CAPTAIN',icon:'compass',col:'#8fe0b8',list:[
+   {id:'sc1',n:'Complete 5 expeditions',goal:5,rw:{cf:60}},
+   {id:'sc2',n:'Complete 25 expeditions',goal:25,rw:{cf:150}},
+   {id:'sc3',n:'Reach Scout Rank 5',goal:5,rw:{cf:200,ticket:'rare'}}]},
+ {id:'best',n:'MONSTER HUNTER',icon:'doge',col:'#c9c9d6',list:[
+   {id:'bs1',n:'Discover 20 enemies',goal:20,rw:{cf:50}},
+   {id:'bs2',n:'Discover 40 enemies',goal:40,rw:{cf:120}},
+   {id:'bs3',n:'Complete the bestiary',goal:ENEMIES.length,rw:{cf:300}}]},
+ {id:'trea',n:'TREASURE SEEKER',icon:'chest',col:'#e8c37f',list:[
+   {id:'tr1',n:'Collect 15 treasure tiers',goal:15,rw:{cf:60}},
+   {id:'tr2',n:'Collect 45 treasure tiers',goal:45,rw:{cf:150}},
+   {id:'tr3',n:'Collect 108 treasure tiers',goal:108,rw:{cf:350,ticket:'rare'}}]},
+ {id:'dojo',n:'DOJO MASTER',icon:'medal',col:'#c46adf',list:[
+   {id:'dj1',n:'Score 50+ in the Dojo',goal:50,rw:{cf:60,xp:1500}},
+   {id:'dj2',n:'Score 150+ in the Dojo',goal:150,rw:{cf:150,xp:5000}},
+   {id:'dj3',n:'Score 400+ in the Dojo',goal:400,rw:{cf:300,xp:15000}}]},
+ {id:'rank',n:'RISING STAR',icon:'up',col:'#7fe8a0',list:[
+   {id:'rk1',n:'Reach User Rank 10',goal:10,rw:{cf:60}},
+   {id:'rk2',n:'Reach User Rank 25',goal:25,rw:{cf:150}},
+   {id:'rk3',n:'Reach User Rank 50',goal:50,rw:{cf:300,ticket:'rare'}}]},
+ {id:'streak',n:'LOYAL COMMANDER',icon:'flame',col:'#e85840',list:[
+   {id:'st1',n:'Log in 7 days in a row',goal:7,rw:{cf:80}},
+   {id:'st2',n:'Log in 14 days in a row',goal:14,rw:{cf:150,ticket:'rare'}},
+   {id:'st3',n:'Log in 30 days in a row',goal:30,rw:{cf:400,ticket:'gold'}}]}];
+function trophyList(){return TROPHY_GROUPS.flatMap(g=>g.list.map(t=>({...t,group:g})))}
+function trophyProg(t){switch(t.id.slice(0,2)){
+  case 'ca':return Object.keys(SV.cats).length;
+  case 'cl':return stageClearsTotal();
+  case 'cr':return crownsTotal();
+  case 'sm':return (SV.stats&&SV.stats.pulls)||0;
+  case 'sc':return t.n.includes('Rank')?scoutInfo().lv:(SV.expedition.runs||0);
+  case 'bs':return Object.keys(SV.bestiary).length;
+  case 'tr':return treasuresTotal();
+  case 'dj':return SV.dojoBest||0;
+  case 'rk':return SV.rank;
+  default:return SV.dailyStreak||0}}
+function trophyDone(t){return trophyProg(t)>=t.goal}
+function trophyClaimable(t){return trophyDone(t)&&!SV.trophies.claimed[t.id]}
+function trophyClaimCount(){return trophyList().filter(trophyClaimable).length}
+function claimTrophy(id){const t=trophyList().find(x=>x.id===id);if(!t||!trophyClaimable(t))return null;
+  SV.trophies.claimed[id]=1;SV.trophies.notified[id]=1;
+  const rw=t.rw;if(rw.cf)SV.cf+=rw.cf;if(rw.xp)addXP(rw.xp);
+  if(rw.ticket){SV.tickets[rw.ticket]=(SV.tickets[rw.ticket]||0)+1}
+  persist();SFX.up();
+  return t}
+/* fire once per newly-claimable trophy: toast + notify flag (dedupes across frames) */
+function trophyCheckAll(){let any=false;
+  for(const t of trophyList()){
+    if(trophyClaimable(t)&&!SV.trophies.notified[t.id]){
+      SV.trophies.notified[t.id]=1;any=true;
+      toast('TROPHY UNLOCKED: '+t.n+' — claim at the Trophy Stand!','#c46adf')}}
+  if(any)persist();
+  return any}

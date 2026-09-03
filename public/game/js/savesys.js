@@ -88,7 +88,8 @@ function consumeGachaGrant(){
   let newN=0;A.results.forEach(id=>{if(applyGachaGrant(id))newN++});
   consumePendingPull();
   SFX.click();G.gachaAnim=null;
-  if(newN&&typeof toast==='function')toast(newN+' new cat'+(newN>1?'s':'')+' joined!','#7fe8a0')}
+  if(newN&&typeof toast==='function')toast(newN+' new cat'+(newN>1?'s':'')+' joined!','#7fe8a0');
+  if(typeof trophyCheckAll==='function')trophyCheckAll()} // collector trophies may have unlocked
 function exchangeGachaDupe(){ // single-pull DUPE card → dupe XP (100×rarity index) instead of +1 plus
   const A=G.gachaAnim;
   if(!A||!A.results||A.results.__done||A.results.length!==1)return;
