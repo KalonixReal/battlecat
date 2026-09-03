@@ -86,7 +86,12 @@ const ART_CATS={
  lilcat:{p:'kitten',tiny:1},
  liltank:{p:'wall',tiny:1},
  moneko:{p:'kitten',coin:1,happy:1},
- neneko:{p:'kitten',baby:1,happy:1}};
+ neneko:{p:'kitten',baby:1,happy:1},
+ island:{p:'kitten',spots:1,happy:1,dance:1},
+ archer:{p:'biped',scope:1,band:1},
+ fortune:{p:'biped',hat:'princess',staff:1},
+ jurassic:{p:'dragon',angry:1},
+ kotatsu:{p:'blob'}};
 const ENEMY_ART={
  doge:{p:'shiba',c:'#f2e2c8',c2:'#dca86e',m:'#fbf3e3'},
  snache:{p:'snake',c:'#e8e4d4'},
@@ -1002,7 +1007,13 @@ ART.catHead=function(x,y,r,walking){const c=cx;
   c.restore()};
 
 function bgSky(){const g=cx.createLinearGradient(0,0,0,720);g.addColorStop(0,'#a8d8f0');g.addColorStop(.75,'#c8e8b8');g.addColorStop(1,'#d8f0c0');cx.fillStyle=g;cx.fillRect(0,0,1280,720);
-  cx.fillStyle='rgba(255,255,255,.8)';for(let i=0;i<6;i++)cloudDraw(((i*260)+G.t*8)%1500-100,70+(i*47)%140,1+(i%3)*0.4)}
+  // soft sun glow upper-right + slow back cloud layer + faster foreground wisps (parallax depth)
+  const sg=cx.createRadialGradient(1180,86,20,1180,86,300);
+  sg.addColorStop(0,'rgba(255,246,200,.55)');sg.addColorStop(.5,'rgba(255,246,200,.18)');sg.addColorStop(1,'rgba(255,246,200,0)');
+  cx.fillStyle=sg;cx.fillRect(880,0,400,380);
+  cx.fillStyle='rgba(255,255,255,.8)';for(let i=0;i<6;i++)cloudDraw(((i*260)+G.t*8)%1500-100,70+(i*47)%140,1+(i%3)*0.4);
+  cx.fillStyle='rgba(255,255,255,.5)';for(let i=0;i<3;i++){const sc=0.9+(i%2)*0.5;
+    cloudDraw(((i*430)+G.t*(15+i*5))%1500-120,104+(i*61)%92,sc)}}
 
 /* ==================== UI ART HELPERS (Builder B — official-chrome support) ====================
    All textures are baked through bakeGet() so per-frame cost is a drawImage/pattern fill.

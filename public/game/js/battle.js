@@ -306,6 +306,23 @@ function applyBattleResult(){
     if(c&&CHSETS[st.ch]&&st.idx>=0){const setIdx=st.idx%9;const own=tCount(st.ch,setIdx);
       if(own<3){const p=treasureChance(st.ch,st.idx,own);if(Math.random()<p){SV.treasures[st.ch]=SV.treasures[st.ch]||{};const arr=SV.treasures[st.ch];arr[setIdx]=own+1;B.rewardTreasure={set:setIdx,tier:own};toast('TREASURE GET!','#ffd94a');
         G.sessionTreasure=G.sessionTreasure||{};const sk=st.ch+'|'+setIdx;G.sessionTreasure[sk]=(G.sessionTreasure[sk]||0)+1}}}
+    // ===== CROWN SYSTEM (story chapters): protect your base to earn up to 3 crowns =====
+    const cc=CHMAP[st.ch];
+    if(cc&&cc.kind==='story'&&st.idx>=0){
+      const hpRatio=B.catBase.hp/B.catBase.maxHp;
+      const earned=hpRatio>=0.8?3:(hpRatio>=0.4?2:1);
+      SV.crowns[st.ch]=SV.crowns[st.ch]||{};
+      const prev=SV.crowns[st.ch][String(st.idx)]||0;
+      if(earned>prev){SV.crowns[st.ch][String(st.idx)]=earned;
+        B.crowns={earned,prev,improved:prev>0};
+        if(earned===3)B.fx.push({k:'crown',x:640+B.cam,y:0,t:1.6})} // crown sparkle fx anchored to screen center
+      else B.crowns={earned:prev,prev,improved:false};
+      // full-3-crown chapter bonus: one-time 750 CF + big XP (tracked via eventsDone flags)
+      const all3=(()=>{const cr=SV.crowns[st.ch]||{};for(let s2=0;s2<48;s2++)if((cr[String(s2)]||0)<3)return false;return true})();
+      if(all3&&!SV.eventsDone['crown:'+st.ch]){
+        SV.eventsDone['crown:'+st.ch]=1;addCF(750);addXP(25000);
+        B.crownBonusCF=750;B.crownBonusXP=25000;
+        toast('ALL CROWNS! Chapter bonus 750 Cat Food + 25,000 XP!','#ffd94a')}}
     // endless dojo grading: the run score counts whether you survive or fall (local top-5 board)
     if(st.endless){SV.dojoBoard=SV.dojoBoard||[];
       SV.dojoBoard.push({s:B.score,d:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'})});
@@ -460,7 +477,7 @@ function drawUnit(u){
     const icons=[];if(u.st.frozen>0)icons.push(['❄','#7fd0ff']);if(u.st.slow>0)icons.push(['⏱','#a0d8ff']);if(u.st.weakenT>0)icons.push(['↓','#e8a0ff']);if(u.st.curse>0)icons.push(['☾','#c46adf']);
     icons.forEach((ic,i)=>txt(cx,ic[0],u.x-(icons.length-1)*7+i*14,y-u.r*2.4-18,12,ic[1],'center',3,'#101018',700));
     if(u.shieldHp>0)txt(cx,'◈',u.x+u.r+4,y-40,14,'#c46adf','center',3,'#101018',700)}}
-const FXDUR={bossdie:1.2,baseboom:1.4,cannon:0.5,slowbeam:1.3,bolt:0.45,waterwave:1.0,holyblast:0.8,breaker:0.55,dust:0.6};
+const FXDUR={bossdie:1.2,baseboom:1.4,cannon:0.5,slowbeam:1.3,bolt:0.45,waterwave:1.0,holyblast:0.8,breaker:0.55,dust:0.6,crown:1.6};
 function drawFx(f){const p=clamp(1-f.t/(FXDUR[f.k]||0.5),0,1);
   cx.save();cx.translate(f.x,GROUND_Y-30+(f.y||0));
   switch(f.k){
@@ -490,6 +507,13 @@ function drawFx(f){const p=clamp(1-f.t/(FXDUR[f.k]||0.5),0,1);
     case 'breaker':{cx.globalAlpha=1-p;cx.strokeStyle='#ff6a5a';cx.lineWidth=5*(1-p)+1;cx.beginPath();cx.arc(0,-26,14+p*95,0,TAU);cx.stroke();
       cx.strokeStyle='#2a1620';cx.lineWidth=2;cx.stroke();
       cx.strokeStyle='rgba(255,140,80,.8)';cx.lineWidth=3;cx.beginPath();cx.arc(0,-26,6+p*130,-0.5,0.9);cx.stroke();cx.beginPath();cx.arc(0,-26,10+p*110,Math.PI-0.6,Math.PI+0.7);cx.stroke();break}
+    case 'crown':{cx.globalAlpha=1-p; // golden crown burst: 3 crowns spiral outward + sparkles
+      for(let i=0;i<3;i++){const a=-Math.PI/2+(i-1)*0.7;const rr2=30+p*110;
+        cx.save();cx.translate(Math.cos(a)*rr2,Math.sin(a)*rr2*0.6-30);cx.rotate((i-1)*0.3+p*2);
+        crownDraw(cx,0,0,13,'#ffd23f','#e8951f');cx.restore()}
+      for(let i=0;i<10;i++){const a2=i/10*TAU+p*1.5;const rr3=60+((i*37)%50)+p*130;
+        cx.fillStyle=i%2?'#fff':'#ffd94a';cx.beginPath();cx.arc(Math.cos(a2)*rr3,Math.sin(a2)*rr3*0.55-20,4*(1-p)+1.5,0,TAU);cx.fill()}
+      break}
     case 'dust':cx.globalAlpha=(1-p)*0.8;cx.fillStyle='#c8b89a';for(let i=0;i<7;i++){const a=i/7*TAU;cx.beginPath();cx.arc(Math.cos(a)*(10+p*46),Math.sin(a)*5-p*26,9*(1-p)+2,0,TAU);cx.fill()}break;
     case 'shieldbreak':cx.globalAlpha=1-p;cx.strokeStyle='#c46adf';cx.lineWidth=3;for(let i=0;i<6;i++){const a=i/6*TAU;cx.beginPath();cx.moveTo(Math.cos(a)*10,Math.sin(a)*10-20);cx.lineTo(Math.cos(a)*(20+p*30),Math.sin(a)*(20+p*30)-20);cx.stroke()}break;
   }
@@ -643,6 +667,24 @@ function drawResult(b){
     txt(cx,l1,x0+w1/2,by+1,30,'#fff','center',5,'rgba(10,10,20,.9)',700);
     txt(cx,gold,x0+w1+gw/2,by+1,34,'#ffd23f','center',6,'rgba(30,16,2,.95)',700);
     txt(cx,l3,x0+w1+gw+w3/2,by+1,30,'#fff','center',5,'rgba(10,10,20,.9)',700);
+    by+=66;
+    // ===== CROWN BAND (story wins): 3 slots pop in + time/kills/damage stats (Gauntlet-style) =====
+    if(win&&b.crowns){
+      cx.fillStyle='rgba(15,18,36,.8)';cx.fillRect(0,by-28,1280,56);
+      txt(cx,'CROWNS',390,by+1,20,'#fff','center',4,'rgba(10,10,20,.9)',700);
+      const ce=b.crowns.earned;
+      for(let i=0;i<3;i++){ // sequential pop-in w/ overshoot ease
+        const pop=clamp((b.resultT-0.4-i*0.14)/0.2,0,1);
+        if(pop<=0)continue;
+        const eb=pop<1?(1+Math.sin(pop*Math.PI)*0.5):1;
+        cx.save();cx.translate(470+i*58,by+2);cx.scale(pop*eb,pop*eb);cx.rotate(i===ce-1&&pop<0.85?Math.sin(pop*30)*0.1:0);
+        crownDraw(cx,0,0,i<ce?15:13,i<ce?'#ffd23f':'#c8bca0',i<ce?'#8a5a10':'#6a6458',i>=ce);
+        cx.restore()}
+      if(b.crowns.improved)txt(cx,'CROWN UP!',540,by+2,14,'#7fe86a','left',3,'#061806',700);
+      // battle stats right side
+      const tsec=Math.max(0,Math.round(b.t));const mm=Math.floor(tsec/60),ss=String(tsec%60).padStart(2,'0');
+      txt(cx,'⏱ '+mm+':'+ss+'  ·  ☠ '+b.kills+'  ·  DMG '+fmt(Math.round(b.dmgDealt/1000))+'k',1150,by+1,18,'#9fd8ff','right',4,'rgba(10,10,20,.9)',700);
+      by+=66}
     cx.globalAlpha=1}
   // drop-reward panel (dark olive + white border, verbatim official lines)
   const drops=[];
@@ -652,7 +694,9 @@ function drawResult(b){
   else if(B.rewardTicket)drops.push('Rare Ticket x1 received!','Activate it at the Gacha menu!');
   else if(B.rewardCF)drops.push('+'+B.rewardCF+' Cat Food received!','Spend it at the Store!');
   if(drops.length&&bA>0){cx.globalAlpha=bA;
-    const pw2=790,ph2=34+drops.length*30+22,px2=640-pw2/2,py2=438;
+    const hasCrowns=win&&b.crowns;
+    if(hasCrowns&&B.crownBonusCF)drops.push('ALL-CROWN BONUS: +'+B.crownBonusCF+' Cat Food + '+fmt(B.crownBonusXP)+' XP!');
+    const pw2=790,ph2=34+drops.length*30+22,px2=640-pw2/2,py2=hasCrowns?458:438;
     cx.fillStyle='rgba(38,38,24,.94)';rr(cx,px2,py2,pw2,ph2,6);cx.fill();
     cx.lineWidth=3.5;cx.strokeStyle='#e8e4d4';rr(cx,px2,py2,pw2,ph2,6);cx.stroke();
     const dr='Drop Reward ',de='Earned!!';

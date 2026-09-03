@@ -4,9 +4,9 @@ const cv=document.getElementById('game'),cx=cv.getContext('2d');
 let VW=0,VH=0,SC=1,OX=0,OY=0;
 function resize(){VW=innerWidth;VH=innerHeight;const dpr=Math.min(devicePixelRatio||1,2);cv.width=VW*dpr;cv.height=VH*dpr;cv.style.width=VW+'px';cv.style.height=VH+'px';SC=Math.min(VW/1280,VH/720);OX=(VW-1280*SC)/2;OY=(VH-720*SC)/2;cx.setTransform(dpr,0,0,dpr,0,0);cv._dpr=dpr;document.getElementById('rotate').style.display=(VH>VW*1.05)?'flex':'none'}
 addEventListener('resize',resize);resize();
-const G={screen:'title',screenPrev:[],hits:[],drags:[],toasts:[],modal:null,t:0,chapter:'eoc1',mapSub:0,selCat:null,selEnemy:null,gachaAnim:null,dragCam:false,pending:null,hoverId:null,scrollHome:0,scrollChap:0,scrollColl:0,scrollList:0,guideFilter:'all',equipSel:-1,lastEvents:null,eventKey:''};
-function push(s){G.screenPrev.push(G.screen);G.screen=s;G.hits=[]}
-function pop(){const p=G.screenPrev.pop();G.screen=p||'home';G.hits=[]}
+const G={screen:'title',screenPrev:[],hits:[],drags:[],toasts:[],modal:null,t:0,chapter:'eoc1',mapSub:0,selCat:null,selEnemy:null,gachaAnim:null,dragCam:false,pending:null,hoverId:null,scrollHome:0,scrollChap:0,scrollColl:0,scrollList:0,guideFilter:'all',equipSel:-1,lastEvents:null,eventKey:'',transT:0};
+function push(s){G.screenPrev.push(G.screen);G.screen=s;G.hits=[];G.transT=0.30}
+function pop(){const p=G.screenPrev.pop();G.screen=p||'home';G.hits=[];G.transT=0.30}
 function toast(msg,col){G.toasts.push({msg,t:3.2,col:col||'#ffd94a'})}
 function openModal(title,lines,btns,drawExtra){G.modal={title,lines,btns:btns||[{n:'CLOSE',cb:()=>{}}],drawExtra}}
 function toDesign(e){return{x:(e.clientX-OX)/SC,y:(e.clientY-OY)/SC}}
@@ -357,8 +357,11 @@ function drawChapters(dt){
       if(c.id==='eoc1')ART.catIcon('cat',36,30,17);else if(c.id==='itf1')ART.catIcon('lizard',36,30,17);else if(c.id==='cotc1')ART.catIcon('gao',36,30,17);else if(c.kind==='sol')ART.catIcon('gross',36,30,17);else if(c.kind==='ul')ART.catIcon('luza',36,30,17);else if(c.kind==='aku')ART.enemyIcon('akumother',36,30,17);else if(c.kind==='dojo')ART.catIcon('kungfu',36,30,17);else ART.catIcon('mr',36,30,17);
       txt(cx,c.n,66,24,19,unl?'#e8a020':'#8a8272','left',4,'#fff',700);
       txt(cx,c.desc||'',66,44,13,'#8a7a5a','left');
-      txt(cx,unl?(clearedN?(c.kind==='story'?clearedN+'/48 cleared':''):''):'',1190,20,13,'#8a7a5a','right');
-      if(unl&&c.kind==='story'){ // completion progress bar
+      txt(cx,unl?(clearedN?(c.kind==='story'?clearedN+'/48 cleared':''):''):'',1128,20,13,'#8a7a5a','right');
+      if(unl&&c.kind==='story'){ // crown total chip (sum of stage crowns /144) + completion progress bar
+        const crc=SV.crowns[c.id]||{};let cn=0;for(const k in crc)cn+=crc[k];
+        crownDraw(cx,1158,19,8.5,'#ffd23f','#8a5a10',cn===0);
+        txt(cx,cn+'/144',1240,20,13,'#b08028','right',2,'#fff',700);
         const pn=clearedN/48;
         cx.fillStyle='rgba(90,59,22,.16)';rr(cx,930,42,240,10,5);cx.fill();
         if(pn>0){cx.fillStyle=pn>=1?'#5aa84a':'#e8951f';rr(cx,930,42,Math.max(9,240*pn),10,5);cx.fill()}
@@ -479,6 +482,9 @@ function drawMap(dt){const c=CHMAP[G.chapter];
     const exs=bx+bW/2-ew/2;
     txt(cx,eLbl,exs,by+bH+13,12.5,'#e8fdff','left',3,'rgba(30,40,50,.85)',700);
     txt(cx,String(nd.energy),exs+cx.measureText('Energy -').width,by+bH+13,12.5,'#54e0f0','left',3,'rgba(30,40,50,.85)',700);
+    // crown pips row (story stages): earned gold / unearned dim — replays can top them up
+    if(c.kind==='story'&&nd.done){const cn=(SV.crowns[c.id]&&SV.crowns[c.id][String(i)])||0;
+      for(let k=0;k<3;k++)crownDraw(cx,bx+bW/2-17+k*17,by+bH+28,5.5,k<cn?'#ffd23f':'#c8bca0',k<cn?'#8a5a10':'#8a7a5a',k>=cn)}
     if(!nd.unl)drawPadlock(cx,bx+bW-14,by+bH/2,7,'#8f887a');
     cx.restore()}
   // white cat marker stands on the current node
@@ -595,6 +601,20 @@ function brownBottomBar(){
   BTN('back',22,659,68,68,pop,{flat:true,nohov:true});
 }
 function star(c,x,y,R,r){c.beginPath();for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5;const rad=i%2?r:R;c.lineTo(x+Math.cos(a)*rad,y+Math.sin(a)*rad)}c.closePath()}
+/* crown glyph (crown system): 3-point gold crown w/ dark rim + optional dim slot variant.
+   crownDraw(c,x,y,s,fill,rim) paints a filled+stroked crown of half-height s. */
+function crownDraw(c,x,y,s,fill,rim,dim){c.save();c.translate(x,y);
+  const w=s*2.2,h=s*1.15,lw=Math.max(1.4,s*0.24);
+  c.beginPath();
+  c.moveTo(-w/2,h*0.55);
+  c.lineTo(-w/2,-h*0.5);c.lineTo(-w*0.32,h*0.02);c.lineTo(0,-h);c.lineTo(w*0.32,h*0.02);c.lineTo(w/2,-h*0.5);
+  c.lineTo(w/2,h*0.55);c.closePath();
+  if(dim){c.globalAlpha*=0.35;fill=fill||'#c8bca0'}
+  c.fillStyle=fill;c.fill();
+  c.lineWidth=lw;c.strokeStyle=rim||'#8a5a10';c.lineJoin='round';c.stroke();
+  // gem dots on the band
+  if(!dim){c.fillStyle='#fff';[[-w*0.18,0],[0,-h*0.28],[w*0.18,0]].forEach(p=>{c.beginPath();c.arc(p[0],h*0.3+(p[1]*0.2),Math.max(0.9,s*0.12),0,TAU);c.fill()})}
+  c.restore()}
 /* custom-drawn cent sign (Fredoka One's ¢ glyph reads like a 4 at large sizes) — x,y = center of the glyph */
 function drawCent(c,x,y,r,col,strokeC,sw){c.save();c.translate(x,y);c.lineCap='round';
   const lw=Math.max(1.4,r*0.30);
@@ -635,27 +655,35 @@ function drawSubmap(dt){const c=CHMAP[G.chapter];const sub=c.kind==='sol'?SOL_SU
   brownBottomBar()}
 function openStageModal(ch,idx){const c=CHMAP[ch];const st=genStage(ch,idx);SFX.click();
   const en=st.script.flatMap(w=>w.spawns.map(s=>s.e)).concat(st.boss?[st.boss]:[]);
+  const crownsN=(c.kind==='story'&&SV.crowns[ch])?(SV.crowns[ch][String(idx)]||0):0;
   openModal(st.name,[
     'Energy cost: '+st.energy+'   (you have '+SV.energy+')',
     'Enemy base HP: '+fmt(st.baseHp),
     'Power: HP \u00d7'+st.mag.hp.toFixed(2)+'  ATK \u00d7'+st.mag.atk.toFixed(2),
     'Enemies: '+([...new Set(en)].map(e=>ENEMAP[e].n).join(', ')||'\u2014'),
     'Reward: '+fmt(st.reward.xp)+' XP'+(st.reward.fruit?' + '+FRUIT_NAMES[st.reward.fruit]:'')+(st.reward.cf?' + '+st.reward.cf+' CF':''),
+    ...(c.kind==='story'?['Crowns: '+crownsN+'/3 \u2014 win with base HP \u226580% for a PERFECT 3-crown clear!']:[]),
     ...(CHSETS[ch]?['Treasure chance: ~'+Math.round(treasureChance(ch,idx,tCount(ch,idx%9))*100)+'% \u2014 farmable on repeat clears!']:[])],
     [{n:'Cancel',cb:()=>{}},{n:'Attack!',col:'#ffd23f',cb:()=>tryStartBattle(ch,idx)}],(x,y,w,h)=>{
+      let yOff=0;
+      // crown strip (story chapters): earned pips + dim slots + PERFECT tag
+      if(c.kind==='story'){yOff=42;
+        txt(cx,'BEST CROWNS',x+30,y+16,11.5,'#b06a10','left',3,'#fff',700);
+        for(let i=0;i<3;i++)crownDraw(cx,x+150+i*46,y+16,13,i<crownsN?'#ffd23f':'#c8bca0',i<crownsN?'#8a5a10':'#8a7a5a',i>=crownsN);
+        if(crownsN===3)txt(cx,'PERFECT!',x+w-30,y+16,13,'#e8951f','right',3,'#fff',700)}
       // enemy lineup tiles with trait rings + boss ribbons
       const uni=[...new Set(en)];const shown=uni.slice(0,6);
-      txt(cx,'APPEARING ENEMIES',x+w/2,y+10,12.5,'#8a6a3a','center',3,'#fff',700);
+      txt(cx,'APPEARING ENEMIES',x+w/2,y+yOff+10,12.5,'#8a6a3a','center',3,'#fff',700);
       const n=shown.length,tw=64,gap=16,x0=x+w/2-(n*tw+(n-1)*gap)/2;
-      shown.forEach((eid,i2)=>{const e=ENEMAP[eid];const ex=x0+i2*(tw+gap),ey=y+24;
+      shown.forEach((eid,i2)=>{const e=ENEMAP[eid];const ex=x0+i2*(tw+gap),ey=y+yOff+24;
         cx.fillStyle='#fffdf5';rr(cx,ex,ey,tw,74,10);cx.fill();
         const tc=TRAIT_COL[e.tr[0]]||'#a89a78';cx.lineWidth=3;cx.strokeStyle=e.boss?'#e84030':tc;rr(cx,ex+1.5,ey+1.5,tw-3,71,9);cx.stroke();
         ART.enemyIcon(eid,ex+tw/2,ey+28,17);
         const tl=e.tr.length?e.tr.map(t2=>t2.toUpperCase()).join('\u00b7'):'TRAITLESS';
         txt(cx,tl,ex+tw/2,ey+56,6.8,shade(tc,.6),'center',2,'#fff',700);
         if(e.boss){cx.save();cx.translate(ex+tw/2,ey-1);cx.rotate(-0.08);cx.fillStyle='#e84030';rr(cx,-21,-8,42,15,4);cx.fill();txt(cx,'BOSS',0,-0.5,9,'#fff','center',2,'#7a1a10',700);cx.restore()}});
-      if(uni.length>6)txt(cx,'+'+(uni.length-6)+' more',x+w/2,y+112,11,'#a89878','center',2,'#fff',400);
-      else if(!uni.length)txt(cx,'No enemies \u2014 destroy the base!',x+w/2,y+60,12,'#a89878','center',2,'#fff',400)})}
+      if(uni.length>6)txt(cx,'+'+(uni.length-6)+' more',x+w/2,y+yOff+112,11,'#a89878','center',2,'#fff',400);
+      else if(!uni.length)txt(cx,'No enemies \u2014 destroy the base!',x+w/2,y+yOff+60,12,'#a89878','center',2,'#fff',400)})}
 
 function openEventModal(ev){const s=ev.s;const uni=[...new Set(s.pool)];
   const wasCl=SV.eventsDone&&SV.eventsDone['clr:'+s.evtId];

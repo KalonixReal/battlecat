@@ -49,6 +49,12 @@ C('dioramos','uber',{gacha:'uber'},[F('Dioramos',8000,1800,3.8,450,5,4,850,7.4,[
 C('gao','uber',{gacha:'uber'},[F('Gao',7000,2100,1.9,220,11,4,780,6.8,[AB('strengthen',1,1),AB('savage',.1,3)]),F('Death Gao',15000,4600,1.9,230,11,4,880,6.8,[AB('strengthen',1,1),AB('savage',.15,3)])]);
 C('luza','legend',{gacha:'legend'},[F('Luza Cat',9000,2500,2.6,380,8,5,900,8,[AB('wave',1,90),AB('curse',.3,4),AB('surge',.4,140)])]);
 C('gatr','legend',{gacha:'legend'},[F('Gatr',12000,3200,3.1,420,7,5,950,8.4,[AB('wave',1,95),AB('weaken',.5,.5,null,.4),AB('surge',.5,150)])]);
+/* ---- Rare Capsule expansion (Island / Archer / Fortune / Jurassic) + Kotatsu (Super Rare) ---- */
+C('island','rare',{gacha:'rare'},[F('Island Cat',1600,30,2.9,110,6,1,700,6.8,[AB('resist',1,0,['red'])],true),F('Island Cat MM',3400,65,2.9,110,6,1,850,6.8,[AB('resist',1,0,['red'])],true),F('Paradise Island Cat',6800,130,2.9,110,6,1,1100,6.8,[AB('resist',1,0,['red']),AB('kb',.3,0,['red'])],true)],[{n:'HP Up',np:8,e:{hp:.06}},{n:'Improve Red Resist',np:10,e:{hp:.08}}]);
+C('archer','rare',{gacha:'rare'},[F('Archer Cats',350,85,1.7,420,8,4,300,4.2,[AB('weaken',.35,.5,['floating'])]),F('Ranger Cats',760,190,1.7,430,8,4,400,4.2,[AB('weaken',.5,.75,['floating'])])],[{n:'Attack Up',np:8,e:{atk:.06}},{n:'Move Speed Up',np:5,e:{spd:.1}}]);
+C('fortune','rare',{gacha:'rare'},[F('Fortune Teller Cat',220,25,1.6,150,9,2,170,3.2,[AB('dodge',.25,0)]),F('Miss Fortune Cat',500,55,1.6,150,9,2,240,3.2,[AB('dodge',.4,0),AB('weaken',.3,.5)])],[{n:'HP Up',np:8,e:{hp:.06}},{n:'Dodge Chance',np:12,e:{hp:.05}}]);
+C('jurassic','rare',{gacha:'rare'},[F('Jurassic Cat Sitter',420,120,2.9,150,16,3,330,4.2,[AB('crit',.15,0)],true),F('Jurassic Cat Sitter MM',920,260,2.9,160,16,3,430,4.2,[AB('crit',.25,0)],true)],[{n:'Attack Up',np:8,e:{atk:.06}},{n:'Crit Chance',np:12,e:{atk:.05}}]);
+C('kotatsu','srar',{gacha:'srar'},[F('Kotatsu Cat',520,60,1.4,110,8,1,400,5.5,[AB('freeze',.25,1.5,['red'])],true),F('Hell Kotatsu Cat',1200,135,1.4,110,8,1,550,5.5,[AB('freeze',.4,2,['red'])],true)],[{n:'HP Up',np:8,e:{hp:.06}},{n:'Attack Up',np:8,e:{atk:.06}},{n:'Freeze Boost',np:14,e:{atk:.06}}]);
 C('valkyrie','special',{ch:'itf1',st:48},[F('Valkyrie Cat',1200,300,1.8,180,14,3,1200,9,[],true),F('Divine Valkyrie',2200,560,1.8,180,14,3,1500,9,[AB('kb',.3,0)],true)]);
 C('lilcat','special',{ch:'eoc1',st:48},[F("Li'l Cat",50,4,1.23,140,10,3,25,4)]);
 C('liltank','special',{ch:'eoc2',st:48},[F("Li'l Tank Cat",200,1,2.23,110,8,1,50,6,[],true)]);
@@ -313,7 +319,11 @@ const COMBOS=[
  {ids:['gross','cow'],n:'Charge Squad',eff:{spd:.05}},
  {ids:['cyborg','lizard'],n:'Reptile Tech',eff:{atk:.05}},
  {ids:['fish','sushi'],n:'Dinner Party',eff:{walletStart:130}},
- {ids:['axe','cutter','pirate'],n:'Cutlass Crew',eff:{atk:.06}}];
+ {ids:['axe','cutter','pirate'],n:'Cutlass Crew',eff:{atk:.06}},
+ {ids:['island','sushi'],n:'Island Resort',eff:{hp:.05}},
+ {ids:['archer','bird'],n:'Arrow Storm',eff:{atk:.04}},
+ {ids:['fortune','kotatsu'],n:'Cozy Winter',eff:{walletStart:140}},
+ {ids:['jurassic','lizard'],n:'Ancient Lizards',eff:{atk:.05}}];
 function comboBonuses(teamIds){const out={walletStart:0,atk:0,hp:0,spd:0,xp:0,slow:0};for(const cb of COMBOS){if(cb.ids.every(i=>teamIds.includes(i)))for(const k in cb.eff)out[k]+=cb.eff[k]}return out}
 
 /* ============================== BASE UPGRADES ============================== */

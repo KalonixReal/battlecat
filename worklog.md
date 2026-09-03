@@ -84,3 +84,78 @@ Next-phase priorities (for the 15-min reviewer):
 1. Retry VLM visual review (tests/shots/*.png) and fix anything it flags.
 2. Add more gacha rares/specials or 3-crown star system if stable.
 3. Consider smaller BGM encodings (28MB bank) if load time matters.
+
+---
+
+## Session Round — QA + Crowns + Gacha Expansion + Polish (Task: autonomous round)
+
+### Current project status (assessment at round start)
+- Game stable: fresh browser session boots clean (title, t advancing), zero console/page errors.
+- Golden-path E2E re-verified with REAL pointer events at 1280x720 viewport (title → home →
+  chapters → map → stage modal → battle: deploy/pause/retreat → map). Note: clicks must be done
+  at a 1280x720 viewport — at other sizes the design-space (1280x720) is letterboxed and raw
+  mouse coords no longer map to hit rects (SC≠1).
+- Stale-error trap identified: `agent-browser errors` in a long-lived session shows errors from
+  OLD file versions (?v=6); a fresh session (or reload after cache-bump) shows zero. Not a bug.
+- VLM visual review STILL blocked by API 429 (retried this round) — pixel probes used instead.
+
+### Completed modifications this round
+1. **CROWN SYSTEM (3-crown clears for story chapters)**
+   - core.js: `SV.crowns = {ch: {stageIdx: 1..3}}` in DEF_SAVE; `_svNormalize` hard-clamps every
+     pip to 0-3 and drops invalid entries; old saves auto-backfill via defaults-merge (verified:
+     deleted `crowns` from a stored save → reloaded → boots clean, field restored).
+   - battle.js `applyBattleResult`: on story-chapter wins, crowns = 3 if base HP ≥80%, 2 if ≥40%,
+     else 1; best-per-stage kept (`Math.max`); crown sparkle FX on a 3-crown earn; ALL-CROWN
+     chapter bonus (all 48 stages × 3) grants one-time 750 CF + 25,000 XP (flag:
+     `SV.eventsDone['crown:'+ch]`).
+   - battle.js `drawResult`: new navy CROWN band under the XP band — 3 slots pop in sequentially
+     with overshoot ease (gold earned / dim unearned), "CROWN UP!" tag on improvement, and
+     Gauntlet-style battle stats right-aligned: ⏱ time · ☠ kills · DMG dealt. All-crown bonus
+     line appended to the drop panel (panel resizes correctly — push happens before ph2 calc).
+   - ui.js `openStageModal`: "Crowns: N/3" info line + BEST CROWNS strip in the drawExtra area
+     (3 pips + PERFECT! tag at 3); enemy tiles shifted down 42px via yOff to make room.
+   - ui.js `drawMap`: 3 mini crown pips (gold/dim) under the "Energy -N" label of every cleared
+     story-stage banner — replays can top them up.
+   - ui.js `drawChapters`: story-chapter cards now show crown glyph + total "N/144" beside the
+     cleared count.
+   - New shared helper `crownDraw(c,x,y,s,fill,rim,dim)` in ui.js (3-point crown w/ gems).
+   - New FX kind 'crown' (FXDUR 1.6): 3 gold crowns spiral outward + 10 sparkles.
+2. **GACHA EXPANSION — 5 new cats (41 → 46 total)**
+   - data.js: island (Rare, area anti-Red resist tank, 3 forms), archer (Rare, 420-range
+     anti-Floating sniper), fortune (Rare, dodge), jurassic (Rare, area crit), kotatsu (Super
+     Rare, area Freeze vs Red). Talents included; 4 new combos (Island Resort, Arrow Storm,
+     Cozy Winter, Ancient Lizards).
+   - art.js: ART_CATS entries (island: spotted dancing kitten; archer: scoped ranger biped;
+     fortune: princess-hat staff biped; jurassic: angry dragon; kotatsu: green blob blanket).
+3. **STYLING / POLISH**
+   - Screen-change transition: push()/pop() set G.transT=0.30; boot.js draws a quick
+     fade-from-black overlay (quadratic ease) — verified transT 0.30→0.22→0 live.
+   - bgSky: soft sun glow (radial gradient upper-right) + 3 faster foreground cloud wisps for
+     parallax depth (affects home + every sky-backed screen).
+   - index.html script cache-bust v6 → v7.
+
+### Verification results
+- Crown E2E (fresh save, real input): won eoc1 stage 1 with base HP 74.7% → earned 2 crowns →
+  victory crown band rendered (navy band + 2 gold + 1 dim pip + stats line), SV.crowns.eoc1['0']=2
+  persisted, map banner shows 2 gold + 1 dim pip under Energy label (pixel-mapped), stage modal
+  shows "Crowns: 2/3" + pips, chapter card shows gold crown + "2/144".
+- Crown FX verified (frozen mid-phase in paused battle): 3 dimmed-gold crowns at exact spiral
+  positions; only fires on 3-crown earns.
+- Gacha: pool probe lists all 5 new cats in correct rarity pools; 12 rollGacha samples include
+  island/fortune; REAL pull flow via UI (Rare Ticket consumed → capsule anim → reveal → OK →
+  grant applied, pendingPull cleared, zero errors).
+- New-cat art: granted 5 cats → equip screen renders roster cleanly; battle deploy of island
+  cat renders sprite on field, no errors.
+- screen-qa.sh sweep (14 screens): all non-blank, zero console errors (NOTE: must open
+  localhost:3000 in the default session before running the script, else it captures blanks).
+- `node --check`: all 9 game JS files pass. `bun run lint`: 0 errors / 11 benign warnings.
+  dev.log clean. Syntax error during dev (extra brace in crown edit) was caught immediately
+  by node --check and fixed before browser testing.
+
+### Unresolved / next-phase priorities
+1. VLM visual review still 429-blocked — retry with fresh quota (screenshots in tests/shots/,
+   incl. new qa2-* captures).
+2. Crowns currently award on story chapters only (EoC/ItF/CotC). Consider extending to Aku gates.
+3. The 28MB WAV audio bank load time — consider re-encoding if it matters.
+4. Consider a Crown-progress reward ladder (e.g. every 48 crowns → CF) instead of only the
+   full-144 bonus.

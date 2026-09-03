@@ -31,7 +31,7 @@ const SAVE_VER=2;
 const DEF_SAVE={ver:2,created:now(),xp:1200,cf:300,tickets:{rare:1,gold:0,plat:0},np:20,
   energy:90,energyTs:now(),rank:1,xpTotal:1200,
   cats:{cat:{lv:1,plus:0},tank:{lv:1,plus:0}},np2:{},teams:[['cat','tank','','','','','','','',''],['','','','','','','','','',''],['','','','','','','','','','']],teamSel:0,
-  cleared:{},treasures:{},fruit:{red:0,green:0,yellow:0,blue:0,purple:0,epic:0,ancient:0},
+  cleared:{},crowns:{},treasures:{},fruit:{red:0,green:0,yellow:0,blue:0,purple:0,epic:0,ancient:0},
   cannons:{standard:{pwr:1,rch:1}},cannonSel:'standard',
   base:{wallet:1,worker:1,cpow:1,crch:1,bhp:1,research:1,account:1},
   bestiary:{},settings:{bgm:true,sfx:true},dupeXp:0,eventsDone:{},dojoBest:0,dojoBoard:[],
@@ -76,7 +76,7 @@ function validateSave(o){ // type-checks critical fields; returns null when corr
   return o}
 function _svNormalize(o){ // shape/number hardening AFTER defaults-merge (unknown fields preserved)
   const num=(v,d)=>{const n=Number(v);return isFinite(n)?n:d};
-  const objKeys=['cats','cannons','settings','eventsDone','gachaSteps','treasures','fruit','base','bestiary','missions','np2','tickets','cleared'];
+  const objKeys=['cats','cannons','settings','eventsDone','gachaSteps','treasures','fruit','base','bestiary','missions','np2','tickets','cleared','crowns'];
   for(const k of objKeys)if(!o[k]||typeof o[k]!=='object'||Array.isArray(o[k]))o[k]=JSON.parse(JSON.stringify(DEF_SAVE[k]||{}));
   for(const k of['xp','cf','np','energy','rank','xpTotal','dupeXp','dojoBest','dailyStreak','teamSel','energyTs','created'])o[k]=num(o[k],DEF_SAVE[k]);
   for(const k of['xp','cf','np','energy'])if(o[k]<0)o[k]=0;
@@ -91,6 +91,9 @@ function _svNormalize(o){ // shape/number hardening AFTER defaults-merge (unknow
   if(!Array.isArray(o.dojoBoard))o.dojoBoard=[];
   o.dojoBoard=o.dojoBoard.filter(e=>e&&typeof e==='object'&&isFinite(Number(e.s))).slice(0,5).map(e=>({s:Math.floor(num(e.s,0)),d:String(e.d||'')}));
   for(const fk in o.fruit)o.fruit[fk]=clamp(Math.floor(num(o.fruit[fk],0)),0,1e9);
+  for(const ck in o.crowns){const cc=o.crowns[ck]; // crowns: {chapter:{stageIdx:1..3}} — hard-clamp each pip
+    if(!cc||typeof cc!=='object'||Array.isArray(cc)){delete o.crowns[ck];continue}
+    for(const sk in cc){const v=clamp(Math.floor(num(cc[sk],0)),0,3);if(v>0)cc[sk]=v;else delete cc[sk]}}
   for(const tk of['rare','gold','plat'])o.tickets[tk]=clamp(Math.floor(num(o.tickets[tk],0)),0,1e9);
   if(typeof o.cannonSel!=='string')o.cannonSel='standard';
   if(typeof o.dailyLast!=='string')o.dailyLast='';

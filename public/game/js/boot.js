@@ -12,6 +12,10 @@ function loop(ts){const dt=Math.min(0.05,(ts-lastTs)/1000||0.016);lastTs=ts;G.t+
   const fn=SCREENS[G.screen]||drawTitle;
   try{fn(dt)}catch(err){console.error('SCREEN ERR',G.screen,err);cx.fillStyle='#300';cx.fillRect(0,0,1280,720);txt(cx,'⚠ UI ERROR: '+err.message,640,360,20,'#fff','center')}
   toastDraw(dt);modalDraw();
+  // screen-change transition: quick fade-from-black on push()/pop() (official-style cut)
+  if(G.transT>0){G.transT-=dt;const ta=clamp(G.transT/0.30,0,1);
+    cx.fillStyle='rgba(18,10,6,'+(ta*ta*0.92).toFixed(3)+')';cx.fillRect(0,0,1280,720);
+    if(G.transT<=0)G.transT=0}
   if(G.hoverId)G.hits.forEach(h=>{});
   cx.restore();
   requestAnimationFrame(loop)}
