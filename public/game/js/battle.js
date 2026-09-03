@@ -47,6 +47,7 @@ function spawnCat(cid){
     r:d.boss?40:20,st:{frozen:0,slow:0,weakenT:0,weakenP:1,curse:0},shieldHp:0,reviveLeft:0,dir:1,
     abil:d.abil,area:d.area,traits:['cat'],hitSet:null};
   B.units.push(u);SFX.deploy();B.fx.push({k:'deploy',x:u.x,t:0.4,y:0});
+  if(SV.missions)SV.missions.dep=(SV.missions.dep||0)+1; // daily mission hook (deploys)
   return u}
 function unitAtk(u){let a=u.atk;if(u.st.weakenT>0)a*=u.st.weakenP;
   const ab=u.side==='cat'?(u.abil||[]):(u.def.abil||[]);
@@ -358,6 +359,7 @@ function applyBattleResult(){
     // endless dojo grading: the run score counts whether you survive or fall (local top-5 board)
     if(st.endless)dojoRecordRun();
     if(SV.missions)SV.missions.clear=(SV.missions.clear||0)+1; // daily mission hook
+    if(SV.missions)SV.missions.win=(SV.missions.win||0)+1; // daily mission hook (wins)
     SV.stats.wins=(SV.stats.wins||0)+1; // lifetime wins (trophy/stat)
     persist();
     if(typeof trophyCheckAll==='function')trophyCheckAll();
@@ -445,6 +447,10 @@ function drawBases(b){
   // cat base (left)
   const cb=b.catBase;cx.save();cx.translate(cb.x,GROUND_Y);
   const alm=cb.alarm>0;cx.translate(0,Math.sin(G.t*30)*(alm?3:0));
+  // alarm-state flash: warm rim light around the cat base while it takes hits
+  if(alm){const pl=0.5+0.5*Math.sin(G.t*12);
+    cx.save();cx.globalAlpha=0.20+pl*0.18;
+    cx.fillStyle='#ff8a5a';cx.beginPath();cx.ellipse(0,-95,95,115,0,0,TAU);cx.fill();cx.restore()}
   cx.fillStyle=alm?'#ff8a8a':'#8a94a8';cx.fillRect(-64,-30,128,32); // platform
   cx.fillStyle=alm?'#ffb0b0':'#a8b2c6';cx.fillRect(-52,-90,104,60); // body
   cx.fillStyle=alm?'#ffdddd':'#f4f2ea';cx.fillRect(-40,-150,80,60);
@@ -467,6 +473,10 @@ function drawBases(b){
   // enemy base (right)
   const eb=b.enemyBase;cx.save();cx.translate(eb.x,GROUND_Y);
   const ealm=eb.alarm>0;
+  // alarm-state aura: pulsing red glow behind the fortress when under attack
+  if(ealm){const pl=0.5+0.5*Math.sin(G.t*12);
+    cx.save();cx.globalAlpha=0.30+pl*0.22;
+    cx.fillStyle='#ff5a5a';cx.beginPath();cx.ellipse(0,-100,110,130,0,0,TAU);cx.fill();cx.restore()}
   cx.fillStyle='#4a3848';cx.fillRect(-70,-36,140,38);
   cx.fillStyle='#5a4658';cx.fillRect(-56,-140,112,104);
   cx.fillStyle='#4a3848';cx.beginPath();cx.moveTo(-66,-140);cx.lineTo(0,-205);cx.lineTo(66,-140);cx.fill();
@@ -572,6 +582,20 @@ function drawBattleHUD(b,dt){
   if(bossU&&!b.result)txt(cx,ENEMAP[bossU.id].n,122,32,18,'#ffd23f','left',4.5,'rgba(60,20,4,.95)',700);
   // stage name center-top
   txt(cx,b.st.name+(b.st.endless?'  \u2014 SCORE '+b.score:''),640,58,15,'rgba(255,255,255,.85)','center',4,'rgba(30,30,44,.9)',700);
+  /* ===== session loot chip (top-center, under stage name): kills + treasure drops this battle ===== */
+  {
+    const sessT=(G.sessionTreasure&&Object.values(G.sessionTreasure).reduce((a,v)=>a+v,0))||0;
+    const label=b.kills+' kills'+(sessT>0?' · '+sessT+' treasure':'');
+    cx.font=FONT(12,700);const lw2=cx.measureText(label).width+58;
+    const lx=640-lw2/2,ly=70;
+    cx.fillStyle='rgba(15,18,30,.72)';rr(cx,lx,ly,lw2,24,12);cx.fill();
+    cx.lineWidth=1.5;cx.strokeStyle='rgba(255,215,120,.5)';rr(cx,lx,ly,lw2,24,12);cx.stroke();
+    // mini gold coin dot
+    cx.fillStyle='#ffd23f';cx.beginPath();cx.arc(lx+14,ly+12,6.5,0,TAU);cx.fill();
+    cx.lineWidth=1.4;cx.strokeStyle='#8a5a10';cx.stroke();
+    cx.fillStyle='rgba(255,255,255,.6)';cx.beginPath();cx.arc(lx+12.4,ly+10.4,2,0,TAU);cx.fill();
+    txt(cx,label,lx+26,ly+12.5,12,'#ffe8b0','left',2.5,'rgba(20,16,4,.9)',700);
+  }
   /* ===== RIGHT EDGE: dark circular SPEED UP button + cat base HP beneath (R8) =====
      Official caption style: 'SPEED UP' stacked in two lines + the ×N count beneath (Builder P). */
   const sx=1234,sy=124,srad=36;
@@ -705,6 +729,25 @@ function drawResult(b){
   cx.lineWidth=20;cx.strokeStyle='rgba(16,12,8,.95)';cx.strokeText(title,0,0);
   cx.lineWidth=7;cx.strokeStyle=win?'#6a4a10':'#4a1420';cx.strokeText(title,0,0);
   cx.fillStyle='#fff';cx.fillText(title,0,0);cx.restore();
+  /* ===== rank medal (Victory only): laurel-wreath chip with the commander's User Rank ===== */
+  if(win&&b.resultT>0.15){const mA=clamp((b.resultT-0.15)/0.3,0,1);
+    cx.save();cx.globalAlpha=mA;cx.translate(930,262);cx.rotate(-0.12);
+    const pu=1+Math.sin(G.t*3)*0.03;cx.scale(pu,pu);
+    // laurel wreath: two arcs of leaves
+    cx.strokeStyle='#3a7a2a';cx.lineWidth=3;cx.lineCap='round';
+    for(let s2=-1;s2<=1;s2+=2){cx.beginPath();
+      for(let a2=-1.15;a2<=1.15;a2+=0.22){const rr2=44+Math.sin(a2*3)*3;
+        cx.moveTo(s2*Math.cos(a2)*rr2*0.86,Math.sin(a2)*rr2*0.86);
+        cx.lineTo(s2*Math.cos(a2+0.16)*(rr2+9),Math.sin(a2+0.16)*(rr2+9))}
+      cx.stroke()}
+    // medal disc
+    cx.fillStyle='#ffd23f';cx.beginPath();cx.arc(0,0,36,0,TAU);cx.fill();
+    cx.lineWidth=3.5;cx.strokeStyle='#8a5a10';cx.stroke();
+    cx.lineWidth=1.5;cx.strokeStyle='rgba(255,255,255,.7)';cx.beginPath();cx.arc(0,0,30,0,TAU);cx.stroke();
+    glyph(cx,'up',0,-8,12,'#8a5a10','#ffd23f');
+    txt(cx,'RANK '+SV.rank,0,14,11,'#5a3b16','center',2.5,'#fff8e8',700);
+    txt(cx,'Commander',0,52,10,'#fff','center',3,'rgba(20,12,4,.9)',700);
+    cx.restore()}
   const bA=clamp((b.resultT-0.2)/0.35,0,1);
   if(bA>0){cx.globalAlpha=bA;
     // NEW RECORD chip sits above the Score band on dojo screens (treasure_a)

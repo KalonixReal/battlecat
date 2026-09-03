@@ -397,6 +397,7 @@ function expdCollect(idx){
   if(after.lv>before.lv){lines.push('SCOUT RANK UP! Now '+after.name+' (+'+Math.round(after.bonus*100)+'% rewards)')}
   if(scoutInfo().bonus>0)lines.push('Scout Rank bonus +'+Math.round(scoutInfo().bonus*100)+'% applied');
   act.splice(idx||0,1);SV.expedition.runs++;persist();
+  if(SV.missions)SV.missions.exp=(SV.missions.exp||0)+1; // daily mission hook (expeditions)
   if(typeof trophyCheckAll==='function')trophyCheckAll();
   return lines}
 

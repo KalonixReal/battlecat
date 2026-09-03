@@ -417,3 +417,95 @@ Next-phase priorities (for the 15-min reviewer):
 3. Scout rank MYTHIC cap (900 XP) — prestige ranks or ticket-only expeditions if wanted.
 4. Consider a trophy SOUND distinct from SFX.up (minor).
 5. 28MB WAV bank — re-encode if load time becomes a complaint.
+
+---
+
+## Session Round — MISSION BOARD EXPANSION + BATTLE HUD RICHES + HOME CATALOG POLISH (Task: autonomous QA → features)
+
+### Current project status (assessment at round start)
+- Pristine save booted clean (rank 1); zero console/page errors; dev.log clean.
+- Full golden-path E2E re-verified with REAL pointer input at 1280x720 BEFORE any edits:
+  title → home → chapters → EoC map → stage modal (attack → Attack!) → battle (deploy ×N at
+  real dock positions, kills/dmg tracked via getB()) → legit WIN (enemy base 900→0) → resOk →
+  map, with XP/rank/clears/wins all applied (stats.wins=1, cleared.eoc1['0'] set).
+- 14-screen sweep + verify-shots: all non-blank, zero console errors.
+- node --check 9/9 game JS files; lint 0 errors / 12 benign warnings.
+- QA harness quirks re-learned this round (IMPORTANT for future rounds):
+  1. `G.hits.push({id:'play'...})` does NOT fire buttons — hits are rebuilt every frame; the
+     injected entry is wiped before the next pointerup scan. Real pointer events (mouse move/
+     down/up at the rect center from `tests/click.ts`) are the only reliable way.
+  2. Home menu rows below scrollHome=0 (hm6..hm10, y>720) are OFF-CANVAS — must dispatch a
+     WheelEvent on the canvas (or drag) BEFORE clicking them: `cv.dispatchEvent(new
+     w.WheelEvent('wheel',{clientX,clientY,deltaY:240}))`.
+  3. Stage modal buttons (mb0/mb1) only exist while the modal is open — click.ts must chain
+     `attack` (600ms) → `mb1` (300ms) within the same frame window.
+
+### Completed modifications this round
+
+**1. DAILY MISSION BOARD: 3 → 6 MISSIONS + REAL PROGRESS BARS (core.js / ui.js / battle.js / data.js):**
+- core.js MISSIONS: added 3 new dailies — 'win' (Win 2 battles, 60 CF, medal icon),
+  'dep' (Deploy 8 cats in battle, 60 CF, cat icon), 'exp' (Complete 1 expedition, 70 CF,
+  compass icon). DEF_SAVE + ensureMissions reset line extended with win/dep/exp counters.
+- Hooks: battle.js applyBattleResult win-path increments missions.win; spawnCat increments
+  missions.dep (fires on every real deploy); data.js expdCollect increments missions.exp.
+- openMissionsModal COMPLETELY REDESIGNED for 6 rows: modal height 612 (title-keyed override
+  in modalDraw), compact rows (rowH 55, step 62) in the drawExtra coordinate space (NOTE:
+  drawExtra receives y+90+lines*28 — NOT the modal top; row layout tuned to that), per-row
+  REAL progress bars (blue/green/gold fill + numeric 'n / goal' label + top gloss), pulsing
+  gold icon medallions when claimable, IN PROGRESS buttons (tap → toast with exact progress),
+  CLAIM buttons, ✔ CLAIMED tags, rank-tier footer badge, reset-info line, header count line.
+- Layout verified collision-free: rows 187..529, footer 558..584, reset 586, CLOSE 602..648.
+
+**2. BATTLE HUD: SESSION LOOT CHIP (battle.js):**
+- Top-center chip under the stage name: gold coin dot + 'N kills · M treasure' (session
+  treasure count from G.sessionTreasure), dark navy pill with gold rim. Fades with the HUD
+  on result screens (correct — verified on defeat/victory shots).
+
+**3. BATTLE: BASE ALARM AURAS (battle.js drawBases):**
+- Cat base: warm pulsing rim-light ellipse while alarm>0 (complements the existing shake).
+- Enemy base: red pulsing aura ellipse — clear "under attack" feedback for the push phase.
+
+**4. VICTORY RANK MEDAL (battle.js drawResult):**
+- Victory-only laurel-wreath medal at (930,262): two arcs of dark-green leaves, gold disc,
+  up-glyph, 'RANK N' + 'Commander' caption, gentle breathing scale. Fades in at resultT 0.15.
+  Defeat shows none (correct). Pixel-verified: gold disc + green leaf (75,137,65) present.
+
+**5. HOME SCREEN POLISH (ui.js drawHome):**
+- Scroll-position indicator rail on the menu column (gold gradient thumb tracks scrollHome).
+- Catdex completion bar under the cat strip: green gradient fill + 'N% of the Catdex
+  collected' label.
+- NEXT TROPHY hint chip on the catalog panel (from last round's unresolved list): sorts
+  unclaimed trophies by %-complete, shows group icon + truncated name + % — purple theme.
+
+**6. Cache-bust v16 → v18** (index.html + page.tsx wrapper in sync).
+
+### Verification results
+- Mission hooks E2E (real input, 2 battles: one loss + one win + retreat test): after win —
+  clear=2, win=1, dep=12, stats.wins=2 all correct; CLAIM flow verified: mclaimclear click →
+  +80 CF (300→380), claimed flag set, green bar + ✔ CLAIMED tag render; IN PROGRESS toast
+  shows 'Clear 2 stages — 1/2 · reward 80 Cat Food'.
+- 6-row modal E2E: opens via MISSIONS (after wheel-scroll), 6 mprog/mclaim buttons at
+  correct non-overlapping positions, close via mb0 works.
+- Pixel probes: progress bar blue #4a9ae8 fill at exact row coordinates; claimed-state
+  green #7fc86a; loot chip dark pill + gold text at (640,72..90); rank medal gold+green;
+  home rail gold thumb at (612,500); Catdex green fill 660..700; hint chip purple at 940..980.
+- Full regression post-edits: 14-screen sweep (tests/screen-qa.sh) zero console errors;
+  verify-shots all non-blank; battle deploy/pause/retreat flows OK; 1920x800 letterbox ✓;
+  390x844 portrait rotate-prompt ✓ (nonBg 1.3% = expected dark overlay).
+- node --check 9/9 pass; bun run lint 0 errors / 12 benign warnings; dev.log clean.
+- QA screenshots: tests/shots/qa7-*.png (01 home, 02 battle, 03 victory, 04/05 missions
+  modal, 06 defeat, 07 victory-medal, 08 missions-claimed, 09 home-new, 10 1920x800,
+  11 portrait, 12/13 battle-chip).
+
+### Unresolved / next-phase priorities
+1. VLM visual review still 429-blocked (6+ sessions) — pixel probes used instead; retry
+   when quota clears (qa7-* shots are freshest).
+2. Missions 'up' (Improve a Cat) hook only counts upgrade-screen purchases — treasure-
+   based improvements don't count; consider widening if it matters.
+3. Battle loot chip currently counts session-wide treasure, not per-battle — could scope
+   it to the active battle if clearer feedback is wanted.
+4. Scout rank MYTHIC cap (900 XP) — prestige ranks or ticket-only expeditions if wanted.
+5. 28MB WAV bank load time — re-encode if it becomes a complaint.
+6. Mission modal drawExtra coordinate quirk (my-94 vs modal-top) is now documented above —
+   future modal layouts should always compute against the drawExtra-passed (mx,my,mw,mh),
+   never the modal's own geometry.

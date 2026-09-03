@@ -176,7 +176,9 @@ function modalDraw(){const m=G.modal;if(!m)return;
   const fade=clamp(m.age/0.14,0,1);
   cx.save();cx.globalAlpha=fade;
   cx.fillStyle='rgba(40,24,8,.6)';cx.fillRect(0,0,1280,720);
-  const w=Math.min(760,1180),h=150+m.lines.length*30+(m.drawExtra?320:0);
+  let h=150+m.lines.length*30+(m.drawExtra?320:0);
+  if(m.title&&m.title.startsWith('DAILY MISSIONS'))h=612; // 6 mission rows need a taller board
+  const w=Math.min(760,1180);
   // pop-in: purely visual transform — all drawing/hit coords below stay in FINAL
   // (unscaled) design space so hit rects stay valid even mid-animation
   cx.translate(640,360);cx.scale(sc,sc);cx.translate(-640,-360);
@@ -312,6 +314,15 @@ function drawHome(dt){bgSky();drawTopBar('');
         c.fillStyle='#c46adf';c.beginPath();c.arc(0,0,13,0,TAU);c.fill();c.lineWidth=2;c.strokeStyle='#6a1a8a';c.stroke();
         txt(c,String(tc),0,0.5,12.5,'#fff','center',2,'#6a1a8a',700);c.restore();
         txt(c,'CLAIM!',w-56,33,11,'#9a3ac4','left',2,'#fff',700)}}}});y+=ih+gap});
+  // scroll-position indicator rail (right edge of the menu column)
+  {const contentMax=Math.max(1,items.length*74-466);
+    if(contentMax>1){const railX=612,railY=210,railH=440;
+      cx.fillStyle='rgba(90,59,22,.18)';rr(cx,railX-2.5,railY,5,railH,2.5);cx.fill();
+      const thumbH=Math.max(40,railH*466/(contentMax+466));
+      const thumbY=railY+(railH-thumbH)*(G.scrollHome/contentMax);
+      const tg2=cx.createLinearGradient(railX-2,thumbY,railX+2,thumbY+thumbH);
+      tg2.addColorStop(0,'#e8a020');tg2.addColorStop(0.5,'#ffd23f');tg2.addColorStop(1,'#e8a020');
+      cx.fillStyle=tg2;rr(cx,railX-2.5,thumbY,5,thumbH,2.5);cx.fill()}}
   creamPanel(640,210,600,440);
   txt(cx,'CATALOG',660,240,20,'#b06a10','left',4,'#fff',700);
   const owned=CATS.filter(c=>catOwned(c.id)).length;
@@ -320,37 +331,86 @@ function drawHome(dt){bgSky();drawTopBar('');
   const done=CATS.filter(c=>catOwned(c.id));
   cx.strokeStyle='rgba(176,138,80,.5)';cx.lineWidth=1.5;cx.beginPath();cx.moveTo(660,540);cx.lineTo(1220,540);cx.stroke();
   txt(cx,'YOUR CATS',660,556,11,'#a89878','left',2,'#fff',700);
+  // next-trophy hint chip (nearest unclaimed trophy by % complete)
+  {const nxt=trophyList().filter(t=>!SV.trophies.claimed[t.id]).sort((a,b2)=>(trophyProg(b2)/b2.goal)-(trophyProg(a)/a.goal))[0];
+    if(nxt){const pr=Math.min(trophyProg(nxt),nxt.goal),fr=clamp(pr/nxt.goal,0,1);
+      const hy=556,hx=830;
+      cx.fillStyle='rgba(196,106,223,.12)';rr(cx,hx-8,hy-12,398,26,13);cx.fill();
+      cx.lineWidth=1.5;cx.strokeStyle='rgba(196,106,223,.45)';rr(cx,hx-8,hy-12,398,26,13);cx.stroke();
+      glyph(cx,nxt.group.icon,hx+8,hy+1,9,'#c46adf','#fff');
+      cx.font=FONT(10.5,700);
+      txt(cx,'NEXT TROPHY: '+nxt.n.slice(0,30)+(nxt.n.length>30?'…':''),hx+22,hy+1,10.5,'#8a4a9a','left',2,'#fff',700);
+      txt(cx,Math.round(fr*100)+'%',1224,hy+1,11,'#c46adf','right',2,'#fff',700)}}
   let bx=660,by=600;
   done.slice(0,13).forEach(c=>{ART.catIcon(c.id,bx,by,20);bx+=42});
-  if(owned>13)txt(cx,'+'+(owned-13)+' more',bx+6,by,12,'#a89878','left');brownBottomBar()}
+  if(owned>13)txt(cx,'+'+(owned-13)+' more',bx+6,by,12,'#a89878','left');
+  // completion progress bar under the cat strip: % of the full collection owned
+  {const pw2=560,px2=660,py2=632;
+    cx.fillStyle='rgba(90,59,22,.16)';rr(cx,px2,py2,pw2,10,5);cx.fill();
+    const fr=owned/CATS.length;
+    const pg=cx.createLinearGradient(px2,0,px2+pw2,0);pg.addColorStop(0,'#7fc86a');pg.addColorStop(1,'#3a9a5a');
+    cx.fillStyle=pg;rr(cx,px2,py2,Math.max(12,pw2*fr),10,5);cx.fill();
+    cx.lineWidth=1.5;cx.strokeStyle='rgba(90,59,22,.4)';rr(cx,px2,py2,pw2,10,5);cx.stroke();
+    txt(cx,Math.round(fr*100)+'% of the Catdex collected',px2+pw2/2,py2+6,10.5,'#5a3b16','center',2,'#fff',700)}
+  brownBottomBar()}
 
 /* ============================== MODAL: DAILY MISSIONS ============================== */
 function openMissionsModal(){ensureMissions();SFX.click();
-  openModal('DAILY MISSIONS \u2014 '+new Date().toLocaleDateString('en-US',{weekday:'long'}),[],[{n:'CLOSE',cb:()=>{}}],(mx,my,mw,mh)=>{
-    // rank-tier badge: goals & rewards scale every 10 User Ranks
+  const total=MISSIONS.length;
+  const claimedN=MISSIONS.filter(m=>missionClaimed(m.id)).length;
+  const claimableN=MISSIONS.filter(m=>missionDone(m.id)&&!missionClaimed(m.id)).length;
+  openModal('DAILY MISSIONS — '+new Date().toLocaleDateString('en-US',{weekday:'long'}),
+    [claimedN+'/'+total+' complete · '+claimableN+' ready to claim'],
+    [{n:'CLOSE',cb:()=>{}}],(mx,my,mw,mh)=>{
     const tier=missionTier();
-    cx.save();cx.translate(mx+mw/2,my+mh-58);
-    cx.fillStyle=tier>0?'#e8951f':'#c8b890';rr(cx,-118,-14,236,28,14);cx.fill();cx.lineWidth=2.5;cx.strokeStyle=tier>0?'#8a5210':'#8a7a5a';rr(cx,-118,-14,236,28,14);cx.stroke();
-    txt(cx,tier>0?('RANK TIER '+tier+' \u2014 GOALS \u00d7'+(1+tier*0.5)+' \u00b7 CF \u00d7'+(1+tier*0.25).toFixed(2)):'RANK TIER 1 \u2014 scale up every 10 ranks',0,0.5,10.5,tier>0?'#fff':'#6a5a42','center',2,tier>0?'#7a4a08':'#fff',700);
+    // per-mission rows: icon medallion + name + REAL progress bar + action button
+    MISSIONS.forEach((m,i)=>{
+      const rowH=55,gapY=7; // compact 6-row stack: fits the drawExtra area (header line + rows + footer)
+      const y=my+4+i*(rowH+gapY);
+      const done=missionDone(m.id),cl=missionClaimed(m.id);
+      const goal=missionGoal(m),cf=missionCF(m),prog=Math.min(SV.missions[m.id]||0,goal);
+      // row plate (tinted when done/claimable)
+      creamPanel(mx+10,y,mw-20,rowH,cl?'#9ab88a':(done?'#e8c37f':'#c8913a'));
+      // icon medallion (pulses gold when claimable)
+      const mcx2=mx+41,mcyy=y+rowH/2;
+      if(done&&!cl){const pu=1+Math.sin(G.t*5)*0.1;
+        cx.save();cx.translate(mcx2,mcyy);cx.scale(pu,pu);
+        cx.fillStyle='#ffd23f';cx.beginPath();cx.arc(0,0,18,0,TAU);cx.fill();
+        cx.lineWidth=2.5;cx.strokeStyle='#8a5a10';cx.stroke();
+        glyph(cx,m.icon,0,0,10.5,'#5a3b16','#ffd23f');cx.restore()}
+      else{cx.fillStyle=done?'#7fc86a':'#d8c8a0';cx.beginPath();cx.arc(mcx2,mcyy,18,0,TAU);cx.fill();
+        cx.lineWidth=2.5;cx.strokeStyle=done?'#3a7a2a':'#a89a78';cx.stroke();
+        glyph(cx,m.icon,mcx2,mcyy,10.5,done?'#1e4a14':'#6a5a3a',done?'#7fc86a':'#d8c8a0')}
+      // mission name (goal number substituted) + reward line
+      txt(cx,m.n.replace(/\d+/,String(goal)),mx+68,y+18,13,cl?'#6a7a5a':'#5a3b16','left',3,'#fff',700);
+      txt(cx,'Reward: '+cf+' Cat Food'+(tier>0?' (scaled)':''),mx+68,y+36,9.5,'#8a7a5a','left');
+      // REAL progress bar with numeric label
+      const pbx=mx+mw-336,pbw=176,pby=y+rowH/2-8;
+      cx.fillStyle='rgba(90,59,22,.16)';rr(cx,pbx,pby,pbw,12,6);cx.fill();
+      const fr=clamp(prog/goal,0,1);
+      const barCol=cl?'#7fc86a':(done?'#ffd23f':'#4a9ae8');
+      if(fr>0){cx.fillStyle=barCol;rr(cx,pbx,pby,Math.max(10,pbw*fr),12,6);cx.fill();
+        cx.fillStyle='rgba(255,255,255,.28)';rr(cx,pbx+1,pby+1.5,Math.max(8,pbw*fr-2),4,2);cx.fill()}
+      cx.lineWidth=1.5;cx.strokeStyle='rgba(90,59,22,.4)';rr(cx,pbx,pby,pbw,12,6);cx.stroke();
+      txt(cx,prog+' / '+goal,pbx+pbw/2,pby+16,10,done?'#1e7a3a':'#8a6a3a','center',2,'#fff',700);
+      // action button / claimed tag
+      if(cl){cx.fillStyle='#e8f4e0';rr(cx,mx+mw-138,y+11,114,32,16);cx.fill();
+        cx.lineWidth=2;cx.strokeStyle='#5a8a4a';rr(cx,mx+mw-138,y+11,114,32,16);cx.stroke();
+        txt(cx,'✔ CLAIMED',mx+mw-81,y+27.5,12,'#3a7a2a','center',2,'#fff',700)}
+      else if(done)BTN('mclaim'+m.id,mx+mw-138,y+11,114,32,()=>{claimMission(m.id)},{col:'#ffd23f',outline:'#8a5a20',label:'CLAIM +'+cf,fs:12,r:16,modal:true});
+      else BTN('mprog'+m.id,mx+mw-138,y+11,114,32,()=>{SFX.click();toast(m.n.replace(/\d+/,String(goal))+' — '+prog+'/'+goal+' · reward '+cf+' Cat Food','#ffb060')},{col:'#e8d8b0',outline:'#8a7a5a',label:'IN PROGRESS',fs:10.5,tcol:'#8a6a3a',r:16,modal:true})});
+    // footer: rank-tier badge (last row ends my+374; badge sits safely below)
+    const fy=my+mh-36;
+    cx.save();cx.translate(mx+mw/2,fy);
+    cx.fillStyle=tier>0?'#e8951f':'#c8b890';rr(cx,-190,-13,380,26,13);cx.fill();
+    cx.lineWidth=2.5;cx.strokeStyle=tier>0?'#8a5210':'#8a7a5a';rr(cx,-190,-13,380,26,13);cx.stroke();
+    txt(cx,tier>0?('RANK TIER '+tier+' — GOALS ×'+(1+tier*0.5)+' · CF ×'+(1+tier*0.25).toFixed(2)):'RANK TIER 1 — goals & rewards grow every 10 ranks',0,0.5,10,tier>0?'#fff':'#6a5a42','center',2,tier>0?'#7a4a08':'#fff',700);
     cx.restore();
-    MISSIONS.forEach((m,i)=>{const y=my+i*74;const done=missionDone(m.id),cl=missionClaimed(m.id);const goal=missionGoal(m),cf=missionCF(m);
-      creamPanel(mx+10,y,mw-20,66,cl?'#9ab88a':'#c8913a');
-      cx.save();cx.translate(mx+42,y+33);
-      cx.fillStyle=done?'#7fc86a':'#d8c8a0';cx.beginPath();cx.arc(0,0,20,0,TAU);cx.fill();cx.lineWidth=3;cx.strokeStyle=done?'#3a7a2a':'#a89a78';cx.stroke();
-      glyph(cx,m.icon,0,0,11,done?'#1e4a14':'#6a5a3a',done?'#7fc86a':'#d8c8a0');cx.restore();
-      txt(cx,m.n.replace(/\d+/,String(goal)),mx+76,y+22,15.5,'#5a3b16','left',3,'#fff',700);
-      txt(cx,'Reward: '+cf+' Cat Food'+(tier>0?' (scaled)':''),mx+76,y+46,12,'#8a7a5a','left');
-      // progress pips
-      for(let k=0;k<goal;k++){cx.fillStyle=k<(SV.missions[m.id]||0)?'#e8a020':'#d8ccb0';rr(cx,mx+290+k*20,y+40,14,14,4);cx.fill();cx.lineWidth=1.5;cx.strokeStyle='#a8845a';rr(cx,mx+290+k*20,y+40,14,14,4);cx.stroke()}
-      if(cl){cx.fillStyle='#e8f4e0';rr(cx,mx+mw-150,y+18,120,30,15);cx.fill();cx.lineWidth=2;cx.strokeStyle='#5a8a4a';rr(cx,mx+mw-150,y+18,120,30,15);cx.stroke();
-        txt(cx,'\u2714 CLAIMED',mx+mw-90,y+34,13,'#3a7a2a','center',2,'#fff',700)}
-      else if(done)BTN('mclaim'+m.id,mx+mw-150,y+18,120,30,()=>{claimMission(m.id)},{col:'#ffd23f',outline:'#8a5a20',label:'CLAIM +'+cf,fs:12,r:15,modal:true});
-      else txt(cx,'In progress\u2026',mx+mw-90,y+34,12.5,'#a89878','center',2,'#fff',700)});
-    txt(cx,'Missions reset daily. Higher User Rank = bigger goals & rewards. Streak logins in the Store for bigger daily bonuses!',mx+mw/2,my+mh-14,12,'#a89878','center',2,'#fff',400)})}
+    txt(cx,'Missions reset daily · streak logins in the Store pay bigger daily bonuses',mx+mw/2,my+mh-8,10.5,'#a89878','center',2,'#fff',400)})}
 
 /* ============================== MODAL: COMBO DETAIL (tap a combo tile) ============================== */
 function openComboDetail(cb){SFX.click();
-  const effLine=Object.entries(cb.eff).map(([k,v])=>EFF_LABEL[k](v)).join('  \u00b7  ');
+  const effLine=Object.entries(cb.eff).map(([k,v])=>EFF_LABEL[k](v)).join('  ·  ');
   const allOwn2=cb.ids.every(i2=>catOwned(i2));
   const inUse2=cb.ids.every(i2=>SV.teams[SV.teamSel].includes(i2));
   const btns2=[{n:'CLOSE',cb:()=>{}}];
@@ -369,7 +429,7 @@ function openComboDetail(cb){SFX.click();
       txt(cx,CATMAP[id].forms[0].n,x+tileW/2,y+86,10.5,own?'#5a4530':'#a89878','center',3,'#fff',700);
       // rarity underline bar
       cx.fillStyle=RAR_COL[CATMAP[id].rarity];rr(cx,x+14,y+96,tileW-28,5,2.5);cx.fill();
-      if(on)txt(cx,'\u2714 TEAM',x+tileW/2,y+110,9.5,'#3a7a2a','center',2,'#fff',700);
+      if(on)txt(cx,'✔ TEAM',x+tileW/2,y+110,9.5,'#3a7a2a','center',2,'#fff',700);
       else if(own)txt(cx,'OWNED',x+tileW/2,y+110,9.5,'#8a7a5a','center',2,'#fff',700);
       else txt(cx,'NOT FOUND',x+tileW/2,y+110,9.5,'#c05040','center',2,'#fff',700);
       if(i2<n-1)txt(cx,'+',x+tileW+gap/2,y+60,20,'#a89878','center')});
@@ -621,7 +681,7 @@ function drawMap(dt){const c=CHMAP[G.chapter];
     cx.fillStyle='rgba(38,24,10,.92)';rr(cx,30,508,438,148,12);cx.fill();
     cx.lineWidth=2.5;cx.strokeStyle='#c8913a';rr(cx,31.5,509.5,435,145,11);cx.stroke();
     txt(cx,'DOJO RECORD',52,530,12,'#e8c890','left',2.5,'#1c1006',700);
-    txt(cx,'Best: '+(SV.dojoBest||0)+'  \u00b7  survive escalating waves',52,550,12.5,'#ffd23f','left',3,'#1c1006',700);
+    txt(cx,'Best: '+(SV.dojoBest||0)+'  ·  survive escalating waves',52,550,12.5,'#ffd23f','left',3,'#1c1006',700);
     const medal=['#cd7f32','#c0c0c0','#ffd700'];
     if((SV.dojoBoard||[]).length)(SV.dojoBoard||[]).forEach((e2,i2)=>{const chx=58+i2*140;
       cx.fillStyle=medal[i2]||'#8a7a5a';star(cx,chx,574,7,3.5);cx.fill();cx.strokeStyle='#1c1006';cx.lineWidth=1.4;cx.stroke();
@@ -715,7 +775,7 @@ function openStageModal(ch,idx){const c=CHMAP[ch];const st=genStage(ch,idx);SFX.
   openModal(st.name,[
     'Energy cost: '+st.energy+'   (you have '+SV.energy+')',
     'Enemy base HP: '+fmt(st.baseHp),
-    'Power: HP \u00d7'+st.mag.hp.toFixed(2)+'  ATK \u00d7'+st.mag.atk.toFixed(2),
+    'Power: HP ×'+st.mag.hp.toFixed(2)+'  ATK ×'+st.mag.atk.toFixed(2),
     'Enemies: '+([...new Set(en)].map(e=>ENEMAP[e].n).join(', ')||'\u2014'),
     'Reward: '+fmt(st.reward.xp)+' XP'+(st.reward.fruit?' + '+FRUIT_NAMES[st.reward.fruit]:'')+(st.reward.cf?' + '+st.reward.cf+' CF':''),
     ...(c.kind==='story'?['Crowns: '+crownsN+'/3 \u2014 win with base HP \u226580% for a PERFECT 3-crown clear!']:[]),
@@ -735,7 +795,7 @@ function openStageModal(ch,idx){const c=CHMAP[ch];const st=genStage(ch,idx);SFX.
         cx.fillStyle='#fffdf5';rr(cx,ex,ey,tw,74,10);cx.fill();
         const tc=TRAIT_COL[e.tr[0]]||'#a89a78';cx.lineWidth=3;cx.strokeStyle=e.boss?'#e84030':tc;rr(cx,ex+1.5,ey+1.5,tw-3,71,9);cx.stroke();
         ART.enemyIcon(eid,ex+tw/2,ey+28,17);
-        const tl=e.tr.length?e.tr.map(t2=>t2.toUpperCase()).join('\u00b7'):'TRAITLESS';
+        const tl=e.tr.length?e.tr.map(t2=>t2.toUpperCase()).join('·'):'TRAITLESS';
         txt(cx,tl,ex+tw/2,ey+56,6.8,shade(tc,.6),'center',2,'#fff',700);
         if(e.boss){cx.save();cx.translate(ex+tw/2,ey-1);cx.rotate(-0.08);cx.fillStyle='#e84030';rr(cx,-21,-8,42,15,4);cx.fill();txt(cx,'BOSS',0,-0.5,9,'#fff','center',2,'#7a1a10',700);cx.restore()}});
       if(uni.length>6)txt(cx,'+'+(uni.length-6)+' more',x+w/2,y+yOff+112,11,'#a89878','center',2,'#fff',400);
@@ -753,19 +813,19 @@ function openEventModal(ev){const s=ev.s;const uni=[...new Set(s.pool)];
         cx.fillStyle='#fffdf5';rr(cx,ex,ey,tw,74,10);cx.fill();
         const tc=TRAIT_COL[e.tr[0]]||'#a89a78';cx.lineWidth=3;cx.strokeStyle=e.boss?'#e84030':tc;rr(cx,ex+1.5,ey+1.5,tw-3,71,9);cx.stroke();
         ART.enemyIcon(eid,ex+tw/2,ey+28,17);
-        const tl=e.tr.length?e.tr.map(t2=>t2.toUpperCase()).join('\u00b7'):'TRAITLESS';
+        const tl=e.tr.length?e.tr.map(t2=>t2.toUpperCase()).join('·'):'TRAITLESS';
         txt(cx,tl,ex+tw/2,ey+56,6.8,shade(tc,.6),'center',2,'#fff',700);
         if(e.boss){cx.save();cx.translate(ex+tw/2,ey-1);cx.rotate(-0.08);cx.fillStyle='#e84030';rr(cx,-21,-8,42,15,4);cx.fill();txt(cx,'BOSS',0,-0.5,9,'#fff','center',2,'#7a1a10',700);cx.restore()}});
       if(uni.length>6)txt(cx,'+'+(uni.length-6)+' more',x+w/2,y+108,11,'#a89878','center',2,'#fff',400);
       else if(!uni.length)txt(cx,'No enemies \u2014 destroy the base!',x+w/2,y+56,12,'#a89878','center',2,'#fff',400);
       // stat strip: base HP + magnification
-      txt(cx,'Enemy base HP '+fmt(s.baseHp)+'   \u00b7   Power HP \u00d7'+s.mag.hp.toFixed(1)+' / ATK \u00d7'+s.mag.atk.toFixed(1),x+w/2,y+138,12.5,'#8a6a3a','center',3,'#fff',400);
+      txt(cx,'Enemy base HP '+fmt(s.baseHp)+'   ·   Power HP ×'+s.mag.hp.toFixed(1)+' / ATK ×'+s.mag.atk.toFixed(1),x+w/2,y+138,12.5,'#8a6a3a','center',3,'#fff',400);
       // rewards ribbon
       const ry=y+h-38;cx.fillStyle='rgba(255,244,214,.85)';rr(cx,x+16,ry,w-32,30,9);cx.fill();
       cx.lineWidth=1.5;cx.strokeStyle='rgba(176,138,80,.5)';rr(cx,x+16,ry,w-32,30,9);cx.stroke();
       let rtxt='Reward: '+fmt(s.reward.xp)+' XP';let rcol='#b06a10';
-      if(s.reward.fruit){rtxt+='  \u00b7  Catfruit: '+FRUIT_NAMES[s.reward.fruit];rcol=shade(FRUIT_COL[s.reward.fruit],.7)}
-      if(s.reward.ticket)rtxt+='  \u00b7  Rare Ticket chance!';
+      if(s.reward.fruit){rtxt+='  ·  Catfruit: '+FRUIT_NAMES[s.reward.fruit];rcol=shade(FRUIT_COL[s.reward.fruit],.7)}
+      if(s.reward.ticket)rtxt+='  ·  Rare Ticket chance!';
       txt(cx,rtxt,x+w/2,ry+15.5,12.5,rcol,'center',3,'#fff',700)})}
 function tryStartBattle(ch,idx){const st=idx>=0?genStage(ch,idx):(G.pendingEvent?G.pendingEvent.s:null);if(!st)return;
   if(SV.energy<st.energy){toast('Not enough energy! ('+SV.energy+'/'+st.energy+')','#ff7a7a');SFX.error();return}
@@ -801,9 +861,9 @@ function drawEquip(dt){
   ['I','II','III'].forEach((t,i)=>{BTN('tt'+i,146+i*66,8,62,40,()=>{SV.teamSel=i;persist();SFX.click()},{col:SV.teamSel===i?'#ffd23f':'#fff8e8',outline:'#8a5a20',label:t,fs:15,r:10,tcol:'#4a2f10'})});
   // active combo summary (kept under the hood logic)
   const actCbs=COMBOS.filter(cb=>cb.ids.every(i=>teamIds2.includes(i)));
-  const cbt=actCbs.length?actCbs.map(cb=>cb.n).join(' \u00b7 ')+' ('+actCbs.map(cb=>Object.entries(cb.eff).map(([k,v])=>EFF_LABEL[k](v)).join(', ')).join(' | ')+')':'No active combos';
+  const cbt=actCbs.length?actCbs.map(cb=>cb.n).join(' · ')+' ('+actCbs.map(cb=>Object.entries(cb.eff).map(([k,v])=>EFF_LABEL[k](v)).join(', ')).join(' | ')+')':'No active combos';
   txt(cx,cbt.length>118?cbt.slice(0,117)+'\u2026':cbt,352,18,12,actCbs.length?'#8a5a10':'#5a7a8a','left',3,'#fff',700);
-  txt(cx,'Tap a card to fill the first empty slot \u00b7 tap card or its slot again to remove',352,38,11.5,'#3a6a84','left',2.5,'#fff',400);
+  txt(cx,'Tap a card to fill the first empty slot · tap card or its slot again to remove',352,38,11.5,'#3a6a84','left',2.5,'#fff',400);
   // ALL COMBOS chip (existing modal, verbatim wiring)
   BTN('cbs',1004,8,132,40,()=>{SFX.click();openModal('CAT COMBOS',[],[{n:'CLOSE',cb:()=>{G.comboFilter='all'}}],(mx,my,mw,mh)=>{
     const teamIds3=SV.teams[SV.teamSel].filter(Boolean);
@@ -825,8 +885,8 @@ function drawEquip(dt){
         let ix=mx+34;cb.ids.forEach(id=>{ART.catIcon(id,ix,y+tileH/2-2,15,own?undefined:0.16);ix+=34;if(ix<mx+34+cb.ids.length*34-6)txt(cx,'+',ix-7,y+tileH/2-2,13,'#a89878','center')});
         const tx0=mx+34+cb.ids.length*34+8;
         txt(cx,cb.n,tx0,y+18,13.5,on?'#b06a10':(own?'#5a4530':'#a89878'),'left',3,'#fff',700);
-        txt(cx,Object.entries(cb.eff).map(([k,v])=>EFF_LABEL[k](v)).join('  \u00b7  '),tx0,y+40,12,own?'#4a3a24':'#b0a488','left',2,'#fff',400);
-        if(on){cx.fillStyle='#e8951f';rr(cx,mx+mw-108,y+14,86,26,13);cx.fill();txt(cx,'\u2714 IN USE',mx+mw-65,y+27.5,11.5,'#fff','center',2,'#7a4a08',700)}
+        txt(cx,Object.entries(cb.eff).map(([k,v])=>EFF_LABEL[k](v)).join('  ·  '),tx0,y+40,12,own?'#4a3a24':'#b0a488','left',2,'#fff',400);
+        if(on){cx.fillStyle='#e8951f';rr(cx,mx+mw-108,y+14,86,26,13);cx.fill();txt(cx,'✔ IN USE',mx+mw-65,y+27.5,11.5,'#fff','center',2,'#7a4a08',700)}
         else if(own){cx.fillStyle='#e8f4e0';rr(cx,mx+mw-108,y+14,86,26,13);cx.fill();cx.lineWidth=1.5;cx.strokeStyle='#5a8a4a';rr(cx,mx+mw-108,y+14,86,26,13);cx.stroke();txt(cx,'READY',mx+mw-65,y+27.5,11.5,'#3a7a2a','center',2,'#fff',700)}
         else{const miss=cb.ids.filter(i2=>!catOwned(i2)).length;txt(cx,miss+' cat'+(miss>1?'s':'')+' missing',mx+mw-65,y+27.5,10.5,'#b0a488','center',2,'#fff',400)}}})});
     cx.restore()})},{col:'#ffd23f',outline:'#8a5a20',label:'ALL COMBOS \u25b8',fs:12,r:10,tcol:'#4a2f10'});
@@ -989,11 +1049,11 @@ function drawUpgrade(dt){
     need=nextFi===1?10:(c.rarity==='normal'?20:30); // wiki: 2nd form lv10 for all; true form lv20 (normals) / lv30+catfruit (rare+)
     const fc=(FRUIT_COST[c.rarity]||{})[nextFi];
     canLv=catLv(c.id)>=need;canFruit=true;fruitMiss=[];
-    if(fc)for(const k in fc){const have=SV.fruit[k]||0;if(have<fc[k]){canFruit=false;fruitMiss.push((fc[k]-have)+'\u00d7 '+FRUIT_NAMES[k])}fcTxt.push(FRUIT_NAMES[k].replace(' Catfruit','')+' '+have+'/'+fc[k])}}
+    if(fc)for(const k in fc){const have=SV.fruit[k]||0;if(have<fc[k]){canFruit=false;fruitMiss.push((fc[k]-have)+'× '+FRUIT_NAMES[k])}fcTxt.push(FRUIT_NAMES[k].replace(' Catfruit','')+' '+have+'/'+fc[k])}}
   const evoReady=canLv&&canFruit; // gated unless the level rule AND the catfruit cost are satisfied
   const evoDone=evoReady; // "ready — tap EVOLVE!" tip must agree with the actual button gate
   if(nextFi<c.forms.length){
-    const gateTxt=!canLv?('Need Lv.'+need+(fruitMiss.length?' \u00b7 Need '+fruitMiss.join(', '):''))
+    const gateTxt=!canLv?('Need Lv.'+need+(fruitMiss.length?' · Need '+fruitMiss.join(', '):''))
       :fruitMiss.length?('Need '+fruitMiss.join(', ')):'';
     BTN('evo',570,412,420,74,()=>{
       if(!canLv){toast('Need level '+need+' first!','#ff7a7a');SFX.error();return}
@@ -1023,12 +1083,12 @@ function drawUpgrade(dt){
    const dg=cx.createLinearGradient(0,py,0,py+ph);dg.addColorStop(0,'#6d5632');dg.addColorStop(1,'#453419');
    cx.fillStyle=dg;rr(cx,px,py,pw,ph,14);cx.fill();
    cx.lineWidth=3;cx.strokeStyle='#191922';rr(cx,px,py,pw,ph,14);cx.stroke();
-   const abilLine=form.abil.length?'ABILITIES: '+form.abil.map(a=>abilStr(a)).join(' \u00b7 '):'A dependable all-rounder \u2014 no special abilities.';
+   const abilLine=form.abil.length?'ABILITIES: '+form.abil.map(a=>abilStr(a)).join(' · '):'A dependable all-rounder \u2014 no special abilities.';
    txt(cx,abilLine,640,py+27,14,'#fff','center',3,'rgba(0,0,0,.55)');
-   txt(cx,c.rarity.toUpperCase()+' \u00b7 Form '+(fi+1)+'/'+c.forms.length+' \u00b7 HP '+fmt(s.hp)+' \u00b7 ATK '+fmt(s.atk)+' \u00b7 Cost '+s.cost+'\u00a2 \u00b7 Range '+s.range+' \u00b7 '+s.rate+'s per hit',640,py+53,12.5,'#e8d8b8','center',2.5,'rgba(0,0,0,.5)');
+   txt(cx,c.rarity.toUpperCase()+' · Form '+(fi+1)+'/'+c.forms.length+' · HP '+fmt(s.hp)+' · ATK '+fmt(s.atk)+' · Cost '+s.cost+'\u00a2 · Range '+s.range+' · '+s.rate+'s per hit',640,py+53,12.5,'#e8d8b8','center',2.5,'rgba(0,0,0,.5)');
    let l3='';
    if(nextFi<c.forms.length)l3=evoDone?'Next form \u201c'+c.forms[nextFi].n+'\u201d is ready \u2014 tap EVOLVE!':'Next form: '+c.forms[nextFi].n+' \u2014 needs Lv '+need+(fcTxt.length?' + '+fcTxt.join(', '):'');
-   else l3='All forms unlocked \u00b7 plus levels come from duplicate Cats in the Gacha';
+   else l3='All forms unlocked · plus levels come from duplicate Cats in the Gacha';
    txt(cx,l3,640,py+79,12.5,nextFi<c.forms.length?(evoDone?'#a0f0a0':'#ffd9a8'):'#c8b890','center',2.5,'rgba(0,0,0,.5)')}
   /* ---- official bottom row: back circle (curved arrow) / STORE pill w/ cart / Cat Food count ---- */
   drawBackArrow(cx,52,698,26);
@@ -1051,7 +1111,7 @@ function openTalentsModal(c){SFX.click();
         else{toast('Not enough NP!','#ff7a7a');SFX.error()}},{col:'#8a4adf',tcol:'#fff',label:cost+' NP',fs:13,r:9,modal:true});
       else txt(cx,'MAX',mx+mw-110,y-2,12,'#a89878','right')})})}
 function abilStr(a){const D={kb:'Knockback',freeze:'Freeze',slow:'Slow',weaken:'Weaken',crit:'Critical Hit',savage:'Savage Blow',wave:'Wave Attack',surge:'Surge',toxic:'Toxic',dodge:'Dodge',warp:'Warp',curse:'Curse',barrierBreak:'Barrier Break',shieldPierce:'Shield Pierce',resist:'Resist',strengthen:'Strengthen',base:'Base Destroyer'};
-  let s=D[a.a]||a.a;if(a.a==='strengthen')s+=' (ATK \u00d7'+(1+(a.p||2))+' at half HP)';
+  let s=D[a.a]||a.a;if(a.a==='strengthen')s+=' (ATK ×'+(1+(a.p||2))+' at half HP)';
   if(a.vs)s+=' ('+a.vs.map(v=>v[0].toUpperCase()+v.slice(1)).join('/')+')';if(a.p&&a.a!=='strengthen'&&a.a!=='resist'&&a.a!=='dodge')s+=' '+(a.p*100).toFixed(0)+'%';else if(a.a==='dodge')s+=' '+(a.p*100).toFixed(0)+'%';if(a.d&&(a.a==='freeze'||a.a==='slow'||a.a==='weaken'||a.a==='curse'))s+=' '+a.d+'s';return s}
 function checkUnlocks(id){const lv=catLv(id);const c=CATMAP[id];if(lv>=10&&c.forms.length>1)toast(c.forms[0].n+' can now evolve!','#ffd94a')}
 
@@ -1159,7 +1219,7 @@ function drawGacha(dt){drawTopBar('GACHA CAPSULES',true);
     cx.lineWidth=4;cx.strokeStyle='#8a5a10';rr(cx,930,576,250,58,16);cx.stroke();
     cx.lineWidth=1.5;cx.strokeStyle='rgba(255,255,255,.75)';rr(cx,934,580,242,50,12);cx.stroke();
     txt(cx,'GOLD TICKET PULL',1055,596,17,'#fff','center',4.5,'#7a4a08',700);
-    txt(cx,'Guaranteed Uber! \u00d7'+SV.tickets.gold,1055,618,14,'#fff','center',3,'#7a4a08',700);
+    txt(cx,'Guaranteed Uber! ×'+SV.tickets.gold,1055,618,14,'#fff','center',3,'#7a4a08',700);
     for(let si=0;si<3;si++){const sa=G.t*2.2+si*2.1;const sxp=1055+Math.cos(sa)*108,syp=605+Math.sin(sa)*22;
       cx.fillStyle='rgba(255,244,200,'+(0.5+0.4*Math.sin(G.t*6+si*2)).toFixed(2)+')';star(cx,sxp,syp,5,2.1);cx.fill()}
     BTN('ggold',930,576,250,58,()=>{doGoldPull(b.id)},{flat:true,nohov:true})}
@@ -1862,7 +1922,7 @@ function drawStore(dt){drawTopBar('CAT FOOD STORE',true);
     if(cur){cx.scale(1.12+Math.sin(G.t*4)*0.05,1.12+Math.sin(G.t*4)*0.05)}
     cx.fillStyle=doneDay?'#7fc86a':(cur?'#ffd23f':'#efe4c8');cx.beginPath();cx.arc(0,0,20,0,TAU);cx.fill();
     cx.lineWidth=3;cx.strokeStyle=doneDay?'#3a7a2a':(cur?'#b07818':'#c8b892');cx.stroke();
-    if(doneDay){txt(cx,'\u2714',0,1,17,'#1e4a14','center',3,'#fff',700)}
+    if(doneDay){txt(cx,'✔',0,1,17,'#1e4a14','center',3,'#fff',700)}
     else{txt(cx,String(d+1),0,0.5,15,cur?'#7a4a08':'#a89878','center',3,'#fff',700)}
     cx.restore();
     txt(cx,'+'+dayRW,col,cy+34,9.5,doneDay?'#3a7a2a':(cur?'#b07818':'#a89878'),'center',2,'#fff',700);

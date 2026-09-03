@@ -37,7 +37,7 @@ const DEF_SAVE={ver:2,created:now(),xp:1200,cf:300,tickets:{rare:1,gold:0,plat:0
   bestiary:{},settings:{bgm:true,sfx:true},dupeXp:0,eventsDone:{},dojoBest:0,dojoBoard:[],
   expedition:{actives:[],scoutXP:0,runs:0},cmdName:'CAT COMMANDER',
   trophies:{claimed:{},notified:{}},stats:{pulls:0,wins:0},
-  dailyStreak:0,dailyLast:'',missions:{date:'',clear:0,pull:0,up:0,claimed:{}},
+  dailyStreak:0,dailyLast:'',missions:{date:'',clear:0,pull:0,up:0,win:0,dep:0,exp:0,claimed:{}},
   gachaSteps:{},pendingPull:null,pendingBattle:null,saveStats:{writes:0,fails:0,lastWrite:0}};
 let SV=null;
 let SAVE_UNRELIABLE=false; // true while localStorage writes are failing (drawSettings shows a red banner)
@@ -176,15 +176,18 @@ function rankOf(xt){return clamp(Math.floor(Math.pow(xt/800,0.55))+1,1,999)}
 const todayKey=()=>new Date().toDateString();
 function yesterKey(){const d=new Date();d.setDate(d.getDate()-1);return d.toDateString()}
 function ensureMissions(){
-  if(!SV.missions)SV.missions={date:'',clear:0,pull:0,up:0,claimed:{}};
-  if(SV.missions.date!==todayKey()){SV.missions={date:todayKey(),clear:0,pull:0,up:0,claimed:{}};persist()}
+  if(!SV.missions)SV.missions={date:'',clear:0,pull:0,up:0,win:0,dep:0,exp:0,claimed:{}};
+  if(SV.missions.date!==todayKey()){SV.missions={date:todayKey(),clear:0,pull:0,up:0,win:0,dep:0,exp:0,claimed:{}};persist()}
   // login streak continuity (claimed flag lives in eventsDone via store screen)
   if(SV.dailyLast&&SV.dailyLast!==todayKey()&&SV.dailyLast!==yesterKey())SV.dailyStreak=0;
 }
 const MISSIONS=[
   {id:'clear',n:'Clear 2 stages',goal:2,cf:80,icon:'swords'},
   {id:'pull',n:'Summon from Gacha',goal:1,cf:50,icon:'capsule'},
-  {id:'up',n:'Improve a Cat',goal:1,cf:50,icon:'up'}];
+  {id:'up',n:'Improve a Cat',goal:1,cf:50,icon:'up'},
+  {id:'win',n:'Win 2 battles',goal:2,cf:60,icon:'medal'},
+  {id:'dep',n:'Deploy 8 cats in battle',goal:8,cf:60,icon:'cat'},
+  {id:'exp',n:'Complete 1 expedition',goal:1,cf:70,icon:'compass'}];
 /* missions scale with User Rank: every 10 ranks the goals grow (+50%) and rewards keep up (+25%) */
 function missionTier(){return Math.floor((SV.rank-1)/10)}
 function missionGoal(m){return Math.ceil(m.goal*(1+missionTier()*0.5))}
