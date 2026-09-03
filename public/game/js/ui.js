@@ -301,7 +301,7 @@ function drawHome(dt){bgSky();drawTopBar('');
     if(it[0]==='MISSIONS'&&mDone>0){const bw2=26;cx.save();c.translate(w-24,14);c.rotate(Math.sin(G.t*5)*0.12);
       c.fillStyle='#e84030';c.beginPath();c.arc(0,0,bw2/2,0,TAU);c.fill();c.lineWidth=2;c.strokeStyle='#7a1a10';c.stroke();
       txt(c,String(mDone),0,0.5,13,'#fff','center',2,'#7a1a10',700);c.restore()}
-    if(it[0]==='EXPEDITIONS'&&expdActive()&&expdDone()){c.save();c.translate(w-24,14);c.rotate(Math.sin(G.t*5)*0.12);
+    if(it[0]==='EXPEDITIONS'&&expdAnyDone()){c.save();c.translate(w-24,14);c.rotate(Math.sin(G.t*5)*0.12);
       c.fillStyle='#3abc6a';c.beginPath();c.arc(0,0,11,0,TAU);c.fill();c.lineWidth=2;c.strokeStyle='#1e5a2a';c.stroke();
       glyph(c,'flag',0,0,10,'#fff','#3abc6a');c.restore();
       txt(c,'READY!',w-56,33,11,'#1e7a3a','left',2,'#fff',700)}}});y+=ih+gap});
@@ -1413,17 +1413,18 @@ function expdFmt(ms){const s=Math.max(0,Math.ceil(ms/1000));const m=Math.floor(s
   return m>0?(m+'m '+String(s%60).padStart(2,'0')+'s'):(s+'s')}
 function drawExpedition(dt){bgSky();drawTopBar('SCOUT EXPEDITIONS',true);
   const today=expdToday();
-  const act=expdActive();
-  const done=expdDone();
+  const actList=expdActives();
+  const slots=expdSlots();
+  const scout=scoutInfo();
   // header ribbon
   creamPanel(20,64,744,60,'#c8913a');
   txt(cx,'Send your scout cat out — collect when the timer rings!',392,94,15,'#8a6a3a','center',3,'#fff',700);
-  txt(cx,'Destinations rotate daily · rewards scale with Rank & Accounting',392,110,10.5,'#a89878','center',2,'#fff',400);
+  txt(cx,'Destinations rotate daily · rewards scale with Rank, Accounting & Scout Rank',392,110,10.5,'#a89878','center',2,'#fff',400);
   // ---- left: 3 destination cards ----
   today.forEach((d,i)=>{
     const y=140+i*132,x=20,w=744,h=118;
-    const busy=!!act;
-    creamPanel(x,y,w,h,act&&act.dest===d.id?'#d8913a':'#c8913a');
+    const mine=actList.find(a=>a.dest===d.id);
+    creamPanel(x,y,w,h,mine?'#d8913a':'#c8913a');
     // terrain swatch with little hills
     const tx=x+14,ty=y+12,tw=88,th=94;
     cx.fillStyle=d.terr;rr(cx,tx,ty,tw,th,10);cx.fill();
@@ -1442,89 +1443,121 @@ function drawExpedition(dt){bgSky();drawTopBar('SCOUT EXPEDITIONS',true);
     for(let k=0;k<5;k++){cx.save();cx.translate(x+172+k*17,y+72);
       cx.strokeStyle=k<d.danger?'#e0533f':'#d8ccb0';cx.lineWidth=2.4;cx.lineCap='round';
       cx.beginPath();cx.moveTo(-3.5,-5);cx.lineTo(-3.5,5);cx.moveTo(0,-6.5);cx.lineTo(0,6.5);cx.moveTo(3.5,-5);cx.lineTo(3.5,5);cx.stroke();cx.restore()}
-    // reward preview
-    const rw=[fmt(d.xp)+' XP',d.cf+' CF',Math.round(d.tk*100)+'% '+d.tkr[0].toUpperCase()+d.tkr.slice(1)+' Ticket',Math.round(d.fruit*100)+'% Catfruit'];
+    // reward preview (scout bonus folded in)
+    const rw=[fmt(Math.round(d.xp*scoutBonus()))+' XP',Math.round(d.cf*scoutBonus())+' CF',Math.round(d.tk*100)+'% '+d.tkr[0].toUpperCase()+d.tkr.slice(1)+' Ticket',Math.round(d.fruit*100)+'% Catfruit'];
     txt(cx,rw.slice(0,2).join(' · '),x+118,y+94,11,'#b06a10','left',2,'#fff',700);
     txt(cx,rw.slice(2).join(' · '),x+300,y+94,11,'#2a7a9a','left',2,'#fff',700);
     // duration badge + deploy
     cx.fillStyle='#fff8e8';rr(cx,x+w-186,y+56,74,30,15);cx.fill();
     cx.lineWidth=2;cx.strokeStyle='#a8845a';rr(cx,x+w-186,y+56,74,30,15);cx.stroke();
     txt(cx,d.mins+' min',x+w-149,y+72,13,'#b06a10','center',2.5,'#fff',700);
-    const isThis=act&&act.dest===d.id;
+    const myDone=mine&&now()>=mine.start+mine.dur*1000;
     BTN('exdep'+i,x+w-104,y+56,90,30,()=>{
-      if(act){toast(done?'Collect the current trip first!':'A scout is already on the road!','#ffb060');SFX.error();return}
-      if(expdStart(d.id)){SFX.up();toast('Scout cat set out for '+d.n+'!','#7fe8a0')}},{col:isThis?(done?'#7fe8a0':'#ffd94a'):'#ffd23f',outline:'#8a5a20',label:isThis?(done?'RETURNED':'EN ROUTE'):'DEPLOY',fs:12,tcol:'#4a2f10'});
-    if(isThis){ // progress strip along the card bottom
-      const frac=done?1:clamp((now()-act.start)/(act.dur*1000),0,1);
+      if(mine){toast(myDone?'Collect the returned scout on the right!':'That destination is already being scouted!','#ffb060');SFX.error();return}
+      if(actList.length>=slots){toast(slots===1?'A scout is already on the road! (Slot 2 unlocks at Rank 30)':'Both scouts are already out!','#ffb060');SFX.error();return}
+      if(expdStart(d.id)){SFX.up();toast('Scout cat set out for '+d.n+'!','#7fe8a0')}},{col:mine?(myDone?'#7fe8a0':'#ffd94a'):'#ffd23f',outline:'#8a5a20',label:mine?(myDone?'RETURNED':'EN ROUTE'):'DEPLOY',fs:12,tcol:'#4a2f10'});
+    if(mine){ // progress strip along the card bottom
+      const frac=clamp((now()-mine.start)/(mine.dur*1000),0,1);
       cx.fillStyle='rgba(90,59,22,.16)';rr(cx,x+14,y+h-12,w-28,7,3.5);cx.fill();
-      cx.fillStyle=done?'#3abc6a':'#e8a020';rr(cx,x+14,y+h-12,Math.max(14,(w-28)*frac),7,3.5);cx.fill()}});
-  // ---- right: live expedition tracker ----
+      cx.fillStyle=myDone?'#3abc6a':'#e8a020';rr(cx,x+14,y+h-12,Math.max(14,(w-28)*frac),7,3.5);cx.fill()}});
+  // ---- right: SCOUT RANK panel ----
   const rx=784,rw2=476;
-  if(act){
-    const ry=140,rh=396;
-    creamPanel(rx,ry,rw2,rh,'#c8913a');
-    txt(cx,'CURRENT EXPEDITION',rx+rw2/2,ry+30,15,'#b06a10','center',3.5,'#fff',700);
-    txt(cx,EXPD.find(d2=>d2.id===act.dest).n,rx+rw2/2,ry+54,19,'#5a3b16','center',4,'#fff',700);
-    // winding path scene
-    const px=rx+28,py=ry+78,pw=rw2-56,ph=170;
-    cx.fillStyle='#e8f4dc';rr(cx,px,py,pw,ph,12);cx.fill();
-    cx.lineWidth=2.5;cx.strokeStyle='#b8d8a0';rr(cx,px,py,pw,ph,12);cx.stroke();
-    cx.save();rr(cx,px,py,pw,ph,12);cx.clip();
-    // path (bezier road)
-    const road=cx.createLinearGradient(0,py,0,py+ph);road.addColorStop(0,'#d8c8a0');road.addColorStop(1,'#c8b480');
-    cx.strokeStyle=road;cx.lineWidth=26;cx.lineCap='round';
-    cx.beginPath();cx.moveTo(px+30,py+ph-24);cx.bezierCurveTo(px+pw*0.3,py+ph+40,px+pw*0.4,py-40,px+pw-30,py+24);cx.stroke();
-    cx.strokeStyle='rgba(176,138,80,.5)';cx.lineWidth=2;cx.setLineDash([10,12]);
-    cx.beginPath();cx.moveTo(px+30,py+ph-24);cx.bezierCurveTo(px+pw*0.3,py+ph+40,px+pw*0.4,py-40,px+pw-30,py+24);cx.stroke();cx.setLineDash([]);
-    // goal flag
-    const gx=px+pw-30,gy=py+24;
-    cx.fillStyle='#5a3b16';rr(cx,gx-2,gy-30,4,34,2);cx.fill();
-    cx.fillStyle='#e0533f';cx.beginPath();cx.moveTo(gx+2,gy-30);cx.lineTo(gx+26,gy-24);cx.lineTo(gx+2,gy-16);cx.closePath();cx.fill();
-    // scout cat walking along the path (progress-mapped t)
-    const frac=done?1:clamp((now()-act.start)/(act.dur*1000),0,1);
-    const bez=t=>{const u=1-t; // cubic bezier of the road
-      const x0=px+30,y0=py+ph-24,x1=px+pw*0.3,y1=py+ph+40,x2=px+pw*0.4,y2=py-40,x3=px+pw-30,y3=py+24;
-      return{x:u*u*u*x0+3*u*u*t*x1+3*u*t*t*x2+t*t*t*x3,y:u*u*u*y0+3*u*u*t*y1+3*u*t*t*y2+t*t*t*y3}};
-    const pos=bez(frac);
-    if(done){ // idle bounce at the flag
-      ART.cat({x:pos.x-24,y:pos.y+Math.sin(G.t*6)*3,s:0.95,id:'cat',t:G.t,e:{anim:'walk'}})}
-    else ART.cat({x:pos.x,y:pos.y,s:0.95,id:'cat',t:G.t,e:{anim:'walk'}});
-    // little paw prints trailing behind
-    cx.fillStyle='rgba(90,59,22,.22)';
-    for(let k=1;k<=4;k++){const pp=bez(Math.max(0,frac-k*0.07));if(pp){cx.beginPath();cx.arc(pp.x,pp.y+8,3,0,TAU);cx.fill()}}
-    cx.restore();
-    // progress bar + countdown
-    const pby=ry+268;
-    cx.fillStyle='rgba(90,59,22,.14)';rr(cx,rx+28,pby,rw2-56,18,9);cx.fill();
-    const frac2=done?1:clamp((now()-act.start)/(act.dur*1000),0,1);
-    cx.fillStyle=done?'#3abc6a':'#e8a020';rr(cx,rx+28,pby,Math.max(24,(rw2-56)*frac2),18,9);cx.fill();
-    cx.lineWidth=2;cx.strokeStyle='#8a5a20';rr(cx,rx+28,pby,rw2-56,18,9);cx.stroke();
-    txt(cx,done?'Scout has returned with the goods!':'Time remaining: '+expdFmt(act.start+act.dur*1000-now()),rx+rw2/2,ry+310,15,done?'#1e7a3a':'#5a3b16','center',3,'#fff',700);
-    txt(cx,'Expeditions run in real time — you can leave and come back!',rx+rw2/2,ry+332,10.5,'#a89878','center',2,'#fff',400);
-    if(done){ // collect button (pulsing glow)
-      const pulse=1+Math.sin(G.t*5)*0.03;
-      cx.save();cx.translate(rx+rw2/2,ry+364);cx.scale(pulse,pulse);
-      cx.shadowColor='rgba(58,188,106,.65)';cx.shadowBlur=16;
-      BTN('excollect',-115,-23,230,46,()=>{
-        const lines=expdCollect();
-        if(lines){SFX.win();openModal('EXPEDITION RESULTS',lines,[{n:'NICE!',col:'#ffd23f',cb:()=>{}}],(x,y,w,h)=>{
-          // loot chips
-          cx.fillStyle='rgba(58,188,106,.12)';rr(cx,x+20,y+h-52,w-40,34,10);cx.fill();
-          txt(cx,'Scout rests for a moment — new trips can start right away.',x+w/2,y+h-35,11.5,'#8a6a3a','center',2.5,'#fff',400)})}},{col:'#7fe8a0',outline:'#2a6a3a',label:'COLLECT!',fs:17,tcol:'#fff'});
-      cx.restore()}
-    else BTN('exwait',rx+rw2/2-115,ry+341,230,46,()=>{toast('Still on the road — '+expdFmt(act.start+act.dur*1000-now())+' to go!','#ffb060');SFX.click()},{col:'#e8d8b0',outline:'#8a7a5a',label:'IN PROGRESS…',fs:14,tcol:'#8a6a3a'})}
-  else{
-    creamPanel(rx,140,rw2,250,'#c8913a');
-    txt(cx,'NO ACTIVE EXPEDITION',rx+rw2/2,180,16,'#b06a10','center',3.5,'#fff',700);
-    ART.cat({x:rx+rw2/2,y:250+Math.sin(G.t*2)*4,s:1.1,id:'cat',t:G.t,e:{anim:'walk'}});
-    txt(cx,'Your scout is napping by the base.',rx+rw2/2,330,14,'#8a7a5a','center',2.5,'#fff',400);
-    txt(cx,'Pick a destination on the left to deploy!',rx+rw2/2,354,12.5,'#5a3b16','center',2.5,'#fff',700)}
-  // stats strip
-  creamPanel(rx,404,rw2,68,'#c8913a');
-  txt(cx,'TRIPS COMPLETED',rx+rw2/2-70,428,11,'#a89878','left',2,'#fff',700);
-  txt(cx,String(SV.expedition.runs||0),rx+rw2/2-70,452,20,'#b06a10','left',3,'#fff',700);
-  txt(cx,'Today: '+today.map(d=>d.n.split(' ')[0]).join(' · ')+'  (rotates at midnight)',rx+rw2/2+40,428,11,'#8a7a5a','left',2,'#fff',400);
-  txt(cx,'Longer trips pay much better — time them around your play!',rx+rw2/2+40,452,11,'#8a7a5a','left',2,'#fff',400);
+  creamPanel(rx,64,rw2,76,'#c8913a');
+  { // badge: scout cat face in a circle + rank ribbon
+    const bx=rx+46,by=102;
+    cx.save();cx.translate(bx,by);cx.rotate(Math.sin(G.t*1.6)*0.05);
+    cx.fillStyle='#fff8e8';cx.beginPath();cx.arc(0,0,27,0,TAU);cx.fill();
+    cx.lineWidth=3;cx.strokeStyle='#8a5a20';cx.stroke();cx.restore();
+    ART.cat({x:bx,y:by+3,s:1.0,id:'cat',t:G.t,e:{anim:'walk'}});
+    cx.save();cx.translate(bx,by-24);cx.rotate(-0.08);
+    cx.fillStyle='#e85840';rr(cx,-24,-11,48,20,8);cx.fill();
+    txt(cx,'LV '+scout.lv,0,0.5,12,'#fff','center',2,'#7a1a10',700);cx.restore()}
+  txt(cx,scout.name,rx+84,88,17,'#5a3b16','left',3.5,'#fff',700);
+  txt(cx,'+'+Math.round(scout.bonus*100)+'% expedition rewards · trips: '+fmt(SV.expedition.runs||0),rx+84,106,11,'#8a6a3a','left',2,'#fff',700);
+  // scout XP bar
+  {const bx=rx+84,bw=rw2-208,by=118;
+    cx.fillStyle='rgba(90,59,22,.16)';rr(cx,bx,by,bw,10,5);cx.fill();
+    const fr=scout.maxed?1:clamp(scout.cur/scout.need,0,1);
+    const g=cx.createLinearGradient(bx,0,bx+bw,0);g.addColorStop(0,'#7fd0ff');g.addColorStop(1,'#4a9ae8');
+    cx.fillStyle=g;rr(cx,bx,by,Math.max(10,bw*fr),10,5);cx.fill();
+    cx.lineWidth=1.5;cx.strokeStyle='#8a5a20';rr(cx,bx,by,bw,10,5);cx.stroke();
+    txt(cx,scout.maxed?'MAX RANK':(scout.cur+'/'+scout.need+' Scout XP — next: '+SCOUT_NAMES[scout.lv]),bx+bw/2,by-3,9.5,'#5a3b16','center',2,'#fff',700)}
+  // slot pips (right side)
+  for(let s=0;s<2;s++){const sx=rx+rw2-64,sy=88+s*26;const unlocked=s<slots;const inUse=!!actList[s];
+    cx.fillStyle=inUse?'#3abc6a':(unlocked?'#ffd94a':'#d8ccb0');cx.beginPath();cx.arc(sx,sy,9,0,TAU);cx.fill();
+    cx.lineWidth=2;cx.strokeStyle=unlocked?'#8a5a20':'#c8b892';cx.stroke();
+    if(!unlocked){drawPadlock(cx,sx,sy,6,'#8a7a5a')}
+    txt(cx,'SLOT '+(s+1),sx-14,sy+0.5,9,unlocked?'#5a3b16':'#a89878','right',2,'#fff',700)}
+  txt(cx,'Slot 2: Rank 30 (now '+SV.rank+')',rx+rw2-12,142,9.5,slots>=2?'#1e7a3a':'#a89878','right',2,'#fff',700);
+  // ---- right: tracker cards (one per slot) ----
+  for(let s=0;s<2;s++){
+    const y=150+s*196,x2=rx,w2=rw2,h=188;
+    const a=actList[s];
+    if(a){ // ---- active trip tracker ----
+      const d=EXPD.find(d2=>d2.id===a.dest)||{n:'?',terr:'#a8a8a8'};
+      const done=now()>=a.start+a.dur*1000;
+      creamPanel(x2,y,w2,h,done?'#3a9a5a':'#c8913a');
+      txt(cx,'SLOT '+(s+1)+' · '+d.n,x2+w2/2,y+24,16,done?'#eafff0':'#5a3b16','center',4,'#fff',700);
+      // winding path scene (compact)
+      const px=x2+20,py=y+38,pw=w2-40,ph=96;
+      cx.fillStyle='#e8f4dc';rr(cx,px,py,pw,ph,10);cx.fill();
+      cx.lineWidth=2;cx.strokeStyle='#b8d8a0';rr(cx,px,py,pw,ph,10);cx.stroke();
+      cx.save();rr(cx,px,py,pw,ph,10);cx.clip();
+      const road=cx.createLinearGradient(0,py,0,py+ph);road.addColorStop(0,'#d8c8a0');road.addColorStop(1,'#c8b480');
+      cx.strokeStyle=road;cx.lineWidth=20;cx.lineCap='round';
+      cx.beginPath();cx.moveTo(px+26,py+ph-18);cx.bezierCurveTo(px+pw*0.3,py+ph+30,px+pw*0.4,py-30,px+pw-26,py+18);cx.stroke();
+      cx.strokeStyle='rgba(176,138,80,.5)';cx.lineWidth=1.6;cx.setLineDash([8,10]);
+      cx.beginPath();cx.moveTo(px+26,py+ph-18);cx.bezierCurveTo(px+pw*0.3,py+ph+30,px+pw*0.4,py-30,px+pw-26,py+18);cx.stroke();cx.setLineDash([]);
+      const gx=px+pw-26,gy=py+18;
+      cx.fillStyle='#5a3b16';rr(cx,gx-2,gy-24,4,28,2);cx.fill();
+      cx.fillStyle='#e0533f';cx.beginPath();cx.moveTo(gx+2,gy-24);cx.lineTo(gx+22,gy-19);cx.lineTo(gx+2,gy-13);cx.closePath();cx.fill();
+      const frac=clamp((now()-a.start)/(a.dur*1000),0,1);
+      const bez=t=>{const u=1-t;
+        const x0=px+26,y0=py+ph-18,x1=px+pw*0.3,y1=py+ph+30,x2b=px+pw*0.4,y2b=py-30,x3=px+pw-26,y3=py+18;
+        return{x:u*u*u*x0+3*u*u*t*x1+3*u*t*t*x2b+t*t*t*x3,y:u*u*u*y0+3*u*u*t*y1+3*u*t*t*y2b+t*t*t*y3}};
+      const pos=bez(frac);
+      ART.cat({x:pos.x,y:pos.y+(done?Math.sin(G.t*6)*3:0),s:0.8,id:'cat',t:G.t,e:{anim:'walk'}});
+      cx.fillStyle='rgba(90,59,22,.22)';
+      for(let k=1;k<=3;k++){const pp=bez(Math.max(0,frac-k*0.08));if(pp){cx.beginPath();cx.arc(pp.x,pp.y+7,2.6,0,TAU);cx.fill()}}
+      cx.restore();
+      // progress bar + countdown + action button
+      const pby=y+144;
+      cx.fillStyle='rgba(90,59,22,.14)';rr(cx,px,pby,w2-40,12,6);cx.fill();
+      cx.fillStyle=done?'#3abc6a':'#e8a020';rr(cx,px,pby,Math.max(16,(w2-40)*frac),12,6);cx.fill();
+      cx.lineWidth=1.5;cx.strokeStyle='#8a5a20';rr(cx,px,pby,w2-40,12,6);cx.stroke();
+      txt(cx,done?'Returned with the goods!':expdFmt(a.start+a.dur*1000-now())+' left',px+4,y+174,12,done?'#1e5a2a':'#8a6a3a','left',2.5,'#fff',700);
+      txt(cx,'+'+(d.danger||1)*12+' scout XP',px+w2-44,y+174,11,'#8a6a3a','right',2.5,'#fff',700);
+      if(done){ // collect button (pulsing glow; BTN at ABSOLUTE coords — hit rects must not inherit transforms)
+        const pulse=0.6+0.4*(1+Math.sin(G.t*5))/2;
+        cx.save();
+        cx.shadowColor='rgba(58,188,106,'+(0.4+pulse*0.5).toFixed(3)+')';cx.shadowBlur=10+pulse*14;
+        BTN('excollect'+s,x2+w2-174,y+130,156,40,()=>{
+          const lines=expdCollect(s);
+          if(lines){SFX.win();openModal('EXPEDITION RESULTS',lines,[{n:'NICE!',col:'#ffd23f',cb:()=>{}}],(x,y3,w3,h3)=>{
+            cx.fillStyle='rgba(58,188,106,.12)';rr(cx,x+20,y3+h3-52,w3-40,34,10);cx.fill();
+            txt(cx,'Scout rests for a moment — new trips can start right away.',x+w3/2,y3+h3-35,11.5,'#8a6a3a','center',2.5,'#fff',400)})}},{col:'#7fe8a0',outline:'#2a6a3a',label:'COLLECT!',fs:14,tcol:'#fff'});
+        cx.restore()}
+      else BTN('exwait'+s,x2+w2-174,y+130,156,40,()=>{toast('Still on the road — '+expdFmt(a.start+a.dur*1000-now())+' to go!','#ffb060');SFX.click()},{col:'#e8d8b0',outline:'#8a7a5a',label:'IN PROGRESS…',fs:12,tcol:'#8a6a3a'})}
+    else{ // ---- free / locked slot ----
+      const unlocked=s<slots;
+      if(unlocked){
+        cx.save();cx.setLineDash([10,8]);cx.lineWidth=2.5;cx.strokeStyle='rgba(138,106,58,.55)';
+        rr(cx,x2,y,w2,h,14);cx.stroke();cx.restore();
+        txt(cx,'SLOT '+(s+1)+' — FREE',x2+w2/2,y+34,15,'#a8845a','center',3,'#fff',700);
+        ART.cat({x:x2+w2/2-90,y:y+96+Math.sin(G.t*1.5)*3,s:0.9,id:'cat',t:G.t,e:{anim:'walk'}});
+        txt(cx,'Your scout is napping by the base.',x2+w2/2+24,y+96,13,'#8a7a5a','center',2.5,'#fff',400);
+        txt(cx,'Pick a destination on the left to deploy!',x2+w2/2+24,y+120,12.5,'#5a3b16','center',2.5,'#fff',700);
+        txt(cx,'Runs in real time — leave and come back later!',x2+w2/2+24,y+150,10.5,'#a89878','center',2,'#fff',400)}
+      else{
+        cx.save();cx.setLineDash([10,8]);cx.lineWidth=2.5;cx.strokeStyle='rgba(168,152,120,.5)';
+        rr(cx,x2,y,w2,h,14);cx.stroke();cx.restore();
+        drawPadlock(cx,x2+w2/2-140,y+96,11,'#a89878');
+        txt(cx,'SLOT 2 — LOCKED',x2+w2/2,y+34,15,'#a89878','center',3,'#fff',700);
+        txt(cx,'Unlocks at User Rank 30 (you are Rank '+SV.rank+')',x2+w2/2,y+96,13.5,'#8a6a3a','center',2.5,'#fff',700);
+        const prog=clamp(SV.rank/30,0,1);
+        cx.fillStyle='rgba(90,59,22,.14)';rr(cx,x2+90,y+118,w2-180,10,5);cx.fill();
+        cx.fillStyle='#c8a860';rr(cx,x2+90,y+118,Math.max(10,(w2-180)*prog),10,5);cx.fill();
+        txt(cx,'Rank progress '+Math.round(prog*100)+'%',x2+w2/2,y+150,10.5,'#a89878','center',2,'#fff',400)}}}
   brownBottomBar()}
 
 /* ============================== SCREEN: WORLD DOJO RANKING ============================== */

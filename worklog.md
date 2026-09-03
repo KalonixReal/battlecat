@@ -262,3 +262,86 @@ Next-phase priorities (for the 15-min reviewer):
 4. Consider expedition "scout level" progression (trips increase a scout rank → small reward
    multipliers) and a second concurrent slot unlocked at Rank 30.
 5. The 28MB WAV bank load time — re-encode if it matters.
+
+---
+
+## Session Round — SCOUT RANK SYSTEM + DUAL EXPEDITIONS + API HARDENING (Task: autonomous QA → features)
+
+### Current project status (assessment at round start)
+- Game booted clean on the existing save (rank 2); zero console/page errors; dev.log clean.
+- Full golden-path E2E re-verified with REAL pointer input at 1280x720: title → home → chapters →
+  map → stage modal → battle (deploy x2, speed x2, cannon UI present) → WIN result → OK → map.
+- 14-screen sweep + expedition + leaderboard: all non-blank (tests/verify-shots.ts).
+- `node --check` all 9 game JS files pass; lint 0 errors / 12 benign warnings.
+- VLM visual review STILL 429-blocked (retried twice this round) — pixel probes used instead.
+
+### Completed modifications this round
+
+**1. EXPEDITION SCOUT RANK SYSTEM (new meta-progression):**
+- data.js: SCOUT_T cumulative XP ladder (10 levels: ROOKIE→MYTHIC, 900 XP cap) + SCOUT_NAMES;
+  `scoutInfo()` (lv/name/cur/need/bonus/maxed), `scoutBonus()` (+6%/level rewards),
+  `expdSlots()` (2nd slot at User Rank 30), `expdAnyDone()`, `expdStart` now slot-aware
+  (max slots, no duplicate destination), `expdCollect(idx)` per-trip (splice, danger×12
+  scout XP, RANK UP line when level crossed).
+- core.js: DEF_SAVE expedition → `{actives:[], scoutXP, runs}`; `_svNormalize` migrates v1
+  single `active` object into `actives[0]`, validates entries (dest/dur 1-86400s/start in
+  past), hard caps at 2; scoutXP clamped. Verified: old save auto-migrated (actives=0,
+  old key gone), fresh boots clean.
+- ui.js drawExpedition REWORK: right column = SCOUT RANK panel (pulsing cat badge + LV ribbon,
+  rank name, +N% rewards, trips count, XP progress bar w/ next-rank label, 2 slot pips with
+  padlock) + one tracker card per slot (compact bezier-road scene, walking cat, paw prints,
+  progress bar, countdown, per-slot COLLECT/IN-PROGRESS button); locked slot-2 card shows
+  padlock + rank progress bar; destination cards fold scout bonus into reward preview;
+  per-card EN ROUTE/RETURNED states + guards with slot-aware toasts.
+- Home EXPEDITIONS badge now uses expdAnyDone() (fires when either slot returns).
+
+**2. FIXED (real bug found by QA): collect-button hit rect off-canvas.**
+  The pulsing COLLECT BTN was wrapped in cx.translate/scale, so its hit rect registered at
+  (-78,-20) — the visual button was NEVER actually clickable, and with 2 slots both rects
+  overlapped at canvas (0,0) (dispatch picked the topmost → collected the WRONG trip).
+  Inherited pattern from last session's excollect. Fix: BTN at ABSOLUTE coords, pulse only
+  the shadow glow (title PLAY button already used the correct pattern — audited all other
+  BTN sites, none affected). Verified E2E: excollect1 rect at real position (1086,476),
+  click collects the correct slot-1 trip (+3,436 XP peaks values, actives correctly spliced).
+  NOTE for future devs: NEVER wrap BTN() in canvas transforms — hit rects are design-space.
+
+**3. LEADERBOARD API HARDENING (server-side):**
+- route.ts POST: in-memory rate limit — 10 posts / 10 min per name+IP (429 past that),
+  bounded map (5000 keys, opportunistic sweep). Verified: 12 rapid curl POSTs → 1-10 ok,
+  11-12 `{"ok":false,"error":"rate-limited"}`. Test rows cleaned; GET unaffected.
+
+**4. CROWN LADDER M2 verified at scale** (was on the unresolved list): seeded 47 crowns →
+  real-pointer stage-1 win (2 crowns earned) → total 49 → crownladder:1 AND :2 flags set,
+  +30 CF/+3,000 XP each applied (cf 640, xp 14,247), screenshot qa5-crownladder-m2.png.
+
+**5. STYLING POLISH (battle, mandatory):**
+- Deploy dock cards: breathing cyan glow when ready+affordable, diagonal glass gloss
+  gradient, radial cooldown ring around the countdown number, cost text color state
+  (green-affordable / red-short). Pixel-verified: card bg (53,68,93) = navy+gloss.
+- Field units: soft elliptical ground shadow (depth cue; fades during knockback,
+  skipped for dying/wall/burrow states).
+
+### Verification results
+- Expedition E2E (fresh migrated save, real input): deploy peaks → tracker card animates →
+  second deploy correctly rejected ("scout already on road") → force-complete → COLLECT at
+  REAL button position → results modal (+XP/+CF/+Green Catfruit/+36 Scout XP) → NICE! →
+  state applied (scoutXP 36, runs 1). Rank-30 test: 2 slots unlocked, 2 concurrent trips
+  (fort+peaks), per-slot collect verified, RANK UP line fired at threshold
+  (160+36=196 → lv4 PATHFINDER +18%). Slot-2 lock screen shows rank progress bar.
+- Full battle E2E post-dock-rework: deploy/speed/win/OK→map, zero console errors.
+- Save reset to pristine defaults via live SV mutation + game persist (rank 1, cf 300,
+  0 crowns, 0 scoutXP) — fresh boot + title→home verified clean.
+- 15-screen sweep all non-blank (qa5-*); node --check 9/9; lint 0 errors; dev.log clean;
+  leaderboard GET 200 with 8 entries after cleanup.
+- QA screenshots: tests/shots/qa5-*.png (expedition-new/active/2slots/collect/rankup,
+  crownladder-m2, battle-dock, result2, final-home, all screens).
+
+### Unresolved / next-phase priorities
+1. VLM visual review still 429-blocked — retry next session with fresh quota (qa5 shots ready).
+2. Scout rank currently maxes at MYTHIC (900 XP) — consider prestige/paragon ranks or
+   expedition GACHA-ticket-only destinations if more depth is wanted.
+3. Consider surfacing scout rank bonus inside the collect modal reward preview (currently
+   folded silently into reward numbers — a tooltip line could make it more legible).
+4. Battle B state is a top-level `let` (not reachable via window.__BC) — fine for players,
+   but QA probes can't inspect it; consider adding B to the __BC hook for future testing.
+5. 28MB WAV audio bank — re-encode if load time becomes a complaint.

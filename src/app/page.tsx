@@ -58,7 +58,7 @@ export default function Home() {
     >
       <iframe
         ref={frameRef}
-        src="/game/index.html?v=12"
+        src="/game/index.html?v=15"
         title="The Battle Cats"
         allow="autoplay; fullscreen"
         style={{

@@ -357,21 +357,43 @@ const EXPD=[
 function expdToday(){ // 3-of-5 daily rotation (deterministic per date)
   const R=rnd((new Date().toDateString().length*9103+new Date().getDate()*7717)>>>0);
   return EXPD.slice().sort(()=>R()-0.5).slice(0,3)}
-function expdActive(){const a=SV.expedition.active;return a?{...EXPD.find(d=>d.id===a.dest),...a}:null}
-function expdDone(){const a=SV.expedition.active;if(!a)return false;return now()>=a.start+a.dur*1000}
-function expdStart(destId){const d=EXPD.find(x=>x.id===destId);if(!d||SV.expedition.active)return false;
-  SV.expedition.active={dest:destId,start:now(),dur:d.mins*60};persist();return true}
-/* collect rewards: scale with account upgrades + small rank bonus; returns summary lines */
-function expdCollect(){
-  const a=SV.expedition.active;if(!a||!expdDone())return null;
+/* ---- SCOUT RANK LADDER: trips earn scout XP (danger×12); each level pays +6% expedition rewards ---- */
+const SCOUT_T=[0,40,95,165,250,350,465,595,740,900]; // cumulative XP needed to REACH level idx+1 (1-based)
+const SCOUT_NAMES=['ROOKIE','TRAINED','SEASONED','PATHFINDER','VETERAN','ELITE','RANGER','TRAILBLAZER','LEGEND','MYTHIC'];
+function scoutInfo(){const xp=clamp(Math.floor((SV&&SV.expedition&&SV.expedition.scoutXP)||0),0,1e6);
+  let lv=1;for(let i=1;i<SCOUT_T.length;i++){if(xp>=SCOUT_T[i])lv=i+1}
+  const base=SCOUT_T[lv-1],next=lv<SCOUT_T.length?SCOUT_T[lv]:null;
+  return{xp,lv,name:SCOUT_NAMES[lv-1],cur:xp-base,need:next!==null?next-base:0,maxed:next===null,bonus:0.06*(lv-1)}}
+function scoutBonus(){return 1+scoutInfo().bonus}
+function expdSlots(){return SV&&SV.rank>=30?2:1} // 2nd concurrent trip slot at User Rank 30
+function expdActives(){return (SV&&SV.expedition&&Array.isArray(SV.expedition.actives))?SV.expedition.actives:[]}
+function expdActive(idx){const a=expdActives()[idx||0];return a?{...EXPD.find(d=>d.id===a.dest),...a}:null}
+function expdDone(idx){const a=expdActives()[idx||0];if(!a)return false;return now()>=a.start+a.dur*1000}
+function expdAnyDone(){return expdActives().some((a,i)=>expdDone(i))}
+function expdStart(destId){const d=EXPD.find(x=>x.id===destId);if(!d)return false;
+  const act=SV.expedition.actives;
+  if(act.some(a=>a.dest===destId))return false; // one trip per destination
+  if(act.length>=expdSlots())return false;     // no free slot
+  act.push({dest:destId,start:now(),dur:d.mins*60});persist();return true}
+/* collect rewards for trip idx: scale with account upgrades + rank + scout rank; returns summary lines */
+function expdCollect(idx){
+  const act=SV.expedition.actives;const a=act[idx||0];
+  if(!a||now()<a.start+a.dur*1000)return null;
   const d=EXPD.find(x=>x.id===a.dest)||{xp:0,cf:0,tk:0,tkr:'rare',fruit:0,n:'?',danger:1};
   const rankMul=1+Math.min(1,SV.rank*0.006); // up to +60% at rank 100
   const acc=1+0.15*(SV.base.account-1);
-  const xp=Math.round(d.xp*rankMul*acc),cf=Math.round(d.cf*rankMul);
+  const sb=scoutBonus();
+  const xp=Math.round(d.xp*rankMul*acc*sb),cf=Math.round(d.cf*rankMul*sb);
   addXP(xp);addCF(cf);
   const lines=['+'+fmt(xp)+' XP','+'+cf+' Cat Food'];
   if(d.tk&&Math.random()<d.tk){SV.tickets[d.tkr]++;persist();lines.push('+1 '+({rare:'Rare',gold:'Gold',plat:'Platinum'})[d.tkr]+' Ticket!')}
   const fruits=Object.keys(SV.fruit).filter(k=>k!=='epic'&&k!=='ancient');
   if(d.fruit&&Math.random()<d.fruit){const f=fruits[Math.floor(Math.random()*fruits.length)];SV.fruit[f]++;persist();lines.push('+1 '+f[0].toUpperCase()+f.slice(1)+' Catfruit!')}
-  SV.expedition.active=null;SV.expedition.runs++;persist();
+  // scout XP from trip danger + rank-up line
+  const sXP=d.danger*12;const before=scoutInfo();
+  SV.expedition.scoutXP=(SV.expedition.scoutXP||0)+sXP;
+  const after=scoutInfo();
+  lines.push('+'+sXP+' Scout XP');
+  if(after.lv>before.lv){lines.push('SCOUT RANK UP! Now '+after.name+' (+'+Math.round(after.bonus*100)+'% rewards)')}
+  act.splice(idx||0,1);SV.expedition.runs++;persist();
   return lines}

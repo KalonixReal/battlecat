@@ -35,7 +35,7 @@ const DEF_SAVE={ver:2,created:now(),xp:1200,cf:300,tickets:{rare:1,gold:0,plat:0
   cannons:{standard:{pwr:1,rch:1}},cannonSel:'standard',
   base:{wallet:1,worker:1,cpow:1,crch:1,bhp:1,research:1,account:1},
   bestiary:{},settings:{bgm:true,sfx:true},dupeXp:0,eventsDone:{},dojoBest:0,dojoBoard:[],
-  expedition:{active:null,runs:0},cmdName:'CAT COMMANDER',
+  expedition:{actives:[],scoutXP:0,runs:0},cmdName:'CAT COMMANDER',
   dailyStreak:0,dailyLast:'',missions:{date:'',clear:0,pull:0,up:0,claimed:{}},
   gachaSteps:{},pendingPull:null,pendingBattle:null,saveStats:{writes:0,fails:0,lastWrite:0}};
 let SV=null;
@@ -90,13 +90,20 @@ function _svNormalize(o){ // shape/number hardening AFTER defaults-merge (unknow
     for(let i=1;i<=3;i++)if(c['ev'+i])e['ev'+i]=true; // preserve explicit evolution flags (they ARE the form state)
     o.cats[id]=e}
   if(!Array.isArray(o.dojoBoard))o.dojoBoard=[];
-  // expedition: {active:{dest,start,dur}|null, runs} — active is validated against the live EX table at boot
+  // expedition: {actives:[{dest,start,dur}×2], scoutXP, runs} — v2 (scout rank era)
+  // v1 saves stored a single `active` object-or-null: migrate it into actives[0].
   if(!o.expedition||typeof o.expedition!=='object'||Array.isArray(o.expedition))o.expedition=JSON.parse(JSON.stringify(DEF_SAVE.expedition));
   const exo=o.expedition;
-  if(exo.active&&(typeof exo.active!=='object'||Array.isArray(exo.active)))exo.active=null;
-  if(exo.active){const ea=exo.active;
-    ea.dest=String(ea.dest||'');ea.start=num(ea.start,0);ea.dur=num(ea.dur,60);
-    if(!ea.dest||ea.dur<=0||ea.dur>86400||ea.start<=0||ea.start>now())exo.active=null}
+  if(!Array.isArray(exo.actives)){exo.actives=[];
+    if(exo.active&&typeof exo.active==='object'&&!Array.isArray(exo.active)){
+      const ea=exo.active;ea.dest=String(ea.dest||'');ea.start=num(ea.start,0);ea.dur=num(ea.dur,60);
+      if(ea.dest&&ea.dur>0&&ea.dur<=86400&&ea.start>0&&ea.start<=now())exo.actives.push({dest:ea.dest,start:ea.start,dur:ea.dur})}
+    delete exo.active}
+  exo.actives=exo.actives.filter(a=>a&&typeof a==='object'&&!Array.isArray(a))
+    .map(a=>({dest:String(a.dest||''),start:num(a.start,0),dur:num(a.dur,60)}))
+    .filter(a=>a.dest&&a.dur>0&&a.dur<=86400&&a.start>0&&a.start<=now())
+    .slice(0,2); // hard cap: max 2 concurrent trips (slot 2 unlocks at user Rank 30)
+  exo.scoutXP=clamp(Math.floor(num(exo.scoutXP,0)),0,1e6);
   exo.runs=clamp(Math.floor(num(exo.runs,0)),0,1e6);
   if(typeof o.cmdName!=='string'||!o.cmdName.trim())o.cmdName='CAT COMMANDER';
   o.cmdName=o.cmdName.replace(/[\u0000-\u001f<>]/g,'').trim().slice(0,18)||'CAT COMMANDER';

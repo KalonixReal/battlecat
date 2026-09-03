@@ -480,6 +480,11 @@ function drawUnit(u){
     cx.fillStyle='rgba(58,44,24,.9)';cx.beginPath();cx.ellipse(0,-7,14,5,0,0,TAU);cx.fill();
     cx.restore();return}
   const y=GROUND_Y-(u.state==='kb'?Math.sin((1-u.kbT/0.38)*Math.PI)*26:0);
+  // soft ground shadow (depth cue — skips dying fade / walls)
+  if(u.state!=='die'&&u.state!=='wall'){
+    const sh=clamp(1-(u.state==='kb'?Math.sin((1-u.kbT/0.38)*Math.PI)*0.4:0),0.6,1);
+    cx.fillStyle='rgba(20,16,10,'+(0.22*sh).toFixed(3)+')';
+    cx.beginPath();cx.ellipse(u.x,GROUND_Y-3,u.r*0.85,4.2,0,0,TAU);cx.fill()}
   cx.save();cx.translate(u.x,y);
   if(u.state==='die'){const p=u.dieT/0.9;cx.globalAlpha=1-p;cx.rotate(u.dir*p*1.4);cx.translate(0,-p*30)}
   const e={anim:u.state==='pre'||u.state==='post'?'attack':u.state==='kb'?'kb':'walk',animT:u.animT,flash:u.flash>0,frozen:u.st.frozen>0,weak:u.st.weakenT>0,curse:u.st.curse>0,slow:u.st.slow>0,r:u.r,boss:u.side==='enemy'&&u.def.boss};
@@ -620,24 +625,37 @@ function drawBattleHUD(b,dt){
       cx.fillStyle='rgba(22,28,40,.5)';rr(cx,dx,dy,dw,dh,10);cx.fill();
       cx.lineWidth=2;cx.strokeStyle='rgba(255,255,255,.08)';rr(cx,dx+1,dy+1,dw-2,dh-2,10);cx.stroke();return}
     const st=catStats(id,undefined,B.costMul);const cd=b.cds[id]||0;const cdMax=st.cd;const can=b.wallet>=st.cost&&cd<=0;
+    const afford=b.wallet>=st.cost;
     BTN('dock'+i,dx,dy,dw,dh+14,()=>{if(B.result)return;if(!can){SFX.error();if(cd>0)toast('Recharging\u2026 '+cd.toFixed(1)+'s','#ffb060');else toast('Not enough \u00a2!','#ff7a7a');return}
       b.wallet-=st.cost;b.cds[id]=cdMax;spawnCat(id)},{flat:true,nohov:true,draw:cc2=>{
-      cc2.save();cc2.shadowColor='rgba(0,0,0,.35)';cc2.shadowBlur=5;cc2.shadowOffsetY=3;
-      cc2.fillStyle=can?'#31405a':'#232a38';rr(cc2,0,0,dw,dh,10);cc2.fill();cc2.restore();
+      // ready + affordable: soft breathing glow behind the card
+      if(can){const gl=0.5+0.5*Math.sin(G.t*3.2+i);
+        cc2.save();cc2.shadowColor='rgba(120,200,255,'+(0.25+gl*0.3).toFixed(3)+')';cc2.shadowBlur=10+gl*6;
+        cc2.fillStyle='#31405a';rr(cc2,0,0,dw,dh,10);cc2.fill();cc2.restore()}
+      else{cc2.save();cc2.shadowColor='rgba(0,0,0,.35)';cc2.shadowBlur=5;cc2.shadowOffsetY=3;
+        cc2.fillStyle=can?'#31405a':'#232a38';rr(cc2,0,0,dw,dh,10);cc2.fill();cc2.restore()}
       cc2.lineWidth=3;cc2.strokeStyle=can?'#c8d2e4':'#3a4456';rr(cc2,1.5,1.5,dw-3,dh-3,10);cc2.stroke();
       ART.catIcon(id,dw/2,33,24,can?undefined:0.45);
       if(cd>0){cc2.fillStyle='rgba(16,20,30,.72)';rr(cc2,0,0,dw,dh,10);cc2.fill();
-        txt(cc2,cd.toFixed(1),dw/2,33,16,'#fff','center',3,'#22262f',700)}
-      else if(!can){cc2.fillStyle='rgba(16,20,30,.35)';rr(cc2,0,0,dw,dh,10);cc2.fill()}
+        txt(cc2,cd.toFixed(1),dw/2,33,16,'#fff','center',3,'#22262f',700);
+        // radial timer ring around the countdown number
+        cc2.strokeStyle='#54e0f0';cc2.lineWidth=2.5;
+        cc2.beginPath();cc2.arc(dw/2,33,17,-Math.PI/2,-Math.PI/2+TAU*(1-cd/cdMax));cc2.stroke()}
+      else if(!afford){cc2.fillStyle='rgba(16,20,30,.35)';rr(cc2,0,0,dw,dh,10);cc2.fill()}
+      // diagonal gloss highlight (glassy card)
+      cc2.save();cc2.beginPath();rr(cc2,1.5,1.5,dw-3,dh-3,10);cc2.clip();
+      const gg=cc2.createLinearGradient(0,0,dw,dh);gg.addColorStop(0,'rgba(255,255,255,.14)');gg.addColorStop(0.45,'rgba(255,255,255,.02)');gg.addColorStop(1,'rgba(255,255,255,0)');
+      cc2.fillStyle=gg;cc2.fillRect(0,0,dw,dh);cc2.restore();
       // cyan cooldown bar at the card's bottom edge (drains to empty = ready)
       const bw=dw-10;
       cc2.fillStyle='rgba(10,14,22,.8)';rr(cc2,5,dh-9,bw,6,3);cc2.fill();
       cc2.fillStyle=cd>0?'#54e0f0':'rgba(84,224,240,.4)';
       rr(cc2,5,dh-9,cd>0?bw*(cd/cdMax):bw,6,3);cc2.fill();
-      // cost under the card: white N + cent glyph
+      // cost under the card: green-ish when affordable, warm red when short
       const cs=String(st.cost);const csw=cc2.measureText(cs).width;
-      txt(cc2,cs,dw/2-(csw+12)/2,dh+9,14,can?'#fff':'#8a94a6','left',3,'rgba(16,20,30,.9)',700);
-      drawCent(cc2,dw/2-(csw+12)/2+csw+6,dh+8,5.5,can?'#fff':'#8a94a6','rgba(16,20,30,.9)',3)}});
+      const cCol=afford?(can?'#c8f0c8':'#a8d8b8'):'#ff9a8a';
+      txt(cc2,cs,dw/2-(csw+12)/2,dh+9,14,cCol,'left',3,'rgba(16,20,30,.9)',700);
+      drawCent(cc2,dw/2-(csw+12)/2+csw+6,dh+8,5.5,cCol,'rgba(16,20,30,.9)',3)}});
   });
   const showL=b.cam>10,showR=b.cam<FIELD_W-1280-10;
   if(showL)BTN('camL',8,300,46,64,()=>{b.cam=clamp(b.cam-500,0,FIELD_W-1280);SFX.click()},{col:'rgba(30,34,48,.75)',label:'\u25c0',fs:20,r:10,tcol:'#fff'});
