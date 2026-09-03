@@ -1011,3 +1011,80 @@ Next-phase priorities (for the 15-min reviewer):
 4. 28MB WAV bank load time — re-encode if it becomes a complaint (unchanged).
 5. Consider persisting a tiny "radar seen" flag so the treasure tab itself can badge hot sets
    from the home screen (currently the badge only exists once on the treasure screen).
+
+---
+Task ID: r16
+Agent: main (Z.ai Code)
+Task: Close all 5 unresolved worklog items (radar COMPLETE tab, farm stage-picker, keeper naming, home hot badge) + blind-critic gauntlet round + critic fixes
+
+Work Log:
+- Baseline QA at v24: 18-screen sweep all non-blank, zero console errors (stable → new features).
+- NEW FEATURE — RADAR TABS (closes unresolved #3): radarSets() now also collects `done` rows;
+  radar modal got 3 tab pills (HOT ·n / CLOSE ·n / DONE ·n, colored when active, pulse on
+  active+nonzero). HOT/CLOSE tabs show 6 farm rows each with PICK + FARM; empty-tab text points
+  at the other tab. DONE tab = compact chip grid (4/row, chapter-tinted spine, 3 gold pips,
+  ellipsized names) + 28/page pager (PREV/page n/m/NEXT) + 'tap a set to view it in TREASURES'
+  footer; chip click → G.tChap=ch, push('treasure'). Default tab: hot if hot>0 else near.
+- NEW FEATURE — STAGE PICKER (closes unresolved #1): farmJump(ch,setI,stageIdx) gained an exact
+  stage target (falls back to best when locked); openStagePicker() modal 'FARM: <SET>' (h=560)
+  lists all 5 stages of a set: numbered medallion, STAGE N, 'one clear = one tier roll' desc,
+  NEXT: BRONZE/SILVER/GOLD tier chip (sway anim), odds % or padlock, purple ★ BEST chip, FARM!/
+  LOCKED per row. Locked rows self-guard with a toast (engine disabled flag is VISUAL-ONLY).
+  Opened from new PICK button on each HOT/CLOSE radar row. CANCEL re-opens the radar (tab kept).
+- NEW FEATURE — HOME HOT BADGE (closes unresolved #5, live not persisted): TREASURES home row
+  shows the missions-style red pulsing badge + 'HOT!' label with radarHotCount() computed live
+  per frame (81-set scan is cheap — no persistence needed, always accurate).
+- NEW FEATURE — KEEPER NAME (closes unresolved #2): SV.shrine.keeperName (12 chars, sanitized
+  + normalized in core.js; empty = default 'KEEPER'). Settings name row split into two
+  side-by-side 350px panels: COMMANDER NAME + SHRINE KEEPER (both reuse the hidden-DOM-input
+  modal pattern; Enter-key handler generalized to both titles). Shrine scene: wooden name sign
+  (post + board, gentle sway) stands left of the keeper cat; dark-gold uppercase name chip at
+  the top-right of the NYANKO SHRINE status panel. Both hidden when name is empty.
+- BLIND CRITIC (gauntlet step): dispatched a fresh-eyes general-purpose subagent that played
+  the game with real pointer input. Verdict: all new features spec-correct, golden path clean,
+  zero console errors — but 9 findings (1 MED, 5 LOW, rest info).
+- CRITIC FIXES APPLIED (all verified): (1) boot.js draw order swapped → modalDraw();
+  toastDraw(dt) — toasts now render ABOVE modals (locked-stage toast was invisible under the
+  picker). (2) farmJump toast removed — it duplicated + covered the map's FARM TARGET banner
+  and its × dismiss. (3) Treasure chapter tabs self-guard when locked (CH_PREV chain map +
+  'Clear <chapter> first to unlock!' toast). (4) Keeper name length unified at 12 everywhere
+  (modal text, save slice, core normalize, sign slice, chip slice). (5) Battle pause now blocks
+  player actions: fireCannon + dock deploy early-return when B.paused. (6) Stage-picker CANCEL
+  re-opens the radar modal (no dead-end).
+- Styling polish: NEXT tier chip, tab pills with pulse, chip spines/pager, sign sway, keeper
+  chip (all VLM-reviewed CLEAN).
+- Cache-bust v24 → v25 → v26 (index.html ×9 scripts + page.tsx).
+
+Verification results (all REAL pointer input, 1280x720, v26)
+- 18-screen sweep: all non-blank, ZERO console errors; node --check 9/9; bun run lint 0 errors
+  / 12 benign warnings (same as r15).
+- E2E: home badge count live (1 seeded); radar tabs all 3; DONE chip → treasure jump (tChap
+  verified); PICK → picker → FARM stage idx 0 with stages [0,9] unlocked → mapFocusIdx=0 (NOT
+  best=9 — spec-critical); locked row → toast stays visible over modal, modal stays open;
+  locked chapter tab → no switch + toast; picker CANCEL → radar re-opened tab kept; keeper
+  name typed via real keyboard → saved → sign + chip VLM-verified ('Mochi'/'TestName');
+  farmJump → map focus + banner, no toast; battle: pause blocks deploy (wallet/units frozen)
+  + cannon (charge/fired frozen).
+- 9 VLM reviews this round, all CLEAN (home badge, radar hot/done/close, stagepicker ×2,
+  settings names, shrine sign, toast-over-modal).
+
+QA GOTCHAS learned this round (add to the running list)
+1. **Browser viewport drifted to 1280x577** (agent-browser default after relaunch?) — design-
+   coordinate clicks were offset by 720/577 scale, causing mystery navigations. ALWAYS run
+   `agent-browser set viewport 1280 720` after any browser relaunch and confirm the screenshot
+   header reports size 1280x720 before trusting click tests.
+2. BTN `disabled` is VISUAL-ONLY (dims fill; cb still fires) — every disabled button must
+   self-guard in its cb. Found 3 unguarded spots this round (picker rows, treasure tabs, pause
+   gating). Audit remaining `disabled:` usages when touching battle.js/ui.js.
+3. To are drawn under modals by default (boot.js order toastDraw→modalDraw) — swapped for good;
+   if a future modal needs toast-free space, position them below y≈120.
+4. The picker's 'NEXT: BRONZE' branch is currently unreachable (own=0 sets never reach the
+   radar) — harmless, becomes live if the picker is ever reachable from the treasure grid.
+
+Unresolved / next-phase priorities
+1. Credits panel next to RESET SAVE could match heights exactly (critic LOW, cosmetic only).
+2. The unreproducible single BACK-click flake (critic NOTE) — watch for recurrence; likely
+   automation-layer, not the game.
+3. Stage picker could also be offered from the treasure screen's FARM SET button (currently
+   only radar rows) — trivial follow-up if wanted.
+4. Radar DONE-tab pager could show page dots instead of text (pure polish).

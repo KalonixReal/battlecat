@@ -180,7 +180,8 @@ function modalDraw(){const m=G.modal;if(!m)return;
   cx.fillStyle='rgba(40,24,8,.6)';cx.fillRect(0,0,1280,720);
   let h=150+m.lines.length*30+(m.drawExtra?320:0);
   if(m.title&&m.title.startsWith('DAILY MISSIONS'))h=612; // 6 mission rows need a taller board
-  if(m.title&&m.title.startsWith('TREASURE RADAR'))h=612; // 7 radar rows + digest footer need the tall board
+  if(m.title&&m.title.startsWith('TREASURE RADAR'))h=612; // tab pills + 6 radar rows + digest footer
+  if(m.title&&m.title.startsWith('FARM:'))h=560; // 5 stage-picker rows + footer
   const w=Math.min(760,1180);
   // pop-in: purely visual transform — all drawing/hit coords below stay in FINAL
   // (unscaled) design space so hit rects stay valid even mid-animation
@@ -312,6 +313,11 @@ function drawHome(dt){bgSky();drawTopBar('');
     if(it[0]==='MISSIONS'&&mDone>0){const bw2=26;cx.save();c.translate(w-24,14);c.rotate(Math.sin(G.t*5)*0.12);
       c.fillStyle='#e84030';c.beginPath();c.arc(0,0,bw2/2,0,TAU);c.fill();c.lineWidth=2;c.strokeStyle='#7a1a10';c.stroke();
       txt(c,String(mDone),0,0.5,13,'#fff','center',2,'#7a1a10',700);c.restore()}
+    if(it[0]==='TREASURES'){const hotN=radarHotCount(); // live hot-set count (2/3 sets) — red ping like missions
+      if(hotN>0){c.save();c.translate(w-24,14);c.rotate(Math.sin(G.t*5)*0.12);
+        c.fillStyle='#e84030';c.beginPath();c.arc(0,0,12,0,TAU);c.fill();c.lineWidth=2;c.strokeStyle='#7a1a10';c.stroke();
+        txt(c,String(hotN),0,0.5,12,'#fff','center',2,'#7a1a10',700);c.restore();
+        txt(c,'HOT!',w-56,33,11,'#d05a28','left',2,'#fff',700)}}
     if(it[0]==='CAT SHRINE'&&shrineInfo().freeLeft){c.save();c.translate(w-24,14);c.rotate(Math.sin(G.t*5)*0.12);
       c.fillStyle='#ffd23f';c.beginPath();c.arc(0,0,12,0,TAU);c.fill();c.lineWidth=2;c.strokeStyle='#8a5a10';c.stroke();
       glyph(c,'torii',0,0,11,'#5a3b16','#ffd23f');c.restore();
@@ -1465,8 +1471,11 @@ function drawTreasure(dt){drawTopBar('TREASURE COLLECTION',true);
       cx.fillStyle='#e84030';cx.beginPath();cx.arc(0,0,12,0,TAU);cx.fill();
       cx.lineWidth=2;cx.strokeStyle='#7a1a10';cx.stroke();
       txt(cx,String(hotN),0,0.5,12,'#fff','center',2,'#7a1a10',700);cx.restore()}}
-  // chapter tabs
-  chs.forEach((c,i)=>{const x=20+i*138;BTN('tch'+i,x,64,132,44,()=>{G.tChap=c.id;SFX.click()},{col:G.tChap===c.id?'#ffd23f':'#fffdf5',outline:'#5a3b16',label:c.n.replace('Empire of Cats: ','EoC ').replace('Into the Future: ','ItF ').replace('Cats of the Cosmos: ','CotC '),fs:11.5,r:10,disabled:!chapterUnlocked(c.id)})});
+  // chapter tabs (locked tabs self-guard: BTN disabled is visual-only)
+  const CH_PREV={eoc2:'eoc1',eoc3:'eoc2',itf1:'eoc3',itf2:'itf1',itf3:'itf2',cotc1:'itf3',cotc2:'cotc1',cotc3:'cotc2'};
+  chs.forEach((c,i)=>{const x=20+i*138;BTN('tch'+i,x,64,132,44,()=>{
+    if(!chapterUnlocked(c.id)){const pv=CH_PREV[c.id];toast('Clear '+(pv?CHMAP[pv].n:'earlier chapters')+' first to unlock!','#ffb060');SFX.error();return}
+    G.tChap=c.id;SFX.click()},{col:G.tChap===c.id?'#ffd23f':'#fffdf5',outline:'#5a3b16',label:c.n.replace('Empire of Cats: ','EoC ').replace('Into the Future: ','ItF ').replace('Cats of the Cosmos: ','CotC '),fs:11.5,r:10,disabled:!chapterUnlocked(c.id)})});
   if(!G.tChap)G.tChap='eoc1';const c=CHMAP[G.tChap]||chs[0];const sets=CHSETS[c.id];
   const multTxt=s=>treasureMult(s).toFixed(2)+'×';
   txt(cx,'Clear stages in '+c.n+' for a chance to find treasure pieces! Each tier stacks.',20,130,14,'#f5e6c4','left',3,'#5a3b16',700);
@@ -1507,48 +1516,139 @@ function drawTreasure(dt){drawTopBar('TREASURE COLLECTION',true);
   txt(cx,'Total attack multiplier: ×'+treasureMult('atk').toFixed(2)+'  ·  HP ×'+treasureMult('hp').toFixed(2)+'  ·  Wallet ×'+treasureMult('wallet').toFixed(2),640,650,14,'#ffe9b0','center',3,'#5a3b16',700);
   brownBottomBar()}
 /* FARM SET jump: focus the chapter map on the highest-odds unlocked stage of this treasure
-   set (chance grows with stage index) — pairs with the map's gold ◇ radar pings */
-function farmJump(ch,setI){
+   set (chance grows with stage index) — pairs with the map's gold ◇ radar pings.
+   stageIdx (optional): jump to a specific stage of the set (stage picker) */
+function farmJump(ch,setI,stageIdx){
   const stages=[0,9,18,27,36].map(k=>setI+k).filter(idx=>idx<48&&stageUnlocked(ch,idx));
   if(!stages.length){toast('Clear more stages to unlock this set\'s farms!','#ffb060');SFX.error();return}
-  G.chapter=ch;G.mapSub=0;G.mapFocusIdx=stages[stages.length-1];G.mapFor=null;
-  push('map');SFX.click();
-  toast('Farming '+CHSETS[ch][setI].n+' — gold ◇ nodes drop its pieces!','#ffd23f')}
+  const target=(stageIdx!==undefined&&stages.includes(stageIdx))?stageIdx:stages[stages.length-1];
+  G.chapter=ch;G.mapSub=0;G.mapFocusIdx=target;G.mapFor=null;
+  push('map');SFX.click()}
+  // no toast here: the map's FARM TARGET banner carries the message (toast only duplicated + covered its ×)
+
+/* STAGE PICKER (per-set farm menu): all 5 stages of one treasure set with live odds + lock
+   state + BEST badge — opened from the radar rows' PICK button. */
+function openStagePicker(ch,setI){SFX.click();
+  const set=CHSETS[ch][setI];
+  const own=tCount(ch,setI);
+  const rows=[0,9,18,27,36].map(k=>setI+k).filter(idx=>idx<48);
+  const unl=rows.filter(idx=>stageUnlocked(ch,idx));
+  const best=unl[unl.length-1];
+  openModal('FARM: '+set.n.toUpperCase(),
+    [chShort(ch)+' · own '+own+'/3 tiers — odds grow with the stage number:'],
+    [{n:'CANCEL',cb:()=>{openRadarModal()}}], // CANCEL returns to the radar (tab remembered), not a dead-end
+    (mx,my,mw,mh)=>{
+      rows.forEach((idx,i)=>{
+        const rowH=46,y=my+6+i*(rowH+8),ok=stageUnlocked(ch,idx);
+        creamPanel(mx+10,y,mw-20,rowH,ok?(idx===best?'#e8c37f':'#c8913a'):'#b8a888');
+        // stage number medallion
+        cx.fillStyle=ok?'#b06a10':'#a89878';cx.beginPath();cx.arc(mx+44,y+rowH/2,17,0,TAU);cx.fill();
+        cx.lineWidth=2;cx.strokeStyle=ok?'#8a5a10':'#98887a';cx.stroke();
+        txt(cx,String(idx+1),mx+44,y+rowH/2+0.5,14,'#fff','center',2.5,'#7a4a08',700);
+        txt(cx,'STAGE '+(idx+1),mx+74,y+18,13,ok?'#5a3b16':'#a89878','left',3,'#fff',700);
+        // next-tier chip: the tier that drops next (bronze→silver→gold)
+        {const tc=['#cd7f32','#c0c0c0','#ffd700'][Math.min(own,2)];
+          const tn=['BRONZE','SILVER','GOLD'][Math.min(own,2)];
+          cx.save();cx.translate(mx+216,y+16);cx.rotate(Math.sin(G.t*2.5+idx*0.7)*0.03);
+          cx.fillStyle=ok?'rgba(255,248,232,.9)':'rgba(232,216,176,.5)';rr(cx,-38,-9,76,18,9);cx.fill();
+          cx.lineWidth=1.4;cx.strokeStyle=ok?'rgba(138,90,32,.55)':'rgba(138,106,58,.3)';rr(cx,-38,-9,76,18,9);cx.stroke();
+          cx.fillStyle=tc;cx.beginPath();cx.arc(-25,0,5,0,TAU);cx.fill();
+          cx.lineWidth=1.2;cx.strokeStyle=shade(tc,.6);cx.stroke();
+          txt(cx,'NEXT: '+tn,4,0.5,8,ok?'#8a5a10':'#a89878','center',1.5,'#fff',700);cx.restore()}
+        txt(cx,ok?'one clear = one tier roll':'locked — clear stage '+idx+' first',mx+74,y+34,9.5,ok?'#8a6a3a':'#a89878','left',2,'#fff',400);
+        // odds / lock + BEST chip
+        if(ok){txt(cx,Math.round(treasureChance(ch,idx,own)*100)+'%',mx+mw-330,y+rowH/2,18,idx===best?'#b06a10':'#8a6a3a','center',2.5,'#fff',700);
+          if(idx===best){cx.save();cx.translate(mx+mw-252,y+rowH/2);cx.rotate(Math.sin(G.t*3)*0.04);
+            cx.fillStyle='#c46adf';rr(cx,-40,-10,80,20,10);cx.fill();
+            cx.lineWidth=1.8;cx.strokeStyle='#8a2aa8';rr(cx,-40,-10,80,20,10);cx.stroke();
+            txt(cx,'\u2605 BEST',0,0.5,10,'#fff','center',2,'#6a1a8a',700);cx.restore()}}
+        else drawPadlock(cx,mx+mw-330,y+rowH/2,8,'#8a8272');
+        // per-row GO (locked rows self-guard: engine disabled flag is visual-only)
+        BTN('spgo'+i,mx+mw-176,y+8,150,30,()=>{if(!stageUnlocked(ch,idx)){toast('Stage '+(idx+1)+' is locked — clear earlier stages first!','#ffb060');SFX.error();return}
+          G.modal=null;farmJump(ch,setI,idx)},
+          {col:ok?'#ffd23f':'#d8ccb0',outline:'#8a5a10',label:ok?'FARM!':'LOCKED',fs:12.5,tcol:'#4a2f10',r:15,disabled:!ok,modal:true})});
+      txt(cx,'FARM focuses the map on that stage — gold \u25c7 radar pings mark its stages',mx+mw/2,my+mh-14,9.5,'#a89878','center',2,'#fff',400)})}
 
 /* ============================== TREASURE RADAR (cross-chapter digest) ==============================
    Scans ALL 9 treasure chapters at once: every set at 2/3 (ONE piece left) with its best
    unlocked stage + odds, sorted by odds — one-click FARM jump per row. Closes the radar loop:
    radar digest → map focus → stage modal odds → battle. */
 function radarSets(){
-  const hot=[],near=[];let doneN=0,totalSets=0,tiers=0;
+  const hot=[],near=[],done=[];let doneN=0,totalSets=0,tiers=0;
   CHAPTERS.filter(c=>c.treasure).forEach(c=>{
     CHSETS[c.id].forEach((set,i)=>{
       const own=tCount(c.id,i);totalSets++;tiers+=own;
-      if(own>=3){doneN++;return}
+      if(own>=3){doneN++;done.push({ch:c.id,setI:i,own:3});return}
       const stages=[0,9,18,27,36].map(k=>i+k).filter(idx=>idx<48&&stageUnlocked(c.id,idx));
       if(!stages.length)return; // nothing farmable unlocked yet
       const best=stages[stages.length-1];
       const row={ch:c.id,setI:i,own,best,odds:treasureChance(c.id,best,own)};
       if(own===2)hot.push(row);else if(own===1)near.push(row)})});
   hot.sort((a,b)=>b.odds-a.odds);near.sort((a,b)=>b.odds-a.odds);
-  return{hot,near,doneN,totalSets,tiers}}
+  return{hot,near,done,doneN,totalSets,tiers}}
 function radarHotCount(){return radarSets().hot.length}
 function chShort(id){return (CHMAP[id].n||'').replace('Empire of Cats: ','EoC ').replace('Into the Future: ','ItF ').replace('Cats of the Cosmos: ','CotC ')}
 function openRadarModal(){SFX.click();
   const R=radarSets();
-  const rows=[...R.hot,...R.near].slice(0,7); // tall board fits 7 rows + digest footer
+  if(!G.radarTab||G.radarTab==='done'&&R.doneN===0)G.radarTab=R.hot.length?'hot':'near'; // default to the useful tab
+  G.radarPage=0;
   openModal('TREASURE RADAR',
     [R.hot.length
       ?R.hot.length+' set'+(R.hot.length>1?'s':'')+' ONE piece from completion — sorted by best odds!'
-      :'No sets at 2/3 yet — here are the closest (1/3), sorted by odds!'],
-    [{n:'CLOSE',cb:()=>{}}],
+      :'No sets at 2/3 yet — the CLOSE tab lists the nearest 1/3 sets!'],
+    [{n:'CLOSE',cb:()=>{G.radarTab=null}}],
     (mx,my,mw,mh)=>{
-      if(!rows.length){ // ultra-early game: nothing farmable yet
-        txt(cx,'No treasure sets are farmable yet — clear story stages to start finding pieces!',mx+mw/2,my+60,13,'#8a6a3a','center',3,'#fff',700);
-        txt(cx,'(Gold ◇ nodes on the map drop pieces — the radar lights up as sets close in.)',mx+mw/2,my+90,11,'#a89878','center',2,'#fff',400);
+      /* ---- tab pills: HOT (2/3) · CLOSE (1/3) · DONE (complete) ---- */
+      const tabs=[['hot','HOT',R.hot.length,'#ffd23f'],['near','CLOSE',R.near.length,'#7fd0ff'],['done','DONE',R.doneN,'#7fc86a']];
+      const tw=(mw-24-16)/3;
+      tabs.forEach((tb,i)=>{
+        const tx=mx+12+i*(tw+8),on=G.radarTab===tb[0];
+        const pu=on&&tb[2]>0?1+Math.sin(G.t*4)*0.03:1;
+        cx.save();cx.translate(tx+tw/2,my+16);cx.scale(pu,pu);cx.translate(-tx-tw/2,-my-16);
+        BTN('rdtab'+tb[0],tx,my+2,tw,30,()=>{G.radarTab=tb[0];G.radarPage=0;SFX.click()},
+          {col:on?tb[3]:'#d8ccb0',outline:'#8a5a10',label:tb[1]+(tb[2]>0?' · '+tb[2]:''),fs:11.5,tcol:'#4a2f10',r:15,modal:true});
+        cx.restore()});
+      const bodyY=my+44;
+      /* ---- DONE tab: compact chip grid (4 per row) + pager — every completed set ---- */
+      if(G.radarTab==='done'){
+        const D=R.done;
+        if(!D.length){txt(cx,'Nothing complete yet — fill all 3 tiers of a set to finish it!',mx+mw/2,bodyY+40,13,'#8a6a3a','center',3,'#fff',700);
+          txt(cx,'(Bronze → Silver → Gold — one tier per treasure drop.)',mx+mw/2,bodyY+66,10.5,'#a89878','center',2,'#fff',400)}
+        else{
+          const chipW=(mw-20-3*8)/4,chipH=34,perPage=28;
+          const pages=Math.max(1,Math.ceil(D.length/perPage));
+          G.radarPage=clamp(G.radarPage,0,pages-1);
+          const list=D.slice(G.radarPage*perPage,(G.radarPage+1)*perPage);
+          const chapTint=id=>id.startsWith('eoc')?'#e8951f':id.startsWith('itf')?'#4a9ae8':'#c46adf';
+          list.forEach((r,i)=>{
+            const x=mx+12+(i%4)*(chipW+8),y=bodyY+4+Math.floor(i/4)*(chipH+8);
+            const set=CHSETS[r.ch][r.setI];
+            creamPanel(x,y,chipW,chipH,'#ffe9b8');
+            // chapter color spine (left edge) + 3 gold pips
+            cx.fillStyle=chapTint(r.ch);rr(cx,x,y,5,chipH,3);cx.fill();
+            for(let t=0;t<3;t++){cx.fillStyle='#ffd700';cx.beginPath();cx.arc(x+chipW-12-t*13,y+chipH/2,4.2,0,TAU);cx.fill();
+              cx.lineWidth=1.2;cx.strokeStyle='#8a5a10';cx.stroke()}
+            const nm=set.n.length>15?set.n.slice(0,14)+'\u2026':set.n;
+            txt(cx,nm,x+13,y+chipH/2,9.5,'#5a3b16','left',2,'#fff',700);
+            // VIEW: chip click → treasure screen with that chapter selected
+            BTN('rdv'+r.ch+'_'+r.setI,x,y,chipW,chipH,()=>{G.modal=null;G.tChap=r.ch;push('treasure');SFX.click();
+              toast('Viewing '+set.n+' in '+chShort(r.ch),'#ffd23f')},{flat:true,nohov:true,modal:true})});
+          // pager: PREV · page n/m · NEXT
+          if(pages>1){const py2=bodyY+4+Math.ceil(Math.min(list.length,perPage)/4)*(chipH+8)+2;
+            BTN('rdpgL',mx+mw/2-190,py2,84,28,()=>{G.radarPage=Math.max(0,G.radarPage-1);SFX.click()},{col:'#e8c37f',outline:'#8a5a10',label:'\u25c2 PREV',fs:11,tcol:'#4a2f10',r:14,disabled:G.radarPage===0,modal:true});
+            txt(cx,'page '+(G.radarPage+1)+'/'+pages,mx+mw/2,py2+14,12,'#8a6a3a','center',2,'#fff',700);
+            BTN('rdpgR',mx+mw/2+106,py2,84,28,()=>{G.radarPage=Math.min(pages-1,G.radarPage+1);SFX.click()},{col:'#e8c37f',outline:'#8a5a10',label:'NEXT \u25b8',fs:11,tcol:'#4a2f10',r:14,disabled:G.radarPage>=pages-1,modal:true})}
+          if(R.doneN>perPage)txt(cx,'showing '+(G.radarPage*perPage+1)+'\u2013'+(G.radarPage*perPage+list.length)+' of '+R.doneN+' complete sets',mx+mw/2,my+mh-30,10,'#a89878','center',2,'#fff',400)}
+        txt(cx,'Sets complete: '+R.doneN+'/'+R.totalSets+' · tap a set to view it in TREASURES',mx+mw/2,my+mh-14,11,'#8a6a3a','center',2.5,'#fff',700);
         return}
+      /* ---- HOT / CLOSE tabs: farm rows (PICK opens the stage picker) ---- */
+      const rows=(G.radarTab==='near'?R.near:R.hot).slice(0,6);
+      if(!rows.length){ // this tab is empty — point at the other one
+        const alt=G.radarTab==='hot'?'CLOSE':'HOT';
+        txt(cx,'No '+(G.radarTab==='hot'?'2/3 (one piece left)':'1/3 (two pieces left)')+' sets right now.',mx+mw/2,bodyY+36,13,'#8a6a3a','center',3,'#fff',700);
+        txt(cx,'Try the '+alt+' tab — or FARM SET buttons on the TREASURE screen.',mx+mw/2,bodyY+62,10.5,'#a89878','center',2,'#fff',400)}
       rows.forEach((r,i)=>{
-        const rowH=44,y=my+4+i*(rowH+8),isHot=r.own===2;
+        const rowH=44,y=bodyY+2+i*(rowH+8),isHot=r.own===2;
         const set=CHSETS[r.ch][r.setI];
         creamPanel(mx+10,y,mw-20,rowH,isHot?'#e8c37f':'#c8913a');
         if(isHot){ // hot rows breathe gold (one piece left)
@@ -1575,15 +1675,17 @@ function openRadarModal(){SFX.click();
         // best odds + stage (hot rows show the odds in gold — one piece left)
         txt(cx,Math.round(r.odds*100)+'%',mx+446,y+20,17,isHot?'#b06a10':'#8a6a3a','center',2.5,'#fff',700);
         txt(cx,'stage '+(r.best+1)+' — best odds',mx+446,y+36,8.5,'#8a6a3a','center',2,'#fff',400);
-        // FARM button (closes modal → farmJump focuses the map)
-        BTN('rdfarm'+i,mx+mw-176,y+7,150,30,()=>{G.modal=null;farmJump(r.ch,r.setI)},
+        // PICK: stage picker (all 5 stages w/ odds) — then FARM: quick jump to the best
+        BTN('rdpick'+i,mx+mw-208,y+7,50,30,()=>{openStagePicker(r.ch,r.setI)},
+          {col:isHot?'#ffdf80':'#e8c37f',outline:'#8a5a10',label:'PICK',fs:9.5,tcol:'#4a2f10',r:15,modal:true});
+        BTN('rdfarm'+i,mx+mw-152,y+7,128,30,()=>{G.modal=null;farmJump(r.ch,r.setI)},
           {col:isHot?'#ffd23f':'#e8c37f',outline:'#8a5a10',label:isHot?'FARM!':'FARM',fs:12.5,tcol:'#4a2f10',r:15,modal:true})});
       // digest footer: world completion snapshot
       const fy=my+mh-14;
       const moreN=R.hot.length+R.near.length-rows.length;
       txt(cx,'Sets complete: '+R.doneN+'/'+R.totalSets+' · tiers owned: '+R.tiers+'/'+R.totalSets*3
         +(moreN>0?' · +'+moreN+' more sets in progress':''),mx+mw/2,fy,11,'#8a6a3a','center',2.5,'#fff',700);
-      txt(cx,'FARM jumps focus the map on the set\'s best stage — gold ◇ radar pings mark its stages',mx+mw/2,fy-16,9.5,'#a89878','center',2,'#fff',400)})}
+      txt(cx,'FARM jumps focus the map on the set\'s best stage · PICK lists every stage with odds',mx+mw/2,fy-16,9.5,'#a89878','center',2,'#fff',400)})}
 
 /* ============================== SCREEN: ENEMY GUIDE ============================== */
 function drawGuide(dt){drawTopBar('ENEMY GUIDE — BESTIARY',true);
@@ -1691,7 +1793,8 @@ function nameEnsure(){
   _nameInp.style.cssText='position:fixed;z-index:998;border:2px solid #5a6478;border-radius:8px;margin:0;padding:4px 10px;background:#101218;color:#e8e8f0;font:16px monospace;outline:none;left:-9999px;top:0;width:10px;height:10px;';
   document.body.appendChild(_nameInp);
   _nameInp.addEventListener('input',()=>{G.nameBuf=_nameInp.value.slice(0,18)});
-  _nameInp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();nameBlur();if(G.modal&&G.modal.title==='COMMANDER NAME'){const cb=(G.modal.btns.find(b=>b.n==='SAVE')||{}).cb;G.modal=null;cb&&cb()}}});
+  _nameInp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();nameBlur();
+    if(G.modal&&(G.modal.title==='COMMANDER NAME'||G.modal.title==='KEEPER NAME')){const cb=(G.modal.btns.find(b=>b.n==='SAVE')||{}).cb;G.modal=null;cb&&cb()}}});
   return _nameInp}
 function nameFocus(dx,dy,dw,dh){
   const inp=nameEnsure();
@@ -2190,7 +2293,19 @@ function drawShrine(dt){bgSky();drawTopBar('CAT SHRINE',true);
         for(let i2=0;i2<3;i2++){const a2=G.t*1.6+i2*TAU/3;
           const sxp=kx+Math.cos(a2)*20,syp=ky-99+Math.sin(a2)*6.5;
           cx.fillStyle='rgba(255,232,140,'+(0.65+0.35*Math.sin(G.t*4+i2)).toFixed(2)+')';
-          star(cx,sxp,syp,4,1.8);cx.fill()}}}
+          star(cx,sxp,syp,4,1.8);cx.fill()}}
+      // keeper's name sign: small wooden plaque standing left of the cat (settings names it)
+      {const kn=(SV.shrine.keeperName||'').trim();
+        if(kn){const sxx=kx-58,syy=gy+70;
+          // post + board, slight sway
+          cx.save();cx.translate(sxx,syy);cx.rotate(Math.sin(G.t*1.2)*0.02);
+          cx.fillStyle='#5a4028';rr(cx,-2.5,-14,5,26,2);cx.fill();
+          const bw2=Math.min(84,kn.length*6.2+16);
+          cx.fillStyle='#8a6a42';rr(cx,-bw2/2,-36,bw2,24,5);cx.fill();
+          cx.lineWidth=2;cx.strokeStyle='#4a3018';rr(cx,-bw2/2,-36,bw2,24,5);cx.stroke();
+          cx.fillStyle='rgba(255,255,255,.10)';rr(cx,-bw2/2+2,-34,bw2-4,7,3);cx.fill();
+          txt(cx,kn.slice(0,12),0,-24,9,'#ffe9b0','center',2,'#3a2410',700);
+          cx.restore()}}}
     // ---- coin toss animation → flash → reveal ----
     if(anim){
       anim.t+=dt;
@@ -2252,6 +2367,14 @@ function drawShrine(dt){bgSky();drawTopBar('CAT SHRINE',true);
   txt(cx,'Toss a coin — the shrine god blesses daily visitors!',rx+80,114,11.5,'#8a6a3a','left',2.5,'#fff',400);
   {const stat=si.freeLeft?['FREE TOSS READY!','#1e7a3a']:['Free toss used today — extra tosses '+si.extraLeft+'/'+SHRINE_MAX_EXTRA,'#a89878'];
     txt(cx,stat[0],rx+80,138,12,stat[1],'left',2.5,'#fff',700)}
+  // keeper line: names the scene cat (settings → KEEPER NAME) — gold chip right of the title
+  {const kn=(SV.shrine.keeperName||'').trim();
+    if(kn){const pu=1+Math.sin(G.t*2.2)*0.03;
+      cx.save();cx.translate(rx+rw2-86,88);cx.scale(pu,pu);
+      cx.fillStyle='#2e2018';rr(cx,-70,-13,140,26,13);cx.fill();
+      cx.lineWidth=1.8;cx.strokeStyle='#c8a030';rr(cx,-70,-13,140,26,13);cx.stroke();
+      glyph(cx,'cat',-54,0,8.5,'#ffd23f','#2e2018');
+      txt(cx,kn.slice(0,12).toUpperCase(),8,0.5,10.5,'#ffd23f','center',2,'#8a5a10',700);cx.restore()}}
   // prayer-streak chip (flame + day count + live bonus) — advances on each daily free toss
   {const sk=si.streak;
     cx.fillStyle=sk>0?'rgba(255,170,80,.16)':'rgba(90,59,22,.06)';rr(cx,rx+16,156,rw2-32,44,11);cx.fill();
@@ -2364,15 +2487,14 @@ function drawSettings(dt){drawTopBar('SETTINGS',true);
   creamPanel(240,90,800,540,'#c8913a');
   BTN('sbgm',280,130,340,60,()=>{SV.settings.bgm=!SV.settings.bgm;persist();AudioSetBgm(SV.settings.bgm)},{col:SV.settings.bgm?'#7fe8a0':'#e8d8b0',outline:'#8a5a20',label:'BGM: '+(SV.settings.bgm?'ON':'OFF'),fs:18});
   BTN('ssfx',660,130,340,60,()=>{SV.settings.sfx=!SV.settings.sfx;persist()},{col:SV.settings.sfx?'#7fe8a0':'#e8d8b0',outline:'#8a5a20',label:'SFX: '+(SV.settings.sfx?'ON':'OFF'),fs:18});
-  // ---- commander name (posted to the World Dojo Ranking) ----
-  cx.fillStyle='#fff8e8';rr(cx,280,200,720,46,14);cx.fill();
-  cx.lineWidth=2.5;cx.strokeStyle='#a8845a';rr(cx,281.5,201.5,717,43,13);cx.stroke();
-  glyph(cx,'medal',312,223,11,'#b06a10','#ffd23f');
-  txt(cx,'COMMANDER NAME',336,214,11,'#a89878','left',2,'#fff',700);
-  txt(cx,(SV.cmdName||'CAT COMMANDER').slice(0,18),336,236,14,'#5a3b16','left',2.5,'#fff',700);
-  txt(cx,'shown on the world ranking',966,223,10,'#a89878','left');
-  BTN('sname',918,206,80,34,()=>{G.nameBuf=SV.cmdName||'';
-    openModal('COMMANDER NAME',['1–18 characters — this name signs your Dojo scores.'],[
+  // ---- commander name (posted to the World Dojo Ranking) — left half ----
+  cx.fillStyle='#fff8e8';rr(cx,280,200,350,46,14);cx.fill();
+  cx.lineWidth=2.5;cx.strokeStyle='#a8845a';rr(cx,281.5,201.5,347,43,13);cx.stroke();
+  glyph(cx,'medal',308,223,10,'#b06a10','#ffd23f');
+  txt(cx,'COMMANDER NAME',328,213,10,'#a89878','left',2,'#fff',700);
+  txt(cx,(SV.cmdName||'CAT COMMANDER').slice(0,16),328,234,12.5,'#5a3b16','left',2.5,'#fff',700);
+  BTN('sname',552,206,72,34,()=>{G.nameBuf=SV.cmdName||'';
+    openModal('COMMANDER NAME',['1–18 characters — signs your Dojo scores.'],[
       {n:'SAVE',col:'#ffd23f',cb:()=>{nameBlur();
         const v=String(G.nameBuf||'').replace(/[\u0000-\u001f<>]/g,'').trim().slice(0,18);
         SV.cmdName=v||'CAT COMMANDER';persist();toast('Commander name saved: '+SV.cmdName,'#7fe8a0')}},
@@ -2384,7 +2506,27 @@ function drawSettings(dt){drawTopBar('SETTINGS',true);
         cx.font='16px monospace';cx.textAlign='left';cx.textBaseline='middle';
         cx.fillStyle='#e8e8f0';cx.fillText(String(G.nameBuf||'').slice(0,26),bx+14,by+bh/2);
         if(!G.nameBuf)txt(cx,'(tap and type)',bx+14,by+bh/2,13,'#6a7488','left');
-        G.hits.push({id:'namefield',x:bx,y:by,w:bw,h:bh,cb:()=>{nameFocus(bx,by,bw,bh)},hidden:false,modal:true})})},{col:'#7fd0ff',outline:'#2a5a7a',label:'EDIT',fs:13});
+        G.hits.push({id:'namefield',x:bx,y:by,w:bw,h:bh,cb:()=>{nameFocus(bx,by,bw,bh)},hidden:false,modal:true})})},{col:'#7fd0ff',outline:'#2a5a7a',label:'EDIT',fs:12});
+  // ---- shrine keeper name (the cat who takes your coins) — right half ----
+  cx.fillStyle='#fff8e8';rr(cx,650,200,350,46,14);cx.fill();
+  cx.lineWidth=2.5;cx.strokeStyle='#a8845a';rr(cx,651.5,201.5,347,43,13);cx.stroke();
+  glyph(cx,'torii',678,223,10,'#b06a10','#ffd23f');
+  txt(cx,'SHRINE KEEPER',698,213,10,'#a89878','left',2,'#fff',700);
+  txt(cx,(SV.shrine.keeperName||'KEEPER').slice(0,16),698,234,12.5,'#5a3b16','left',2.5,'#fff',700);
+  BTN('skname',922,206,72,34,()=>{G.nameBuf=SV.shrine.keeperName||'';
+    openModal('KEEPER NAME',['1–12 characters — the shrine cat who takes your coins.'],[
+      {n:'SAVE',col:'#ffd23f',cb:()=>{nameBlur();
+        const v=String(G.nameBuf||'').replace(/[\u0000-\u001f<>]/g,'').trim().slice(0,12);
+        SV.shrine.keeperName=v;persist();toast('Keeper name saved: '+(v||'KEEPER'),'#ffd23f')}},
+      {n:'CANCEL',cb:()=>{nameBlur()}}],
+      (x,y,w,h)=>{ // same hidden-DOM-input pattern as the commander name
+        const bx=x+40,by=y+14,bw=w-80,bh=54;
+        cx.fillStyle='#101218';rr(cx,bx,by,bw,bh,10);cx.fill();
+        cx.lineWidth=2;cx.strokeStyle='#5a6478';rr(cx,bx,by,bw,bh,10);cx.stroke();
+        cx.font='16px monospace';cx.textAlign='left';cx.textBaseline='middle';
+        cx.fillStyle='#e8e8f0';cx.fillText(String(G.nameBuf||'').slice(0,26),bx+14,by+bh/2);
+        if(!G.nameBuf)txt(cx,'(tap and type)',bx+14,by+bh/2,13,'#6a7488','left');
+        G.hits.push({id:'knamefield',x:bx,y:by,w:bw,h:bh,cb:()=>{nameFocus(bx,by,bw,bh)},hidden:false,modal:true})})},{col:'#ffb95a',outline:'#8a4a10',label:'EDIT',fs:12});
   // ---- export: proper panel — download a file OR copy the clipboard code ----
   BTN('sexp',280,290,340,60,()=>{openModal('EXPORT SAVE',['Back up your progress: download a save file,','or copy a restore code to the clipboard.'],[
     {n:'DOWNLOAD FILE',col:'#7fd0ff',cb:()=>{downloadSaveFile()}},

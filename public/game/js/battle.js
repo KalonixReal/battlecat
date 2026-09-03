@@ -206,7 +206,7 @@ function updateUnit(u,dt){
   else{u.x+=u.dir*spd*WALK_MUL*dt;u.animT+=dt*1.2*WALK_MUL}
   u.x=clamp(u.x,CAT_BASE_X+30,ENEMY_BASE_X-30)}
 function fireCannon(){
-  if(B.result)return;
+  if(B.result||B.paused)return; // pause freezes the field AND player actions
   const c=B.cannon;if(c.t>0)return;c.t=c.charge;c.fired++;
   const pw=1+0.25*(SV.base.cpow-1);
   const es=B.units.filter(v=>v.side==='enemy'&&v.state!=='die');
@@ -667,7 +667,7 @@ function drawBattleHUD(b,dt){
       cx.lineWidth=2;cx.strokeStyle='rgba(255,255,255,.08)';rr(cx,dx+1,dy+1,dw-2,dh-2,10);cx.stroke();return}
     const st=catStats(id,undefined,B.costMul);const cd=b.cds[id]||0;const cdMax=st.cd;const can=b.wallet>=st.cost&&cd<=0;
     const afford=b.wallet>=st.cost;
-    BTN('dock'+i,dx,dy,dw,dh+14,()=>{if(B.result)return;if(!can){SFX.error();if(cd>0)toast('Recharging\u2026 '+cd.toFixed(1)+'s','#ffb060');else toast('Not enough \u00a2!','#ff7a7a');return}
+    BTN('dock'+i,dx,dy,dw,dh+14,()=>{if(B.result||B.paused)return;if(!can){SFX.error();if(cd>0)toast('Recharging\u2026 '+cd.toFixed(1)+'s','#ffb060');else toast('Not enough \u00a2!','#ff7a7a');return}
       b.wallet-=st.cost;b.cds[id]=cdMax;spawnCat(id)},{flat:true,nohov:true,draw:cc2=>{
       // ready + affordable: soft breathing glow behind the card
       if(can){const gl=0.5+0.5*Math.sin(G.t*3.2+i);
