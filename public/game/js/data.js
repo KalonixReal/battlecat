@@ -289,7 +289,7 @@ function rollGacha(bannerId){
   if(!cands.length){ // fallback: walk populated gacha pools so a pull NEVER returns null
     for(const p2 of ['rare','srar','uber','legend']){cands=CATS.filter(c=>c.rarity===p2&&c.unlock&&c.unlock.gacha===p2);if(cands.length){pool=p2;break}}}
   if(!cands.length)return null; // unreachable: every gacha pool is populated
-  const feat=B&&B.feat||[];let cat=pick(cands,R);if(feat.length&&R()<0.25){const f=CATMAP[pick(feat,R)];if(f&&f.rarity===pool)cat=f} // featured boost only replaces within the rolled rarity (keeps banner odds 89/9/2 · 3/27/70 · 9/23/68 honest)
+  const feat=bannerFeats(B);let cat=pick(cands,R);if(feat.length&&R()<0.25){const f=CATMAP[pick(feat,R)];if(f&&f.rarity===pool)cat=f} // featured boost only replaces within the rolled rarity (keeps banner odds 89/9/2 · 3/27/70 · 9/23/68 honest)
   return cat.id}
 const BANNERS=[
  {id:'rare',n:'Rare Cat Capsules',cost:150,cost10:1500,pool:'rare',feat:['neko','pogo','cutter'],col:'#ff7ab8',col2:'#e8489a',cap:'#ffd9ec'},
@@ -297,6 +297,23 @@ const BANNERS=[
  {id:'legend',n:'Legend Festival',cost:150,cost10:1500,pool:'legend',feat:['luza','gatr'],col:'#e8a020',col2:'#b06a08',cap:'#ffe9b8'},
  {id:'epic',n:'Dark Heroes: Epicforce',cost:150,cost10:1500,pool:'uber',feat:['dioramos','kaguya','noble'],col:'#5a6a8a',col2:'#2e3a55',cap:'#d4def0'}];
 function activeBanners(){const wd=new Date().getDay();return [BANNERS[0],wd%2===0?BANNERS[1]:BANNERS[3],BANNERS[2]]}
+/* DAILY FEATURED ROTATION: each banner's featured cats rotate daily (date-seeded, deterministic)
+   from its full featured-tier pool — the 25% featured boost always applies to TODAY's picks.
+   b.feat stays as the banner's "home" lineup (fallback when the tier pool is tiny). */
+function bannerFeats(b){
+  if(!b||!b.feat||!b.feat.length)return[];
+  const tier=CATMAP[b.feat[0]].rarity;
+  const gachaKey=tier==='rare'?'rare':tier==='legend'?'legend':'uber';
+  const pool=CATS.filter(c=>c.rarity===tier&&c.unlock&&c.unlock.gacha===gachaKey);
+  if(pool.length<=b.feat.length)return b.feat.slice();
+  const d=new Date();
+  const R=rnd((d.getFullYear()*372+d.getMonth()*31+d.getDate())*7919+b.id.length*104729+b.id.charCodeAt(0)*31+7);
+  const idx=[];while(idx.length<Math.min(3,b.feat.length+1)){const k=Math.floor(R()*pool.length);if(!idx.includes(k))idx.push(k)}
+  return idx.map(k=>pool[k].id)}
+/* honest countdown to the next featured rotation (local midnight) */
+function featRotateIn(){const d=new Date();const end=new Date(d.getFullYear(),d.getMonth(),d.getDate()+1);
+  const ms=Math.max(0,end-d);const h=Math.floor(ms/3600000),m=Math.floor((ms%3600000)/60000);
+  return (h>0?h+'h ':'')+m+'m'}
 const COMBOS=[
  {ids:['cat','tank'],n:'Cat Family',eff:{walletStart:100}},
  {ids:['cat','axe','tank'],n:'Brawlers',eff:{atk:.03}},

@@ -715,3 +715,82 @@ Next-phase priorities (for the 15-min reviewer):
    belong to" tooltip on the stage modal (treasureChance already shown there).
 6. VLM false-positive pattern is now well-characterized (small-text hallucinations) — future
    rounds should zoom-crop first, fix second (see lessons above).
+
+---
+
+## Session Round — STAGE-MODAL TREASURE CARD + GACHA DAILY FEATURED ROTATION (Task: autonomous QA → features)
+
+### Current project status (assessment at round start)
+- Fresh browser session at v21 (localStorage resets per agent-browser session → fresh default save):
+  clean boot (title, t advancing), zero console/page errors, dev.log clean.
+- Golden-path E2E re-verified with REAL pointer input at 1280x720: title → home → chapters → EoC1
+  map → stage modal → battle (sustained deploy ×75, t=90) → WIN with perfect 1200/1200 HP,
+  10 kills → rewards (xp 1305, crowns 3, wins 1) → map. Zero console errors.
+- 17-screen sweep: all non-blank, zero console errors. VLM review of previously-unchecked
+  screens: submap CLEAN (grid aligned, ellipsis intentional), victory CLEAN (medal/crowns/base
+  all fine — confetti renders correctly). No bugs found this round → feature work.
+
+### Completed modifications this round
+
+**1. NEW FEATURE — STAGE-MODAL TREASURE SET CARD (closes old unresolved #5):**
+- ui.js openStageModal: computes treasureCard {set: CHSETS[ch][idx%9], own: tCount(ch,idx%9)}
+  for story chapters; the plain "Treasure chance: ~N%" modal LINE is replaced by a full card in
+  the drawExtra area (below enemy tiles, above Attack/Cancel): chest glyph medallion,
+  "TREASURE SET · <name>" + "Set bonus: <stat> — pieces stack its multiplier", 3 tier pips
+  (bronze #cd7f32 / silver #c0c0c0 / gold #ffd700, filled = owned, glossy highlight) each
+  labeled with its per-tier drop %, pulsing gold-rim + red "1 PIECE LEFT!" badge when own===2
+  (ties into the map treasure radar pings), green "SET COMPLETE ✓" when own===3.
+- Modal math: story modal = 6 lines → h=650, drawExtra 322px; card at yOff+126..184 fits with
+  no overlap of enemy tiles (+N more at yOff+112) or buttons (y+h-64).
+- E2E: seeded eoc1 set0=2/3 → hot card w/ red badge (187 red px) + VLM CLEAN ("cleanly
+  positioned between Appearing Enemies and the action buttons… fully visible"); set0=3/3 →
+  green SET COMPLETE (70 px); Attack button still starts the battle with the card present.
+
+**2. NEW FEATURE — GACHA DAILY FEATURED ROTATION:**
+- data.js bannerFeats(b): date-seeded (deterministic) daily rotation of up to 3 featured cats
+  from each banner's full featured-tier gacha pool (rare banner rotates within rare gacha cats;
+  uber/epic within uber; legend falls back to its static 2 when pool ≤ feat size). b.feat stays
+  as the home lineup. featRotateIn(): honest countdown to local midnight.
+- rollGacha + doGoldPull now use bannerFeats() — the 25% featured boost applies to TODAY's
+  picks (banner odds untouched: 89/9/2 · 3/27/70 · 9/23/68).
+- ui.js drawGacha: NEW "TODAY'S FEATURED" strip (right column x950 y262, dark glass panel w/
+  banner-colored rim): header ribbon w/ clock glyph, 3 rows (rarity-ringed cat medallion w/
+  breathing pulse on row 1, name, "RARITY · 25% BOOST" tag, pulsing red NEW! / green OWNED ✓
+  status), footer "new featured cats every midnight". Static fake "Ends in 3 days" chip →
+  honest "rotate in Xh Ym" gold chip. openGachaInfo lists today's featured + rotation note.
+- Probe: rare→[cutter,island,jurassic], uber-pool→[noble,dioramos,paladin], legend→[luza,gatr]
+  (correct fallback). E2E: gtry (rare ticket consumed → cutter granted, exactly-once OK),
+  g10 10+1 (CF 2000→500, 11 results, pending cleared, 11 cats owned) — all on the rotation
+  path, zero console errors. VLM CLEAN (rows cleanly laid out, no overlap w/ machine/chips).
+- NOTE for QA: top-level const (BANNERS) is NOT on window — probe via activeBanners() instead.
+
+**3. STYLING POLISH:**
+- Gacha step-pity pill: taller labeled chip — "N / 10" + "step pity" (or gold "guaranteed!" at
+  10) so the counter reads as what it is.
+- Clock glyph stroke-order bug fixed (strokeStyle now set before the arc).
+
+**4. Cache-bust v21 → v22** (index.html ×9 scripts + page.tsx in sync — bumped AFTER all edits,
+  avoiding last round's stale-cache gotcha).
+
+### Verification results (all REAL pointer input, 1280x720, v22)
+- Gacha E2E: single pull (ticket path) + 10+1 (CF path) + multi-card reveal + OK grant; stats
+  pulls 12; zero errors. Featured strip + countdown chip pixel- and VLM-verified.
+- Stage-modal E2E: hot (1 PIECE LEFT) + complete (SET COMPLETE) card states; Attack flow intact.
+- 17-screen sweep at v22: all non-blank, zero console errors.
+- node --check 9/9 game JS files; bun run lint 0 errors / 12 benign warnings; dev.log clean.
+- QA screenshots: tests/shots/qa12-* (victory, submap, gacha-featured, gacha-reveal,
+  stagemodal-treasure, stagemodal-complete), sweep-* (17 screens @v22).
+- Two syntax slips during editing (extra brace in stage modal, doubled closing brace in
+  rollGacha, plus a double-backslash escape) were ALL caught immediately by node --check and
+  fixed before browser testing — keep using node --check after every edit batch.
+
+### Unresolved / next-phase priorities
+1. Missions 'up' hook still only counts upgrade-screen purchases (unchanged, low priority).
+2. Shrine cat-costume unlocks per MEGA count (pity/streak now cover the luck side) — next
+   natural shrine depth if wanted.
+3. Scout prestige maxes at ★3 — consider ★∞ or prestige-only ticket expeditions.
+4. 28MB WAV bank load time — re-encode if it becomes a complaint.
+5. Treasure radar + stage-modal card are now a complete loop; possible next: a TREASURE screen
+   "farm this set" jump that opens the map focused on a 2/3 set's stages.
+6. Gacha rotation is date-seeded client-side (deterministic per day) — fine for a replica; a
+   server-side rotation table would only matter for cross-device fairness.

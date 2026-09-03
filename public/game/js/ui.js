@@ -802,6 +802,8 @@ function drawSubmap(dt){const c=CHMAP[G.chapter];const sub=c.kind==='sol'?SOL_SU
 function openStageModal(ch,idx){const c=CHMAP[ch];const st=genStage(ch,idx);SFX.click();
   const en=st.script.flatMap(w=>w.spawns.map(s=>s.e)).concat(st.boss?[st.boss]:[]);
   const crownsN=(c.kind==='story'&&SV.crowns[ch])?(SV.crowns[ch][String(idx)]||0):0;
+  // treasure-set card data (story chapters with treasure): set i%9, current owned tiers
+  const treasureCard=(c.kind==='story'&&CHSETS[ch])?{set:CHSETS[ch][idx%9],own:tCount(ch,idx%9)}:null;
   openModal(st.name,[
     'Energy cost: '+st.energy+'   (you have '+SV.energy+')',
     'Enemy base HP: '+fmt(st.baseHp),
@@ -809,7 +811,7 @@ function openStageModal(ch,idx){const c=CHMAP[ch];const st=genStage(ch,idx);SFX.
     'Enemies: '+([...new Set(en)].map(e=>ENEMAP[e].n).join(', ')||'\u2014'),
     'Reward: '+fmt(st.reward.xp)+' XP'+(st.reward.fruit?' + '+FRUIT_NAMES[st.reward.fruit]:'')+(st.reward.cf?' + '+st.reward.cf+' CF':''),
     ...(c.kind==='story'?['Crowns: '+crownsN+'/3 \u2014 win with base HP \u226580% for a PERFECT 3-crown clear!']:[]),
-    ...(CHSETS[ch]?['Treasure chance: ~'+Math.round(treasureChance(ch,idx,tCount(ch,idx%9))*100)+'% \u2014 farmable on repeat clears!']:[])],
+    ...(!treasureCard?['Treasure chance: ~'+Math.round(treasureChance(ch,idx%9,tCount(ch,idx%9))*100)+'% \u2014 farmable on repeat clears!']:[])],
     [{n:'Cancel',cb:()=>{}},{n:'Attack!',col:'#ffd23f',cb:()=>tryStartBattle(ch,idx)}],(x,y,w,h)=>{
       let yOff=0;
       // crown strip (story chapters): earned pips + dim slots + PERFECT tag
@@ -829,7 +831,37 @@ function openStageModal(ch,idx){const c=CHMAP[ch];const st=genStage(ch,idx);SFX.
         txt(cx,tl,ex+tw/2,ey+56,6.8,shade(tc,.6),'center',2,'#fff',700);
         if(e.boss){cx.save();cx.translate(ex+tw/2,ey-1);cx.rotate(-0.08);cx.fillStyle='#e84030';rr(cx,-21,-8,42,15,4);cx.fill();txt(cx,'BOSS',0,-0.5,9,'#fff','center',2,'#7a1a10',700);cx.restore()}});
       if(uni.length>6)txt(cx,'+'+(uni.length-6)+' more',x+w/2,y+yOff+112,11,'#a89878','center',2,'#fff',400);
-      else if(!uni.length)txt(cx,'No enemies \u2014 destroy the base!',x+w/2,y+yOff+60,12,'#a89878','center',2,'#fff',400)})}
+      else if(!uni.length)txt(cx,'No enemies \u2014 destroy the base!',x+w/2,y+yOff+60,12,'#a89878','center',2,'#fff',400);
+      // TREASURE SET CARD (story chapters with treasure): set name, tier pips + per-tier odds,
+      // pulsing gold highlight when one piece remains \u2014 closes the map-radar loop
+      // (map ping \u2192 stage modal shows the exact set + odds \u2192 farm with confidence)
+      if(treasureCard){const tcd=treasureCard;
+        const cy2=y+yOff+126,ch2=w-56,cx2=x+28;
+        const hot=tcd.own===2; // ONE PIECE LEFT
+        cx.save();
+        if(hot){const pu=0.5+0.5*Math.sin(G.t*4);
+          cx.shadowColor='rgba(255,200,40,'+(0.30+pu*0.35).toFixed(2)+')';cx.shadowBlur=8+pu*8}
+        cx.fillStyle=hot?'rgba(255,238,180,.95)':'rgba(255,244,214,.80)';rr(cx,cx2,cy2,ch2,58,12);cx.fill();cx.restore();
+        cx.lineWidth=hot?3:1.8;cx.strokeStyle=hot?'#e8951f':'rgba(176,138,80,.6)';rr(cx,cx2,cy2,ch2,58,12);cx.stroke();
+        // chest medallion
+        cx.fillStyle='#b06a10';cx.beginPath();cx.arc(cx2+34,cy2+29,20,0,TAU);cx.fill();
+        cx.lineWidth=2.5;cx.strokeStyle='#8a5a10';cx.stroke();
+        glyph(cx,'chest',cx2+34,cy2+29,17,'#ffd23f','#7a4a08');
+        // set name + stat-bonus line
+        txt(cx,'TREASURE SET \u00b7 '+tcd.set.n,cx2+64,cy2+16,13.5,hot?'#b06a10':'#8a6a10','left',2.5,'#fff',700);
+        txt(cx,'Set bonus: '+TSTATS[tcd.set.stat]+' \u2014 pieces stack its multiplier',cx2+64,cy2+34,10.5,'#8a6a3a','left',2,'#fff',400);
+        // tier pips: bronze / silver / gold, owned fill + per-tier drop odds
+        const tiers=[['Bronze','#cd7f32'],['Silver','#c0c0c0'],['Gold','#ffd700']];
+        tiers.forEach((t3,i)=>{const px2=cx2+66+i*152,py2=cy2+46;const got=tcd.own>i;
+          cx.fillStyle=got?t3[1]:'rgba(200,190,160,.35)';cx.beginPath();cx.arc(px2,py2,8,0,TAU);cx.fill();
+          cx.lineWidth=1.8;cx.strokeStyle=got?shade(t3[1],.55):'#c8b892';cx.stroke();
+          if(got){cx.fillStyle='rgba(255,255,255,.55)';cx.beginPath();cx.arc(px2-2.6,py2-2.6,2.6,0,TAU);cx.fill()}
+          txt(cx,t3[0]+' '+Math.round(treasureChance(ch,idx,Math.min(i,2))*100)+'%',px2+14,py2+0.5,10,got?'#5a3b16':'#a89878','left',2,'#fff',got?700:400)});
+        if(hot){const pu=1+Math.sin(G.t*5)*0.05;
+          cx.save();cx.translate(cx2+ch2-92,cy2+29);cx.scale(pu,pu);
+          cx.fillStyle='#e84030';rr(cx,-58,-13,116,26,13);cx.fill();
+          txt(cx,'1 PIECE LEFT!',0,0.5,12,'#fff','center',2.5,'#7a1a10',700);cx.restore()}
+        else if(tcd.own===3)txt(cx,'SET COMPLETE \u2713',cx2+ch2-14,cy2+29,11,'#3a9a5a','right',2.5,'#fff',700)}})}
 
 function openEventModal(ev){const s=ev.s;const uni=[...new Set(s.pool)];
   const wasCl=SV.eventsDone&&SV.eventsDone['clr:'+s.evtId];
@@ -1205,21 +1237,55 @@ function drawGacha(dt){drawTopBar('GACHA CAPSULES',true);
     txt(cx,pre+' '+val,996,ty2+17.5,14,iconBg,'left',3,'#0a0612',700)};
   tchip(170,'#bfe8ff','#4a7a9a','R',SV.tickets.rare);
   tchip(212,'#ffe9a8','#9a7a2a','G',SV.tickets.gold);
-  // === 'Ends in N days' chip + (i) rates button, top-right corner ===
-  cx.fillStyle='rgba(20,12,30,.55)';rr(cx,1096,86,148,28,14);cx.fill();
-  txt(cx,'Ends in 3 days',1170,100.5,12.5,'#fff','center',2.5,'#1a0e20',700);
+  // === 'Featured rotate in Xh Ym' chip (honest — counts to local midnight) + (i) rates button, top-right ===
+  const feats=bannerFeats(b);
+  cx.fillStyle='rgba(20,12,30,.55)';rr(cx,1088,86,156,28,14);cx.fill();
+  txt(cx,'rotate in '+featRotateIn(),1166,100.5,12.5,'#ffd23f','center',2.5,'#1a0e20',700);
   cx.fillStyle='#3a9a5a';cx.beginPath();cx.arc(1246,72,16,0,TAU);cx.fill();
   cx.lineWidth=2.5;cx.strokeStyle='#1e5a30';cx.stroke();
   txt(cx,'i',1246,73,17,'#fff','center',3,'#1e5a30',700);
   BTN('ginfo',1226,52,40,40,()=>{SFX.click();openGachaInfo(b)},{flat:true,nohov:true});
+  // === TODAY'S FEATURED strip (right column): the daily rotation, live — 25% boost applies to these ===
+  {const fx=950,fy=262,fw=306,fh=54+feats.length*56;
+    cx.save();cx.shadowColor='rgba(20,12,4,.5)';cx.shadowBlur=8;cx.shadowOffsetY=3;
+    cx.fillStyle='rgba(24,16,34,.82)';rr(cx,fx,fy,fw,fh,14);cx.fill();cx.restore();
+    cx.lineWidth=2;cx.strokeStyle=b.col;rr(cx,fx,fy,fw,fh,14);cx.stroke();
+    cx.lineWidth=1;cx.strokeStyle='rgba(255,255,255,.16)';rr(cx,fx+4,fy+4,fw-8,fh-8,11);cx.stroke();
+    // header ribbon w/ clock glyph
+    cx.fillStyle=b.col;rr(cx,fx+10,fy+8,fw-20,26,13);cx.fill();
+    cx.strokeStyle='rgba(255,255,255,.9)';cx.lineWidth=1.8;
+    cx.beginPath();cx.arc(fx+24,fy+21,7,0,TAU);cx.stroke();
+    cx.beginPath();cx.moveTo(fx+24,fy+21);cx.lineTo(fx+24,fy+16.5);cx.moveTo(fx+24,fy+21);cx.lineTo(fx+27.5,fy+21);cx.stroke();
+    txt(cx,'TODAY\u2019S FEATURED',fx+fw/2+8,fy+21,12.5,'#fff','center',2.5,'rgba(20,10,30,.85)',700);
+    feats.forEach((fid,i)=>{const fc=CATMAP[fid];const ry=fy+44+i*56;
+      const first=i===0;const pu=first?1+Math.sin(G.t*4)*0.05:1;
+      // row plate (first row gets a subtle glow)
+      cx.save();if(first){cx.shadowColor=b.col;cx.shadowBlur=8+4*Math.sin(G.t*4)}
+      cx.fillStyle='rgba(255,255,255,'+(first?'.12':'.07')+')';rr(cx,fx+10,ry,fw-20,48,10);cx.fill();cx.restore();
+      cx.lineWidth=1.5;cx.strokeStyle=first?b.col:'rgba(255,255,255,.14)';rr(cx,fx+10,ry,fw-20,48,10);cx.stroke();
+      // cat icon in a rarity-ringed medallion
+      cx.save();cx.translate(fx+38,ry+24);cx.scale(pu,pu);
+      cx.fillStyle='#fff8e8';cx.beginPath();cx.arc(0,0,17,0,TAU);cx.fill();
+      cx.lineWidth=2.5;cx.strokeStyle=RAR_COL[fc.rarity];cx.stroke();cx.restore();
+      ART.catIcon(fid,fx+38,ry+24,20);
+      // name + rarity tag
+      txt(cx,fc.forms[0].n,fx+62,ry+16,13,'#fff','left',2.5,'rgba(10,6,20,.9)',700);
+      txt(cx,fc.rarity.toUpperCase()+' \u00b7 25% BOOST',fx+62,ry+35,9.5,shade(RAR_COL[fc.rarity],1.25),'left',2,'#0a0612',700);
+      // owned check / NEW tag
+      if(SV.cats[fid])txt(cx,'OWNED \u2713',fx+fw-18,ry+24,9.5,'#7fe8a0','right',2,'#0a0612',700);
+      else{const np2=1+Math.sin(G.t*5)*0.06;cx.save();cx.translate(fx+fw-44,ry+24);cx.scale(np2,np2);
+        cx.fillStyle='#e84030';rr(cx,-24,-9,48,18,9);cx.fill();
+        txt(cx,'NEW!',0,0.5,9.5,'#fff','center',2,'#7a1a10',700);cx.restore()}});
+    txt(cx,'new featured cats every midnight',fx+fw/2,fy+fh-8,9,'rgba(255,255,255,.55)','center')}
   // === pull buttons: big yellow official-style pair below the machine ===
   const canTicket=SV.tickets.rare>0,can1=canTicket||SV.cf>=b.cost,can10=SV.cf>=b.cost10;
   const step=(SV.gachaSteps&&SV.gachaSteps[b.id])||0;
-  // pity step pill (pulls since last featured-ish result, /10)
-  cx.fillStyle='rgba(20,12,30,.55)';rr(cx,208,586,142,44,22);cx.fill();
-  cx.fillStyle=b.cap;cx.beginPath();cx.arc(232,608,11,0,TAU);cx.fill();
-  cx.fillStyle=b.col;cx.beginPath();cx.arc(232,608,11,Math.PI,0);cx.fill();
-  txt(cx,step+' / 10',252,609,17,'#fff','left',3,'#1a0e20',700);
+  // pity step pill (pulls since last featured-ish result, /10) — labeled + capped state
+  cx.fillStyle='rgba(20,12,30,.55)';rr(cx,208,582,142,52,14);cx.fill();
+  cx.fillStyle=b.cap;cx.beginPath();cx.arc(232,606,11,0,TAU);cx.fill();
+  cx.fillStyle=b.col;cx.beginPath();cx.arc(232,606,11,Math.PI,0);cx.fill();
+  txt(cx,step+' / 10',252,602,16,'#fff','left',3,'#1a0e20',700);
+  txt(cx,step>=10?'guaranteed!':'step pity',252,622,9,step>=10?'#ffd23f':'#9a8fb0','left',2,'#1a0e20',step>=10?700:400);
   const pullBtn=(id,bx,label,costTxt,enabled,cb,glowCol)=>{cx.save();
     if(enabled){cx.shadowColor=glowCol;cx.shadowBlur=12}
     const g=cx.createLinearGradient(0,576,0,634);g.addColorStop(0,enabled?'#ffe24a':'#cfc4a8');g.addColorStop(1,enabled?'#ffb420':'#a89c80');
@@ -1277,10 +1343,12 @@ function drawGacha(dt){drawTopBar('GACHA CAPSULES',true);
 function syncSteps(bid,n){SV.gachaSteps=SV.gachaSteps||{};SV.gachaSteps[bid]=((SV.gachaSteps[bid]||0)+n)%11;persist()}
 function openGachaInfo(b){
   const pool=CATS.filter(c=>c.rarity===(b.pool==='legend'?'legend':b.pool==='uber'?'uber':'rare')&&c.unlock&&c.unlock.gacha===b.pool).slice(0,8);
+  const feats=bannerFeats(b);
   openModal(b.n,[
     b.pool==='rare'?'Rates: 89% Rare / 9% SR / 2% Uber':b.pool==='legend'?'Rates: 3% Legend / 27% Uber / 68% Rare+':'Rates: 9% Uber / 23% SR / 68% Rare+',
-    'Featured: '+(b.feat.map(f=>CATMAP[f].forms[0].n).join(', ')||'\u2014'),
+    'Today\u2019s featured: '+(feats.map(f=>CATMAP[f].forms[0].n).join(', ')||'\u2014'),
     'Featured cats have a boosted 25% appearance chance!',
+    'Featured lineup rotates at midnight \u2014 new cats every day!',
     'Gold Tickets (from the Store) guarantee an Uber Rare \u2014 use the gold button!',
     pool.length?'On-banner: '+pool.map(c=>CATMAP[c.id].forms[0].n).join(', ')+'\u2026':''],
     [{n:'CLOSE',cb:()=>{}}])}
@@ -1305,7 +1373,7 @@ function doGoldPull(bannerId){
   const B=BANNERS.find(b2=>b2.id===bannerId);
   const ubers=CATS.filter(c=>c.rarity==='uber'&&c.unlock&&c.unlock.gacha==='uber');
   const legends=CATS.filter(c=>c.rarity==='legend'&&c.unlock&&c.unlock.gacha==='legend');
-  const feat=(B&&B.feat||[]).map(f=>CATMAP[f]).filter(c=>c&&(c.rarity==='uber'||c.rarity==='legend'));
+  const feat=bannerFeats(B).map(f=>CATMAP[f]).filter(c=>c&&(c.rarity==='uber'||c.rarity==='legend'));
   let pool=feat.length?feat.concat(ubers,legends):ubers.concat(legends); // featured weighted by presence
   if(!pool.length)pool=ubers.length?ubers:legends; // null-safe fallbacks (same policy as rollGacha)
   if(!pool.length){toast('No Uber pool available!','#ff7a7a');return}
