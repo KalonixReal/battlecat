@@ -1,6 +1,11 @@
 'use strict';
 /* ============================== BATTLE ENGINE ============================== */
-const FIELD_W=2600,CAT_BASE_X=120,ENEMY_BASE_X=FIELD_W-120,GROUND_Y=560;
+/* FIELD ORIENTATION (matches the original mobile game): the CAT BASE stands on the
+   RIGHT edge and cats march LEFT toward the ENEMY BASE on the LEFT edge (per the
+   Battle Cats wiki: "destroy the enemy base on the left side of the battlefield").
+   The camera therefore starts at the RIGHT end (home base) and the front line
+   advances leftward as the battle progresses. */
+const FIELD_W=2600,ENEMY_BASE_X=120,CAT_BASE_X=FIELD_W-120,GROUND_Y=560;
 const WALK_MUL=1.5; // global movement pacing — wiki speed x9 px/s felt sluggish crossing the field vs the original
 let B=null;
 const WORKER_COST=[40,120,280,560,1000,1600,2400],WORKER_MUL=[1,1.35,1.7,2.1,2.6,3.2,3.9,4.7];
@@ -13,7 +18,7 @@ function startBattle(st){
     units:[],pops:[],fx:[],waves:[],surges:[],queue:[],
     catBase:{hp:Math.round(st.catBaseHp*(1+0.3*(SV.base.bhp-1))),maxHp:Math.round(st.catBaseHp*(1+0.3*(SV.base.bhp-1))),x:CAT_BASE_X,alarm:0},
     enemyBase:{hp:st.baseHp,maxHp:st.baseHp,x:ENEMY_BASE_X,alarm:0},
-    cam:0,shake:0,warn:null,warnT:0,triggerDone:false,endlessK:0,endlessT:8,score:0,
+    cam:FIELD_W-1280,camHold:0,camV:0,shake:0,warn:null,warnT:0,triggerDone:false,endlessK:0,endlessT:8,score:0,
     cannon:{t:0,charge:cannonChargeBase(),type:SV.cannonSel,fired:0},
     cds:{},teamIds,combo,dmgDealt:0,kills:0,
     treasureBase:((G.sessionTreasure&&Object.values(G.sessionTreasure).reduce((a,v)=>a+v,0))||0)}; // loot chip counts THIS battle's drops
@@ -31,22 +36,22 @@ function startBattle(st){
 }
 function spawnEnemy(eid,x0){
   const d=ENEMAP[eid];const mag=B.st.mag;
-  const u={side:'enemy',def:d,id:eid,x:x0!==undefined?x0:ENEMY_BASE_X-70-Math.random()*30,y:0,
+  const u={side:'enemy',def:d,id:eid,x:x0!==undefined?x0:ENEMY_BASE_X+70+Math.random()*30,y:0,
     hp:d.hp*mag.hp,maxHp:d.hp*mag.hp,atk:d.atk*mag.atk,rate:d.rate,range:d.range,speed:d.speed*WALK_SPD,kb:d.kb,
     rateT:0.5,state:'walk',animT:Math.random()*9,flash:0,kbT:0,kbDone:0,dieT:0,r:d.boss?46:22,
     st:{frozen:0,slow:0,weakenT:0,weakenP:1,curse:0},shieldHp:d.shield?d.shield.hp:0,reviveLeft:d.revive?d.revive.n:0,
     kbTaken:0,burrowUsed:false,reviveT:0,burrowDist:0,
-    burrowing:0,dodge:d.dodge||null,dir:-1,hitSet:null};
+    burrowing:0,dodge:d.dodge||null,dir:1,hitSet:null,spawnT:0.3,landT:0};
   B.units.push(u);
   if(!SV.bestiary[eid]){SV.bestiary[eid]=true;persist();toast('NEW ENEMY: '+d.n,'#ff9a6a')}
   return u}
 function spawnCat(cid){
   const s=catStats(cid);const d=s.f;const cb=comboBonuses(B.teamIds);
-  const u={side:'cat',def:d,id:cid,x:CAT_BASE_X+50+Math.random()*26,y:0,
+  const u={side:'cat',def:d,id:cid,x:CAT_BASE_X-60-Math.random()*26,y:0,
     hp:Math.round(s.hp*(1+cb.hp)),maxHp:Math.round(s.hp*(1+cb.hp)),atk:Math.round(s.atk*(1+cb.atk)),rate:d.rate,range:d.range,
     speed:s.speed*(1+cb.spd),kb:d.kb,rateT:0.2,state:'walk',animT:Math.random()*9,flash:0,kbT:0,dieT:0,kbTaken:0,
-    r:d.boss?40:20,st:{frozen:0,slow:0,weakenT:0,weakenP:1,curse:0},shieldHp:0,reviveLeft:0,dir:1,
-    abil:d.abil,area:d.area,traits:['cat'],hitSet:null};
+    r:d.boss?40:20,st:{frozen:0,slow:0,weakenT:0,weakenP:1,curse:0},shieldHp:0,reviveLeft:0,dir:-1,
+    abil:d.abil,area:d.area,traits:['cat'],hitSet:null,spawnT:0.35,landT:0};
   B.units.push(u);SFX.deploy();B.fx.push({k:'deploy',x:u.x,t:0.4,y:0});
   if(SV.missions)SV.missions.dep=(SV.missions.dep||0)+1; // daily mission hook (deploys)
   return u}
@@ -80,7 +85,7 @@ function applyDamage(src,tgt,dmg,o){o=o||{};
       B.st.trigger.spawn.forEach(s=>{for(let k=0;k<s.count;k++)spawnEnemy(s.e)});
       B.warn=B.st.trigger.warn;B.warnT=3.2;SFX.warn();
       if(B.st.shockwave){B.shake=14;SFX.shock();
-        B.units.filter(v=>v.side==='cat').forEach(v=>{if((B.enemyBase.x-v.x)<500)startKb(v,130)})}
+        B.units.filter(v=>v.side==='cat').forEach(v=>{if((v.x-B.enemyBase.x)<500)startKb(v,130)})}
       B.queue.push({t:B.t+2,e:B.st.boss})}
     if(base.hp<=0){base.hp=0;endBattle(base===B.enemyBase)}
     return}
@@ -111,7 +116,7 @@ function killUnit(u,src){
     SFX.burrow();return}
   u.state='die';u.dieT=0;
   if(u.side==='enemy'){B.wallet=Math.min(B.walletMax*WALLET_MAX[B.walletLv],B.wallet+u.def.money);B.kills++;
-    B.fx.push({k:'poof',x:u.x,t:0.5,y:0});SFX.edie();
+    B.fx.push({k:'poof',x:u.x,t:0.5,y:0});B.fx.push({k:'moneypop',x:u.x,t:0.7,y:0});SFX.edie();
     if(u.def.boss){B.shake=Math.max(B.shake,10);B.fx.push({k:'bossdie',x:u.x,t:1.2,y:0})}}
   else{B.fx.push({k:'poof',x:u.x,t:0.5,y:0});SFX.cdie()}}
 function hasImm(u,k){return (u.side==='cat'?(u.abil||[]):(u.def.abil||[])).some(x=>x.a==='immune'&&x.extra===k)}
@@ -121,7 +126,8 @@ function startKb(u,dist,src){
   u.kbTaken=(u.kbTaken||0)+1;
   if(u.kbTaken>=u.kb){killUnit(u,src);return} // KB limit: the kb-th knockback destroys the unit instead of pushing
   u.state='kb';u.kbT=0.38;u.kbTotal=dist||90;
-  u.kbFrom=u.x;SFX.kb();B.fx.push({k:'kbstar',x:u.x,t:0.35,y:0})}
+  u.kbFrom=u.x;u.rateT=0.3; // ORIGINAL RULE: being knocked back mid-attack RESETS the attack timer
+  SFX.kb();B.fx.push({k:'kbstar',x:u.x,t:0.35,y:0})}
 function popTxt(x,y,s,col,big){B.pops.push({x:x+(Math.random()*16-8),y,s:String(s),col:col||'#fff',t:0.9,big:big||14,vy:-55})}
 function applyAbilities(src,tgts,o){
   const abils=src.side==='cat'?(src.abil||[]):(src.def.abil||[]);
@@ -140,7 +146,7 @@ function applyAbilities(src,tgts,o){
           t.st.slow=Math.max(t.st.slow,dur);popTxt(t.x,GROUND_Y-100,'SLOW','#a0d8ff')}break;
         case 'weaken':if(Math.random()<a.p&&!hasImm(t,'weaken')){t.st.weakenT=Math.max(t.st.weakenT,(a.d||4)*half);t.st.weakenP=a.extra||0.5;popTxt(t.x,GROUND_Y-100,'WEAK','#e8a0ff')}break;
         case 'curse':if(Math.random()<a.p&&!hasImm(t,'curse')){t.st.curse=Math.max(t.st.curse,(a.d||3)*half);popTxt(t.x,GROUND_Y-100,'CURSE','#c46adf')}break;
-        case 'warp':if(Math.random()<a.p&&!hasImm(t,'warp')){t.x=clamp(t.x-t.dir*(220+Math.random()*200),CAT_BASE_X+40,ENEMY_BASE_X-40);t.st.frozen=Math.max(t.st.frozen,0.6);popTxt(t.x,GROUND_Y-100,'WARP','#7fe8a0')}break;
+        case 'warp':if(Math.random()<a.p&&!hasImm(t,'warp')){t.x=clamp(t.x-t.dir*(220+Math.random()*200),ENEMY_BASE_X+40,CAT_BASE_X-40);t.st.frozen=Math.max(t.st.frozen,0.6);popTxt(t.x,GROUND_Y-100,'WARP','#7fe8a0')}break;
         case 'toxic':if(Math.random()<a.p){const td=t.maxHp*(a.d||0.2);applyDamage(src,t,td,{noDodge:true,toxic:true});popTxt(t.x,GROUND_Y-120,'TOXIC','#a0ff88')}break;
         case 'dodge':case 'resist':case 'strengthen':break;
         case 'savage':case 'crit':case 'goodbye':break; // savage/crit roll in strike(); 'goodbye' (death explosion): intentionally not implemented — no-op
@@ -174,37 +180,54 @@ function updateUnit(u,dt){
       popTxt(u.x,GROUND_Y-70,'REVIVE!','#8aa06a');B.fx.push({k:'dust',x:u.x,t:0.6,y:0})}
     return}
   if(u.state==='burrow'){ // ZOMBIE BURROW: travels underground toward the cat base (unhittable, invisible, untargetable)
-    const sp=u.speed*2*WALK_MUL*dt;u.x-=sp;u.burrowDist+=sp;
-    if(u.burrowDist>=(u.def.burrow?u.def.burrow.d:0)||u.x<=CAT_BASE_X+60){
-      u.x=clamp(u.x,CAT_BASE_X+60,ENEMY_BASE_X-60);u.state='walk';u.rateT=Math.max(u.rateT,0.2);
+    const sp=u.speed*2*WALK_MUL*dt;u.x+=u.dir*sp;u.burrowDist+=sp; // dir=+1 → digs rightward toward the CAT base
+    if(u.burrowDist>=(u.def.burrow?u.def.burrow.d:0)||u.x>=CAT_BASE_X-60){
+      u.x=clamp(u.x,ENEMY_BASE_X+60,CAT_BASE_X-60);u.state='walk';u.rateT=Math.max(u.rateT,0.2);
       popTxt(u.x,GROUND_Y-70,'BURROW!','#8aa06a');B.fx.push({k:'dust',x:u.x,t:0.6,y:0});SFX.burrow()}
     return}
   for(const k of ['frozen','slow','weakenT','curse'])if(u.st[k]>0)u.st[k]-=dt;
   if(u.flash>0)u.flash-=dt;
+  if(u.landT>0)u.landT-=dt;
+  if(u.spawnT>0)u.spawnT-=dt;
   if(u.strPop){u.strPop=false;popTxt(u.x,GROUND_Y-100-u.r,'STRENGTHEN!','#ff9a4a');SFX.up()}
-  if(u.state==='kb'){u.kbT-=dt;u.x=u.kbFrom-u.dir*u.kbTotal*(1-Math.pow(u.kbT/0.38,2));
-    if(u.kbT<=0){u.state='walk'}return}
+  u.animT+=dt*(u.state==='walk'?1:0.55); // secondary motion (tail sway/blinks) keeps ticking, slower mid-attack
+  if(u.state==='kb'){
+    u.kbT-=dt;
+    u.x=u.kbFrom-u.dir*u.kbTotal*(1-Math.pow(u.kbT/0.38,2));
+    if(u.kbT<=0){u.state='walk';u.landT=0.18;B.fx.push({k:'dust',x:u.x,t:0.5,y:0})}
+    return}
   if(u.st.frozen>0)return;
   u.rateT-=dt;
   // walls block
   const wall=B.units.find(v=>v.state==='wall'&&v.side!==u.side&&Math.abs(v.x-u.x)<30&&v.hp>0);
-  if(u.rateT<=0){
+  /* ===== ATTACK FLOW (original Battle Cats timing) =====
+     rateT<=0 & target in reach → WINDUP (foreswing: crouch back, weapon raises;
+     unit cannot move — "cannot move or start another attack until the animation
+     ends") → damage lands AT the lunge apex (strike frame) → BACKSWING (recoil
+     settle). A whiff (target died mid-windup) still plays the full swing. */
+  if(u.rateT<=0&&u.state==='walk'){
     // BURROW trigger: a burrowing zombie digs under instead of its first strike when a cat is in reach (once per spawn)
-    if(u.side==='enemy'&&u.def.burrow&&!u.burrowUsed&&u.state==='walk'){
+    if(u.side==='enemy'&&u.def.burrow&&!u.burrowUsed){
       const bg=findTargets(u);
       if(bg.some(t=>!t.base)){u.burrowUsed=true;u.state='burrow';u.burrowDist=0;
         B.fx.push({k:'dust',x:u.x,t:0.6,y:0});SFX.burrow();return}}
-    if(strike(u)){u.state='pre';u.preT=Math.max(0.14,u.rate*0.22);u.rateT=u.rate;return}} // rate starts counting at the strike → attack interval == rate
-  if(u.state==='pre'){u.preT-=dt;if(u.preT<=0){u.state='post';u.postT=Math.max(0.12,u.rate*0.3)}return}
+    if(findTargets(u).length){u.state='pre';u.preT0=Math.max(0.16,Math.min(0.42,u.rate*0.30));u.preT=u.preT0;u.rateT=99;return}}
+  if(u.state==='pre'){ // FORESWING — damage lands when this expires
+    u.preT-=dt;
+    if(u.preT<=0){
+      strike(u);                       // hit lands at the moment of the lunge apex
+      u.state='post';u.postT0=Math.max(0.14,Math.min(0.4,u.rate*0.26));u.postT=u.postT0;u.rateT=u.rate}
+    return}
   if(u.state==='post'){u.postT-=dt;if(u.postT<=0)u.state='walk';return}
   // walk (with slow) — official: hold position while a UNIT target is in attack range (base-only reach never stops movement)
   const spd=u.speed*(u.st.slow>0?0.5:1);
   const front=B.units.filter(v=>v.side===u.side&&v!==u&&v.state!=='die'&&v.burrowing<=0&&v.state!=='burrow'&&v.state!=='revive'&&(v.x-u.x)*u.dir>0&&(v.x-u.x)*u.dir<30).sort((a,b)=>(a.x-u.x)*u.dir-((b.x-u.x)*u.dir))[0];
   let halt=!!(wall||front);
   if(!halt){const tg=findTargets(u);if(tg.some(t=>!t.base))halt=true}
-  if(halt){u.animT+=dt*0.7}
+  u.halted=halt;
+  if(halt)u.animT+=dt*0.5
   else{u.x+=u.dir*spd*WALK_MUL*dt;u.animT+=dt*1.2*WALK_MUL}
-  u.x=clamp(u.x,CAT_BASE_X+30,ENEMY_BASE_X-30)}
+  u.x=clamp(u.x,ENEMY_BASE_X+30,CAT_BASE_X-30)}
 function fireCannon(){
   if(B.result||B.paused)return; // pause freezes the field AND player actions
   const c=B.cannon;if(c.t>0)return;c.t=c.charge;c.fired++;
@@ -216,21 +239,21 @@ function fireCannon(){
     case 'standard':es.forEach(v=>{applyDamage({side:'cat',abil:[]},v,15*pw,{noDodge:true});if(v.state!=='die')startKb(v,120)});break;
     case 'slow':es.forEach(v=>{v.st.slow=Math.max(v.st.slow,6*pw);popTxt(v.x,GROUND_Y-100,'SLOW','#a0d8ff')});
       B.fx.push({k:'slowbeam',x:CAT_BASE_X,t:1.3,y:0});SFX.beam&&SFX.beam();break;
-    case 'ironwall':{const wx=clamp(B.cam+640,CAT_BASE_X+200,ENEMY_BASE_X-200);
+    case 'ironwall':{const wx=clamp(B.cam+640,ENEMY_BASE_X+200,CAT_BASE_X-200);
       B.units.push({side:'cat',def:{n:'Iron Wall'},id:'__wall',x:wx,hp:Math.round(1400*pw*treasureMult('baseHp')),maxHp:Math.round(1400*pw*treasureMult('baseHp')),atk:0,rate:0,range:0,speed:0,kb:99,rateT:0,state:'wall',animT:0,flash:0,kbT:0,dieT:0,r:34,st:{frozen:0,slow:0,weakenT:0,weakenP:1,curse:0},shieldHp:0,reviveLeft:0,dir:1,hitSet:null});
       B.fx.push({k:'dust',x:wx,t:0.6,y:0});break}
     case 'thunder':es.forEach(v=>{v.st.frozen=Math.max(v.st.frozen,2.5);popTxt(v.x,GROUND_Y-100,'FREEZE','#7fd0ff')});
-      {const pool=es.length?es:[{x:clamp(B.cam+640,CAT_BASE_X+200,ENEMY_BASE_X-200)}];
+      {const pool=es.length?es:[{x:clamp(B.cam+640,ENEMY_BASE_X+200,CAT_BASE_X-200)}];
        for(let i=0;i<Math.min(5,pool.length+1);i++){const v=pool[i%pool.length];B.fx.push({k:'bolt',x:v.x+(Math.random()*40-20),t:0.45,y:0})}}
       SFX.thunder();break;
     case 'water':es.forEach(v=>{if(v.state!=='die')startKb(v,220*pw)});
-      B.fx.push({k:'waterwave',x:CAT_BASE_X+60,t:1.0,y:0});SFX.wave();break;
+      B.fx.push({k:'waterwave',x:CAT_BASE_X-60,t:1.0,y:0});SFX.wave();break;
     case 'holy':es.forEach(v=>{const fl=v.def.tr&&(v.def.tr.includes('floating')||v.def.tr.includes('angel'));applyDamage({side:'cat',abil:[]},v,fl?120*pw:12*pw,{noDodge:true});if(v.state!=='die'&&fl)startKb(v,90);
       B.fx.push({k:'holyblast',x:v.x,t:0.8,y:0})});
-      if(!es.length)B.fx.push({k:'holyblast',x:clamp(B.cam+640,CAT_BASE_X+300,ENEMY_BASE_X-100),t:0.8,y:0});break;
+      if(!es.length)B.fx.push({k:'holyblast',x:clamp(B.cam+640,ENEMY_BASE_X+300,CAT_BASE_X-100),t:0.8,y:0});break;
     case 'breaker':es.forEach(v=>{applyDamage({side:'cat',abil:[{a:'barrierBreak',p:1,d:0,vs:null}]},v,20*pw,{noDodge:true}); // shatter + damage-through handled by applyDamage
       B.fx.push({k:'breaker',x:v.x,t:0.55,y:0})});
-      B.fx.push({k:'breaker',x:clamp(B.cam+640,CAT_BASE_X+300,ENEMY_BASE_X-100),t:0.55,y:0});break;
+      B.fx.push({k:'breaker',x:clamp(B.cam+640,ENEMY_BASE_X+300,CAT_BASE_X-100),t:0.55,y:0});break;
   }}
 function updateBattle(dt){
   if(B.result){B.resultT+=dt;
@@ -274,6 +297,21 @@ function updateBattle(dt){
   if(Bn.shake>0)Bn.shake=Math.max(0,Bn.shake-30*d);
   if(Bn.warnT>0)Bn.warnT-=d;
   Bn.catBase.alarm=Math.max(0,Bn.catBase.alarm-d);Bn.enemyBase.alarm=Math.max(0,Bn.enemyBase.alarm-d);
+  /* ===== FRONT-LINE AUTO-FOLLOW CAMERA (original behavior) =====
+     The camera eases after the battle front (the furthest-advanced cat — cats push
+     LEFTWARD here). Manual scrolling takes over instantly and auto-follow resumes
+     ~2.6s after release. Enemy breakthrough near the home base snaps attention home. */
+  if(Bn.camHold>0)Bn.camHold-=dt;
+  else if(!B.result){
+    const cats=Bn.units.filter(v=>v.side==='cat'&&v.state!=='die'&&v.state!=='burrow'&&v.state!=='revive');
+    const frontX=cats.length?Math.min(...cats.map(v=>v.x)):Bn.catBase.x; // leftmost cat = front line
+    const homeRisk=Bn.units.some(v=>v.side==='enemy'&&v.state!=='die'&&v.x>Bn.catBase.x-560); // breakthrough!
+    let target;
+    if(homeRisk)target=Bn.catBase.x-640+380;                    // defend home: keep the base in view
+    else target=clamp(frontX-640+360,0,FIELD_W-1280);            // front sits ~28% from the screen's left edge
+    const dc=target-Bn.cam;
+    if(Math.abs(dc)>2)Bn.cam=clamp(Bn.cam+dc*Math.min(1,dt*1.6),0,FIELD_W-1280) // critically-damped ease (soft drift like the original)
+  }
   // wallet / worker / cannon buttons handled in UI
 }
 function endBattle(win){
@@ -433,7 +471,7 @@ function drawBattleBG(b,shx,shy){
   cx.fillStyle=grad.ground2;cx.fillRect(0,GROUND_Y,1280,8);
   // ground pattern
   cx.strokeStyle=grad.ground3;cx.lineWidth=2;
-  for(let i=0;i<40;i++){const gx=((i*64)-b.cam)%(40*64);cx.beginPath();cx.moveTo(gx,GROUND_Y+14);cx.lineTo(gx+22,GROUND_Y+30);cx.stroke()}
+  for(let i=0;i<42;i++){const gx=((i*64)-b.cam)%(42*64);cx.beginPath();cx.moveTo(gx,GROUND_Y+14);cx.lineTo(gx+22,GROUND_Y+30);cx.stroke()}
 }
 const BG_THEMES={grass:{sky1:'#bfe8ff',sky2:'#e8ffd0',sun:'#ffe66a',far:'#8fbf6a',mid:'#6aa04e',ground:'#5a9e3f',ground2:'#4a8a33',ground3:'rgba(0,0,0,.12)'},
  desert:{sky1:'#ffe0a8',sky2:'#ffefc8',sun:'#ff9a4a',far:'#d8a86a',mid:'#c09050',ground:'#e0b070',ground2:'#c89858',ground3:'rgba(120,80,40,.2)'},
@@ -466,8 +504,11 @@ function drawBases(b){
   // flag
   cx.strokeStyle='#5a6478';cx.lineWidth=4;cx.beginPath();cx.moveTo(0,-150);cx.lineTo(0,-190);cx.stroke();
   cx.fillStyle='#ffd94a';cx.beginPath();cx.moveTo(0,-190);cx.lineTo(34+Math.sin(G.t*4)*4,-182);cx.lineTo(0,-172);cx.fill();
-  // cannon
-  cx.fillStyle='#3a3f4e';cx.fillRect(-14,-170,28,16);
+  // cannon barrel — points LEFT toward the enemy base (home base stands on the RIGHT)
+  cx.fillStyle='#3a3f4e';cx.fillRect(-40,-168,44,14);
+  cx.fillStyle='#5a6478';cx.fillRect(-40,-168,44,4);
+  cx.fillStyle='#22262f';cx.beginPath();cx.arc(-38,-161,8,0,TAU);cx.fill();
+  cx.fillStyle='#3a3f4e';cx.fillRect(-12,-176,26,20);
   cx.restore();
   // hp bar
   baseBar(cb.x,GROUND_Y-215,cb.hp,cb.maxHp,'#7fe8a0');
@@ -496,21 +537,49 @@ function drawUnit(u){
     cx.save();cx.translate(u.x,GROUND_Y);
     cx.fillStyle='rgba(88,66,38,.85)';cx.beginPath();cx.ellipse(0,-4,26,9,0,0,TAU);cx.fill();
     cx.fillStyle='rgba(58,44,24,.9)';cx.beginPath();cx.ellipse(0,-7,14,5,0,0,TAU);cx.fill();
+    // dirt crumb trail while burrowing
+    for(let i=0;i<3;i++){const cp=(G.t*2+i*0.33)%1;cx.globalAlpha=(1-cp)*0.6;
+      cx.fillStyle='#6a5230';cx.beginPath();cx.arc(-u.dir*cp*22,-6-Math.abs(Math.sin(cp*9))*8,2.4,0,TAU);cx.fill()}
     cx.restore();return}
-  const y=GROUND_Y-(u.state==='kb'?Math.sin((1-u.kbT/0.38)*Math.PI)*26:0);
-  // soft ground shadow (depth cue — skips dying fade / walls)
+  /* ===== LIVE ANIMATION TRANSFORM PIPELINE (applied around the baked sprite) =====
+     bake = body pose only (walk/idle/windup/strike frames); all positional juice —
+     spawn pop-in, hit squash, kb tumble arc, landing squash, death spin — is a live
+     transform so it stays smooth at 60fps and composes with every unit painter. */
+  const dieP=u.state==='die'?clamp(u.dieT/0.55,0,1):0;   // death: fast spin+shrink phase, then fade-out drift
+  const dieFade=u.state==='die'?clamp((u.dieT-0.55)/0.35,0,1):0;
+  const kbP=u.state==='kb'?1-u.kbT/0.38:0;               // knockback: parabolic tumble arc
+  const kbY=u.state==='kb'?-Math.sin(kbP*Math.PI)*42:0;
+  const kbRot=u.state==='kb'?-u.dir*kbP*2.4:0;           // tumble back over the arc
+  const spn=u.spawnT>0?1-u.spawnT/(u.side==='cat'?0.35:0.3):1;
+  const pop=spn<1?1+Math.sin(Math.min(1,spn)*Math.PI)*0.16:1; // spawn overshoot bounce
+  const lsq=u.landT>0?u.landT/0.18:0;                    // landing squash (widescreen pancake)
+  const hsq=u.flash>0?u.flash/0.12:0;                    // fresh-hit micro squash
+  const y=GROUND_Y+kbY-(dieFade>0?dieFade*26:0);
+  // soft ground shadow (depth cue — skips dying fade / walls; shrinks while airborne)
   if(u.state!=='die'&&u.state!=='wall'){
-    const sh=clamp(1-(u.state==='kb'?Math.sin((1-u.kbT/0.38)*Math.PI)*0.4:0),0.6,1);
+    const air=kbY<-4?0.55:1;const sh=clamp(air*(1-(u.state==='kb'?Math.sin((1-u.kbT/0.38)*Math.PI)*0.4:0)),0.5,1);
     cx.fillStyle='rgba(20,16,10,'+(0.22*sh).toFixed(3)+')';
-    cx.beginPath();cx.ellipse(u.x,GROUND_Y-3,u.r*0.85,4.2,0,0,TAU);cx.fill()}
+    cx.beginPath();cx.ellipse(u.x,GROUND_Y-3,u.r*0.85*sh,4.2*sh,0,0,TAU);cx.fill()}
   cx.save();cx.translate(u.x,y);
-  if(u.state==='die'){const p=u.dieT/0.9;cx.globalAlpha=1-p;cx.rotate(u.dir*p*1.4);cx.translate(0,-p*30)}
-  const e={anim:u.state==='pre'||u.state==='post'?'attack':u.state==='kb'?'kb':'walk',animT:u.animT,flash:u.flash>0,frozen:u.st.frozen>0,weak:u.st.weakenT>0,curse:u.st.curse>0,slow:u.st.slow>0,r:u.r,boss:u.side==='enemy'&&u.def.boss};
+  // death: spin + shrink (first half), then drift up while fading
+  if(u.state==='die'){cx.globalAlpha=1-dieFade;cx.rotate(-u.dir*dieP*2.2);const ds=1-dieP*0.35;cx.scale(ds,ds)}
+  // spawn pop-in: scale from 0 with a bouncy overshoot
+  if(spn<1){const se=0.55+spn*0.45;cx.scale(spn<0.15?spn/0.15*0.55:se*pop,spn<0.15?spn/0.15*0.55:se*pop)}
+  // knockback tumble rotation (arc offset handled by kbY above)
+  if(u.state==='kb')cx.rotate(kbRot);
+  // landing squash / hit micro-squash (compose both)
+  if(lsq>0||hsq>0){const w=1+lsq*0.28+hsq*0.08,h=1-lsq*0.22-hsq*0.10;cx.scale(w,h)}
+  const e={anim:u.state==='pre'?'windup':(u.state==='post'?'attack':(u.state==='kb'?'idle':'walk')),
+    animT:u.animT,idle:u.halted&&u.state==='walk',atkT:u.state==='pre'?1-u.preT/(u.preT0||0.3):(u.state==='post'?1-u.postT/(u.postT0||0.25):0),
+    flash:u.flash>0,frozen:u.st.frozen>0,weak:u.st.weakenT>0,curse:u.st.curse>0,slow:u.st.slow>0,r:u.r,boss:u.side==='enemy'&&u.def.boss};
   if(u.state==='wall'){cx.fillStyle='#8a94a8';rr(cx,-26,-70,52,70,8);cx.fill();cx.strokeStyle='#5a6478';cx.lineWidth=3;rr(cx,-26,-70,52,70,8);cx.stroke();cx.fillStyle='#6a7488';for(let i=0;i<3;i++)cx.fillRect(-20+i*16,-62,10,54)}
   else if(u.side==='cat')ART.cat({id:u.id,x:0,y:0,s:u.r/20,t:u.animT,dir:u.dir,e});
   else ART.enemy({id:u.id,x:0,y:0,s:(u.def.boss?2.1:1)*(u.r/22),t:u.animT,dir:u.dir,e,u,tint:B.tint});
   if(e.flash){cx.globalCompositeOperation='source-atop';cx.fillStyle='rgba(255,255,255,.6)';cx.fillRect(-60,-120,120,130);cx.globalCompositeOperation='source-over'}
   cx.restore();
+  if(u.state==='die'&&dieFade>0){ // death poof ring + rising motes
+    cx.globalAlpha=dieFade*0.8;cx.strokeStyle='#fff';cx.lineWidth=2.5;
+    cx.beginPath();cx.ellipse(u.x,GROUND_Y-14,20+dieFade*26,8+dieFade*10,0,0,TAU);cx.stroke();cx.globalAlpha=1}
   if(e.frozen){cx.fillStyle='rgba(140,220,255,.45)';cx.beginPath();cx.arc(u.x,y-30,u.r+12,0,TAU);cx.fill();cx.strokeStyle='#bfeaff';cx.stroke()}
   // hp bar (damaged only)
   if(u.hp<u.maxHp&&u.state!=='die'){const w=u.def&&u.def.boss?70:36;
@@ -521,7 +590,7 @@ function drawUnit(u){
     const icons=[];if(u.st.frozen>0)icons.push(['❄','#7fd0ff']);if(u.st.slow>0)icons.push(['⏱','#a0d8ff']);if(u.st.weakenT>0)icons.push(['↓','#e8a0ff']);if(u.st.curse>0)icons.push(['☾','#c46adf']);
     icons.forEach((ic,i)=>txt(cx,ic[0],u.x-(icons.length-1)*7+i*14,y-u.r*2.4-18,12,ic[1],'center',3,'#101018',700));
     if(u.shieldHp>0)txt(cx,'◈',u.x+u.r+4,y-40,14,'#c46adf','center',3,'#101018',700)}}
-const FXDUR={bossdie:1.2,baseboom:1.4,cannon:0.5,slowbeam:1.3,bolt:0.45,waterwave:1.0,holyblast:0.8,breaker:0.55,dust:0.6,crown:1.6};
+const FXDUR={bossdie:1.2,baseboom:1.4,cannon:0.5,slowbeam:1.3,bolt:0.45,waterwave:1.0,holyblast:0.8,breaker:0.55,dust:0.6,crown:1.6,moneypop:0.7};
 function drawFx(f){const p=clamp(1-f.t/(FXDUR[f.k]||0.5),0,1);
   cx.save();cx.translate(f.x,GROUND_Y-30+(f.y||0));
   switch(f.k){
@@ -531,18 +600,18 @@ function drawFx(f){const p=clamp(1-f.t/(FXDUR[f.k]||0.5),0,1);
     case 'slash':cx.globalAlpha=1-p*0.7;cx.strokeStyle='#fff';cx.lineWidth=4;const sw=(f.range>100?60:26);cx.beginPath();cx.moveTo(f.dir*sw*0.3,-30);cx.quadraticCurveTo(f.dir*sw,-16,f.dir*sw*0.4,10);cx.stroke();break;
     case 'bossdie':cx.globalAlpha=1-p;for(let i=0;i<8;i++){const a=i/8*TAU;cx.fillStyle=i%2?'#ffd94a':'#ff7a5a';cx.beginPath();cx.arc(Math.cos(a)*p*120,Math.sin(a)*p*60,14*(1-p)+4,0,TAU);cx.fill()}break;
     case 'baseboom':cx.globalAlpha=1-p;for(let i=0;i<12;i++){const a=i/12*TAU*2+p*3;cx.fillStyle=i%2?'#ffd94a':'#fff';cx.beginPath();cx.arc(Math.cos(a)*p*160,Math.sin(a)*p*90-40,16*(1-p)+4,0,TAU);cx.fill()}break;
-    case 'cannon':cx.globalAlpha=1-p;cx.fillStyle='#fff';cx.fillRect(0,-46,1280*p,26);cx.fillStyle='rgba(255,220,100,.7)';cx.fillRect(0,-52,1280*p,38);break;
+    case 'cannon':cx.globalAlpha=1-p;cx.fillStyle='#fff';cx.fillRect(-1280*p,-46,1280*p,26);cx.fillStyle='rgba(255,220,100,.7)';cx.fillRect(-1280*p,-52,1280*p,38);break;
     case 'slowbeam':{cx.globalAlpha=(1-p)*0.9;const bw=26*(1-p*0.5);const grad=cx.createLinearGradient(0,-60-bw,0,-20);
       grad.addColorStop(0,'rgba(140,200,255,0)');grad.addColorStop(0.7,'rgba(120,180,255,.75)');grad.addColorStop(1,'rgba(230,250,255,.95)');
-      cx.fillStyle=grad;cx.fillRect(-40,-60-bw,2600+p*600,bw+40);
-      cx.fillStyle='rgba(255,255,255,.85)';cx.fillRect(-40,-46,2600+p*600,7);break}
+      cx.fillStyle=grad;cx.fillRect(-(2600+p*600),-60-bw,2600+p*600,bw+40);
+      cx.fillStyle='rgba(255,255,255,.85)';cx.fillRect(-(2600+p*600),-46,2600+p*600,7);break}
     case 'bolt':{cx.globalAlpha=1-p;cx.strokeStyle='#bfe4ff';cx.lineWidth=4;cx.beginPath();let bx=0,by=-560;cx.moveTo(bx,by);
       while(by<-10){bx+=Math.random()*30-15;by+=44;cx.lineTo(bx,by)}cx.stroke();
       cx.strokeStyle='#fff';cx.lineWidth=1.6;cx.stroke();
       cx.fillStyle='rgba(190,230,255,'+(0.7*(1-p))+')';cx.beginPath();cx.arc(0,-6,26*p+6,0,TAU);cx.fill();break}
     case 'waterwave':{cx.globalAlpha=(1-p)*0.85;for(let i=0;i<3;i++){const wp=i/3;cx.strokeStyle=i%2?'rgba(120,200,255,.9)':'rgba(220,245,255,.9)';cx.lineWidth=9-i*2;
-      cx.beginPath();cx.arc(wp*900*(1-p*0.4),10,46+p*130,-Math.PI*0.86,-Math.PI*0.14);cx.stroke()}
-      cx.fillStyle='rgba(140,210,255,.35)';cx.beginPath();cx.ellipse(p*700,26,220*p+40,20,0,0,TAU);cx.fill();break}
+      cx.beginPath();cx.arc(-wp*900*(1-p*0.4),10,46+p*130,-Math.PI*0.86,-Math.PI*0.14);cx.stroke()}
+      cx.fillStyle='rgba(140,210,255,.35)';cx.beginPath();cx.ellipse(-p*700,26,220*p+40,20,0,0,TAU);cx.fill();break}
     case 'holyblast':{cx.globalAlpha=(1-p)*0.95;const hw=30*(1-p*0.6);
       const grad2=cx.createLinearGradient(-hw,0,hw,0);grad2.addColorStop(0,'rgba(255,240,160,0)');grad2.addColorStop(0.5,'rgba(255,246,200,.95)');grad2.addColorStop(1,'rgba(255,240,160,0)');
       cx.fillStyle=grad2;cx.fillRect(-hw,-560,hw*2,560);
@@ -559,28 +628,40 @@ function drawFx(f){const p=clamp(1-f.t/(FXDUR[f.k]||0.5),0,1);
         cx.fillStyle=i%2?'#fff':'#ffd94a';cx.beginPath();cx.arc(Math.cos(a2)*rr3,Math.sin(a2)*rr3*0.55-20,4*(1-p)+1.5,0,TAU);cx.fill()}
       break}
     case 'dust':cx.globalAlpha=(1-p)*0.8;cx.fillStyle='#c8b89a';for(let i=0;i<7;i++){const a=i/7*TAU;cx.beginPath();cx.arc(Math.cos(a)*(10+p*46),Math.sin(a)*5-p*26,9*(1-p)+2,0,TAU);cx.fill()}break;
+    case 'moneypop':{cx.globalAlpha=1-p; // 3 gold coins arc up + sparkle (enemy bounty feedback)
+      for(let i=0;i<3;i++){const ph=p+i*0.12;const cxp=-14+i*14+ph*8;const cyp=-ph*(64+i*10)+Math.pow(ph,2)*40;
+        cx.save();cx.translate(cxp,cyp);cx.rotate(ph*(i%2?4:-3));
+        cx.fillStyle='#ffd23f';cx.beginPath();cx.arc(0,0,6.5,0,TAU);cx.fill();
+        cx.lineWidth=2;cx.strokeStyle='#b07818';cx.stroke();
+        cx.fillStyle='rgba(255,255,255,.65)';cx.beginPath();cx.arc(-2.2,-2.2,1.7,0,TAU);cx.fill();
+        cx.fillStyle='#b07818';txt(cx,'¢',0,0.5,8,'#8a5a10','center');cx.restore()}
+      for(let i=0;i<4;i++){const a=i/4*TAU+0.6;const sr=12+((i*29)%14)+p*34;
+        cx.fillStyle=i%2?'#fff':'#ffd94a';cx.beginPath();cx.arc(Math.cos(a)*sr,Math.sin(a)*sr*0.6-p*18,2.2*(1-p)+0.8,0,TAU);cx.fill()}
+      break}
     case 'shieldbreak':cx.globalAlpha=1-p;cx.strokeStyle='#c46adf';cx.lineWidth=3;for(let i=0;i<6;i++){const a=i/6*TAU;cx.beginPath();cx.moveTo(Math.cos(a)*10,Math.sin(a)*10-20);cx.lineTo(Math.cos(a)*(20+p*30),Math.sin(a)*(20+p*30)-20);cx.stroke()}break;
   }
   cx.restore();cx.globalAlpha=1}
 function drawBattleHUD(b,dt){
-  // camera drag region registered FIRST so HUD buttons (registered later) win the hit scan
-  SCROLL('field',0,110,1280,470,()=>b.cam,v=>{b.cam=clamp(v,0,FIELD_W-1280)},FIELD_W-1280,null).horiz=true;
-  /* ===== TOP-RIGHT: enemy base HP — gold chunky numerals + cent glyph (R8) ===== */
+  // camera drag region registered FIRST so HUD buttons (registered later) win the hit scan;
+  // manual scrolling pauses the front-line auto-follow for 2.6s (original feel)
+  SCROLL('field',0,110,1280,470,()=>b.cam,v=>{b.cam=clamp(v,0,FIELD_W-1280);b.camHold=2.6},FIELD_W-1280,null).horiz=true;
+  /* ===== TOP-LEFT: enemy base HP (enemy base stands LEFT — gold numerals + cent glyph) ===== */
   const eb=b.enemyBase;
   const eTxt=fmt(Math.max(0,Math.ceil(eb.hp)))+'/'+fmt(eb.maxHp);
   cx.font=FONT(26,700);
-  txt(cx,eTxt,1258,30,26,'#ffd23f','right',5,'rgba(20,16,4,.9)',700);
-  drawCent(cx,1266,29,9,'#ffd23f','rgba(20,16,4,.9)',4);
-  /* ===== TOP-LEFT: pause = yellow circle w/ two dark bars (R8) + retreat ===== */
-  cx.fillStyle=b.paused?'#e85840':'#ffd23f';cx.beginPath();cx.arc(37,33,23,0,TAU);cx.fill();
+  const enW=cx.measureText(eTxt).width;
+  txt(cx,eTxt,20,30,26,'#ffd23f','left',5,'rgba(20,16,4,.9)',700);
+  drawCent(cx,20+enW+11,29,9,'#ffd23f','rgba(20,16,4,.9)',4);
+  /* ===== TOP-RIGHT: pause (yellow circle w/ two dark bars) + retreat — home-base side ===== */
+  cx.fillStyle=b.paused?'#e85840':'#ffd23f';cx.beginPath();cx.arc(1243,33,23,0,TAU);cx.fill();
   cx.lineWidth=4;cx.strokeStyle=b.paused?'#7a1a10':'#8a5a20';cx.stroke();
-  if(b.paused)txt(cx,'\u25b6',37,34,17,'#5a3b16','center',3,'#fff',700);
-  else{cx.fillStyle='#5a3b16';cx.fillRect(29,23,6,20);cx.fillRect(39,23,6,20)}
-  BTN('pause',12,10,46,46,()=>{if(B.result)return;b.paused=!b.paused;SFX.click()},{flat:true,nohov:true}); // hit-zone literal matches the test.html audit (drawn circle unchanged)
-  BTN('quit',66,10,42,42,()=>{if(B.result)return;openModal('RETREAT?',['Give up this battle? Energy is already spent.'],[{n:'Yes',col:'#e85840',cb:()=>{if(B.result)return;endBattle(false);applyBattleResult();G.screen='map';G.screenPrev=[];B=null;AudioSetBgm('menu')}},{n:'No',cb:()=>{}}])},{col:'rgba(40,46,60,.85)',outline:'#22262f',label:'\u2715',fs:15,r:21,tcol:'#fff'}); // retreat order: endBattle(false) FIRST (defeat SFX/flag), THEN applyBattleResult — no reward on retreat
-  // boss name (yellow w/ outline) beside the pause button while a boss is on the field
+  if(b.paused)txt(cx,'\u25b6',1243,34,17,'#5a3b16','center',3,'#fff',700);
+  else{cx.fillStyle='#5a3b16';cx.fillRect(1235,23,6,20);cx.fillRect(1245,23,6,20)}
+  BTN('pause',1218,10,46,46,()=>{if(B.result)return;b.paused=!b.paused;SFX.click()},{flat:true,nohov:true});
+  BTN('quit',1170,10,42,42,()=>{if(B.result)return;openModal('RETREAT?',['Give up this battle? Energy is already spent.'],[{n:'Yes',col:'#e85840',cb:()=>{if(B.result)return;endBattle(false);applyBattleResult();G.screen='map';G.screenPrev=[];B=null;AudioSetBgm('menu')}},{n:'No',cb:()=>{}}])},{col:'rgba(40,46,60,.85)',outline:'#22262f',label:'\u2715',fs:15,r:21,tcol:'#fff'}); // retreat order: endBattle(false) FIRST (defeat SFX/flag), THEN applyBattleResult — no reward on retreat
+  // boss name (yellow w/ outline) under the enemy base HP while a boss is on the field
   const bossU=b.units.find(u=>u.side==='enemy'&&u.def.boss&&u.state!=='die'&&u.state!=='burrow');
-  if(bossU&&!b.result)txt(cx,ENEMAP[bossU.id].n,122,32,18,'#ffd23f','left',4.5,'rgba(60,20,4,.95)',700);
+  if(bossU&&!b.result)txt(cx,ENEMAP[bossU.id].n,22,58,18,'#ffd23f','left',4.5,'rgba(60,20,4,.95)',700);
   // stage name center-top — dark chip so it reads against any sky (VLM QA fix: no more floating text)
   {const sname=b.st.name+(b.st.endless?'  \u2014 SCORE '+b.score:'');
     cx.font=FONT(15,700);const snw=cx.measureText(sname).width+36;
@@ -628,9 +709,11 @@ function drawBattleHUD(b,dt){
   cx.fillStyle='#ffd23f';cx.beginPath();cx.arc(bx,by,38,0,TAU);cx.fill();cx.restore();
   cx.lineWidth=4;cx.strokeStyle='#8a5a20';cx.beginPath();cx.arc(bx,by,38,0,TAU);cx.stroke();
   ART.catIcon('cat',bx,by-4,19);
-  cx.font=FONT(19,700);const wNum=String(Math.floor(b.wallet));const wnW=cx.measureText(wNum).width;
-  txt(cx,wNum,bx-4,by+56,19,'#ffd23f','right',4,'rgba(20,16,4,.95)',700);
-  drawCent(cx,bx-wnW+1,by+55,7,'#ffd23f','rgba(20,16,4,.95)',3.5);
+  cx.font=FONT(21,700);const wNum=String(Math.floor(b.wallet));const wnW=cx.measureText(wNum).width;
+  // money cluster centered under the wallet circle: NUMBER then ¢ (symbol never covers digits)
+  const gapC=5,symW=15;const totW=wnW+gapC+symW;const mnx=bx-totW/2;
+  txt(cx,wNum,mnx,by+56,21,'#ffd23f','left',4,'rgba(20,16,4,.95)',700);
+  drawCent(cx,mnx+wnW+gapC+7,by+55,7,'#ffd23f','rgba(20,16,4,.95)',3.5);
   const wkCost=WORKER_COST[b.workerLv];
   if(b.workerLv<7&&b.wallet>=wkCost){ // affordable worker upgrade — contained pill badge (VLM QA fix)
     cx.save();cx.translate(bx+34,by-34);
@@ -699,8 +782,8 @@ function drawBattleHUD(b,dt){
       drawCent(cc2,dw/2-(csw+12)/2+csw+6,dh+8,5.5,cCol,'rgba(16,20,30,.9)',3)}});
   });
   const showL=b.cam>10,showR=b.cam<FIELD_W-1280-10;
-  if(showL)BTN('camL',8,300,46,64,()=>{b.cam=clamp(b.cam-500,0,FIELD_W-1280);SFX.click()},{col:'rgba(30,34,48,.75)',label:'\u25c0',fs:20,r:10,tcol:'#fff'});
-  if(showR)BTN('camR',1226,300,46,64,()=>{b.cam=clamp(b.cam+500,0,FIELD_W-1280);SFX.click()},{col:'rgba(30,34,48,.75)',label:'\u25b6',fs:20,r:10,tcol:'#fff'});
+  if(showL)BTN('camL',8,300,46,64,()=>{b.cam=clamp(b.cam-500,0,FIELD_W-1280);b.camHold=2.0;SFX.click()},{col:'rgba(30,34,48,.75)',label:'\u25c0',fs:20,r:10,tcol:'#fff'});
+  if(showR)BTN('camR',1226,300,46,64,()=>{b.cam=clamp(b.cam+500,0,FIELD_W-1280);b.camHold=2.0;SFX.click()},{col:'rgba(30,34,48,.75)',label:'\u25b6',fs:20,r:10,tcol:'#fff'});
 }
 
 function openWorkerMenu(b){

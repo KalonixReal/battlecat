@@ -11,6 +11,7 @@ function toast(msg,col){G.toasts.push({msg,t:3.2,age:0,col:col||'#ffd94a'})}
 function openModal(title,lines,btns,drawExtra){G.modal={title,lines,btns:btns||[{n:'CLOSE',cb:()=>{}}],drawExtra}}
 function toDesign(e){return{x:(e.clientX-OX)/SC,y:(e.clientY-OY)/SC}}
 cv.addEventListener('pointerdown',e=>{const p=toDesign(e);AudioUnlock();G.pdown={x:p.x,y:p.y,moved:false,t:now()};
+  try{cv.setPointerCapture(e.pointerId)}catch(e2){} // drag survives leaving the window — no more stuck/lost drags
   if(G.modal){for(let i=G.hits.length-1;i>=0;i--){const h=G.hits[i];if(!String(h.id).startsWith('mb')&&!h.modal)continue;
     if(p.x>=h.x&&p.x<=h.x+h.w&&p.y>=h.y&&p.y<=h.y+h.h){G.pend={h,p}}}
     if(G.gachaAnim)G.gachaAnim.tap=true;return}
@@ -48,7 +49,7 @@ cv.addEventListener('wheel',e=>{const p=toDesign(e);
   let sreg=null;for(let i=G.hits.length-1;i>=0;i--){const s=G.hits[i];if(!s||!s.scroll||s.hidden)continue;
     if(p.x>=s.x&&p.x<=s.x+s.w&&p.y>=s.y&&p.y<=s.y+s.h){sreg=s;break}}
   if(sreg){const dy=e.deltaY;
-    if(sreg.horiz){const dx=Math.abs(e.deltaX)>Math.abs(dy)?e.deltaX:dy;sreg.setOff(sreg.off()+dx)}
+    if(sreg.horiz){const dx=Math.abs(e.deltaX)>Math.abs(dy)?e.deltaX:dy;sreg.setOff(sreg.off()-dx)} // wheel matches the grab-the-world drag (same feel as finger)
     else sreg.setOff(clamp(sreg.off()+dy,0,sreg.max()));
     e.preventDefault();e.stopPropagation()}
 },{passive:false});
@@ -58,9 +59,11 @@ function endPointer(e){if(G.dragScroll){const ds=G.dragScroll;
       if(ds.pendBtn&&ds.pendBtn.cb)ds.pendBtn.cb()}
     if(ds.pendBtn)ds.pendBtn.active=false;
     G.dragScroll=null}
+  if(e&&e.pointerId!==undefined){try{cv.releasePointerCapture(e.pointerId)}catch(e2){}}
   if(G.pend&&G.pdown){const p=toDesign(e);const h=G.pend.h;if(p.x>=h.x&&p.x<=h.x+h.w&&p.y>=h.y&&p.y<=h.y+h.h){if(!G.pdown.moved&&h.cb)h.cb()}G.pend=null}
   for(const h of G.hits)h.active=false;G.pdown=null}
 cv.addEventListener('pointerup',endPointer);cv.addEventListener('pointercancel',endPointer);
+cv.addEventListener('lostpointercapture',endPointer);
 function BTN(id,x,y,w,h,cb,o){o=o||{};G.hits.push({id,x,y,w,h,cb,scroll:o.scroll,hidden:o.hidden,modal:o.modal});if(o.scroll)return;
   const hov=G.hoverId===id&&!o.nohov,act=h.active&&!o.nohov;
   cx.save();cx.translate(x+(act?2:0),y+(act?2:0));
@@ -911,7 +914,13 @@ function openEventModal(ev){const s=ev.s;const uni=[...new Set(s.pool)];
       if(s.reward.ticket)rtxt+='  ·  Rare Ticket chance!';
       txt(cx,rtxt,x+w/2,ry+15.5,12.5,rcol,'center',3,'#fff',700)})}
 function tryStartBattle(ch,idx){const st=idx>=0?genStage(ch,idx):(G.pendingEvent?G.pendingEvent.s:null);if(!st)return;
-  if(SV.energy<st.energy){toast('Not enough energy! ('+SV.energy+'/'+st.energy+')','#ff7a7a');SFX.error();return}
+  if(SV.energy<st.energy){ // blocking dialog (original behavior) — a toast was too easy to miss
+    SFX.error();
+    const regen=Math.max(0,st.energy-SV.energy);
+    openModal('OUT OF ENERGY',['Energy: '+SV.energy+' / '+st.energy,'Leadership is a renewable resource — energy refills 1 per minute'+(regen>0?' (full in ~'+tstr(regen)+')':'')+'.'],[
+      {n:'STORE — top up!',col:'#ffd23f',cb:()=>{G.screen='store';G.screenPrev=[];G.hits=[];G.modal=null;SFX.click()}},
+      {n:'OK',cb:()=>{}}]);
+    return}
   spendEnergy(st.energy);SFX.click();startBattle(st)}
 /* ============================== SCREEN: EQUIP ============================== */
 const RAR_COL={normal:'#c9c9d6',special:'#7fd0ff',rare:'#8fe8ff',srar:'#ffd94a',uber:'#ff9ad5',legend:'#c46adf'};
@@ -2561,7 +2570,7 @@ function drawSettings(dt){drawTopBar('SETTINGS',true);
   // ---- reset: double confirm (two modals) ----
   BTN('sreset',280,370,340,60,()=>{openModal('RESET GAME?',['This deletes ALL progress permanently!'],[
     {n:'DELETE ALL',col:'#ff5a5a',cb:()=>{openModal('FINAL CONFIRM',['Every cat, XP, treasure and clear will be','wiped from this browser. There is no undo.'],[
-      {n:'YES — WIPE SAVE',col:'#ff5a5a',cb:()=>{localStorage.removeItem(SAVE_KEY);loadSave();toast('Game reset');G.screen='title';G.screenPrev=[]}},
+      {n:'YES — WIPE SAVE',col:'#ff5a5a',cb:()=>{localStorage.removeItem(SAVE_KEY);localStorage.removeItem(SAVE_KEY_LEGACY);loadSave();toast('Game reset');G.screen='title';G.screenPrev=[]}},
       {n:'KEEP MY SAVE',cb:()=>{}}])}},
     {n:'CANCEL',cb:()=>{}}])},{col:'#ff5a5a',outline:'#8a1a1a',label:'RESET SAVE',fs:16});
   // ---- dev-only DEMO BOOST (not part of normal progression UI) ----

@@ -15,8 +15,10 @@ function so(c,fn,lw,col){c.strokeStyle=col||OUT;c.lineWidth=lw||3;c.lineCap='rou
 /* outlined tube limb (dark edge + light core) */
 function tube(c,fn,w,col){c.lineCap='round';c.lineJoin='round';c.strokeStyle=OUT;c.lineWidth=w+2.4;c.beginPath();fn();c.stroke();c.strokeStyle=col||CATW;c.lineWidth=w;c.beginPath();fn();c.stroke()}
 function dots2(c,x,y,r){c.beginPath();c.arc(-x,y,r,0,TAU);c.fill();c.beginPath();c.arc(x,y,r,0,TAU);c.fill()}
-/* stubby scissoring legs. pts=[[xTop,yTop],...]; alternate diagonal phase. */
-function legs(c,pts,ph,w,col){pts.forEach((p,i)=>{const o=(i%2?-ph:ph)*2.6;tube(c,()=>{c.moveTo(p[0],p[1]);c.lineTo(p[0]+o,0)},w,col)})}
+/* stubby scissoring legs with real stepping — horizontal swing + knee lift on the forward pass.
+   pts=[[xTop,yTop],...]; alternate diagonal phase (ph = continuous -1..1 stride wave). */
+function legs(c,pts,ph,w,col){pts.forEach((p,i)=>{const s=(i%2?1:-1);const sw=s*(ph||0);
+  tube(c,()=>{c.moveTo(p[0],p[1]);c.lineTo(p[0]+sw*2.6,-Math.max(0,sw)*3.4)},w,col)})}
 /* zombie stitch mark: seam line + cross ticks */
 function stitch(c,x,y,s,col){const col2=col||'#4a6238';const k=s||2;
   so(c,()=>{c.moveTo(x-k,y);c.lineTo(x+k,y)},k*0.7,col2);
@@ -714,26 +716,58 @@ function bakeGet(key,w,h,draw){let b=BAKE.get(key);if(b)return b;
   if(BAKE.size>700){let n=0;for(const k2 of BAKE.keys()){BAKE.delete(k2);if(++n>=300)break}}
   const off=document.createElement('canvas');off.width=Math.max(2,w);off.height=Math.max(2,h);
   const c2=off.getContext('2d');draw(c2,w,h);b={cv:off,w,h};BAKE.set(key,b);return b}
+/* per-body-class gait: [bobAplitude px, bobRate rad/s] — heavies lumber, kittens trot */
+const GAIT={kitten:[2.6,9],wall:[1.7,6],tall:[3.4,6.5],brute:[4.4,6],bird:[3.0,10],fish:[3.2,8],
+  dragon:[4.2,6.5],luga:[3.0,4.5],biped:[3.0,7.5],blob:[3.4,7],rock:[2.0,5],mech:[2.2,5],samurai:[3.2,7.5]};
+/* soft volumetric light: top-light + bottom shade clipped to the painted body —
+   gives EVERY unit instant roundness (applied inside the bake, source-atop). */
+function volumeShade(c2,BW,BH){
+  try{c2.globalCompositeOperation='source-atop';
+    const vg=c2.createLinearGradient(0,0,0,BH);
+    vg.addColorStop(0,'rgba(255,255,242,.20)');
+    vg.addColorStop(0.5,'rgba(255,255,255,0)');
+    vg.addColorStop(1,'rgba(28,20,48,.15)');
+    c2.fillStyle=vg;c2.fillRect(0,0,BW,BH);
+    c2.globalCompositeOperation='source-over'}catch(e){}}
+/* shared pose math for the 4-state attack cycle (original foreswing→strike→backswing):
+   anim 'windup' (pk 0→-1: crouch back, weapon raises) → 'attack' (pk 1→0: full lunge
+   extension at the strike frame, easing home through the backswing). */
+function poseOf(e,t,gait){
+  const walk=!e||e.anim==='walk';
+  const idle=!!(e&&e.idle&&walk);
+  const win=e&&e.anim==='windup';
+  const atk=e&&e.anim==='attack';
+  const aT=clamp((e&&e.atkT)||0,0,1);
+  let pk=0;
+  if(win){const s=aT*aT*(3-2*aT);pk=-s}              // smoothstep anticipation: 0 → -1
+  else if(atk)pk=(1-aT)*(1-aT);                       // punchy recoil: 1 → 0
+  const code=win?'g':atk?'a':(idle?'i':'w');
+  const gr=(gait&&gait[1])||8,ga=(gait&&gait[0])||2.8;
+  const ph=(walk&&!idle)?Math.sin(t*gr):0;
+  return{walk,idle,win,atk,pk,ph,code,aT}}
 const ART={
  /* per-unit blink seed — desyncs idle blinking between units */
  _seed(id){let h=0;const s=String(id);for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return h%1000},
  cat(o){const d=ART_CATS[o.id]||ART_CATS.cat;const s=o.s||1,dir=o.dir||1;
    const t=o.t||0,e=o.e||null;
-   const walk=!e||e.anim==='walk';const atk=e&&e.anim==='attack';const kb=e&&e.anim==='kb';
-   const P=CP[d.p]||CP.kitten;
+   const gait=GAIT[d.p]||GAIT.kitten;
+   const pose=poseOf(e,t,gait);
    const dp=Math.min(cv._dpr||1,2);
    const sB=Math.round(s*20)/20;
-   const anim=walk?'w':(atk?'a':'k');
-   const ph=walk?Math.floor((t%0.69813)/0.69813*14):(atk?Math.floor(((e.animT||0)%1)*12):0);
-   const bl=walk&&!atk&&!kb&&(((t||0)*0.26+ART._seed(o.id)*0.013)%1)<0.05; // ~0.19s blink every ~3.8s
-   const key='bc|'+o.id+'|'+sB+'|'+dir+'|'+anim+'|'+ph+'|'+(e&&e.weak?1:0)+'|'+(bl?1:0);
+   const ph=pose.walk?Math.floor((t%0.69813)/0.69813*14):(pose.win||pose.atk?Math.floor(pose.aT*12):0);
+   const bl=pose.walk&&!pose.idle&&!pose.win&&!pose.atk&&(((t||0)*0.26+ART._seed(o.id)*0.013)%1)<0.05; // ~0.19s blink every ~3.8s
+   const key='bc|'+o.id+'|'+sB+'|'+dir+'|'+pose.code+'|'+ph+'|'+(e&&e.weak?1:0)+'|'+(bl?1:0);
    const BW=Math.ceil(330*s*dp),BH=Math.ceil(210*s*dp),PAD=22*s*dp;
    const b=bakeGet(key,BW,BH,c2=>{c2.setTransform(dp,0,0,dp,BW/2,BH-PAD);
-     c2.scale(dir*s,s);if(kb)c2.rotate(-0.35);
-     const bob=walk?Math.abs(wob(t,2.8)):0;
-     const pk=atk?Math.sin(clamp(1-((e.animT||0)%1),0,1)*Math.PI):0;
-     c2.translate(pk*12,-bob);if(walk)c2.scale(1+bob*0.016,1-bob*0.016);
-     FACE_BLINK=bl;try{P(c2,t,d,{walk,atk,pk,ph:walk?Math.sin(t*9):0,e})}finally{FACE_BLINK=false}});
+     c2.scale(dir*s,s);
+     const bob=pose.idle?0:(pose.walk&&!pose.win&&!pose.atk?Math.abs(Math.sin(t*gait[1])*gait[0]):0);
+     const breathe=pose.idle?Math.sin(t*3)*0.018:0;
+     if(pose.walk&&!pose.idle)c2.rotate(0.045);           // forward lean while marching
+     c2.scale(1+bob*0.014+breathe,1-bob*0.016+breathe);   // squash-bob / idle breathing
+     if(pose.win){const c=Math.pow(pose.aT,1.15);c2.translate(-19*c,4.5*c);c2.rotate(-0.07*c);c2.scale(1-0.075*c,1-0.105*c)}   // foreswing: deep anticipation crouch back
+     if(pose.atk){const l=pose.pk;c2.translate(l*23,-l*6);c2.rotate(l*0.09);c2.scale(1+l*0.075,1-l*0.06)}        // strike: strong lunge + stretch
+     FACE_BLINK=bl;try{CP[d.p](c2,t,d,{walk:pose.walk&&!pose.idle,atk:pose.atk,pk:pose.pk,ph:pose.ph,e})}finally{FACE_BLINK=false};
+     volumeShade(c2,BW,BH)});
    const c=cx;c.save();if(e&&e.weak)c.globalAlpha*=0.9;
    c.drawImage(b.cv,o.x-BW/(2*dp),o.y-(BH-PAD)/dp,BW/dp,BH/dp);c.restore();
    if(d.legend){c.save();c.globalAlpha=0.3+0.15*Math.sin(G.t*4);const g=c.createRadialGradient(o.x,o.y-40*s,0,o.x,o.y-40*s,90*s);
@@ -744,24 +778,27 @@ const ART={
  ,enemy(o){const d=ENEMY_ART[o.id]||ENEMY_ART.doge;const s=o.s||1,dir=o.dir||-1;
    const bz=o.e&&o.e.boss;const bsc=bz?(d.bsc!==undefined?d.bsc:0.55):1;
    const t=o.t||0,e=o.e||null;
-   const walk=!e||e.anim==='walk';const atk=e&&e.anim==='attack';const kb=e&&e.anim==='kb';
-   const P=EP[d.p]||EP.shiba;
+   const gait=GAIT[d.p]||GAIT.kitten;
+   const pose=poseOf(e,t,gait);
    const dp=Math.min(cv._dpr||1,2);
    const sB=Math.round(s*bsc*20)/20;
-   const anim=walk?'w':(atk?'a':'k');
-   const ph=walk?Math.floor((t%0.69813)/0.69813*14):(atk?Math.floor(((e.animT||0)%1)*12):0);
-   const bl=walk&&!atk&&!kb&&(((t||0)*0.26+ART._seed(o.id)*0.017+0.37)%1)<0.05; // enemies blink out of phase with cats
+   const ph=pose.walk?Math.floor((t%0.69813)/0.69813*14):(pose.win||pose.atk?Math.floor(pose.aT*12):0);
+   const bl=pose.walk&&!pose.idle&&!pose.win&&!pose.atk&&(((t||0)*0.26+ART._seed(o.id)*0.017+0.37)%1)<0.05; // enemies blink out of phase with cats
    const tint=o.tint||'';
-   const key='be|'+o.id+'|'+sB+'|'+dir+'|'+anim+'|'+ph+'|'+(e&&e.weak?1:0)+'|'+(bl?1:0)+'|'+tint;
+   const key='be|'+o.id+'|'+sB+'|'+dir+'|'+pose.code+'|'+ph+'|'+(e&&e.weak?1:0)+'|'+(bl?1:0)+'|'+tint;
    const BW=Math.ceil(330*s*bsc*dp),BH=Math.ceil(210*s*bsc*dp),PAD=22*s*bsc*dp;
    // boss trait aura stays live (drawn behind the baked body)
    if(bz){const c=cx;c.save();c.translate(o.x,o.y);c.scale(s*bsc,s*bsc);traitAura(c,22,e);c.restore()}
    const b=bakeGet(key,BW,BH,c2=>{c2.setTransform(dp,0,0,dp,BW/2,BH-PAD);
-     c2.scale(dir*s*bsc,s*bsc);if(kb)c2.rotate(-0.35);
-     const bob=walk?Math.abs(wob(t,2.8)):0;
-     const pk=atk?Math.sin(clamp(1-((e.animT||0)%1),0,1)*Math.PI):0;
-     c2.translate(pk*12,-bob);if(walk)c2.scale(1+bob*0.016,1-bob*0.016);
-     FACE_BLINK=bl;try{P(c2,t,d,{walk,atk,pk,ph:walk?Math.sin(t*9):0,e})}finally{FACE_BLINK=false};
+     c2.scale(dir*s*bsc,s*bsc);
+     const bob=pose.idle?0:(pose.walk&&!pose.win&&!pose.atk?Math.abs(Math.sin(t*gait[1])*gait[0]):0);
+     const breathe=pose.idle?Math.sin(t*3)*0.018:0;
+     if(pose.walk&&!pose.idle)c2.rotate(0.045);
+     c2.scale(1+bob*0.014+breathe,1-bob*0.016+breathe);
+     if(pose.win){const c=Math.pow(pose.aT,1.15);c2.translate(-19*c,4.5*c);c2.rotate(-0.07*c);c2.scale(1-0.075*c,1-0.105*c)}   // foreswing: deep anticipation crouch back
+     if(pose.atk){const l=pose.pk;c2.translate(l*23,-l*6);c2.rotate(l*0.09);c2.scale(1+l*0.075,1-l*0.06)}        // strike: strong lunge + stretch
+     FACE_BLINK=bl;try{EP[d.p](c2,t,d,{walk:pose.walk&&!pose.idle,atk:pose.atk,pk:pose.pk,ph:pose.ph,e})}finally{FACE_BLINK=false};
+     volumeShade(c2,BW,BH);
      if(tint){ // chapter tint wash (EoC Ch2 crimson / Ch3 shadow) — tints painted pixels only
        c2.setTransform(1,0,0,1,0,0);c2.globalCompositeOperation='source-atop';
        c2.fillStyle=tint;c2.fillRect(0,0,BW,BH);c2.globalCompositeOperation='source-over'}});

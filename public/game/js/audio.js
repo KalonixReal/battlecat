@@ -10,6 +10,7 @@
 let AC=null,masterG=null,bgmG=null;
 let bgmTimer=null,bgmTheme=null,bgmStep=0,bgmNext=0,bgmCur=null;
 let bgmMel=[],bgmBass=[],noiseBuf=null,bgmDelay=null,bgmWetG=null;
+let bgmPlaying=null; // {mode:'baked'|'synth',theme} — prevents restart-on-same-theme (screen changes must not restart the menu loop)
 const BGM_VOL=0.14;
 
 /* ---------- baked assets (pre-rendered into assets/audio/, zero runtime synth) ----------
@@ -317,11 +318,13 @@ function bgmStart(){
   if(bk&&bk.ab&&bk.len>0){ // pre-rendered loop (assets/audio/bgm_<theme>.wav) — zero runtime synthesis
     try{bgmBakedSrc=AC.createBufferSource();bgmBakedSrc.buffer=bk.ab;
       bgmBakedSrc.loop=true;bgmBakedSrc.loopStart=0;bgmBakedSrc.loopEnd=bk.len;
-      bgmBakedSrc.connect(bgmBakedG||masterG);bgmBakedSrc.start(AC.currentTime);return}catch(e){_bkStopBgm()}}
+      bgmBakedSrc.connect(bgmBakedG||masterG);bgmBakedSrc.start(AC.currentTime);
+      bgmPlaying={mode:'baked',theme:bgmTheme};return}catch(e){_bkStopBgm()}}
   const R=rng32(th.seed);       // seeded -> stable composition per theme
   bgmMel=bgmMelody(th,R);
   bgmBass=bgmBassline(th,R);
   bgmStep=0;bgmNext=AC.currentTime+0.08;
+  bgmPlaying={mode:'synth',theme:bgmTheme};
   const spb=60/th.bpm/2;        // eighth-note step
   bgmTimer=setInterval(()=>{
     if(!AC||!bgmTheme||!bgmCur)return;
@@ -358,7 +361,7 @@ function AudioSetBgm(theme){
   if(theme===true)theme=bgmTheme||'menu';          // settings ON -> resume current
   if(theme===false){if(bgmG)bgmG.gain.value=0;if(bgmBakedG)bgmBakedG.gain.value=0;return} // settings OFF -> mute
   if(theme===null){
-    bgmTheme=null;bgmCur=null;bgmMel=[];bgmBass=[];
+    bgmTheme=null;bgmCur=null;bgmMel=[];bgmBass=[];bgmPlaying=null;
     clearInterval(bgmTimer);bgmTimer=null;_bkStopBgm();return;
   }
   if(!BGM_THEMES[theme])theme='menu';              // unknown falls back
@@ -367,6 +370,10 @@ function AudioSetBgm(theme){
   if(!AC)return;                                   // stored; starts on first AudioUnlock
   if(bgmG)bgmG.gain.value=(typeof SV!=='undefined'&&SV&&SV.settings.bgm)?BGM_VOL:0;
   if(bgmBakedG)bgmBakedG.gain.value=(typeof SV!=='undefined'&&SV&&SV.settings.bgm)?1:0;
-  if(changed||!bgmTimer)bgmStart();
+  // restart only when the THEME changed or nothing is playing — same-theme baked loops
+  // keep their position (screen hops / BGM toggle resume mid-track, like the original)
+  if(changed||!bgmTimer){
+    if(!(bgmPlaying&&bgmPlaying.mode==='baked'&&bgmPlaying.theme===theme))bgmStart();
+  }
 }
 function AudioSetBgmSafe(theme){try{AudioSetBgm(theme)}catch(e){}}

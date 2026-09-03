@@ -1088,3 +1088,61 @@ Unresolved / next-phase priorities
 3. Stage picker could also be offered from the treasure screen's FARM SET button (currently
    only radar rows) — trivial follow-up if wanted.
 4. Radar DONE-tab pager could show page dots instead of text (pure polish).
+
+---
+Task ID: r17-critic
+Agent: blind-critic (general-purpose, sonnet)
+Task: Time-boxed blind QA of r17 changes (battlefield mirror, camera system, attack animation, music loop, money counter)
+
+Work Log:
+- Set viewport 1280x720; probed via w.__BC.G / getB() / getSV(); saved shots to tests/shots/qc-*.png
+- Golden path: title→PLAY→home row→EoC ch1→ATTACK→stage modal→Attack(mb1)→battle; waited for wallet, deployed 4 cats from dock (rects from G.hits)
+- Orientation: verified catBase.x=2480/enemyBase.x=120, cats 2361→2036 (march LEFT), enemies 120→1979 (march RIGHT), cam starts 1320 (max-right, cat base on screen right); VLM on crops: white cat base right, dark fortress with red eyes left, enemy HP 6,914/6,914 top-LEFT, pause/quit top-RIGHT
+- Camera: field drag mouse +200/+300 → cam 1320→1120→820 (exact 1:1 grab-the-world); drag 400→1280 → cam 1320→440 (-880 = -mouse delta); camHold 2.6 during drag; after release auto-follow eased cam 820→1320 (front-line target = leftmost cat − 280, clamped); camL button pans −500/click (1320→820→0)
+- Money: crop (0,540)-(260,720) → VLM read "528¢", symbol clear of digits, fully legible
+- Animations: sampled unit states over time — cats [walk,pre,walk,post], enemies [die,pre,post,walk]; pops peaked at 6 (VLM read red "12" damage number); fx kinds slash/poof/moneypop/kbstar/dust; fight-region pixel diff 13.9%/150ms vs 3-5% background; paused-frame VLM showed varied cat poses + hit flash at impact
+- Music: bgm loop=true, loopEnd 34.29 == bufDur 34.29; settings BGM off→on: same AudioBufferSourceNode (sameSrc=true), gain 0→1, mode stayed 'baked', no console error
+- Console: zero errors (only Fast Refresh/React DevTools noise; ~15 full HMR reloads during session — env noise)
+
+Findings:
+- All 6 checks PASS (golden path, orientation/mirror, camera drag+follow, money counter, attack animations, music loop+toggle)
+- LOW (UX): insufficient-energy Attack click closes the stage modal with only a transient toast ('Not enough energy! (8/9)') — original uses a blocking out-of-energy dialog; repro: lose a battle, re-open modal, click Attack with energy < cost
+- LOW (QA-workflow): localStorage.clear() does NOT reset the save (savesys v2 persists elsewhere) — testers can't get a fresh state the obvious way; also map default node follows lastClearedIdx+1, so "fresh" first battle was stage 13, not stage 1
+- NIT: energy economy (no refund on loss/retreat + 1/min regen) can lock a losing player out of battles for ~10min — matches original design per savesys comment, but felt during QA
+- NIT: camera auto-follow ease rate (dt*2.2) recovers ~500px in ~0.5s after manual scroll — snappier than the original's gentle drift
+- HMR full-reloads mid-flow close modals/reset screens; pendingBattle recovery toast fired correctly each time (robustness worked as designed)
+
+Verdict: SHIP
+
+---
+Task ID: r17
+Agent: main (Z.ai Code)
+Task: User-reported bug sweep — reversed scroll / drags off the window, music not looping, money counter blocked by the cent symbol, plus a major animation & art-quality upgrade ("not up to the mobile game quality yet: animations and cats and enemies")
+
+Work Log:
+- RESEARCH (web): Battle Cats wiki ×2 sources confirm "All battles are won by destroying the enemy base on the LEFT side of the battlefield. Your Cat Base is on the RIGHT" — OUR FIELD WAS MIRRORED vs the original. That was the true root cause of the user's "scroll is reversed" muscle-memory complaint. Also confirmed original attack timing: FORESWING (windup) → hit lands at the strike frame → BACKSWING (recovery), unit cannot move during the animation, knockback resets the attack.
+- BATTLEFIELD MIRROR (battle.js): ENEMY_BASE_X=120 / CAT_BASE_X=2480; cats dir=-1 spawn at catBase-60; enemies dir=+1 spawn at enemyBase+70; camera STARTS at cam=1320 (home base, right); burrow digs rightward (dir-aware); all base clamps swapped (walk/warp/burrow/ironwall/thunder/holy/breaker); shockwave kb direction flipped; ground tufts 40→42 (full field coverage).
+- CAMERA SYSTEM: (1) pointer capture on pointerdown (ui.js) + release/lostpointercapture in endPointer — drags can no longer get stuck or jump when the cursor leaves the window (user bug "gets off the windows"); (2) drag stays grab-the-world (drag right → view pans LEFT toward the enemy base — exactly the original gesture on the now-correctly-mirrored field); (3) mouse wheel flipped to off-dx to match drag semantics; (4) NEW front-line AUTO-FOLLOW: eased tracking of the leftmost cat (soft dt*1.6), home-defense override when enemies break through near the base, 2.6s camHold after manual scroll; camL/camR arrows set camHold too.
+- MUSIC LOOP FIX: (1) offline WAV surgery — for all 16 bgm_*.wav the ~1.2s ring-out tail past the musical loop point is now wrap-mixed into the head (seamless loop; files exactly loop-length; verified ALL EXACT vs bank.json); (2) audio.js bgmPlaying tracker — AudioSetBgm(same theme) no longer restarts the baked loop from 0 (screen hops / BGM toggle RESUME mid-track like the original).
+- MONEY COUNTER FIX (battle.js): number drawn left-aligned with the ¢ glyph AFTER it as one centered cluster under the wallet circle (was: symbol at the number's left edge overlapping the first digit). Font 19→21.
+- ATTACK ANIMATION RESTRUCTURE (battle.js updateUnit): rateT<=0 + target in reach → enter 'pre' WINDUP (preT0 = 0.16–0.42s scaled by rate, rateT locked at 99) → damage lands via strike() EXACTLY when windup expires (the lunge apex) → 'post' BACKSWING recovery (postT0 0.14–0.4s) → walk. Whiffs still play the full swing. startKb now resets rateT=0.3 (original rule: knockback resets the attack).
+- ANIMATION JUICE (battle.js drawUnit + art.js): live-transform pipeline around the baked sprite — spawn pop-in with overshoot bounce, fresh-hit micro-squash, KB parabolic tumble arc (42px, 2.4rad tumble, landing squash + dust), death spin+shrink then fade+rise with poof ring, ground shadow shrinks while airborne; burrow dirt-crumb trail; NEW 'moneypop' fx (3 gold coins arc + sparkles on enemy death); art.js legs() now lifts the forward-pass foot (real stepping); per-body-class GAIT table (heavies lumber at 6rad/s, kittens trot at 9); forward lean 0.045rad while marching; idle breathe (1.8% scaleY sine) when halted; volumeShade() bakes a soft top-light/bottom-shade gradient into every unit sprite (instant volumetric roundness on all 41 cats + 60 enemies).
+- WINDUP/STRIKE POSE MATH (art.js poseOf + bakes): windup pk 0→-1 smoothstep (painters' weapons raise back); strike pk=(1-atkT)² decays 1→0; bake transforms boosted after VLM-verified too-subtle first pass: windup = translate(-19c, +4.5c) + rotate(-0.07c) + squash(1-7.5%c, 1-10.5%c); strike = translate(+23pk, -6pk) + rotate(0.09pk) + stretch(1+7.5%pk). Direct in-page centroid test: rest(298) → windup(309, 11px back) → strike(273, 25px forward) — poses proven.
+- HUD MIRROR: enemy base HP + boss name → TOP-LEFT (enemy side); pause/quit → TOP-RIGHT (home side); cat base HP stays right edge under the SPEED button; cat-base cannon barrel now points LEFT; cannon/slowbeam/waterwave FX sweep LEFTWARD from the right-side base.
+- CRITIC LOWs FIXED: out-of-energy Attack now opens a blocking OUT OF ENERGY modal (energy count, regen ETA, STORE shortcut, OK); RESET SAVE now also removes SAVE_KEY_LEGACY (save could resurrect from the legacy key). NIT fixed: auto-follow ease 2.2→1.6 (gentler drift).
+- Page title "Z.ai Code Scaffold" → "The Battle Cats" (layout.tsx).
+- Cache-bust v26 → v29 (index.html ×9 scripts + page.tsx) after each edit batch.
+
+Stage Summary:
+- USER BUGS FIXED: scroll reversed (root cause = mirrored field, now matches the original exactly), drags getting off the window (pointer capture), music not looping (tail-wrap surgery + no same-theme restarts), money counter blocked by the ¢ symbol (number-then-symbol cluster).
+- QUALITY UPGRADES: original attack timing (foreswing→strike→backswing with damage synced to the lunge), front-line auto-follow camera, walk/idle/windup/strike/death/kb/spawn animation overhaul, per-class gaits, leg stepping, volumetric shading on every unit.
+- VERIFIED (real pointer input, 1280x720, v29): golden path E2E win; VLM: cat base RIGHT / enemy base LEFT / cats marching LEFT; enemy HP top-left, pause/quit top-right; money counter zoom-crop CLEAN; cannon beam sweeps left; drag ±500 exact 1:1 with camHold, drag at x=1800/-200 (outside window) tracks smoothly and releases cleanly; wheel matches drag; auto-follow eased 1320→2 across the whole field during the push; music: loop=true, loopEnd==bufDur (34.29s), itf2 30s theme still playing past 33s (analyser peak>0), BGM toggle resumes same source (no restart); windup mid-pause VLM: "shorter, compressed, shifted back, backward lean" ✓; bake analysis: 14 stride buckets + windup/attack/idle frames; 18-screen sweep all non-blank, ZERO console errors; node --check 9/9; bun run lint 0 errors / 12 benign warnings.
+- BLIND CRITIC (fresh-eyes subagent): all 6 checks PASS, verdict SHIP; its 2 LOW + 1 NIT findings fixed above.
+- Screenshots: tests/shots/r17-*.png + qc-*.png (boot, battle×4, attack burst, windup/rest/strike zooms, cannon, endgame, money/ehp/pause zooms, sweeps).
+
+Unresolved / next-phase priorities
+1. Per-unit attack variety: painters currently share the generic windup/lunge; giving each body class a distinct signature attack (e.g. dragon head-snap, brute overhead smash follow-through) is the next fidelity jump.
+2. Enemy sprites: 60 enemies share ~20 body painters with palette swaps — the classic starters (Doge/Snache/Those Guys/Hippoe) deserve bespoke proportions.
+3. Battle-intro camera sweep (original pans base-to-base at battle start) + boss-arrival camera pan to the enemy base.
+4. Kill/feed VLM aliasing gotcha: two screenshots ~0.35s apart alias the 0.7s stride cycle and look identical — always verify animation with in-page pixel diffs (≤150ms windows) or pause-locked states, never burst screenshots.
+5. 28MB WAV bank load time remains (unchanged; now 16 files × ~1.2s shorter each).
