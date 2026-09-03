@@ -230,11 +230,15 @@ function drawTitle(dt){
   cx.fillRect(950,270,10,60);cx.fillRect(1010,270,10,60);cx.fillRect(938,262,94,10);cx.fillRect(946,276,78,8);
   //tokyo tower
   cx.beginPath();cx.moveTo(760,330);cx.lineTo(782,240);cx.lineTo(804,330);cx.closePath();cx.fill();
-  // cat-head crowd bottom (the iconic Basic Cat faces)
-  const headRows=[[710,46,1.2],[668,38,1.02],[696,32,.86]];
+  // cat-head crowd bottom (the iconic Basic Cat faces) — rows raised so each head reads as a
+  //   crowd member peeking up from the bottom edge (QA fix: rows used to be 60-85% cut)
+  const headRows=[[678,46,1.2],[640,38,1.02],[674,32,.86]];
   headRows.forEach((row,ri)=>{const[y,step,sc]=row;
     for(let x=-20;x<1320;x+=step){const h=46*sc+(Math.sin(x*7.3+ri)*3);
       ART.catHead(x,y+h/2,h/2,false)}});
+  // grounding band: warm dark strip under the crowd so the heads sit ON something
+  {const gb=cx.createLinearGradient(0,694,0,720);gb.addColorStop(0,'rgba(122,42,28,0)');gb.addColorStop(1,'rgba(122,42,28,.55)');
+    cx.fillStyle=gb;cx.fillRect(0,694,1280,26)}
   // logo: per-letter bouncy "Battle" pink + paw + "Cats" orange w/ rim (original title signature)
   cx.save();cx.translate(640,215);
   cx.rotate(-0.04);
@@ -480,7 +484,7 @@ function drawChapters(dt){
       if(unl&&c.kind==='story'){ // crown total chip (sum of stage crowns /144) + completion progress bar
         const crc=SV.crowns[c.id]||{};let cn=0;for(const k in crc)cn+=crc[k];
         crownDraw(cx,1158,19,8.5,'#ffd23f','#8a5a10',cn===0);
-        txt(cx,cn+'/144',1240,20,13,'#b08028','right',2,'#fff',700);
+        txt(cx,cn+'/144',1228,20,13,'#b08028','right',2,'#fff',700);
         const pn=clearedN/48;
         cx.fillStyle='rgba(90,59,22,.16)';rr(cx,930,42,240,10,5);cx.fill();
         if(pn>0){cx.fillStyle=pn>=1?'#5aa84a':'#e8951f';rr(cx,930,42,Math.max(9,240*pn),10,5);cx.fill()}
@@ -604,6 +608,18 @@ function drawMap(dt){const c=CHMAP[G.chapter];
     // crown pips row (story stages): earned gold / unearned dim — replays can top them up
     if(c.kind==='story'&&nd.done){const cn=(SV.crowns[c.id]&&SV.crowns[c.id][String(i)])||0;
       for(let k=0;k<3;k++)crownDraw(cx,bx+bW/2-17+k*17,by+bH+28,5.5,k<cn?'#ffd23f':'#c8bca0',k<cn?'#8a5a10':'#8a7a5a',k>=cn)}
+    // TREASURE RADAR (story stages): set maps to stage i%9 — a gold diamond pinned beside the
+    // node marks stages missing ONE piece (2/3), dim diamonds mark completed sets: farming at a glance
+    if(c.kind==='story'&&nd.unl&&CHSETS[c.id]){const setIdx=i%9;const own=tCount(c.id,setIdx);
+      if(own===2){const pu=1+Math.sin(G.t*5)*0.12;
+        cx.save();cx.translate(px+24,py-24);cx.scale(pu,pu);
+        cx.shadowColor='rgba(255,210,63,.7)';cx.shadowBlur=8;
+        cx.fillStyle='#ffd23f';cx.beginPath();cx.moveTo(0,-8);cx.lineTo(7,0);cx.lineTo(0,8);cx.lineTo(-7,0);cx.closePath();cx.fill();
+        cx.shadowBlur=0;cx.lineWidth=1.8;cx.strokeStyle='#8a5a10';cx.stroke();cx.restore();
+        txt(cx,'2/3',px+34,py-24,9.5,'#5a3210','left',2.5,'#ffd23f',700)}
+      else if(own===3){cx.save();cx.translate(px+24,py-24);
+        cx.fillStyle='rgba(216,195,127,.9)';cx.beginPath();cx.moveTo(0,-6);cx.lineTo(5.5,0);cx.lineTo(0,6);cx.lineTo(-5.5,0);cx.closePath();cx.fill();
+        cx.lineWidth=1.4;cx.strokeStyle='rgba(138,90,16,.5)';cx.stroke();cx.restore()}}
     if(!nd.unl)drawPadlock(cx,bx+bW-14,by+bH/2,7,'#8f887a');
     cx.restore()}
   // white cat marker stands on the current node
@@ -615,7 +631,15 @@ function drawMap(dt){const c=CHMAP[G.chapter];
   if(c.kind==='story'){const last=lastClearedIdx(c)+1;
     cx.fillStyle='rgba(255,248,232,.9)';rr(cx,1108,86,150,30,15);cx.fill();
     cx.lineWidth=2.5;cx.strokeStyle='#8a5a20';rr(cx,1108,86,150,30,15);cx.stroke();
-    txt(cx,Math.min(last,48)+' / 48 CLEARED',1183,101.5,13,'#8a5a10','center',3,'#fff',700)}
+    txt(cx,Math.min(last,48)+' / 48 CLEARED',1183,101.5,13,'#8a5a10','center',3,'#fff',700);
+    // treasure-set completion chip (radar legend): complete sets / 9 for this chapter
+    if(CHSETS[c.id]){let done=0;for(let k=0;k<9;k++)if(tCount(c.id,k)===3)done++;
+      cx.fillStyle='rgba(255,248,232,.9)';rr(cx,1108,122,150,30,15);cx.fill();
+      cx.lineWidth=2.5;cx.strokeStyle='#c8a030';rr(cx,1108,122,150,30,15);cx.stroke();
+      cx.fillStyle='#ffd23f';cx.save();cx.translate(1124,137);cx.beginPath();cx.moveTo(0,-6.5);cx.lineTo(5.8,0);cx.lineTo(0,6.5);cx.lineTo(-5.8,0);cx.closePath();cx.fill();
+      cx.lineWidth=1.6;cx.strokeStyle='#8a5a10';cx.stroke();cx.restore();
+      txt(cx,'TREASURE '+done+'/9',1224,137.5,13,'#b08028','center',2.5,'#fff',700);
+      if(done<9)txt(cx,'gold ◇ = set at 2/3 pieces',1183,162,9.5,'#a89878','center',2,'#fff',400)}}
   // ---- chapter cycle arrows on the frame (official side arrows) ----
   const chIdx=CHAPTERS.indexOf(c);
   const cyc=dir=>{for(let k=1;k<=CHAPTERS.length;k++){const nc=CHAPTERS[(chIdx+dir*k+CHAPTERS.length*2)%CHAPTERS.length];
@@ -1537,26 +1561,26 @@ function drawExpedition(dt){bgSky();drawTopBar('SCOUT EXPEDITIONS',true);
       cx.fillStyle=myDone?'#3abc6a':'#e8a020';rr(cx,x+14,y+h-12,Math.max(14,(w-28)*frac),7,3.5);cx.fill()}});
   // ---- right: SCOUT RANK panel ----
   const rx=784,rw2=476;
-  creamPanel(rx,64,rw2,76,'#c8913a');
+  creamPanel(rx,64,rw2,92,'#c8913a');
   { // badge: scout cat face in a circle + rank ribbon
-    const bx=rx+46,by=102;
+    const bx=rx+46,by=104;
     cx.save();cx.translate(bx,by);cx.rotate(Math.sin(G.t*1.6)*0.05);
     cx.fillStyle='#fff8e8';cx.beginPath();cx.arc(0,0,27,0,TAU);cx.fill();
     cx.lineWidth=3;cx.strokeStyle='#8a5a20';cx.stroke();cx.restore();
-    ART.cat({x:bx,y:by+3,s:1.0,id:'cat',t:G.t,e:{anim:'walk'}});
-    cx.save();cx.translate(bx,by-24);cx.rotate(-0.08);
+    ART.cat({x:bx,y:by+6,s:1.0,id:'cat',t:G.t,e:{anim:'walk'}});
+    cx.save();cx.translate(bx,by-27);cx.rotate(-0.08);
     cx.fillStyle='#e85840';rr(cx,-24,-11,48,20,8);cx.fill();
     txt(cx,'LV '+scout.lv,0,0.5,12,'#fff','center',2,'#7a1a10',700);cx.restore()}
   txt(cx,scout.name,rx+84,88,17,'#5a3b16','left',3.5,'#fff',700);
   txt(cx,'+'+Math.round(scout.bonus*100)+'% expedition rewards · trips: '+fmt(SV.expedition.runs||0),rx+84,106,11,'#8a6a3a','left',2,'#fff',700);
-  // scout XP bar
-  {const bx=rx+84,bw=rw2-208,by=118;
+  // scout XP bar (label sits clear above the bar — no descender clipping)
+  {const bx=rx+84,bw=rw2-208,by=126;
+    txt(cx,scout.maxed?(scout.prest>=SCOUT_PRESTIGE_MAX?'MAX RANK + MAX STARS':'MAX RANK — prestige for a star'):(scout.cur+'/'+scout.need+' Scout XP — next: '+SCOUT_NAMES[scout.lv]),bx,118,9.5,'#5a3b16','left',2,'#fff',700);
     cx.fillStyle='rgba(90,59,22,.16)';rr(cx,bx,by,bw,10,5);cx.fill();
     const fr=scout.maxed?1:clamp(scout.cur/scout.need,0,1);
     const g=cx.createLinearGradient(bx,0,bx+bw,0);g.addColorStop(0,'#7fd0ff');g.addColorStop(1,'#4a9ae8');
     cx.fillStyle=g;rr(cx,bx,by,Math.max(10,bw*fr),10,5);cx.fill();
-    cx.lineWidth=1.5;cx.strokeStyle='#8a5a20';rr(cx,bx,by,bw,10,5);cx.stroke();
-    txt(cx,scout.maxed?(scout.prest>=SCOUT_PRESTIGE_MAX?'MAX RANK + MAX STARS':'MAX RANK — prestige for a star'):(scout.cur+'/'+scout.need+' Scout XP — next: '+SCOUT_NAMES[scout.lv]),bx+bw/2,by-3,9.5,'#5a3b16','center',2,'#fff',700)}
+    cx.lineWidth=1.5;cx.strokeStyle='#8a5a20';rr(cx,bx,by,bw,10,5);cx.stroke()}
   // prestige button: only when MYTHIC + stars remain (confirm modal — resets scout XP)
   if(scout.maxed&&scout.prest<SCOUT_PRESTIGE_MAX){const pu=0.6+0.4*(1+Math.sin(G.t*4))/2;
     cx.save();cx.shadowColor='rgba(196,106,223,'+(0.25+pu*0.35).toFixed(2)+')';cx.shadowBlur=8+pu*8;
@@ -1577,10 +1601,10 @@ function drawExpedition(dt){bgSky();drawTopBar('SCOUT EXPEDITIONS',true);
     cx.lineWidth=2;cx.strokeStyle=unlocked?'#8a5a20':'#c8b892';cx.stroke();
     if(!unlocked){drawPadlock(cx,sx,sy,6,'#8a7a5a')}
     txt(cx,'SLOT '+(s+1),sx-14,sy+0.5,9,unlocked?'#5a3b16':'#a89878','right',2,'#fff',700)}
-  txt(cx,'Slot 2: Rank 30 (now '+SV.rank+')',rx+rw2-12,142,9.5,slots>=2?'#1e7a3a':'#a89878','right',2,'#fff',700);
+  txt(cx,'Slot 2: Rank 30 (now '+SV.rank+')',rx+rw2-12,148,9.5,slots>=2?'#1e7a3a':'#a89878','right',2,'#fff',700);
   // ---- right: tracker cards (one per slot) ----
   for(let s=0;s<2;s++){
-    const y=150+s*196,x2=rx,w2=rw2,h=188;
+    const y=162+s*196,x2=rx,w2=rw2,h=188;
     const a=actList[s];
     if(a){ // ---- active trip tracker ----
       const d=EXPD.find(d2=>d2.id===a.dest)||{n:'?',terr:'#a8a8a8'};
@@ -1737,21 +1761,22 @@ function drawTrophies(dt){bgSky();drawTopBar('TROPHY STAND',true);
     txt(cx,String(claimableN),0,1,16,'#fff','center',2.5,'#8a1a10',700);
     txt(cx,'READY TO CLAIM!',0,38,10.5,'#e84030','center',2.5,'#fff',700);cx.restore()}
   else txt(cx,'All claimed — keep playing to unlock more!',1160,106,12,'#5a3b16','right',2.5,'#fff',700);
-  // ---- scrollable 2-column group grid ----
+  // ---- scrollable 2-column group grid (starts BELOW the summary header — QA fix: grid used
+  //   to start at y=96 which buried the header's lower half: text, cup base, rewards line, badge) ----
   const colW=606,gap=16,colX=[20,20+colW+gap];
   let colH=[0,0];
   const placed=TROPHY_GROUPS.map(g=>{
     const cI=colH[0]<=colH[1]?0:1;
-    const y=96+colH[cI];
+    const y=156+colH[cI];
     const h=44+g.list.length*46+10;
     colH[cI]+=h+gap;
     return{g,cI,x:colX[cI],y,h}});
   const contentH=Math.max(colH[0],colH[1]);
-  SCROLL('tsc',0,96,1280,574,()=>G.scrollTrophy||0,v=>G.scrollTrophy=clamp(v,0,Math.max(0,contentH-566)),Math.max(0,contentH-566));
+  SCROLL('tsc',0,156,1280,514,()=>G.scrollTrophy||0,v=>G.scrollTrophy=clamp(v,0,Math.max(0,contentH-514)),Math.max(0,contentH-514));
   const off=G.scrollTrophy||0;
   placed.forEach(({g,cI,x,y,h})=>{
     const sy=y-off;
-    if(sy+h<80||sy>660)return; // cull off-screen panels
+    if(sy+h<140||sy>660)return; // cull off-screen panels
     creamPanel(x,sy,colW,h);
     // group header band
     cx.fillStyle=shade(g.col,.92);rr(cx,x+3,sy+3,colW-6,38,12);cx.fill();
@@ -1940,7 +1965,8 @@ function drawShrine(dt){bgSky();drawTopBar('CAT SHRINE',true);
               cx.fillStyle='rgba(255,255,255,.35)';cx.beginPath();cx.arc(-9,-11,9,0,TAU);cx.fill();
               glyph(cx,res.icon,0,0,20,'#fff',shade(res.col,.62));cx.restore();
               txt(cx,shrineBlessLine(res),mx+mw/2,my+126,17,res.jackpot?'#c46adf':'#5a3b16','center',4,'#fff',700);
-              txt(cx,anim.free?'(free daily toss)':'(paid toss — '+SHRINE_COST+' CF)',mx+mw/2,my+156,11,'#8a6a3a','center',2,'#fff',400)})}}}
+              if(res.streakMul>1)txt(cx,'prayer streak bonus +'+Math.round((res.streakMul-1)*100)+'% applied',mx+mw/2,my+146,11.5,'#d05a28','center',2.5,'#fff',700);
+              txt(cx,anim.free?'(free daily toss)':'(paid toss — '+SHRINE_COST+' CF)',mx+mw/2,my+170,11,'#8a6a3a','center',2,'#fff',400)})}}}
     cx.restore()}
   /* ---- RIGHT: status panel + pray controls + pool preview ---- */
   const rx=784,rw2=476;
@@ -1950,16 +1976,39 @@ function drawShrine(dt){bgSky();drawTopBar('CAT SHRINE',true);
   txt(cx,'Toss a coin — the shrine god blesses daily visitors!',rx+80,114,11.5,'#8a6a3a','left',2.5,'#fff',400);
   {const stat=si.freeLeft?['FREE TOSS READY!','#1e7a3a']:['Free toss used today — extra tosses '+si.extraLeft+'/'+SHRINE_MAX_EXTRA,'#a89878'];
     txt(cx,stat[0],rx+80,138,12,stat[1],'left',2.5,'#fff',700)}
+  // prayer-streak chip (flame + day count + live bonus) — advances on each daily free toss
+  {const sk=si.streak;
+    cx.fillStyle=sk>0?'rgba(255,170,80,.16)':'rgba(90,59,22,.06)';rr(cx,rx+16,156,rw2-32,44,11);cx.fill();
+    cx.lineWidth=1.6;cx.strokeStyle=sk>0?'rgba(232,88,64,.5)':'rgba(138,106,58,.35)';rr(cx,rx+16,156,rw2-32,44,11);cx.stroke();
+    const fp=sk>0?1+Math.sin(G.t*4)*0.08:1;
+    cx.save();cx.translate(rx+44,178);cx.scale(fp,fp);glyph(cx,'flame',0,0,15,'#ff7a3f','#ffd23f');cx.restore();
+    if(sk>0){txt(cx,sk+'-DAY PRAYER STREAK',rx+70,170,11.5,'#d05a28','left',2.5,'#fff',700);
+      txt(cx,'blessing rewards +'+Math.round(si.streakBonus*100)+'% (+'+(sk<SHRINE_STREAK_MAX?'4% each new day':'max streak!)')+')',rx+70,188,10,sk>=SHRINE_STREAK_MAX?'#d05a28':'#8a6a3a','left',2,'#fff',400)}
+    else{txt(cx,'PRAYER STREAK',rx+70,170,11.5,'#a89878','left',2,'#fff',700);
+      txt(cx,'pray daily — each day adds +4% blessing rewards',rx+70,188,10,'#a89878','left',2,'#fff',400)}}
   // stats strip
-  creamPanel(rx,226,rw2,84);
-  txt(cx,'Lifetime tosses: '+fmt(si.total)+'   ·   MEGA blessings: '+si.megaN,rx+24,254,12.5,'#5a3b16','left',2.5,'#fff',700);
+  creamPanel(rx,226,rw2,94);
+  txt(cx,'Lifetime tosses: '+fmt(si.total)+'   ·   MEGA blessings: '+si.megaN,rx+24,250,12.5,'#5a3b16','left',2.5,'#fff',700);
   {const lastB=SHRINE_BLESSINGS.find(b=>b.id===si.lastId);
-    if(lastB){txt(cx,'LAST BLESSING:',rx+24,286,10.5,'#a89878','left',2,'#fff',700);
-      cx.fillStyle='rgba(255,244,214,.7)';rr(cx,rx+120,274,rw2-146,26,13);cx.fill();
-      cx.lineWidth=1.4;cx.strokeStyle='rgba(176,138,80,.5)';rr(cx,rx+120,274,rw2-146,26,13);cx.stroke();
-      glyph(cx,lastB.icon,rx+140,287,10,lastB.col,'#fff');
-      txt(cx,lastB.n,rx+158,287,11,'#b06a10','left',2,'#fff',700)}
-    else txt(cx,'No blessings yet — toss your first coin today!',rx+24,286,11,'#a89878','left',2,'#fff',400)}
+    if(lastB){txt(cx,'LAST BLESSING:',rx+24,278,10.5,'#a89878','left',2,'#fff',700);
+      cx.fillStyle='rgba(255,244,214,.7)';rr(cx,rx+120,266,rw2-146,26,13);cx.fill();
+      cx.lineWidth=1.4;cx.strokeStyle='rgba(176,138,80,.5)';rr(cx,rx+120,266,rw2-146,26,13);cx.stroke();
+      glyph(cx,lastB.icon,rx+140,279,10,lastB.col,'#fff');
+      txt(cx,lastB.n,rx+158,279,11,'#b06a10','left',2,'#fff',700)}
+    else txt(cx,'No blessings yet — toss your first coin today!',rx+24,278,11,'#a89878','left',2,'#fff',400)}
+  // MEGA pity meter — 10 gold pips; MEGA weight ramps as pips fill, forced at 10
+  {const p=si.pity,pL=si.pityLeft;
+    txt(cx,'MEGA PITY',rx+24,306,10.5,'#a89878','left',2,'#fff',700);
+    for(let i=0;i<SHRINE_PITY_MAX;i++){const px=rx+108+i*22,py=306;
+      const on=i<p;
+      const pu=on&&p>=SHRINE_PITY_MAX-1?1+Math.sin(G.t*6+i)*0.15:1;
+      cx.save();cx.translate(px,py);cx.scale(pu,pu);
+      cx.fillStyle=on?'#c46adf':'rgba(196,106,223,.16)';
+      cx.beginPath();cx.moveTo(0,-7);cx.lineTo(6,0);cx.lineTo(0,7);cx.lineTo(-6,0);cx.closePath();cx.fill();
+      if(on){cx.lineWidth=1.6;cx.strokeStyle='#8a2aa8';cx.stroke()}
+      cx.restore()}
+    if(pL<=1)txt(cx,'NEXT TOSS: GUARANTEED MEGA!',rx+rw2-24,306,10.5,'#c46adf','right',2.5,'#fff',700);
+    else txt(cx,'MEGA in ≤'+pL+' tosses',rx+rw2-24,306,10.5,'#8a6a3a','right',2,'#fff',400)}
   // PRAY buttons (disabled mid-animation / when modal up)
   {const canFree=si.freeLeft&&!anim;
     const canPaid=!si.freeLeft&&si.extraLeft>0&&SV.cf>=SHRINE_COST&&!anim;

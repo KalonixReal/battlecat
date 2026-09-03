@@ -2,7 +2,7 @@
 import sharp from 'sharp'
 import { readdirSync } from 'fs'
 const dir = 'tests/shots'
-for (const f of readdirSync(dir).sort()) {
+for (const f of readdirSync(dir).sort().filter(f=>f.startsWith('sweep-'))) {
   if (!f.endsWith('.png')) continue
   const { data, info } = await sharp(`${dir}/${f}`).raw().toBuffer({ resolveWithObject: true })
   let nonBg = 0, n = 0

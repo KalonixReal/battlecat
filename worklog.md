@@ -608,3 +608,110 @@ Next-phase priorities (for the 15-min reviewer):
 5. 28MB WAV bank load time — re-encode if it becomes a complaint.
 6. Consider second save slot / cloud-save export of the shrine + prestige state (savesys has
    export/import already — new fields ride along automatically).
+
+---
+
+## Session Round — VLM-DRIVEN QA SWEEP + SHRINE PITY/STREAK + TREASURE RADAR (Task: autonomous QA → fix → features)
+
+### Current project status (assessment at round start)
+- Fresh session at v19: clean boot (title, t advancing), zero console/page errors, dev.log clean.
+- Golden-path E2E re-verified with REAL pointer input at 1280x720: title → home → chapters →
+  story list → map → stage modal (ndstory0, mb1=Attack) → battle (sustained deploy, speed)
+  → WIN → rewards → map. NOTE: Korea stage-1 CAN be lost if you under-deploy (cats that spawn
+  into an enemy pile at the base die in <0.4s) — balance is authentic, spam cats to win.
+- 17-screen sweep (tests/screen-qa.sh, now updated to cover all 18 screens incl. shrine):
+  all non-blank, zero console errors.
+- VLM visual review WORKED all round (z-ai vision CLI, glm-5v-turbo) — 20+ reviews performed.
+  IMPORTANT LESSONS: VLM misreads small text at full-screen scale (hallucinated treasure tab
+  duplicates "EoC Ch.3×2", guide "BEHEMOTH" clipping, base "Research ed" truncation — all
+  disproven with PIL crop-zooms). ALWAYS zoom-verify with tight crops before acting on VLM
+  findings at <12px font sizes.
+- REAL bugs found by VLM (zoom-confirmed): trophies grid buried the summary header (below),
+  chapters "N/144" text touched the card border, title cat-crowd rows 60–85% cut at the
+  bottom edge, map radar legend (this round's own new UI) overflowed the right edge.
+
+### Completed modifications this round
+
+**1. FIXED (VLM-confirmed real bug) — trophies grid buried the summary header:**
+- ui.js drawTrophies: the scrollable group grid started at y=96, overlapping the summary
+  header panel (64..148) — the "N/37 trophies claimed" text (center-y 96) had its bottom half
+  buried under the first row of group panels, "Rewards earned" line and the READY badge were
+  fully covered, and the cup base was hidden. Grid now starts at y=156 (SCROLL viewport
+  0,156,1280,514; panels placed at 156+colH; cull bound 140; max scroll contentH-514).
+  VLM re-review: "entire header fully visible… distinct clean gap" — FIXED.
+
+**2. FIXED — chapters crown count touched the card border:** "N/144" right-aligned at local
+  x=1240 = the card's exact border. Now x=1228. VLM re-review: chapters CLEAN.
+
+**3. FIXED — title cat-crowd grounding:** headRows were [[710,…],[668,…],[696,…]] → the big
+  row was 82% cut at the canvas bottom (heads barely peeked). Now [[678,…],[640,…],[674,…]]
+  + a warm dark grounding gradient band (694..720). VLM no longer flags the crowd.
+
+**4. NEW FEATURE — SHRINE PITY (gacha-style MEGA guarantee):**
+- data.js: SHRINE_PITY_MAX=10; shrineRoll weights MEGA ×(1+0.85×pity) and FORCES MEGA when
+  pity≥9; shrineApply sets pity=0 on jackpot else +1 (clamped).
+- ui.js drawShrine: MEGA PITY meter — 10 purple diamond pips in the stats strip (filled =
+  current pity; last pip pulses when the next toss is guaranteed) + "MEGA in ≤N tosses" /
+  "NEXT TOSS: GUARANTEED MEGA!" label.
+- E2E: seeded pity=9 → paid toss → forced MEGA (lastId=mega, megaN 0→1, pity→0); reward math
+  exact: CF 411−50+270=631 and XP 1305+2949=4254 (220/2400 × rankMul 1.024 × streakMul 1.2).
+
+**5. NEW FEATURE — PRAYER STREAK (consecutive-day blessing bonus):**
+- data.js: shrineStreakBonus() = +4%/day, cap +40% (10 days); shrineRoll multiplies XP/CF/NP/
+  MEGA numbers by streakMul; day-8+ streaks give a 50% chance of double catfruit.
+- shrinePray: the daily FREE toss advances the streak (yesterday → +1, gap → reset to 1,
+  same-day → no double count); milestone toasts at 3/7/10 days.
+- core.js: DEF_SAVE shrine gains {pity,streak,lastPrayDay} + hard normalization (clamps 0..10,
+  string check); old saves auto-backfill (verified: v19 save booted with new fields intact).
+- ui.js: streak chip inside the status panel (pulsing flame glyph + "N-DAY PRAYER STREAK" +
+  live "+N%" line, dim idle state when streak=0); blessing modal appends "prayer streak bonus
+  +N% applied" line; shrineInfo exposes pity/pityLeft/streak/streakBonus.
+- E2E: seeded streak=4 anchored to yesterday → free toss → streak 5, bonus 0.16→0.20, CF
+  blessing 111 = 90×1.024×1.2 (streak applied) → modal streak line pixel-verified (67 px) →
+  paid toss did NOT advance streak (stays 5). Streak reset logic: lastPrayDay neither today
+  nor yesterday → streak=0 (lazy eval in shrineInfo).
+
+**6. NEW FEATURE — MAP TREASURE RADAR (farming visibility):**
+- ui.js drawMap (story nodes): gold pulsing diamond + "2/3" label pinned beside nodes whose
+  treasure set (i%9) is at 2/3 pieces; dim gold diamond on completed (3/3) sets. Anchored to
+  the node dot (px+24,py-24) — NOT the banner, so dense banner stacks never collide.
+- Chapter header: "TREASURE n/9" gold pill under the "N/48 CLEARED" chip + legend caption
+  "gold ◇ = set at 2/3 pieces" (recentered to 1183 after VLM caught the first, wider caption
+  clipping at the screen edge).
+- E2E: seeded treasures.eoc1={0:3,1:3,2:2} → chip shows TREASURE 2/9; camera panned to origin
+  → gold ping pixel-verified at (693,236) beside the stage-2 node.
+
+**7. STYLING (expedition scout-rank panel, VLM-driven):**
+- XP-bar label moved from by−3 to y=118 with the bar at 126..136 (clear 5px gap; VLM had
+  flagged descender clipping); LV ribbon raised to by−27 and the cat nudged to by+6 (no more
+  ribbon-over-ears); panel 76→92 tall so the 'Slot 2: Rank 30' line sits inside; tracker
+  cards shifted to y=162/s+196.
+
+**8. Cache-bust v19 → v20 → v21** (index.html ×9 scripts + page.tsx). GOTCHA HIT THIS ROUND:
+  bumping v20 BEFORE the follow-up edits left the browser serving stale cached js — always
+  re-bump AFTER the final edit of a round (v21 is the true final).
+
+### Verification results (all REAL pointer input, 1280x720, v21)
+- Shrine E2E: streak advance 4→5 (+4%), streak-multiplied rewards (exact math above), forced
+  MEGA at pity 10 with pity reset, paid toss does not advance streak, modal streak line,
+  7/7 pixel-verified pity pips at pity=7, flame chip renders (255,210,63 at probe).
+- VLM re-reviews post-fix: trophies CLEAN (header unburied, clean gap), shrine CLEAN twice
+  (incl. pity pips "evenly spaced, no clipping"), chapters CLEAN, map legend readable in
+  tight crop, title crowd no longer flagged.
+- Battle smoke + full win at v21: sustained deploy → t=89 WIN, catHp 1200 (perfect), 10 kills,
+  zero console errors — battle.js untouched this round, regression-free.
+- 17-screen sweep at v20/v21: all non-blank, zero console errors.
+- node --check 9/9 game JS files; bun run lint 0 errors / 12 benign warnings; dev.log clean.
+- QA screenshots: tests/shots/qa9-* (battle-end, victory), sweep-* (17 screens @v20),
+  qa10-* (shrine-new, shrine-modal-streak, map-radar, map-radar2, expd-fixed, map-fixed),
+  qa11-* (expd, map, shrine-pity — the v21 finals).
+
+### Unresolved / next-phase priorities
+1. Missions 'up' hook still only counts upgrade-screen purchases (unchanged, low priority).
+2. Shrine could add cat-costume unlocks per MEGA count (pity/streak now cover the luck side).
+3. Scout prestige maxes at ★3 — consider ★∞ or prestige-only ticket expeditions if wanted.
+4. 28MB WAV bank load time — re-encode if it becomes a complaint.
+5. Treasure radar only pings at 2/3 (one piece left) — could add a "which set does this stage
+   belong to" tooltip on the stage modal (treasureChance already shown there).
+6. VLM false-positive pattern is now well-characterized (small-text hallucinations) — future
+   rounds should zoom-crop first, fix second (see lessons above).

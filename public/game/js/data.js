@@ -494,6 +494,8 @@ function trophyCheckAll(){let any=false;
    Only flags/counters persist — rewards apply immediately on reveal. */
 const SHRINE_MAX_EXTRA=3;               // paid tosses per day beyond the free one
 const SHRINE_COST=50;                   // Cat Food per paid toss
+const SHRINE_PITY_MAX=10;               // guaranteed MEGA blessing within this many non-MEGA tosses
+const SHRINE_STREAK_MAX=10;             // prayer streak caps at 10 days (+40% rewards)
 const SHRINE_BLESSINGS=[
  {id:'xp',   n:'Wisdom of the Ancients', col:'#7fd0ff', icon:'up',      w:22, jackpot:false,
   line:r=>'+'+fmt(r.n)+' XP — the shrine cats shared their scrolls!'},
@@ -511,46 +513,59 @@ const SHRINE_BLESSINGS=[
   line:r=>'+1 Gold Ticket — a golden glint in the offering box!'},
  {id:'mega', n:'MEGA BLESSING',          col:'#c46adf', icon:'trophy',  w:3, jackpot:true,
   line:r=>'+'+r.cf+' Cat Food · +'+fmt(r.xp)+' XP · +1 Rare Ticket — THE SHRINE GOD SMILED!'}];
-/* roll one blessing (weighted; free toss doubles jackpot weight), compute rank-scaled rewards */
+/* roll one blessing (weighted; free toss doubles jackpot weight; PITY ramps the MEGA weight
+   every non-MEGA toss and guarantees it at SHRINE_PITY_MAX; streak bonus scales numeric rewards) */
 function shrineRoll(free){
-  const pool=SHRINE_BLESSINGS.map(b=>({b,w:b.w*(b.jackpot&&free?2:1)}));
+  const pity=SV.shrine.pity||0;
+  const pool=SHRINE_BLESSINGS.map(b=>({b,w:b.id==='mega'?b.w*(b.jackpot&&free?2:1)*(1+0.85*pity):b.w}));
+  const forceMega=pity>=SHRINE_PITY_MAX-1; // this toss completes the pity counter
   const tot=pool.reduce((a,p)=>a+p.w,0);
   let r=Math.random()*tot,pick=pool[0].b;
   for(const p of pool){r-=p.w;if(r<=0){pick=p.b;break}}
+  if(forceMega)pick=SHRINE_BLESSINGS.find(b=>b.id==='mega');
   const rankMul=1+Math.min(1.5,SV.rank*0.012); // up to +150% at high rank
-  const res={id:pick.id,name:pick.n,col:pick.col,icon:pick.icon,jackpot:pick.jackpot,n:0};
-  if(pick.id==='xp')res.n=Math.round((900+SV.rank*180)*rankMul);
-  else if(pick.id==='cf')res.n=Math.round(90*rankMul);
+  const streakMul=1+shrineStreakBonus();      // +4% per consecutive prayer day (cap +40%)
+  const res={id:pick.id,name:pick.n,col:pick.col,icon:pick.icon,jackpot:pick.jackpot,n:0,streakMul};
+  if(pick.id==='xp')res.n=Math.round((900+SV.rank*180)*rankMul*streakMul);
+  else if(pick.id==='cf')res.n=Math.round(90*rankMul*streakMul);
   else if(pick.id==='en')res.n=energyMax();
   else if(pick.id==='rare')res.n=1;
   else if(pick.id==='fruit'){const ks=Object.keys(SV.fruit).filter(k=>k!=='epic'&&k!=='ancient');
-    res.fruit=ks[Math.floor(Math.random()*ks.length)];res.fruitLabel=res.fruit[0].toUpperCase()+res.fruit.slice(1);res.n=1}
-  else if(pick.id==='np')res.n=Math.max(3,Math.round(2+SV.rank*0.25));
+    res.fruit=ks[Math.floor(Math.random()*ks.length)];res.fruitLabel=res.fruit[0].toUpperCase()+res.fruit.slice(1);
+    res.n=(shrineStreakBonus()>=0.30&&Math.random()<0.5)?2:1} // day-8+ streaks can double-drop fruit
+  else if(pick.id==='np')res.n=Math.max(3,Math.round((2+SV.rank*0.25)*streakMul));
   else if(pick.id==='gold')res.n=1;
-  else if(pick.id==='mega'){res.cf=Math.round(220*rankMul);res.xp=Math.round(2400*rankMul);res.n=0}
+  else if(pick.id==='mega'){res.cf=Math.round(220*rankMul*streakMul);res.xp=Math.round(2400*rankMul*streakMul);res.n=0}
   return res}
+/* current prayer-streak reward multiplier (+0.04 per day, cap 0.40) */
+function shrineStreakBonus(){return Math.min(0.40,(SV.shrine.streak||0)*0.04)}
 /* apply a rolled blessing to the save; returns nothing (rewards already inside res) */
 function shrineApply(res){
   if(res.id==='xp')addXP(res.n);
   else if(res.id==='cf')addCF(res.n);
   else if(res.id==='en'){SV.energy=energyMax();SV.energyTs=now()}
   else if(res.id==='rare')SV.tickets.rare++;
-  else if(res.id==='fruit')SV.fruit[res.fruit]++;
+  else if(res.id==='fruit')SV.fruit[res.fruit]+=res.n||1;
   else if(res.id==='np'){SV.np+=res.n}
   else if(res.id==='gold')SV.tickets.gold++;
   else if(res.id==='mega'){addCF(res.cf);addXP(res.xp);SV.tickets.rare++}
   const S=SV.shrine;S.total++;S.todayN++;S.lastBless=res.n;S.lastId=res.id;
   if(res.jackpot)S.megaN++;
+  S.pity=res.jackpot?0:Math.min(SHRINE_PITY_MAX,(S.pity||0)+1); // pity: MEGA resets, otherwise builds
   persist();
   if(typeof trophyCheckAll==='function')trophyCheckAll();
   return true}
-/* state helpers: {day,freeUsed,todayN,total,megaN,lastId,lastBless} — day rolls reset counters */
+/* state helpers: {day,freeUsed,todayN,total,megaN,pity,streak,lastPrayDay,lastId,lastBless} —
+   day rolls reset counters; streak counts consecutive days with a free toss */
 function shrineInfo(){const S=SV.shrine;
   if(S.day!==todayKey()){S.day=todayKey();S.freeUsed=false;S.todayN=0}
+  // prayer-streak continuity: a missed day resets it (evaluated lazily so reloads stay honest)
+  if(S.lastPrayDay&&S.lastPrayDay!==todayKey()&&S.lastPrayDay!==yesterKey())S.streak=0;
   const extraUsed=Math.max(0,S.todayN-(S.freeUsed?1:0));
   return{freeLeft:!S.freeUsed,extraLeft:Math.max(0,SHRINE_MAX_EXTRA-extraUsed),
-    extraUsed,todayN:S.todayN,total:S.total,megaN:S.megaN||0,
-    cost:SHRINE_COST,lastId:S.lastId||null,lastBless:S.lastBless||0}}
+    extraUsed,todayN:S.todayN,total:S.total,megaN:S.megaN||0,cost:SHRINE_COST,lastId:S.lastId||null,lastBless:S.lastBless||0,
+    pity:clamp(S.pity||0,0,SHRINE_PITY_MAX),pityLeft:Math.max(0,SHRINE_PITY_MAX-(S.pity||0)),
+    streak:clamp(S.streak||0,0,SHRINE_STREAK_MAX),streakBonus:shrineStreakBonus()}}
 /* begin a pray: returns {res,free} on success, null when not allowed */
 function shrinePray(){
   const si=shrineInfo();const free=si.freeLeft;
@@ -558,7 +573,14 @@ function shrinePray(){
     if(si.extraLeft<=0){toast('The shrine is resting — come back tomorrow!','#ffb060');SFX.error();return null}
     if(SV.cf<SHRINE_COST){toast('Not enough Cat Food ('+SHRINE_COST+' CF needed)','#ff7a7a');SFX.error();return null}
     SV.cf-=SHRINE_COST}
-  else SV.shrine.freeUsed=true;
+  else{ // free toss = the day's "visit": advances the prayer streak
+    SV.shrine.freeUsed=true;
+    const S=SV.shrine;const wasStreak=S.streak||0;
+    if(S.lastPrayDay!==todayKey()){
+      S.streak=(S.lastPrayDay===yesterKey())?Math.min(SHRINE_STREAK_MAX,wasStreak+1):1;
+      S.lastPrayDay=todayKey();
+      if(S.streak>wasStreak&&(S.streak===3||S.streak===7||S.streak===SHRINE_STREAK_MAX))
+        toast('PRAYER STREAK '+S.streak+' DAYS — blessing rewards +'+Math.round(shrineStreakBonus()*100)+'%!','#ff9a5a')}}
   const res=shrineRoll(free);
   return{res,free}}
 /* ---- scout prestige: after MYTHIC (900 XP) reset XP for a permanent ★ bonus ---- */

@@ -36,7 +36,7 @@ const DEF_SAVE={ver:2,created:now(),xp:1200,cf:300,tickets:{rare:1,gold:0,plat:0
   base:{wallet:1,worker:1,cpow:1,crch:1,bhp:1,research:1,account:1},
   bestiary:{},settings:{bgm:true,sfx:true},dupeXp:0,eventsDone:{},dojoBest:0,dojoBoard:[],
   expedition:{actives:[],scoutXP:0,runs:0,prestige:0},cmdName:'CAT COMMANDER',
-  shrine:{day:'',freeUsed:false,todayN:0,total:0,megaN:0,lastId:'',lastBless:0},
+  shrine:{day:'',freeUsed:false,todayN:0,total:0,megaN:0,pity:0,streak:0,lastPrayDay:'',lastId:'',lastBless:0},
   trophies:{claimed:{},notified:{}},stats:{pulls:0,wins:0},
   dailyStreak:0,dailyLast:'',missions:{date:'',clear:0,pull:0,up:0,win:0,dep:0,exp:0,claimed:{}},
   gachaSteps:{},pendingPull:null,pendingBattle:null,saveStats:{writes:0,fails:0,lastWrite:0}};
@@ -108,12 +108,15 @@ function _svNormalize(o){ // shape/number hardening AFTER defaults-merge (unknow
   exo.scoutXP=clamp(Math.floor(num(exo.scoutXP,0)),0,1e6);
   exo.runs=clamp(Math.floor(num(exo.runs,0)),0,1e6);
   exo.prestige=clamp(Math.floor(num(exo.prestige,0)),0,3); // prestige stars survive the XP reset
-  // shrine: {day,freeUsed,todayN,total,megaN,lastId,lastBless} — daily blessing counters
+  // shrine: {day,freeUsed,todayN,total,megaN,pity,streak,lastPrayDay,lastId,lastBless} — daily counters + pity/streak
   if(!o.shrine||typeof o.shrine!=='object'||Array.isArray(o.shrine))o.shrine=JSON.parse(JSON.stringify(DEF_SAVE.shrine));
   const sho=o.shrine;
   if(typeof sho.day!=='string')sho.day='';
   sho.freeUsed=!!sho.freeUsed;
   for(const k of['todayN','total','megaN','lastBless'])sho[k]=clamp(Math.floor(num(sho[k],0)),0,1e6);
+  sho.pity=clamp(Math.floor(num(sho.pity,0)),0,10);          // MEGA pity counter (gacha-style hard guarantee)
+  sho.streak=clamp(Math.floor(num(sho.streak,0)),0,10);      // consecutive prayer days
+  if(typeof sho.lastPrayDay!=='string')sho.lastPrayDay='';
   if(typeof sho.lastId!=='string')sho.lastId='';
   if(sho.day!==todayKey()){sho.freeUsed=false;sho.todayN=0} // stale day → reset counters (mirrors shrineInfo)
   // trophies: {claimed:{id:1}, notified:{id:1}} — progress is computed live, only flags persist
