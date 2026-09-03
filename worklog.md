@@ -906,3 +906,108 @@ Next-phase priorities (for the 15-min reviewer):
    purely cosmetic by design.
 6. Consider a TREASURE screen summary of which sets are at 2/3 across ALL chapters (a 'radar
    digest' row) now that farm jumps exist.
+
+---
+
+## Session Round — TREASURE RADAR DIGEST + KEEPER'S BLESSING + ★∞ PRESTIGE + MISSION HOOKS (Task: autonomous QA → features + styling)
+
+### Current project status (assessment at round start)
+- Fresh session at v23: clean boot (title, t advancing), zero console/page errors, dev.log clean.
+- 18-screen sweep: all non-blank, zero console errors.
+- Golden-path E2E re-verified with REAL pointer input at 1280x720 (viewport verified 720 first):
+  home → BATTLE (hm0) → chapters → EoC1 (ch0) → attack → stage modal → **Attack is mb1** (mb0 =
+  Cancel — mirror of the RETREAT confirm, which is also mb0-first) → battle → sustained dock0
+  deploys + wallet/worker boosts (seeded B.walletLv/workerLv=3 when lv0 income was too slow for
+  the lv1 2-cat team) + cannon → **WIN** at t=264 → resOk → map → rewards applied (xp 4034,
+  eoc1 stage 0/1 cleared).
+- Project judged STABLE → this round = new features (per priorities list) + mandatory styling.
+
+### Completed modifications this round
+
+**1. NEW FEATURE — TREASURE RADAR DIGEST (closes old unresolved #6, the "radar digest" row):**
+- `radarSets()` (ui.js): scans ALL 9 treasure chapters × 9 sets = 81 sets; collects `hot` (own=2,
+  ≥1 unlocked farm stage), `near` (own=1), `doneN/totalSets/tiers` for the digest footer; rows
+  sorted by best odds (chance grows with stage idx).
+- `openRadarModal()`: tall board (modalDraw special-case `startsWith('TREASURE RADAR')` → h=612,
+  same pattern as DAILY MISSIONS). 7 rows max: hot first then near. Each row = chapter chip
+  (EoC/ItF/CotC via chShort) + set name + stat-bonus line + 3 tier pips (hot row's empty gold
+  pip pulses) + best-odds % with 'stage N — best odds' subline + FARM button (BTN modal:true,
+  cb closes modal → farmJump). Hot rows breathe gold glow. Digest footer: 'Sets complete X/81 ·
+  tiers owned Y/243 · +N more in progress' + farm-jump hint line. Empty-state fallback text for
+  ultra-early saves.
+- RADAR pill in the treasure top bar (700,9,160x36, between title and stats pill): gold
+  gradient, orbiting-blip radar glyph, red pulsing badge with hot count (MISSIONS-badge style).
+- E2E: radarHotCount=1 → modal (1 hot + 1 near, 2 rdfarm buttons) → rdfarm0 click → modal null,
+  map/eoc1/focusIdx, 'Farming Idol of Empire…' toast. VLM CLEAN (rows, pips, odds, FARM, footer).
+
+**2. NEW FEATURE — KEEPER'S BLESSING (closes old unresolved #5's gameplay half):**
+- data.js: `SHRINE_BLESS_PER=0.03` + `shrineBlessPct()` (3% per owned costume piece, +15% max);
+  shrineRoll mega weight now ×(1+shrineBlessPct()) — costume track is no longer purely cosmetic.
+- ui.js drawShrine: gold pulsing 'MEGA +N%' chip with crown glyph right of 'POSSIBLE BLESSINGS'
+  title (grey hint 'dress the keeper to raise MEGA odds' at 0); MEGA pool row gains a gold
+  '+N%' badge left of the JACKPOT chip; KEEPER'S DRESS right-label at max → 'FULLY DRESSED —
+  MEGA +15%!'. Blessing modal reveal path unchanged (ribbon logic intact).
+- Math verified live: megaN=3 → bp=0.09, pity-4 mega weight 13.20→14.39 (chance 12.2%→13.2%);
+  megaN=10 → chip 'MEGA +15%' (pixel-probed) + FULLY DRESSED label (VLM CLEAN ×3 states).
+- Paid toss E2E at megaN=3: praypaid → coin flight → 'Wisdom of the Ancients' modal (CF 534→484),
+  zero errors.
+
+**3. NEW FEATURE — SCOUT PRESTIGE ★∞ (closes old unresolved #2):**
+- data.js: `SCOUT_PRESTIGE_MAX=999999` (uncapped); scoutInfo stars string capped at 5 glyphs +
+  '+' when beyond (display-only; bonus math 0.10*prest was already unbounded).
+- ui.js drawExpedition: PRESTIGE button now shows whenever MYTHIC (was `prest<3`); modal text
+  notes 'No cap!'; star-count note consolidated to ONE compact right-aligned line
+  (`N★ · +N% forever · no cap`) — the rank-NAME line already carries the capped glyph string.
+- VLM found 2 REAL overlaps on first render (my longer labels ran under the PRESTIGE button /
+  collided with the XP label) → fixed: compact stats line when maxed ('+N% rewards · N trips'),
+  short XP label 'MAX RANK — prestige for a ★', button tightened to 88x46 at y=78. VLM re-check
+  CLEAN. E2E: prestige 4→5 via button + confirm (xp reset 0, name 'ROOKIE ★★★★★', +50%);
+  seeded 8 → name 'ELITE ★★★★★+' (cap works).
+
+**4. FIX — Missions 'up' hook (closes old unresolved #1):** 'Improve a Cat' now counts ALL
+  improvement paths, not just LEVEL UP: EVOLVE success (`SV.cats[id].ev…=true`) and TALENT NP
+  purchases each bump `SV.missions.up`. E2E: seeded basic cat lv10 → EVOLVE → 'EVOLVED → Macho
+  Cat!' + missions.up=1. (Deploy/expedition/gacha/shrine hooks unchanged — already covered.)
+
+**5. STYLING POLISH:**
+- Expedition FREE-slot card: walking cat → **idle** anim + 3 floating 'z z z' glyphs (size/
+  opacity ramp, sine bob) above the napper — matches the 'napping by the base' flavor text
+  (content mismatch was the real defect; the full-screen VLM nits about XP-label descenders and
+  cat-text overlap were disproven by zoom-crop).
+- RADAR pill/badge + hot-row gold breathing + pulsing empty-gold pip (see #1) are new styling
+  detail in themselves.
+- Full-screen VLM nits disproven by zoom this round: 2 (expedition XP label 'clipping', napping
+  cat-text 'overlap'). Confirmed REAL and fixed: 2 (prestige panel label/button overlaps).
+
+**6. Cache-bust v23 → v24** (index.html ×9 scripts + page.tsx, bumped AFTER all edits).
+
+### Verification results (all REAL pointer input, 1280x720, v24)
+- Boot clean; 18-screen sweep: all non-blank, ZERO console errors; dev.log clean.
+- Golden path E2E (win), retreat flow, stage-modal treasure card VLM CLEAN.
+- Radar: open → farm jump E2E; modal + top-bar pill + badge VLM CLEAN (pixel-probed badge/pill).
+- Shrine: blessing chip/badge/labels VLM CLEAN ×3 costume states; blessing math verified; paid
+  toss E2E OK. node --check 9/9 game JS; bun run lint 0 errors / 12 benign warnings.
+- QA shots: tests/shots/r15-* (radar-modal, radar-farmjump, stagemodal, treasure, shrine-bless,
+  shrine-full, shrine-toss, expedition×3) + sweep-* (18 screens @v24).
+
+### QA GOTCHAS learned this round (add to the running list)
+1. Stage-modal Attack is **mb1** (btns array order: [Cancel, Attack!]); RETREAT confirm is mb0.
+   Both modals use `mb{i}` indices — always dump `G.modal.btns.map(b=>b.n)` before clicking.
+2. Full-screen VLM reviews mis-flagged 2 non-issues (XP-label descenders, cat-text overlap) —
+   zoom-crop-first protocol again separated real from phantom. But it DID catch 2 real label/
+   button overlaps I introduced — keep VLM-reviewing every new panel.
+3. When seeding battle wallet for E2E speed: `B.walletLv=3;B.workerLv=3;B.wallet=2000` via
+   `__BC.getB()` (B is the module-level battle state; NOT G.bt/G.battle).
+4. Radar helpers (radarSets etc.) ARE on window (top-level function declarations) — probe
+   `w.radarSets()` directly; only top-level **const** (like BANNERS) hides off window.
+5. One apostrophe-in-single-quoted-string syntax slip ('keeper's blessing…') was caught
+   immediately by node --check — run it after EVERY edit batch (2 rounds in a row now).
+
+### Unresolved / next-phase priorities
+1. Farm-jump still targets only the best stage — a stage-picker per set (all 5 stages with odds
+   listed, maybe from the radar row's FARM long-press or an expand arrow) remains polish-level.
+2. Shrine keeper could be NAMEABLE in settings (cmdName exists for the Dojo — reuse pattern).
+3. Radar digest could gain a "COMPLETE" filter tab (show finished sets for completionists).
+4. 28MB WAV bank load time — re-encode if it becomes a complaint (unchanged).
+5. Consider persisting a tiny "radar seen" flag so the treasure tab itself can badge hot sets
+   from the home screen (currently the badge only exists once on the treasure screen).

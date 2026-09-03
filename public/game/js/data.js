@@ -381,7 +381,7 @@ function scoutInfo(){const xp=clamp(Math.floor((SV&&SV.expedition&&SV.expedition
   let lv=1;for(let i=1;i<SCOUT_T.length;i++){if(xp>=SCOUT_T[i])lv=i+1}
   const base=SCOUT_T[lv-1],next=lv<SCOUT_T.length?SCOUT_T[lv]:null;
   const prest=clamp(Math.floor((SV&&SV.expedition&&SV.expedition.prestige)||0),0,typeof SCOUT_PRESTIGE_MAX==='number'?SCOUT_PRESTIGE_MAX:3);
-  const stars=prest>0?('\u2605'.repeat(prest)):'';
+  const stars=prest>0?('\u2605'.repeat(Math.min(prest,5))+(prest>5?'+':'')):''; // glyph cap for ★∞
   return{xp,lv,prest,stars,name:SCOUT_NAMES[lv-1]+(stars?' '+stars:''),cur:xp-base,need:next!==null?next-base:0,maxed:next===null,bonus:0.06*(lv-1)+0.10*prest}}
 function scoutBonus(){return 1+scoutInfo().bonus}
 function expdSlots(){return SV&&SV.rank>=30?2:1} // 2nd concurrent trip slot at User Rank 30
@@ -522,6 +522,10 @@ const SHRINE_COSTUMES=[
  {mega:5,n:'Golden Crown'},
  {mega:10,n:'Divine Halo'}];
 function shrineCostumes(megaN){return SHRINE_COSTUMES.map(c=>({...c,got:megaN>=c.mega}))}
+/* KEEPER'S BLESSING: each owned costume piece grants a permanent +3% MEGA-blessing weight
+   (up to +15% fully dressed) — the dress track is no longer purely cosmetic */
+const SHRINE_BLESS_PER=0.03;
+function shrineBlessPct(){return shrineCostumes((SV.shrine&&SV.shrine.megaN)||0).filter(c=>c.got).length*SHRINE_BLESS_PER}
 const SHRINE_BLESSINGS=[
  {id:'xp',   n:'Wisdom of the Ancients', col:'#7fd0ff', icon:'up',      w:22, jackpot:false,
   line:r=>'+'+fmt(r.n)+' XP — the shrine cats shared their scrolls!'},
@@ -543,7 +547,7 @@ const SHRINE_BLESSINGS=[
    every non-MEGA toss and guarantees it at SHRINE_PITY_MAX; streak bonus scales numeric rewards) */
 function shrineRoll(free){
   const pity=SV.shrine.pity||0;
-  const pool=SHRINE_BLESSINGS.map(b=>({b,w:b.id==='mega'?b.w*(b.jackpot&&free?2:1)*(1+0.85*pity):b.w}));
+  const pool=SHRINE_BLESSINGS.map(b=>({b,w:b.id==='mega'?b.w*(b.jackpot&&free?2:1)*(1+0.85*pity)*(1+shrineBlessPct()):b.w}));
   const forceMega=pity>=SHRINE_PITY_MAX-1; // this toss completes the pity counter
   const tot=pool.reduce((a,p)=>a+p.w,0);
   let r=Math.random()*tot,pick=pool[0].b;
@@ -612,8 +616,9 @@ function shrinePray(){
         toast('PRAYER STREAK '+S.streak+' DAYS — blessing rewards +'+Math.round(shrineStreakBonus()*100)+'%!','#ff9a5a')}}
   const res=shrineRoll(free);
   return{res,free}}
-/* ---- scout prestige: after MYTHIC (900 XP) reset XP for a permanent ★ bonus ---- */
-const SCOUT_PRESTIGE_MAX=3;
+/* ---- scout prestige: after MYTHIC (900 XP) reset XP for a permanent ★ bonus ----
+   ★∞: uncapped — every prestige adds +10% expedition rewards forever (UI caps the star glyphs) */
+const SCOUT_PRESTIGE_MAX=999999;
 function scoutPrestige(){const s=scoutInfo();
   if(!s.maxed)return false;
   const ex=SV.expedition;

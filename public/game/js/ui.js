@@ -180,6 +180,7 @@ function modalDraw(){const m=G.modal;if(!m)return;
   cx.fillStyle='rgba(40,24,8,.6)';cx.fillRect(0,0,1280,720);
   let h=150+m.lines.length*30+(m.drawExtra?320:0);
   if(m.title&&m.title.startsWith('DAILY MISSIONS'))h=612; // 6 mission rows need a taller board
+  if(m.title&&m.title.startsWith('TREASURE RADAR'))h=612; // 7 radar rows + digest footer need the tall board
   const w=Math.min(760,1180);
   // pop-in: purely visual transform — all drawing/hit coords below stay in FINAL
   // (unscaled) design space so hit rects stay valid even mid-animation
@@ -1135,7 +1136,8 @@ function drawUpgrade(dt){
       if(!canLv){toast('Need level '+need+' first!','#ff7a7a');SFX.error();return}
       if(!canFruit){toast('Not enough Catfruit! Need '+fruitMiss.join(', '),'#ff7a7a');SFX.error();return}
       const fc=(FRUIT_COST[c.rarity]||{})[nextFi];if(fc)for(const k in fc)SV.fruit[k]-=fc[k];
-      SV.cats[c.id]['ev'+nextFi]=true;persist();SFX.win2();toast('EVOLVED \u2192 '+c.forms[nextFi].n+'!','#7fe8a0')},{flat:true,r:14,draw:cc=>{
+      SV.cats[c.id]['ev'+nextFi]=true;if(SV.missions)SV.missions.up=(SV.missions.up||0)+1; // daily mission hook (improvements)
+      persist();SFX.win2();toast('EVOLVED \u2192 '+c.forms[nextFi].n+'!','#7fe8a0')},{flat:true,r:14,draw:cc=>{
       cc.shadowColor='rgba(30,10,60,.45)';cc.shadowBlur=8;cc.shadowOffsetY=4;
       cc.fillStyle=evoReady?'#8a4adf':'#8f8f9c';rr(cc,0,0,420,74,14);cc.fill();cc.shadowColor='transparent';
       const g=cc.createLinearGradient(0,0,0,74);g.addColorStop(0,'rgba(255,255,255,.2)');g.addColorStop(1,'rgba(0,0,0,.15)');
@@ -1183,7 +1185,7 @@ function openTalentsModal(c){SFX.click();
       creamPanel(mx+14,y-20,mw-28,36,'#cbb384');
       txt(cx,t.n+'  Lv'+tl+'/5',mx+30,y-2,14,'#5a4530','left',3,'#fff',700);
       if(tl<5)BTN('talm'+i,mx+mw-194,y-16,168,30,()=>{
-        if(SV.np>=cost){SV.np-=cost;SV.np2[c.id]=SV.np2[c.id]||{};SV.np2[c.id][i]=tl+1;persist();SFX.up();openTalentsModal(c)}
+        if(SV.np>=cost){SV.np-=cost;SV.np2[c.id]=SV.np2[c.id]||{};SV.np2[c.id][i]=tl+1;if(SV.missions)SV.missions.up=(SV.missions.up||0)+1;persist();SFX.up();openTalentsModal(c)}
         else{toast('Not enough NP!','#ff7a7a');SFX.error()}},{col:'#8a4adf',tcol:'#fff',label:cost+' NP',fs:13,r:9,modal:true});
       else txt(cx,'MAX',mx+mw-110,y-2,12,'#a89878','right')})})}
 function abilStr(a){const D={kb:'Knockback',freeze:'Freeze',slow:'Slow',weaken:'Weaken',crit:'Critical Hit',savage:'Savage Blow',wave:'Wave Attack',surge:'Surge',toxic:'Toxic',dodge:'Dodge',warp:'Warp',curse:'Curse',barrierBreak:'Barrier Break',shieldPierce:'Shield Pierce',resist:'Resist',strengthen:'Strengthen',base:'Base Destroyer'};
@@ -1440,6 +1442,29 @@ function drawGachaAnim(dt){const A=G.gachaAnim;A.t+=dt;cx.fillStyle='rgba(8,6,16
 function drawTreasure(dt){drawTopBar('TREASURE COLLECTION',true);
   woodBody();
   const chs=CHAPTERS.filter(c=>c.treasure);
+  // RADAR digest button (top bar, between title and stats pill) — red badge pings hot sets
+  {const hotN=radarHotCount();
+    const pu=hotN>0?1+Math.sin(G.t*5)*0.04:1;
+    cx.save();cx.translate(780,27);cx.scale(pu,pu);
+    if(hotN>0){cx.shadowColor='rgba(255,180,40,'+(0.35+0.3*Math.sin(G.t*5)).toFixed(2)+')';cx.shadowBlur=10}
+    const rg=cx.createLinearGradient(-80,0,80,0);rg.addColorStop(0,'#e8951f');rg.addColorStop(.5,'#ffd23f');rg.addColorStop(1,'#e8951f');
+    cx.fillStyle=rg;rr(cx,-80,-18,160,36,18);cx.fill();cx.shadowColor='transparent';
+    cx.lineWidth=2.5;cx.strokeStyle='#8a5a10';rr(cx,-78.5,-16.5,157,33,17);cx.stroke();
+    // radar sweep glyph (disc + orbiting blip dot)
+    cx.fillStyle='#5a3b16';cx.beginPath();cx.arc(-58,0,8,0,TAU);cx.fill();
+    cx.strokeStyle='#5a3b16';cx.lineWidth=1.6;
+    cx.beginPath();cx.arc(-58,0,13,Math.PI*0.15,Math.PI*0.85);cx.stroke();
+    const ba=G.t*2.2; // blip orbits the disc (radar sweep)
+    cx.fillStyle='#7a2a10';cx.beginPath();cx.arc(-58+Math.cos(ba)*10,Math.sin(ba)*10,2.2,0,TAU);cx.fill();
+    cx.restore();
+    txt(cx,'RADAR',826,27.5,14,'#4a2f10','center',3,'#fff',700);
+    BTN('tradar',700,9,160,36,()=>{openRadarModal()},{flat:true,nohov:true});
+    if(hotN>0){ // badge count (pulses red like the MISSIONS badge)
+      const bp=1+Math.sin(G.t*6)*0.12;
+      cx.save();cx.translate(852,13);cx.rotate(Math.sin(G.t*5)*0.12);cx.scale(bp,bp);
+      cx.fillStyle='#e84030';cx.beginPath();cx.arc(0,0,12,0,TAU);cx.fill();
+      cx.lineWidth=2;cx.strokeStyle='#7a1a10';cx.stroke();
+      txt(cx,String(hotN),0,0.5,12,'#fff','center',2,'#7a1a10',700);cx.restore()}}
   // chapter tabs
   chs.forEach((c,i)=>{const x=20+i*138;BTN('tch'+i,x,64,132,44,()=>{G.tChap=c.id;SFX.click()},{col:G.tChap===c.id?'#ffd23f':'#fffdf5',outline:'#5a3b16',label:c.n.replace('Empire of Cats: ','EoC ').replace('Into the Future: ','ItF ').replace('Cats of the Cosmos: ','CotC '),fs:11.5,r:10,disabled:!chapterUnlocked(c.id)})});
   if(!G.tChap)G.tChap='eoc1';const c=CHMAP[G.tChap]||chs[0];const sets=CHSETS[c.id];
@@ -1489,6 +1514,76 @@ function farmJump(ch,setI){
   G.chapter=ch;G.mapSub=0;G.mapFocusIdx=stages[stages.length-1];G.mapFor=null;
   push('map');SFX.click();
   toast('Farming '+CHSETS[ch][setI].n+' — gold ◇ nodes drop its pieces!','#ffd23f')}
+
+/* ============================== TREASURE RADAR (cross-chapter digest) ==============================
+   Scans ALL 9 treasure chapters at once: every set at 2/3 (ONE piece left) with its best
+   unlocked stage + odds, sorted by odds — one-click FARM jump per row. Closes the radar loop:
+   radar digest → map focus → stage modal odds → battle. */
+function radarSets(){
+  const hot=[],near=[];let doneN=0,totalSets=0,tiers=0;
+  CHAPTERS.filter(c=>c.treasure).forEach(c=>{
+    CHSETS[c.id].forEach((set,i)=>{
+      const own=tCount(c.id,i);totalSets++;tiers+=own;
+      if(own>=3){doneN++;return}
+      const stages=[0,9,18,27,36].map(k=>i+k).filter(idx=>idx<48&&stageUnlocked(c.id,idx));
+      if(!stages.length)return; // nothing farmable unlocked yet
+      const best=stages[stages.length-1];
+      const row={ch:c.id,setI:i,own,best,odds:treasureChance(c.id,best,own)};
+      if(own===2)hot.push(row);else if(own===1)near.push(row)})});
+  hot.sort((a,b)=>b.odds-a.odds);near.sort((a,b)=>b.odds-a.odds);
+  return{hot,near,doneN,totalSets,tiers}}
+function radarHotCount(){return radarSets().hot.length}
+function chShort(id){return (CHMAP[id].n||'').replace('Empire of Cats: ','EoC ').replace('Into the Future: ','ItF ').replace('Cats of the Cosmos: ','CotC ')}
+function openRadarModal(){SFX.click();
+  const R=radarSets();
+  const rows=[...R.hot,...R.near].slice(0,7); // tall board fits 7 rows + digest footer
+  openModal('TREASURE RADAR',
+    [R.hot.length
+      ?R.hot.length+' set'+(R.hot.length>1?'s':'')+' ONE piece from completion — sorted by best odds!'
+      :'No sets at 2/3 yet — here are the closest (1/3), sorted by odds!'],
+    [{n:'CLOSE',cb:()=>{}}],
+    (mx,my,mw,mh)=>{
+      if(!rows.length){ // ultra-early game: nothing farmable yet
+        txt(cx,'No treasure sets are farmable yet — clear story stages to start finding pieces!',mx+mw/2,my+60,13,'#8a6a3a','center',3,'#fff',700);
+        txt(cx,'(Gold ◇ nodes on the map drop pieces — the radar lights up as sets close in.)',mx+mw/2,my+90,11,'#a89878','center',2,'#fff',400);
+        return}
+      rows.forEach((r,i)=>{
+        const rowH=44,y=my+4+i*(rowH+8),isHot=r.own===2;
+        const set=CHSETS[r.ch][r.setI];
+        creamPanel(mx+10,y,mw-20,rowH,isHot?'#e8c37f':'#c8913a');
+        if(isHot){ // hot rows breathe gold (one piece left)
+          const pu=0.5+0.5*Math.sin(G.t*4+i);
+          cx.save();cx.shadowColor='rgba(255,200,40,'+(0.20+pu*0.25).toFixed(2)+')';cx.shadowBlur=6+pu*6;
+          cx.fillStyle='rgba(255,238,180,.6)';rr(cx,mx+10,y,mw-20,rowH,16);cx.fill();cx.restore()}
+        // chapter chip (tier-tinted)
+        const cn=chShort(r.ch);
+        cx.fillStyle=isHot?'#e8951f':'#b06a10';rr(cx,mx+22,y+10,104,24,12);cx.fill();
+        cx.lineWidth=1.8;cx.strokeStyle='#8a5a10';rr(cx,mx+22,y+10,104,24,12);cx.stroke();
+        txt(cx,cn,mx+74,y+22,10.5,'#fff','center',2,'#7a4a08',700);
+        // set name + stat bonus
+        txt(cx,set.n,mx+140,y+17,13.5,'#5a3b16','left',3,'#fff',700);
+        txt(cx,'bonus: '+TSTATS[set.stat],mx+140,y+33,9.5,'#8a6a3a','left',2,'#fff',400);
+        // tier pips (bronze/silver/gold; hot row's empty gold pip pulses)
+        const tcols=['#cd7f32','#c0c0c0','#ffd700'];
+        for(let t=0;t<3;t++){const got=r.own>t;const px2=mx+336+t*24,py2=y+22;
+          const pu=isHot&&t===2&&!got?1+Math.sin(G.t*6)*0.18:1;
+          cx.save();cx.translate(px2,py2);cx.scale(pu,pu);
+          cx.fillStyle=got?tcols[t]:'rgba(200,190,160,.4)';cx.beginPath();cx.arc(0,0,8,0,TAU);cx.fill();
+          cx.lineWidth=1.8;cx.strokeStyle=got?shade(tcols[t],.55):'#c8b892';cx.stroke();
+          if(got){cx.fillStyle='rgba(255,255,255,.5)';cx.beginPath();cx.arc(-2.5,-2.5,2.4,0,TAU);cx.fill()}
+          cx.restore()}
+        // best odds + stage (hot rows show the odds in gold — one piece left)
+        txt(cx,Math.round(r.odds*100)+'%',mx+446,y+20,17,isHot?'#b06a10':'#8a6a3a','center',2.5,'#fff',700);
+        txt(cx,'stage '+(r.best+1)+' — best odds',mx+446,y+36,8.5,'#8a6a3a','center',2,'#fff',400);
+        // FARM button (closes modal → farmJump focuses the map)
+        BTN('rdfarm'+i,mx+mw-176,y+7,150,30,()=>{G.modal=null;farmJump(r.ch,r.setI)},
+          {col:isHot?'#ffd23f':'#e8c37f',outline:'#8a5a10',label:isHot?'FARM!':'FARM',fs:12.5,tcol:'#4a2f10',r:15,modal:true})});
+      // digest footer: world completion snapshot
+      const fy=my+mh-14;
+      const moreN=R.hot.length+R.near.length-rows.length;
+      txt(cx,'Sets complete: '+R.doneN+'/'+R.totalSets+' · tiers owned: '+R.tiers+'/'+R.totalSets*3
+        +(moreN>0?' · +'+moreN+' more sets in progress':''),mx+mw/2,fy,11,'#8a6a3a','center',2.5,'#fff',700);
+      txt(cx,'FARM jumps focus the map on the set\'s best stage — gold ◇ radar pings mark its stages',mx+mw/2,fy-16,9.5,'#a89878','center',2,'#fff',400)})}
 
 /* ============================== SCREEN: ENEMY GUIDE ============================== */
 function drawGuide(dt){drawTopBar('ENEMY GUIDE — BESTIARY',true);
@@ -1673,29 +1768,33 @@ function drawExpedition(dt){bgSky();drawTopBar('SCOUT EXPEDITIONS',true);
     cx.fillStyle='#e85840';rr(cx,-24,-11,48,20,8);cx.fill();
     txt(cx,'LV '+scout.lv,0,0.5,12,'#fff','center',2,'#7a1a10',700);cx.restore()}
   txt(cx,scout.name,rx+84,88,17,'#5a3b16','left',3.5,'#fff',700);
-  txt(cx,'+'+Math.round(scout.bonus*100)+'% expedition rewards · trips: '+fmt(SV.expedition.runs||0),rx+84,106,11,'#8a6a3a','left',2,'#fff',700);
+  { // stats line: compact when the PRESTIGE button shares this panel (no run-under)
+    const st=scout.maxed
+      ?('+'+Math.round(scout.bonus*100)+'% rewards · '+fmt(SV.expedition.runs||0)+' trips')
+      :('+'+Math.round(scout.bonus*100)+'% expedition rewards · trips: '+fmt(SV.expedition.runs||0));
+    txt(cx,st,rx+84,106,11,'#8a6a3a','left',2,'#fff',700)}
   // scout XP bar (label sits clear above the bar — no descender clipping)
   {const bx=rx+84,bw=rw2-208,by=126;
-    txt(cx,scout.maxed?(scout.prest>=SCOUT_PRESTIGE_MAX?'MAX RANK + MAX STARS':'MAX RANK — prestige for a star'):(scout.cur+'/'+scout.need+' Scout XP — next: '+SCOUT_NAMES[scout.lv]),bx,118,9.5,'#5a3b16','left',2,'#fff',700);
+    txt(cx,scout.maxed?'MAX RANK — prestige for a ★':(scout.cur+'/'+scout.need+' Scout XP — next: '+SCOUT_NAMES[scout.lv]),bx,118,9.5,'#5a3b16','left',2,'#fff',700);
     cx.fillStyle='rgba(90,59,22,.16)';rr(cx,bx,by,bw,10,5);cx.fill();
     const fr=scout.maxed?1:clamp(scout.cur/scout.need,0,1);
     const g=cx.createLinearGradient(bx,0,bx+bw,0);g.addColorStop(0,'#7fd0ff');g.addColorStop(1,'#4a9ae8');
     cx.fillStyle=g;rr(cx,bx,by,Math.max(10,bw*fr),10,5);cx.fill();
     cx.lineWidth=1.5;cx.strokeStyle='#8a5a20';rr(cx,bx,by,bw,10,5);cx.stroke()}
-  // prestige button: only when MYTHIC + stars remain (confirm modal — resets scout XP)
-  if(scout.maxed&&scout.prest<SCOUT_PRESTIGE_MAX){const pu=0.6+0.4*(1+Math.sin(G.t*4))/2;
+  // prestige button: whenever MYTHIC (confirm modal — resets scout XP) — ★∞, uncapped
+  if(scout.maxed){const pu=0.6+0.4*(1+Math.sin(G.t*4))/2;
     cx.save();cx.shadowColor='rgba(196,106,223,'+(0.25+pu*0.35).toFixed(2)+')';cx.shadowBlur=8+pu*8;
-    BTN('sprest',rx+rw2-198,86,92,48,()=>{
+    BTN('sprest',rx+rw2-192,78,88,46,()=>{
       openModal('SCOUT PRESTIGE',[
         'Reset scout XP to zero and claim a permanent ★.',
-        'Each star adds +10% expedition rewards — forever.',
+        'Each star adds +10% expedition rewards — forever. No cap!',
         'Current: +'+Math.round(scout.bonus*100)+'% → after: +'+Math.round((scout.bonus+0.10)*100)+'%'],[
         {n:'PRESTIGE!',col:'#c46adf',cb:()=>{if(scoutPrestige()){toast('SCOUT PRESTIGE! ★'+SV.expedition.prestige+' — bonus now +'+Math.round(scoutInfo().bonus*100)+'%','#c46adf')}}},
         {n:'LATER',cb:()=>{}}])},
       {col:'#c46adf',outline:'#6a1a8a',label:'PRESTIGE',fs:11,tcol:'#fff'});
     cx.restore()}
-  else if(scout.prest>0){txt(cx,'★'.repeat(scout.prest)+' prestige stars',rx+rw2-136,96,10,'#c46adf','right',2,'#fff',700);
-    txt(cx,'+10% each · permanent',rx+rw2-136,110,9,'#a86ac4','right',2,'#fff',400)}
+  else if(scout.prest>0){ // star count lives in the rank-name line — one compact note only
+    txt(cx,scout.prest+'★ · +'+Math.round(scout.prest*10)+'% forever · no cap',rx+rw2-136,110,9,'#a86ac4','right',2,'#fff',400)}
   // slot pips (right side)
   for(let s=0;s<2;s++){const sx=rx+rw2-64,sy=88+s*26;const unlocked=s<slots;const inUse=!!actList[s];
     cx.fillStyle=inUse?'#3abc6a':(unlocked?'#ffd94a':'#d8ccb0');cx.beginPath();cx.arc(sx,sy,9,0,TAU);cx.fill();
@@ -1758,7 +1857,12 @@ function drawExpedition(dt){bgSky();drawTopBar('SCOUT EXPEDITIONS',true);
         cx.save();cx.setLineDash([10,8]);cx.lineWidth=2.5;cx.strokeStyle='rgba(138,106,58,.55)';
         rr(cx,x2,y,w2,h,14);cx.stroke();cx.restore();
         txt(cx,'SLOT '+(s+1)+' — FREE',x2+w2/2,y+34,15,'#a8845a','center',3,'#fff',700);
-        ART.cat({x:x2+w2/2-90,y:y+96+Math.sin(G.t*1.5)*3,s:0.9,id:'cat',t:G.t,e:{anim:'walk'}});
+        ART.cat({x:x2+w2/2-90,y:y+96+Math.sin(G.t*1.5)*3,s:0.9,id:'cat',t:G.t,e:{anim:'idle'}});
+        // floating Z z z above the napping scout (idle anim — matches the flavor text)
+        for(let z=0;z<3;z++){const zx=x2+w2/2-64+z*16,zy=y+52-z*16-Math.sin(G.t*1.6+z*0.9)*5;
+          cx.fillStyle='rgba(90,120,180,'+(0.75-z*0.18).toFixed(2)+')';
+          cx.font=FONT(9+z*2.5,700);cx.textAlign='center';cx.textBaseline='middle';
+          cx.fillText('z',zx,zy)}
         txt(cx,'Your scout is napping by the base.',x2+w2/2+24,y+96,13,'#8a7a5a','center',2.5,'#fff',400);
         txt(cx,'Pick a destination on the left to deploy!',x2+w2/2+24,y+120,12.5,'#5a3b16','center',2.5,'#fff',700);
         txt(cx,'Runs in real time — leave and come back later!',x2+w2/2+24,y+150,10.5,'#a89878','center',2,'#fff',400)}
@@ -2196,7 +2300,7 @@ function drawShrine(dt){bgSky();drawTopBar('CAT SHRINE',true);
       else{cx.lineWidth=1.2;cx.strokeStyle='rgba(138,106,58,.4)';cx.stroke()}
       cx.restore()});
     if(next)txt(cx,next.n+' at '+next.mega+' MEGA',rx+rw2-24,326,10,gotN?'#8a6a3a':'#b8a884','right',2,'#fff',400);
-    else txt(cx,'FULLY DRESSED — the keeper is divine!',rx+rw2-24,326,10,'#d05a28','right',2,'#fff',700)}
+    else txt(cx,'FULLY DRESSED — MEGA +'+Math.round(shrineBlessPct()*100)+'%!',rx+rw2-24,326,10,'#d05a28','right',2,'#fff',700)}
   // PRAY buttons (disabled mid-animation / when modal up)
   {const canFree=si.freeLeft&&!anim;
     const canPaid=!si.freeLeft&&si.extraLeft>0&&SV.cf>=SHRINE_COST&&!anim;
@@ -2218,6 +2322,15 @@ function drawShrine(dt){bgSky();drawTopBar('CAT SHRINE',true);
   //   MEGA row below the panel's bottom edge; now every row stays inside)
   creamPanel(rx,432,rw2,228);
   txt(cx,'POSSIBLE BLESSINGS',rx+18,452,13,'#b06a10','left',3,'#fff',700);
+  { // KEEPER'S BLESSING: live MEGA-weight bonus from the dress track (gold, pulses when active)
+    const bp=shrineBlessPct();
+    if(bp>0){const pu=1+Math.sin(G.t*3.5)*0.04;
+      cx.save();cx.translate(rx+rw2-96,452);cx.scale(pu,pu);
+      cx.fillStyle='rgba(255,238,180,.95)';rr(cx,-88,-10,176,20,10);cx.fill();
+      cx.lineWidth=1.8;cx.strokeStyle='#e8951f';rr(cx,-88,-10,176,20,10);cx.stroke();
+      glyph(cx,'crown',-72,0,9,'#b06a10','#ffd23f');
+      txt(cx,'MEGA +'+Math.round(bp*100)+'%',6,0.5,10.5,'#8a5a10','center',2,'#fff',700);cx.restore()}
+    else txt(cx,'dress the keeper to raise MEGA odds',rx+rw2-18,452,9.5,'#a89878','right',2,'#fff',400)}
   SHRINE_BLESSINGS.forEach((b,i)=>{
     const bx=rx+18,by=462+i*24.5;
     cx.fillStyle=i%2?'rgba(90,59,22,.05)':'rgba(255,244,214,.45)';
@@ -2227,6 +2340,8 @@ function drawShrine(dt){bgSky();drawTopBar('CAT SHRINE',true);
     glyph(cx,b.icon,bx+14,by+11.5,9.5,'#fff',shade(b.col,.62));
     txt(cx,b.n,bx+32,by+12,11.5,'#5a3b16','left',2,'#fff',700);
     if(b.jackpot){const pu=1+Math.sin(G.t*5)*0.06;
+      const bp=shrineBlessPct();
+      if(bp>0)txt(cx,'+'+Math.round(bp*100)+'%',bx+rw2-98,by+12,11,'#e8951f','right',2,'#fff',700); // blessing boost badge
       cx.save();cx.translate(bx+rw2-66,by+11.5);cx.scale(pu,pu);
       cx.fillStyle='#c46adf';rr(cx,-26,-9,52,18,9);cx.fill();
       txt(cx,'JACKPOT',0,0.5,9,'#fff','center',2,'#6a1a8a',700);cx.restore()}
