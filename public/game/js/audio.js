@@ -317,7 +317,16 @@ function bgmStart(){
   const bk=BK_BGM[bgmTheme];
   if(bk&&bk.ab&&bk.len>0){ // pre-rendered loop (assets/audio/bgm_<theme>.wav) — zero runtime synthesis
     try{bgmBakedSrc=AC.createBufferSource();bgmBakedSrc.buffer=bk.ab;
-      bgmBakedSrc.loop=true;bgmBakedSrc.loopStart=0;bgmBakedSrc.loopEnd=bk.len;
+      bgmBakedSrc.loop=true;bgmBakedSrc.loopStart=0;
+      /* BULLETPROOF LOOP: use the ACTUAL decoded duration. Some browsers stall when
+         loopEnd >= buffer duration — only set a loopEnd when the bank declares a
+         genuine loop point SHORTER than the buffer, else rely on the default
+         full-buffer loop (bank lens == buffer durations here). */
+      const dur=bk.ab.duration||0;
+      if(bk.len>0&&bk.len<dur*0.999)bgmBakedSrc.loopEnd=bk.len;
+      const th2=bgmTheme;
+      bgmBakedSrc.onended=()=>{ // watchdog: if the loop EVER dies (browser quirk / stop), restart immediately
+        if(bgmTheme===th2&&AC&&(!SV||!SV.settings||SV.settings.bgm))try{bgmStart()}catch(e){}};
       bgmBakedSrc.connect(bgmBakedG||masterG);bgmBakedSrc.start(AC.currentTime);
       bgmPlaying={mode:'baked',theme:bgmTheme};return}catch(e){_bkStopBgm()}}
   const R=rng32(th.seed);       // seeded -> stable composition per theme
@@ -377,3 +386,14 @@ function AudioSetBgm(theme){
   }
 }
 function AudioSetBgmSafe(theme){try{AudioSetBgm(theme)}catch(e){}}
+/* resume audio after tab switches: Chrome suspends background AudioContexts and
+   throttles the synth scheduler — visibilitychange resumes the context and
+   restarts the baked loop if it died while hidden (music NEVER stays silent) */
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden)return;
+  try{
+    if(AC&&AC.state==='suspended')AC.resume();
+    if(AC&&bgmTheme&&(!bgmPlaying||bgmPlaying.mode!=='baked'||!bgmBakedSrc)){
+      const bk=BK_BGM[bgmTheme];
+      if(bk&&bk.ab)bgmStart();}
+  }catch(e){}});

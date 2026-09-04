@@ -1146,3 +1146,41 @@ Unresolved / next-phase priorities
 3. Battle-intro camera sweep (original pans base-to-base at battle start) + boss-arrival camera pan to the enemy base.
 4. Kill/feed VLM aliasing gotcha: two screenshots ~0.35s apart alias the 0.7s stride cycle and look identical — always verify animation with in-page pixel diffs (≤150ms windows) or pause-locked states, never burst screenshots.
 5. 28MB WAV bank load time remains (unchanged; now 16 files × ~1.2s shorter each).
+
+---
+Task ID: r18
+Agent: main (Z.ai Code)
+Task: User-reported bug triage + animation/graphics quality overhaul ("animations are just zoom in/out — SO BAD", "graphics look simple"; scroll reversed / scroll off-window / music loop / money counter blocked by symbol)
+
+Work Log:
+- REPRODUCED all 4 user bugs live via agent-browser + VLM on /game (battle screenshots, drag probes, counter crops):
+  - scroll reversed: drag was grab-the-world (drag RIGHT panned view LEFT) — user expects pan-the-camera
+  - money counter: ¢ coin overlapped the last digit on the top-left enemy-HP counter (measured: text ink to 1228.5, coin from 1223.5) and 7-digit wallets ran off-screen left
+  - music loop: loopEnd=bank len (== duration) can stall on some browsers when loopEnd >= duration
+  - scroll off-window: no fling + camHold interplay felt like fighting the camera (clamp itself was correct — verified [0,1320] at extremes)
+- ANIMATION OVERHAUL (art.js):
+  - poseOf v2: 3-phase strike curve — SNAP (-1→+1 easeOut in first 10%, damage tick lands at snap), HOLD impact frame (10-50%), RETURN easeIn (50-100%) — the original's 2-frame attack feel
+  - Walk v2: REAL vertical hop translate (-bob*0.9), waddle roll (sin*0.05), oscillating forward lean, stride counter-phase — was pure subtle squash (read as "zoom")
+  - GAIT amplitudes ~1.7x (kitten 2.6→4.6 etc), legs() stride 2.6→4.4 + knee lift 3.4→5.4 (visible leg scissoring)
+  - windup crouch deepened (translate -26, rotate -0.11, scale 1-0.10/1-0.15); strike lunge amplified (translate l*34, rotate 0.15)
+  - bake resolution: 14→18 walk frames, 12→16 attack frames
+- BATTLE JUICE (battle.js):
+  - NEW 'impact' FX: white 4-point star + gold ring + radial speed sparks at every hit point (replaces flat kbstar), big variant on crits/≥25% hits
+  - KB tumble: arc 42→46px, spin 2.4→3.4 rad (head-over-heels)
+  - death: now flies back (-dir*14) + drops (dieP*10) while spinning
+- SCROLL FIXES (ui.js + battle.js):
+  - drag direction REVERSED to pan-the-camera: drag LEFT looks LEFT, drag RIGHT looks RIGHT (verified: 660→460 on 200px left drag, 660→860 on right)
+  - wheel: same direction as drag + hard clamp; fling momentum: smoothed velocity tracking during drag (first-segment measures from drag start), on release camera glides with 0.002^dt friction, clamped + camHold guard — verified: 300px drag glides 522px total and settles
+  - extreme drags clamp to [0,1320] (verified)
+- MUSIC LOOP (audio.js): loopEnd only set when bank len < decoded duration*0.999 (else default full-buffer loop), onended watchdog restarts a dead loop, visibilitychange resumes suspended AC + restarts baked loop if it died while hidden
+- MONEY COUNTERS (battle.js): top-left coin moved +20px clear gap; top-right counter shifted left (coin at sx-6, 5px clear); wallet re-anchored right (number right-aligned at 160, coin pinned at 175, auto-shrink >150px) — VLM-verified 7-digit wallet fully visible, zero overlap on all three counters
+- GRAPHICS PASS (battle.js drawBattleBG): 3-stop sky + horizon haze, sun with 10 rotating rays + glow ring, volumetric clouds (shaded undersides), two-tone mountains with rim highlights, real trees (trunk + double canopy + sway) for grass/snow, tower windows + blinking beacons for future/cosmos, butterflies/leaves ambient, ground flowers/tufts/pebbles with parallax
+- boot.js: __BC QA hook extended (ENEMAP, CATMAP, genStage, startBattle, spawnCat, spawnEnemy) — all verified live
+- QA: node --check all files OK, bun run lint 0 errors (12 pre-existing warnings), full loop battle→victory→map verified, dev.log clean, cache-bust v31/v32
+- VLM blind-critic pass on home/gacha/equip/battle: equip-grid "misalignment" claim disproven by second VLM pass (aligned); remaining findings are stylistic opinions (font is already Fredoka One)
+
+Stage Summary:
+- ALL 4 user-reported bugs fixed and machine-verified (direction, bounds+fling, loop watchdog, counters)
+- Animations now frame-based original-style: snap-hold-return strikes, hopping waddling march, deep anticipation crouches, full-extent lunges, impact starbursts, tumbled KB, flying deaths — no more "zoom in/out"
+- Backgrounds/hud substantially richer (sun rays, trees, flowers, volumetric clouds)
+- NOT DONE / next-phase candidates: per-unit painter pass (only shared pose math + helpers amplified — individual unit painters could get unit-specific attack flourishes), gacha capsule animation juice, warm-mustard palette shift per critic, UI button 3D bevel styling, re-baking BGMs with true musical loop points (crossfade)

@@ -31,7 +31,7 @@ G.lastEvents=eventStages();G.eventKey='ev'+new Date().toDateString();
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){lastTs=performance.now()}});
 requestAnimationFrame(loop);
 console.log('%cThe Battle Cats booted','color:#ffd94a;font-weight:bold');
-window.__BC={G:G,getSV:()=>SV,getB:()=>B}; // QA/testing hook (getB: live battle state, null outside battle)
+window.__BC={G:G,getSV:()=>SV,getB:()=>B,ENEMAP,CATMAP,genStage,startBattle,spawnCat,spawnEnemy,updateBattle:()=>B&&updateBattle(0.016)}; // QA/testing hook (getB: live battle state, null outside battle)
 // tell the Next.js wrapper (or any embedder) the engine is live & the first frame is drawn
 try{parent!==window&&parent.postMessage({bc:'booted',v:1},'*')}catch(e){}
 addEventListener('message',e=>{ // wrapper → game bridge (focus restore / forced resize)

@@ -11,6 +11,7 @@ function toast(msg,col){G.toasts.push({msg,t:3.2,age:0,col:col||'#ffd94a'})}
 function openModal(title,lines,btns,drawExtra){G.modal={title,lines,btns:btns||[{n:'CLOSE',cb:()=>{}}],drawExtra}}
 function toDesign(e){return{x:(e.clientX-OX)/SC,y:(e.clientY-OY)/SC}}
 cv.addEventListener('pointerdown',e=>{const p=toDesign(e);AudioUnlock();G.pdown={x:p.x,y:p.y,moved:false,t:now()};
+  if(G.flingCam)G.flingCam=null; // new grab kills any live camera fling
   try{cv.setPointerCapture(e.pointerId)}catch(e2){} // drag survives leaving the window — no more stuck/lost drags
   if(G.modal){for(let i=G.hits.length-1;i>=0;i--){const h=G.hits[i];if(!String(h.id).startsWith('mb')&&!h.modal)continue;
     if(p.x>=h.x&&p.x<=h.x+h.w&&p.y>=h.y&&p.y<=h.y+h.h){G.pend={h,p}}}
@@ -37,9 +38,15 @@ cv.addEventListener('pointerdown',e=>{const p=toDesign(e);AudioUnlock();G.pdown=
 });
 cv.addEventListener('pointermove',e=>{const p=toDesign(e);G.mouse=p;
   if(G.dragScroll){const h=G.dragScroll.h;
-    if(h.horiz){const d=p.x-G.dragScroll.sx;if(Math.abs(d)>6||G.dragScroll.moved){G.dragScroll.moved=true;h.setOff(G.dragScroll.off-d)}}
+    if(h.horiz){const d=p.x-G.dragScroll.sx;if(Math.abs(d)>6||G.dragScroll.moved){G.dragScroll.moved=true;h.setOff(G.dragScroll.off+d); /* PAN-CAMERA: view follows the finger — drag LEFT looks LEFT */
+      if(G.flingCam)G.flingCam=null;
+      const nt=now(),olt=G.dragScroll.lt||nt,olx=(G.dragScroll.lx!==undefined?G.dragScroll.lx:G.dragScroll.sx); // first segment measures from the drag START
+      const iv=(p.x-olx)/Math.max(0.008,(nt-olt)/1000); // instantaneous px/s of this segment
+      G.dragScroll.v=0.55*(G.dragScroll.v||0)+0.45*clamp(iv,-3000,3000); // smoothed velocity (for the release fling)
+      G.dragScroll.lx=p.x;G.dragScroll.lt=nt}}
     else{const d=p.y-G.dragScroll.sy;if(Math.abs(d)>6||G.dragScroll.moved){G.dragScroll.moved=true;h.setOff(clamp(G.dragScroll.off-d,0,h.max()))}}}
-  else if(G.pdown&&G.onDrag){G.onDrag(p,G.pdown)}
+  else if(G.pdown&&G.onDrag)G.onDrag(p,G.pdown);
+  if(G.pdown&&Math.hypot(p.x-G.pdown.x,p.y-G.pdown.y)>7)G.pdown.moved=true;
   let hov=null;for(const h of G.hits){if(!h.hidden&&p.x>=h.x&&p.x<=h.x+h.w&&p.y>=h.y&&p.y<=h.y+h.h){hov=h.id;break}}G.hoverId=hov;
   cv.style.cursor=hov?'pointer':'default';
 });
@@ -49,7 +56,8 @@ cv.addEventListener('wheel',e=>{const p=toDesign(e);
   let sreg=null;for(let i=G.hits.length-1;i>=0;i--){const s=G.hits[i];if(!s||!s.scroll||s.hidden)continue;
     if(p.x>=s.x&&p.x<=s.x+s.w&&p.y>=s.y&&p.y<=s.y+s.h){sreg=s;break}}
   if(sreg){const dy=e.deltaY;
-    if(sreg.horiz){const dx=Math.abs(e.deltaX)>Math.abs(dy)?e.deltaX:dy;sreg.setOff(sreg.off()-dx)} // wheel matches the grab-the-world drag (same feel as finger)
+    if(sreg.horiz){const dx=Math.abs(e.deltaX)>Math.abs(dy)?e.deltaX:dy; // PAN-CAMERA wheel: roll right = look right (matches the drag), hard-clamped to bounds
+      sreg.setOff(clamp(sreg.off()+dx,0,(sreg.max&&sreg.max()>0)?sreg.max():1e9))}
     else sreg.setOff(clamp(sreg.off()+dy,0,sreg.max()));
     e.preventDefault();e.stopPropagation()}
 },{passive:false});
@@ -57,6 +65,8 @@ function endPointer(e){if(G.dragScroll){const ds=G.dragScroll;
     if(!ds.moved){ // a tap (not a drag): fire the region's own onTap AND any button it swallowed
       if(ds.h.tap)ds.h.tap();
       if(ds.pendBtn&&ds.pendBtn.cb)ds.pendBtn.cb()}
+    else if(ds.h.horiz&&ds.v){ // FLING: horizontal momentum on release — camera glides with friction (original feel)
+      if(now()-(ds.lt||0)<140&&Math.abs(ds.v)>380)G.flingCam={v:clamp(ds.v,-2600,2600)}}
     if(ds.pendBtn)ds.pendBtn.active=false;
     G.dragScroll=null}
   if(e&&e.pointerId!==undefined){try{cv.releasePointerCapture(e.pointerId)}catch(e2){}}

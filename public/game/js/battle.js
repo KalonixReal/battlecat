@@ -105,6 +105,9 @@ function applyDamage(src,tgt,dmg,o){o=o||{};
   if(u.traits&&u.traits.includes('metal'))d=o.crit?dmg:1; // Metal: 1 per non-crit hit; CRIT deals full ATK vs Metal (ignores Metal)
   else if(o.crit&&!o.isWave)d*=2; // wiki: Critical Hit = 200% damage; applied exactly ONCE (strike passes plain ATK); waves/surges never crit
   u.hp-=d;u.flash=0.12;
+  /* IMPACT FX v2 — white starburst + radial sparks at the exact hit point (the
+     original's punchy hit feedback: every strike reads as a committed contact) */
+  B.fx.push({k:'impact',x:u.x,y:-70-u.r*0.6,t:0.26,big:d>=u.maxHp*0.25||o.crit,dir:(src&&src.x<u.x)?1:-1});
   popTxt(u.x,GROUND_Y-70-u.r,Math.round(d),o.crit?'#ffd94a':(u.side==='cat'?'#ff7a7a':'#fff'),o.crit?18:14);
   if(u.side==='enemy')B.dmgDealt+=d;
   if(u.hp<=0){
@@ -127,7 +130,7 @@ function startKb(u,dist,src){
   if(u.kbTaken>=u.kb){killUnit(u,src);return} // KB limit: the kb-th knockback destroys the unit instead of pushing
   u.state='kb';u.kbT=0.38;u.kbTotal=dist||90;
   u.kbFrom=u.x;u.rateT=0.3; // ORIGINAL RULE: being knocked back mid-attack RESETS the attack timer
-  SFX.kb();B.fx.push({k:'kbstar',x:u.x,t:0.35,y:0})}
+  SFX.kb();B.fx.push({k:'impact',x:u.x,y:-90,t:0.26,big:true,dir:u.dir})}
 function popTxt(x,y,s,col,big){B.pops.push({x:x+(Math.random()*16-8),y,s:String(s),col:col||'#fff',t:0.9,big:big||14,vy:-55})}
 function applyAbilities(src,tgts,o){
   const abils=src.side==='cat'?(src.abil||[]):(src.def.abil||[]);
@@ -301,6 +304,14 @@ function updateBattle(dt){
      The camera eases after the battle front (the furthest-advanced cat — cats push
      LEFTWARD here). Manual scrolling takes over instantly and auto-follow resumes
      ~2.6s after release. Enemy breakthrough near the home base snaps attention home. */
+  /* camera FLING momentum (released drag): glides with exponential friction,
+     hard-clamped to the field bounds — runs regardless of camHold (the release
+     just set camHold) and keeps auto-follow at bay until it settles */
+  if(G.flingCam&&!B.result){
+    Bn.cam=clamp(Bn.cam+G.flingCam.v*dt,0,FIELD_W-1280);
+    Bn.camHold=Math.max(Bn.camHold,0.35);
+    G.flingCam.v*=Math.pow(0.002,dt);
+    if(Math.abs(G.flingCam.v)<40||Bn.cam<=0||Bn.cam>=FIELD_W-1280)G.flingCam=null}
   if(Bn.camHold>0)Bn.camHold-=dt;
   else if(!B.result){
     const cats=Bn.units.filter(v=>v.side==='cat'&&v.state!=='die'&&v.state!=='burrow'&&v.state!=='revive');
@@ -444,19 +455,50 @@ function drawBattle(dt){updateBattle(dt);
   if(b.result)drawResult(b)}
 function drawBattleBG(b,shx,shy){
   const th=b.st.bg;const grad=BG_THEMES[th]||BG_THEMES.grass;
-  const g=cx.createLinearGradient(0,0,0,720);g.addColorStop(0,grad.sky1);g.addColorStop(1,grad.sky2);cx.fillStyle=g;cx.fillRect(0,0,1280,720);
-  // sun/moon
-  cx.fillStyle=grad.sun;cx.beginPath();cx.arc(1100,90,38,0,TAU);cx.fill();
-  // clouds parallax
-  cx.fillStyle='rgba(255,255,255,.75)';
-  for(let i=0;i<7;i++){const cxp=((i*397+Math.sin(i*7)*60)-b.cam*0.25)%(1500)-150;cloudDraw(cxp,60+((i*53)%120),0.7+((i*29)%40)/100)}
-  // far mountains
-  cx.fillStyle=grad.far;
+  /* sky — 3-stop gradient + horizon haze band (depth) */
+  const g=cx.createLinearGradient(0,0,0,720);
+  g.addColorStop(0,grad.sky1);g.addColorStop(0.62,grad.sky2);g.addColorStop(1,grad.sky2);
+  cx.fillStyle=g;cx.fillRect(0,0,1280,720);
+  const hz=cx.createLinearGradient(0,GROUND_Y-150,0,GROUND_Y);
+  hz.addColorStop(0,'rgba(255,255,255,0)');hz.addColorStop(1,'rgba(255,255,255,.14)');
+  cx.fillStyle=hz;cx.fillRect(0,GROUND_Y-150,1280,150);
+  /* sun with soft rotating rays (alive, not static) */
+  cx.save();cx.translate(1100,90);
+  cx.globalAlpha=0.16;cx.fillStyle=grad.sun;
+  for(let i=0;i<10;i++){const a=i/10*TAU+G.t*0.06;
+    cx.beginPath();cx.moveTo(0,0);cx.arc(0,0,74,a,a+0.19);cx.closePath();cx.fill()}
+  cx.globalAlpha=0.28;cx.beginPath();cx.arc(0,0,52,0,TAU);cx.fill();
+  cx.globalAlpha=1;cx.beginPath();cx.arc(0,0,38,0,TAU);cx.fill();
+  if(th==='cosmos'){cx.fillStyle='rgba(255,255,255,.85)';
+    for(let i=0;i<4;i++){const a=G.t*0.5+i*1.57;cx.beginPath();cx.arc(Math.cos(a)*54,Math.sin(a)*18,2.2,0,TAU);cx.fill()}}
+  cx.restore();
+  /* clouds — soft white puffs with a shaded underside (volumetric) */
+  for(let i=0;i<7;i++){const cxp=((i*397+Math.sin(i*7)*60)-b.cam*0.25)%(1500)-150;
+    const cy=60+((i*53)%120),cs=0.7+((i*29)%40)/100;
+    cx.fillStyle='rgba(190,205,225,.5)';
+    cx.beginPath();cx.arc(cxp,cy+7*cs,24*cs,0,TAU);cx.arc(cxp+32*cs,cy+3*cs,19*cs,0,TAU);cx.arc(cxp+58*cs,cy+8*cs,17*cs,0,TAU);cx.fill();
+    cx.fillStyle='rgba(255,255,255,.9)';
+    cx.beginPath();cx.arc(cxp,cy,23*cs,0,TAU);cx.arc(cxp+30*cs,cy-6*cs,19*cs,0,TAU);cx.arc(cxp+56*cs,cy,16*cs,0,TAU);cx.fill()}
+  /* far mountains — two-tone silhouettes with rim highlights */
   for(let i=0;i<11;i++){let mx=((i*280)-b.cam*0.35)%3080;if(mx<-200)mx+=3080;const h=90+((i*97)%90);
-    cx.beginPath();cx.moveTo(mx-170,GROUND_Y+4);cx.quadraticCurveTo(mx,GROUND_Y-h*1.9,mx+170,GROUND_Y+4);cx.closePath();cx.fill()}
-  // mid structures
-  cx.fillStyle=grad.mid;
-  for(let i=0;i<9;i++){let mx=((i*340+120)-b.cam*0.6)%3060;if(mx<-200)mx+=3060;if(th==='future'||th==='cosmos'){cx.fillRect(mx,360,40,200);cx.fillRect(mx+52,410,26,150)}else{cx.beginPath();cx.arc(mx,GROUND_Y+6,60,Math.PI,0);cx.fill()}}
+    cx.fillStyle=grad.far;
+    cx.beginPath();cx.moveTo(mx-170,GROUND_Y+4);cx.quadraticCurveTo(mx,GROUND_Y-h*1.9,mx+170,GROUND_Y+4);cx.closePath();cx.fill();
+    cx.fillStyle='rgba(255,255,255,.20)';
+    cx.beginPath();cx.moveTo(mx-38,GROUND_Y-h*1.42);cx.quadraticCurveTo(mx,GROUND_Y-h*1.9,mx+34,GROUND_Y-h*1.46);cx.quadraticCurveTo(mx+8,GROUND_Y-h*1.5,mx-12,GROUND_Y-h*1.36);cx.closePath();cx.fill()}
+  /* mid layer — trees for grass/snow, towers for future/cosmos (parallax 0.6) */
+  for(let i=0;i<9;i++){let mx=((i*340+120)-b.cam*0.6)%3060;if(mx<-200)mx+=3060;
+    if(th==='future'||th==='cosmos'){
+      cx.fillStyle=grad.mid;cx.fillRect(mx,360,40,200);cx.fillRect(mx+52,410,26,150);
+      cx.fillStyle='rgba(255,255,255,.25)';
+      for(let wy=0;wy<3;wy++)cx.fillRect(mx+6,375+wy*55,8,9);
+      if((i*7)%3===0){cx.fillStyle='rgba(255,90,90,'+(0.5+0.4*Math.sin(G.t*3+i)).toFixed(2)+')';cx.beginPath();cx.arc(mx+20,352,3,0,TAU);cx.fill()}}
+    else{ // round-crown trees: trunk + double canopy + sway
+      const swy=Math.sin(G.t*0.8+i*1.9)*3;
+      cx.fillStyle=shade(grad.mid,.55);cx.fillRect(mx-5,GROUND_Y-38,10,42);
+      cx.fillStyle=grad.mid;
+      cx.beginPath();cx.arc(mx+swy*0.4,GROUND_Y-58,34,0,TAU);cx.arc(mx-18+swy*0.3,GROUND_Y-44,22,0,TAU);cx.arc(mx+20+swy*0.5,GROUND_Y-46,24,0,TAU);cx.fill();
+      cx.fillStyle='rgba(255,255,255,.16)';
+      cx.beginPath();cx.arc(mx-9+swy*0.4,GROUND_Y-66,14,0,TAU);cx.arc(mx+11+swy*0.4,GROUND_Y-58,11,0,TAU);cx.fill()}}
   // Aku realm: drifting flame wisps rising from the ground (chapter atmosphere)
   if(th==='aku'){for(let i=0;i<6;i++){
     let wx=((i*430+40)-b.cam*0.5)%2700;if(wx<-100)wx+=2700;
@@ -466,12 +508,39 @@ function drawBattleBG(b,shx,shy){
     cx.fillStyle='#c46adf';cx.beginPath();cx.ellipse(0,0,15*fs,26*fs,Math.sin(G.t*1.5+i)*0.2,0,TAU);cx.fill();
     cx.fillStyle='#ff5a9a';cx.beginPath();cx.ellipse(0,7*fs,7.5*fs,14*fs,0,0,TAU);cx.fill();
     cx.restore()}}
-  // ground
+  /* butterflies / drifting leaves — grass chapters get ambient life */
+  if(th==='grass'||th==='snow'||th==='event'){for(let i=0;i<5;i++){
+    let lx=((i*517+90)-b.cam*0.8)%2560;if(lx<-60)lx+=2560;
+    const ly=200+((i*131)%210)+Math.sin(G.t*1.3+i*2.1)*26;
+    const fl=0.85+0.15*Math.sin(G.t*6+i*2);
+    cx.save();cx.translate(lx,ly);cx.globalAlpha=0.75;
+    cx.fillStyle=th==='snow'?'rgba(255,255,255,.9)':['#ffd94a','#ff9a5a','#a8e8ff'][i%3];
+    cx.scale(fl,1);
+    cx.beginPath();cx.ellipse(-4,-2,5,3.5,-0.6,0,TAU);cx.ellipse(4,-2,5,3.5,0.6,0,TAU);cx.fill();
+    cx.restore()}}
+  /* ground — top lip highlight + base fill + rolling texture */
   cx.fillStyle=grad.ground;cx.fillRect(0,GROUND_Y,1280,720-GROUND_Y);
   cx.fillStyle=grad.ground2;cx.fillRect(0,GROUND_Y,1280,8);
-  // ground pattern
+  cx.fillStyle='rgba(255,255,255,.10)';cx.fillRect(0,GROUND_Y,1280,2);
+  // perspective stripes (camera-speed cue)
   cx.strokeStyle=grad.ground3;cx.lineWidth=2;
   for(let i=0;i<42;i++){const gx=((i*64)-b.cam)%(42*64);cx.beginPath();cx.moveTo(gx,GROUND_Y+14);cx.lineTo(gx+22,GROUND_Y+30);cx.stroke()}
+  // grass tufts + flowers / pebbles scattered on the near band
+  for(let i=0;i<26;i++){let fx=((i*173+50)-b.cam)%4150;if(fx<-40)fx+=4150;
+    const fy=GROUND_Y+18+((i*61)%56);
+    if((i*13)%4===0){ // flower: stem + colored head
+      cx.strokeStyle=shade(grad.ground,.6);cx.lineWidth=2;cx.beginPath();cx.moveTo(fx,fy+8);cx.lineTo(fx,fy-2);cx.stroke();
+      const fc=['#ffd94a','#ff8a9a','#a8e8ff'][i%3];
+      cx.fillStyle=fc;for(let p=0;p<5;p++){const a=p/5*TAU;cx.beginPath();cx.arc(fx+Math.cos(a)*3.4,fy-4+Math.sin(a)*3.4,2.3,0,TAU);cx.fill()}
+      cx.fillStyle='#e88a2a';cx.beginPath();cx.arc(fx,fy-4,2,0,TAU);cx.fill()}
+    else if((i*7)%3===0){ // pebble
+      cx.fillStyle='rgba(0,0,0,.14)';cx.beginPath();cx.ellipse(fx,fy,4.5,2.6,0,0,TAU);cx.fill();
+      cx.fillStyle='rgba(255,255,255,.22)';cx.beginPath();cx.ellipse(fx-1,fy-1,2.2,1.2,0,0,TAU);cx.fill()}
+    else{ // grass tuft
+      cx.strokeStyle=shade(grad.ground,.72);cx.lineWidth=2;cx.lineCap='round';
+      cx.beginPath();cx.moveTo(fx,fy+7);cx.quadraticCurveTo(fx-3,fy-1,fx-5,fy-6);
+      cx.moveTo(fx,fy+7);cx.quadraticCurveTo(fx+1,fy-2,fx+1,fy-8);
+      cx.moveTo(fx,fy+7);cx.quadraticCurveTo(fx+4,fy,fx+6,fy-5);cx.stroke()}}
 }
 const BG_THEMES={grass:{sky1:'#bfe8ff',sky2:'#e8ffd0',sun:'#ffe66a',far:'#8fbf6a',mid:'#6aa04e',ground:'#5a9e3f',ground2:'#4a8a33',ground3:'rgba(0,0,0,.12)'},
  desert:{sky1:'#ffe0a8',sky2:'#ffefc8',sun:'#ff9a4a',far:'#d8a86a',mid:'#c09050',ground:'#e0b070',ground2:'#c89858',ground3:'rgba(120,80,40,.2)'},
@@ -548,8 +617,8 @@ function drawUnit(u){
   const dieP=u.state==='die'?clamp(u.dieT/0.55,0,1):0;   // death: fast spin+shrink phase, then fade-out drift
   const dieFade=u.state==='die'?clamp((u.dieT-0.55)/0.35,0,1):0;
   const kbP=u.state==='kb'?1-u.kbT/0.38:0;               // knockback: parabolic tumble arc
-  const kbY=u.state==='kb'?-Math.sin(kbP*Math.PI)*42:0;
-  const kbRot=u.state==='kb'?-u.dir*kbP*2.4:0;           // tumble back over the arc
+  const kbY=u.state==='kb'?-Math.sin(kbP*Math.PI)*46:0;
+  const kbRot=u.state==='kb'?-u.dir*kbP*3.4:0;           // tumble back over the arc (full head-over-heels spin, original style)
   const spn=u.spawnT>0?1-u.spawnT/(u.side==='cat'?0.35:0.3):1;
   const pop=spn<1?1+Math.sin(Math.min(1,spn)*Math.PI)*0.16:1; // spawn overshoot bounce
   const lsq=u.landT>0?u.landT/0.18:0;                    // landing squash (widescreen pancake)
@@ -561,8 +630,8 @@ function drawUnit(u){
     cx.fillStyle='rgba(20,16,10,'+(0.22*sh).toFixed(3)+')';
     cx.beginPath();cx.ellipse(u.x,GROUND_Y-3,u.r*0.85*sh,4.2*sh,0,0,TAU);cx.fill()}
   cx.save();cx.translate(u.x,y);
-  // death: spin + shrink (first half), then drift up while fading
-  if(u.state==='die'){cx.globalAlpha=1-dieFade;cx.rotate(-u.dir*dieP*2.2);const ds=1-dieP*0.35;cx.scale(ds,ds)}
+  // death: spin + fly back + shrink (first half), then drift up while fading
+  if(u.state==='die'){cx.globalAlpha=1-dieFade;cx.translate(-u.dir*dieP*14,dieP*10);cx.rotate(-u.dir*dieP*2.6);const ds=1-dieP*0.38;cx.scale(ds,ds)}
   // spawn pop-in: scale from 0 with a bouncy overshoot
   if(spn<1){const se=0.55+spn*0.45;cx.scale(spn<0.15?spn/0.15*0.55:se*pop,spn<0.15?spn/0.15*0.55:se*pop)}
   // knockback tumble rotation (arc offset handled by kbY above)
@@ -590,13 +659,27 @@ function drawUnit(u){
     const icons=[];if(u.st.frozen>0)icons.push(['❄','#7fd0ff']);if(u.st.slow>0)icons.push(['⏱','#a0d8ff']);if(u.st.weakenT>0)icons.push(['↓','#e8a0ff']);if(u.st.curse>0)icons.push(['☾','#c46adf']);
     icons.forEach((ic,i)=>txt(cx,ic[0],u.x-(icons.length-1)*7+i*14,y-u.r*2.4-18,12,ic[1],'center',3,'#101018',700));
     if(u.shieldHp>0)txt(cx,'◈',u.x+u.r+4,y-40,14,'#c46adf','center',3,'#101018',700)}}
-const FXDUR={bossdie:1.2,baseboom:1.4,cannon:0.5,slowbeam:1.3,bolt:0.45,waterwave:1.0,holyblast:0.8,breaker:0.55,dust:0.6,crown:1.6,moneypop:0.7};
+const FXDUR={bossdie:1.2,baseboom:1.4,cannon:0.5,slowbeam:1.3,bolt:0.45,waterwave:1.0,holyblast:0.8,breaker:0.55,dust:0.6,crown:1.6,moneypop:0.7,impact:0.26};
 function drawFx(f){const p=clamp(1-f.t/(FXDUR[f.k]||0.5),0,1);
   cx.save();cx.translate(f.x,GROUND_Y-30+(f.y||0));
   switch(f.k){
     case 'poof':cx.globalAlpha=1-p;cx.fillStyle='#fff';for(let i=0;i<5;i++){const a=i/5*TAU+f.t*3;cx.beginPath();cx.arc(Math.cos(a)*(10+p*30),Math.sin(a)*8-p*20,8*(1-p),0,TAU);cx.fill()}break;
     case 'deploy':cx.globalAlpha=1-p;cx.strokeStyle='#ffd94a';cx.lineWidth=3;cx.beginPath();cx.arc(0,0,20+p*30,0,TAU);cx.stroke();break;
-    case 'kbstar':cx.globalAlpha=1-p;cx.fillStyle='#ffd94a';txt(cx,'★',0,-10,20,'#ffd94a','center');break;
+    case 'impact':{ /* hit starburst: 4-point white star + radial speed-sparks (reads in 1 frame) */
+      const im=1-p;const sc=(f.big?1.5:1)*(0.6+im*0.8);cx.globalAlpha=Math.min(1,im*1.6);
+      cx.save();cx.rotate((f.dir||1)*p*0.9);
+      cx.fillStyle='#fff';
+      cx.beginPath(); // 4-point star
+      for(let i2=0;i2<8;i2++){const a=i2*Math.PI/4;const rr2=(i2%2?7:21)*sc;
+        if(i2===0)cx.moveTo(Math.cos(a)*rr2,Math.sin(a)*rr2);else cx.lineTo(Math.cos(a)*rr2,Math.sin(a)*rr2)}
+      cx.closePath();cx.fill();
+      cx.strokeStyle='#ffd94a';cx.lineWidth=2.5*sc;
+      cx.beginPath();cx.arc(0,0,23*sc,0,TAU);cx.stroke();cx.restore();
+      for(let i2=0;i2<6;i2++){const a=i2/6*TAU+(f.dir||1)*0.4; // flying sparks
+        cx.strokeStyle='rgba(255,255,255,'+(im*0.9).toFixed(2)+')';cx.lineWidth=2.2;
+        cx.beginPath();cx.moveTo(Math.cos(a)*(14+im*26)*sc,Math.sin(a)*(14+im*26)*sc);
+        cx.lineTo(Math.cos(a)*(22+im*38)*sc,Math.sin(a)*(22+im*38)*sc);cx.stroke()}
+      cx.globalAlpha=1;break}
     case 'slash':cx.globalAlpha=1-p*0.7;cx.strokeStyle='#fff';cx.lineWidth=4;const sw=(f.range>100?60:26);cx.beginPath();cx.moveTo(f.dir*sw*0.3,-30);cx.quadraticCurveTo(f.dir*sw,-16,f.dir*sw*0.4,10);cx.stroke();break;
     case 'bossdie':cx.globalAlpha=1-p;for(let i=0;i<8;i++){const a=i/8*TAU;cx.fillStyle=i%2?'#ffd94a':'#ff7a5a';cx.beginPath();cx.arc(Math.cos(a)*p*120,Math.sin(a)*p*60,14*(1-p)+4,0,TAU);cx.fill()}break;
     case 'baseboom':cx.globalAlpha=1-p;for(let i=0;i<12;i++){const a=i/12*TAU*2+p*3;cx.fillStyle=i%2?'#ffd94a':'#fff';cx.beginPath();cx.arc(Math.cos(a)*p*160,Math.sin(a)*p*90-40,16*(1-p)+4,0,TAU);cx.fill()}break;
@@ -651,7 +734,7 @@ function drawBattleHUD(b,dt){
   cx.font=FONT(26,700);
   const enW=cx.measureText(eTxt).width;
   txt(cx,eTxt,20,30,26,'#ffd23f','left',5,'rgba(20,16,4,.9)',700);
-  drawCent(cx,20+enW+11,29,9,'#ffd23f','rgba(20,16,4,.9)',4);
+  drawCent(cx,20+enW+20,29,9,'#ffd23f','rgba(20,16,4,.9)',4); // 20px clear gap: coin ink starts at +9 — NEVER touches the digits (5px stroke ink)
   /* ===== TOP-RIGHT: pause (yellow circle w/ two dark bars) + retreat — home-base side ===== */
   cx.fillStyle=b.paused?'#e85840':'#ffd23f';cx.beginPath();cx.arc(1243,33,23,0,TAU);cx.fill();
   cx.lineWidth=4;cx.strokeStyle=b.paused?'#7a1a10':'#8a5a20';cx.stroke();
@@ -700,8 +783,8 @@ function drawBattleHUD(b,dt){
   const cb2=b.catBase;
   const cTxt=fmt(Math.max(0,Math.ceil(cb2.hp)))+'/'+fmt(cb2.maxHp);
   cx.font=FONT(13.5,700);const ctw=cx.measureText(cTxt).width;
-  txt(cx,cTxt,sx-8,168,13.5,'#fff','right',3.5,'rgba(20,16,4,.9)',700);
-  drawCent(cx,sx-3,167,5.5,'#fff','rgba(20,16,4,.9)',3);
+  txt(cx,cTxt,sx-22,168,13.5,'#fff','right',3.5,'rgba(20,16,4,.9)',700);
+  drawCent(cx,sx-6,167,5.5,'#fff','rgba(20,16,4,.9)',3); // number ends at sx-22; coin spans sx-13.5..+1.5 — 5px clear (was overlapping the last digit)
   /* ===== BOTTOM-LEFT: wallet circle — worker-cat face + Level N + gold ¢ (R8/R9) ===== */
   const bx=64,by=646;
   txt(cx,'Level '+(b.workerLv+1),bx,by-56,14,'#ffd23f','center',3.5,'rgba(20,16,4,.95)',700);
@@ -709,11 +792,14 @@ function drawBattleHUD(b,dt){
   cx.fillStyle='#ffd23f';cx.beginPath();cx.arc(bx,by,38,0,TAU);cx.fill();cx.restore();
   cx.lineWidth=4;cx.strokeStyle='#8a5a20';cx.beginPath();cx.arc(bx,by,38,0,TAU);cx.stroke();
   ART.catIcon('cat',bx,by-4,19);
-  cx.font=FONT(21,700);const wNum=String(Math.floor(b.wallet));const wnW=cx.measureText(wNum).width;
-  // money cluster centered under the wallet circle: NUMBER then ¢ (symbol never covers digits)
-  const gapC=5,symW=15;const totW=wnW+gapC+symW;const mnx=bx-totW/2;
-  txt(cx,wNum,mnx,by+56,21,'#ffd23f','left',4,'rgba(20,16,4,.95)',700);
-  drawCent(cx,mnx+wnW+gapC+7,by+55,7,'#ffd23f','rgba(20,16,4,.95)',3.5);
+  // money cluster beside/under the wallet: NUMBER right-anchored (grows leftward, never
+  // off-screen), coin pinned 15px right of the number END — can never touch the digits;
+  // font auto-shrinks for extreme wallets
+  let mfs=21;cx.font=FONT(mfs,700);
+  const wNum=String(Math.floor(b.wallet));
+  while(cx.measureText(wNum).width>150&&mfs>12){mfs--;cx.font=FONT(mfs,700)}
+  txt(cx,wNum,160,by+56,mfs,'#ffd23f','right',4,'rgba(20,16,4,.95)',700);
+  drawCent(cx,175,by+55,6.5,'#ffd23f','rgba(20,16,4,.95)',3.2);
   const wkCost=WORKER_COST[b.workerLv];
   if(b.workerLv<7&&b.wallet>=wkCost){ // affordable worker upgrade — contained pill badge (VLM QA fix)
     cx.save();cx.translate(bx+34,by-34);
