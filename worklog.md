@@ -1254,3 +1254,21 @@ Unresolved / next-phase priorities
 2. luza/Tecoluga painter fallback (wiki only exposes form-3 assets)
 3. Per-unit frame timing (walk dur currently uniform 110ms; original varies per unit)
 4. Boss/mega-unit size calibration (TARGET normalization vs original proportions) after visual check
+
+---
+Task ID: r21
+Agent: main (Z.ai Code)
+Task: Workspace was cleared; user instructed to read the full pasted transcript and PULL FROM GITHUB FIRST, then continue the gauntlet (animation bug fix, real-asset parity, push to GitHub regularly)
+
+Work Log:
+- Read the entire 3228-line pasted transcript (r1..r20 full history + user's standing directives)
+- git clone https://github.com/KalonixReal/battlecat.git -> recovered full project (59MB public/game, worklog 1256 lines, tools/, vlm relay infra)
+- Last real commit in repo: 9e8775f "feat: real Earth world map for EoC/ITF stage select + NaN wallet guards + Gemini VLM relay tool" + vlm batch commits
+- LOST with workspace (were gitignored): .secrets.json (GitHub token + keys) -> PUSH + VLM-gh dispatch currently BLOCKED pending user token
+- Gemini direct API still region-blocked (HK egress, 400 FAILED_PRECONDITION on gemini-3.5-flash-lite)
+- bun install OK (827 pkgs), dev server up, /game/index.html 200, sprites.json 200, cache-bust versions in repo: v30-v34
+
+Stage Summary:
+- RECOVERED: 92-unit sprites.json v2, official OGG BGMs (21 tracks), real eoc_map.png, all game JS, QA tools, build-sprites v2
+- OPEN FROM TRANSCRIPT (lost uncommitted work): v3 slicer (idle-row detection) was written but never committed; final CRITICAL DISCOVERY at crash time: "For basic cat, ROW1=ATTACK, ROW2=WALK - the build has them INVERTED" (unverified/unfinished)
+- NEXT: verify row-order inversion empirically, Miraheze Cat-animations GIF source (754 GIFs via weserv proxy) as the superior animation source, boss calibration, full QA
