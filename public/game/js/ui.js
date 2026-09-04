@@ -38,7 +38,7 @@ cv.addEventListener('pointerdown',e=>{const p=toDesign(e);AudioUnlock();G.pdown=
 });
 cv.addEventListener('pointermove',e=>{const p=toDesign(e);G.mouse=p;
   if(G.dragScroll){const h=G.dragScroll.h;
-    if(h.horiz){const d=p.x-G.dragScroll.sx;if(Math.abs(d)>6||G.dragScroll.moved){G.dragScroll.moved=true;h.setOff(G.dragScroll.off+d); /* PAN-THE-CAMERA: drag RIGHT looks RIGHT — finger direction = look direction (user-verified) */
+    if(h.horiz){const d=p.x-G.dragScroll.sx;if(Math.abs(d)>6||G.dragScroll.moved){G.dragScroll.moved=true;h.setOff(G.dragScroll.off-d); /* GRAB-THE-WORLD (original): the WORLD follows the finger — drag LEFT slides content LEFT, revealing the right */
       if(G.flingCam)G.flingCam=null;
       const nt=now(),olt=G.dragScroll.lt||nt,olx=(G.dragScroll.lx!==undefined?G.dragScroll.lx:G.dragScroll.sx); // first segment measures from the drag START
       const iv=(p.x-olx)/Math.max(0.008,(nt-olt)/1000); // instantaneous px/s of this segment
@@ -56,8 +56,8 @@ cv.addEventListener('wheel',e=>{const p=toDesign(e);
   let sreg=null;for(let i=G.hits.length-1;i>=0;i--){const s=G.hits[i];if(!s||!s.scroll||s.hidden)continue;
     if(p.x>=s.x&&p.x<=s.x+s.w&&p.y>=s.y&&p.y<=s.y+s.h){sreg=s;break}}
   if(sreg){const dy=e.deltaY;
-    if(sreg.horiz){const dx=Math.abs(e.deltaX)>Math.abs(dy)?e.deltaX:dy; // PAN-THE-CAMERA wheel: roll right = look right (matches the drag), hard-clamped to bounds
-      sreg.setOff(clamp(sreg.off()+dx,0,(sreg.max&&sreg.max()>0)?sreg.max():1e9))}
+    if(sreg.horiz){const dx=Math.abs(e.deltaX)>Math.abs(dy)?e.deltaX:dy; // wheel: roll right slides content LEFT (grab-the-world, matches the drag)
+      sreg.setOff(clamp(sreg.off()-dx,0,(sreg.max&&sreg.max()>0)?sreg.max():1e9))}
     else sreg.setOff(clamp(sreg.off()+dy,0,sreg.max()));
     e.preventDefault();e.stopPropagation()}
 },{passive:false});
@@ -65,7 +65,7 @@ function endPointer(e){if(G.dragScroll){const ds=G.dragScroll;
     if(!ds.moved){ // a tap (not a drag): fire the region's own onTap AND any button it swallowed
       if(ds.h.tap)ds.h.tap();
       if(ds.pendBtn&&ds.pendBtn.cb)ds.pendBtn.cb()}
-    else if(ds.h.horiz&&ds.v){ // FLING: horizontal momentum on release — camera glides in the finger's direction
+    else if(ds.h.horiz&&ds.v){ // FLING: content keeps gliding in the finger's direction (grab-the-world momentum)
       if(now()-(ds.lt||0)<140&&Math.abs(ds.v)>380)G.flingCam={v:clamp(ds.v,-2600,2600)}}
     if(ds.pendBtn)ds.pendBtn.active=false;
     G.dragScroll=null}
@@ -722,7 +722,7 @@ function drawMap(dt){const c=CHMAP[G.chapter];
   if(!G.pdown)G.mapDrag=null;
   G.onDrag=(p,pd)=>{if(!G.mapDrag)return;const dx=p.x-G.mapDrag.sx,dy=p.y-G.mapDrag.sy;
     if(!pd.moved&&Math.abs(dx)+Math.abs(dy)>7)pd.moved=true;
-    if(pd.moved){G.mapCam.x=clamp(G.mapDrag.cx+dx,0,Math.max(0,mapW-1248));G.mapCam.y=clamp(G.mapDrag.cy+dy,0,Math.max(0,mapH-634))}}; // PAN-THE-CAMERA: drag direction = look direction
+    if(pd.moved){G.mapCam.x=clamp(G.mapDrag.cx-dx,0,Math.max(0,mapW-1248));G.mapCam.y=clamp(G.mapDrag.cy-dy,0,Math.max(0,mapH-634))}}; // GRAB-THE-WORLD (original): map content follows the finger
   // ---- map scene (real Earth for story chapters; parchment otherwise) ----
   cx.save();cx.beginPath();cx.rect(16,70,1248,634);cx.clip();
   if(useReal){

@@ -1,0 +1,386 @@
+{
+ "cat": {
+  "kind": "cat",
+  "title": "Cat"
+ },
+ "tank": {
+  "kind": "cat",
+  "title": "Eraser Cat"
+ },
+ "axe": {
+  "kind": "cat",
+  "title": "Axe Cat"
+ },
+ "gross": {
+  "kind": "cat",
+  "title": "Gross Cat"
+ },
+ "cow": {
+  "kind": "cat",
+  "title": "Cow Cat"
+ },
+ "bird": {
+  "kind": "cat",
+  "title": "Bird Cat"
+ },
+ "fish": {
+  "kind": "cat",
+  "title": "Fish Cat"
+ },
+ "lizard": {
+  "kind": "cat",
+  "title": "Dragon Cat"
+ },
+ "titan": {
+  "kind": "cat",
+  "title": "Titan Cat"
+ },
+ "boogie": {
+  "kind": "cat",
+  "title": "Boogie Cat"
+ },
+ "mr": {
+  "kind": "cat",
+  "title": "Mr."
+ },
+ "bahamut": {
+  "kind": "cat",
+  "title": "Bahamut Cat"
+ },
+ "kungfu": {
+  "kind": "cat",
+  "title": "Kung Fu Cat"
+ },
+ "rock": {
+  "kind": "cat",
+  "title": "Stone Cat"
+ },
+ "neko": {
+  "kind": "cat",
+  "title": "Nekoluga",
+  "atk": "https://static.wikia.nocookie.net/battle-cats/images/b/b8/Nekoluga_Attack_Animation.gif/revision/latest",
+  "atk_file": "Nekoluga_Attack_Animation.gif"
+ },
+ "pogo": {
+  "kind": "cat",
+  "title": "Pogo Cat"
+ },
+ "sushi": {
+  "kind": "cat",
+  "title": "Sushi Cat"
+ },
+ "cutter": {
+  "kind": "cat",
+  "title": "Cutter Cat"
+ },
+ "pirate": {
+  "kind": "cat",
+  "title": "Pirate Cat"
+ },
+ "thief": {
+  "kind": "cat",
+  "title": "Thief Cat"
+ },
+ "sorcerer": {
+  "kind": "cat",
+  "title": "Witch Cat"
+ },
+ "guitar": {
+  "kind": "cat",
+  "title": "Rocker Cat"
+ },
+ "can": {
+  "kind": "cat",
+  "title": "Hip Hop Cat"
+ },
+ "cyborg": {
+  "kind": "cat",
+  "title": "Cyborg Cat"
+ },
+ "seafarer": {
+  "kind": "cat",
+  "title": "Surfer Cat"
+ },
+ "slime": {
+  "kind": "cat",
+  "title": "Slime Cat"
+ },
+ "paladin": {
+  "kind": "cat",
+  "title": "Marauder Cat"
+ },
+ "medusa": {
+  "kind": "cat",
+  "title": "Medusa Cat"
+ },
+ "catman": {
+  "kind": "cat",
+  "title": "Catman"
+ },
+ "mechabun": {
+  "kind": "cat",
+  "title": "Mecha-Bun"
+ },
+ "noble": {
+  "kind": "cat",
+  "title": "High Lord Babel"
+ },
+ "kaguya": {
+  "kind": "cat",
+  "title": "Kaguya of the Coast"
+ },
+ "dioramos": {
+  "kind": "cat",
+  "title": "Dioramos"
+ },
+ "gao": {
+  "kind": "cat",
+  "title": "Baby Gao"
+ },
+ "luza": {
+  "kind": "cat",
+  "title": "Tecoluga"
+ },
+ "gatr": {
+  "kind": "cat",
+  "title": "Legeluga"
+ },
+ "island": {
+  "kind": "cat",
+  "title": "Fish Cat"
+ },
+ "archer": {
+  "kind": "cat",
+  "title": "Archer Cat"
+ },
+ "fortune": {
+  "kind": "cat",
+  "title": "Fortune Teller Cat"
+ },
+ "jurassic": {
+  "kind": "cat",
+  "title": "Jurassic Cat Sitter"
+ },
+ "kotatsu": {
+  "kind": "cat",
+  "title": "Kotatsu Cat"
+ },
+ "valkyrie": {
+  "kind": "cat",
+  "title": "Valkyrie Cat"
+ },
+ "lilcat": {
+  "kind": "cat",
+  "title": "Li'l Cat"
+ },
+ "liltank": {
+  "kind": "cat",
+  "title": "Li'l Tank Cat"
+ },
+ "moneko": {
+  "kind": "cat",
+  "title": "Moneko"
+ },
+ "neneko": {
+  "kind": "cat",
+  "title": "Neneko"
+ },
+ "doge": {
+  "kind": "enemy",
+  "title": "Doge",
+  "atk": "https://static.wikia.nocookie.net/battle-cats/images/7/75/Doge_attack.gif/revision/latest",
+  "atk_file": "Doge_attack.gif"
+ },
+ "snache": {
+  "kind": "enemy",
+  "title": "Snache"
+ },
+ "those": {
+  "kind": "enemy",
+  "title": "Those Guys"
+ },
+ "baa": {
+  "kind": "enemy",
+  "title": "Baa Baa"
+ },
+ "jackie": {
+  "kind": "enemy",
+  "title": "Jackie Peng"
+ },
+ "leboin": {
+  "kind": "enemy",
+  "title": "Le'boin",
+  "walk": "https://static.wikia.nocookie.net/battle-cats/images/4/49/Le%27boin.gif/revision/latest",
+  "walk_file": "Le'boin.gif"
+ },
+ "hippoe": {
+  "kind": "enemy",
+  "title": "Hippoe",
+  "atk": "https://static.wikia.nocookie.net/battle-cats/images/8/80/Hippoe_attack.gif/revision/latest",
+  "atk_file": "Hippoe_attack.gif"
+ },
+ "sirseal": {
+  "kind": "enemy",
+  "title": "Sir Seal"
+ },
+ "onehorn": {
+  "kind": "enemy",
+  "title": "One Horn"
+ },
+ "teacher": {
+  "kind": "enemy",
+  "title": "Teacher Bear"
+ },
+ "croco": {
+  "kind": "enemy",
+  "title": "Croco",
+  "walk": "https://static.wikia.nocookie.net/battle-cats/images/4/49/Croco.gif/revision/latest",
+  "walk_file": "Croco.gif"
+ },
+ "shibalien": {
+  "kind": "enemy",
+  "title": "Shibalien"
+ },
+ "face": {
+  "kind": "enemy",
+  "title": "The Face"
+ },
+ "nyandam": {
+  "kind": "enemy",
+  "title": "Dark Emperor Nyandam"
+ },
+ "ghostdoge": {
+  "kind": "enemy",
+  "title": "Zoge"
+ },
+ "angelgabriel": {
+  "kind": "enemy",
+  "title": "Gabriel"
+ },
+ "angelseraph": {
+  "kind": "enemy",
+  "title": "Mr. Angel"
+ },
+ "metallic": {
+  "kind": "enemy",
+  "title": "Metal Hippoe"
+ },
+ "metallicdoge": {
+  "kind": "enemy",
+  "title": "Metal Doge"
+ },
+ "zombieelephant": {
+  "kind": "enemy",
+  "title": "Elephantidae Papaou"
+ },
+ "zombibear": {
+  "kind": "enemy",
+  "title": "Cadaver Bear"
+ },
+ "relicdoge": {
+  "kind": "enemy",
+  "title": "Relic Doge"
+ },
+ "relichippo": {
+  "kind": "enemy",
+  "title": "Heavenly Hippoe"
+ },
+ "akudoge": {
+  "kind": "enemy",
+  "title": "Aku Doge"
+ },
+ "akucerberus": {
+  "kind": "enemy",
+  "title": "Cerberus Kids"
+ },
+ "behemothcroc": {
+  "kind": "enemy",
+  "title": "Crocodylidae Kurocroc"
+ },
+ "behemothbear": {
+  "kind": "enemy",
+  "title": "Bearkini"
+ },
+ "witchen": {
+  "kind": "enemy",
+  "title": "Drury Witch"
+ },
+ "clionel": {
+  "kind": "enemy",
+  "title": "Cruel Angel Clionel"
+ },
+ "dogedark": {
+  "kind": "enemy",
+  "title": "Doge Dark"
+ },
+ "gory": {
+  "kind": "enemy",
+  "title": "Gory",
+  "walk": "https://static.wikia.nocookie.net/battle-cats/images/e/ec/Gory.gif/revision/latest",
+  "walk_file": "Gory.gif"
+ },
+ "wanwan": {
+  "kind": "enemy",
+  "title": "Everlord Wanwan"
+ },
+ "owlbrow": {
+  "kind": "enemy",
+  "title": "Owlbrow"
+ },
+ "camelle": {
+  "kind": "enemy",
+  "title": "Camelle"
+ },
+ "mastera": {
+  "kind": "enemy",
+  "title": "Master A."
+ },
+ "bore": {
+  "kind": "enemy",
+  "title": "Bore"
+ },
+ "kurosawah": {
+  "kind": "enemy",
+  "title": "Director Kurosawah"
+ },
+ "gregor": {
+  "kind": "enemy",
+  "title": "General GreGory"
+ },
+ "lesolar": {
+  "kind": "enemy",
+  "title": "Le'Solar"
+ },
+ "spacefish": {
+  "kind": "enemy",
+  "title": "Spacefish Jones"
+ },
+ "projecta": {
+  "kind": "enemy",
+  "title": "Project A"
+ },
+ "phace": {
+  "kind": "enemy",
+  "title": "I.M. Phace"
+ },
+ "dober": {
+  "kind": "enemy",
+  "title": "Dober P.D"
+ },
+ "sael": {
+  "kind": "enemy",
+  "title": "Imperator Sael"
+ },
+ "elizabeth": {
+  "kind": "enemy",
+  "title": "Elizabeth the LVIth"
+ },
+ "sunfish": {
+  "kind": "enemy",
+  "title": "Sunfish Jones"
+ },
+ "celeboodle": {
+  "kind": "enemy",
+  "title": "Celeboodle"
+ }
+}

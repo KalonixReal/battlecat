@@ -1,0 +1,6142 @@
+{
+"000_m_attack_animation.gif": {
+"file": "000_m_attack_animation.gif",
+"path": "e/e8/000_m_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"001_m_attack_animation.gif": {
+"file": "001_m_attack_animation.gif",
+"path": "0/0e/001_m_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"002_m_attack_animation.gif": {
+"file": "002_m_attack_animation.gif",
+"path": "c/c7/002_m_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"003_m_attack_animation.gif": {
+"file": "003_m_attack_animation.gif",
+"path": "f/f6/003_m_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"004_m_attack_animation.gif": {
+"file": "004_m_attack_animation.gif",
+"path": "b/bd/004_m_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"006_m_attack_animation.gif": {
+"file": "006_m_attack_animation.gif",
+"path": "b/bd/006_m_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"007_m_attack_animation.gif": {
+"file": "007_m_attack_animation.gif",
+"path": "8/8d/007_m_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"008_m_attack_animation.gif": {
+"file": "008_m_attack_animation.gif",
+"path": "d/db/008_m_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"009_m_attack_animation.gif": {
+"file": "009_m_attack_animation.gif",
+"path": "7/78/009_m_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"010_m_attack_animation.gif": {
+"file": "010_m_attack_animation.gif",
+"path": "0/04/010_m_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"026_c_attack_animation.gif": {
+"file": "026_c_attack_animation.gif",
+"path": "2/20/026_c_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"026_f_attack_animation.gif": {
+"file": "026_f_attack_animation.gif",
+"path": "f/fd/026_f_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"026_s_attack_animation.gif": {
+"file": "026_s_attack_animation.gif",
+"path": "6/69/026_s_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"028_c_attack_animation.gif": {
+"file": "028_c_attack_animation.gif",
+"path": "c/c0/028_c_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"028_f_attack_animation.gif": {
+"file": "028_f_attack_animation.gif",
+"path": "c/c5/028_f_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"045_c_attack_animation.gif": {
+"file": "045_c_attack_animation.gif",
+"path": "2/2d/045_c_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"045_f_attack_animation.gif": {
+"file": "045_f_attack_animation.gif",
+"path": "0/09/045_f_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"062_c_attack_animation.gif": {
+"file": "062_c_attack_animation.gif",
+"path": "d/dc/062_c_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"062_f_attack_animation.gif": {
+"file": "062_f_attack_animation.gif",
+"path": "3/36/062_f_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"073_s_attack_animation.gif": {
+"file": "073_s_attack_animation.gif",
+"path": "c/c7/073_s_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"075_u_Attack.gif": {
+"file": "075_u_Attack.gif",
+"path": "a/ab/075_u_Attack.gif",
+"cat": "Cat_animations"
+},
+"076_4_Attack.gif": {
+"file": "076_4_Attack.gif",
+"path": "8/8e/076_4_Attack.gif",
+"cat": "Cat_animations"
+},
+"082_c_attack_animation.gif": {
+"file": "082_c_attack_animation.gif",
+"path": "4/4e/082_c_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"082_f_attack_animation.gif": {
+"file": "082_f_attack_animation.gif",
+"path": "b/b2/082_f_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"107_f_Attack_Old.gif": {
+"file": "107_f_Attack_Old.gif",
+"path": "1/1e/107_f_Attack_Old.gif",
+"cat": "Cat_animations"
+},
+"108_c_attack_animation.gif": {
+"file": "108_c_attack_animation.gif",
+"path": "3/3d/108_c_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"108_f_attack_animation.gif": {
+"file": "108_f_attack_animation.gif",
+"path": "e/e2/108_f_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"10901_c_attack_animation.gif": {
+"file": "10901_c_attack_animation.gif",
+"path": "9/9c/10901_c_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"10901_f_attack_animation.gif": {
+"file": "10901_f_attack_animation.gif",
+"path": "f/f1/10901_f_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"10901_s_attack_animation.gif": {
+"file": "10901_s_attack_animation.gif",
+"path": "7/7a/10901_s_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"10902_c_attack_animation.gif": {
+"file": "10902_c_attack_animation.gif",
+"path": "8/8c/10902_c_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"10902_f_attack_animation.gif": {
+"file": "10902_f_attack_animation.gif",
+"path": "8/8b/10902_f_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"10903_c_attack_animation.gif": {
+"file": "10903_c_attack_animation.gif",
+"path": "b/bc/10903_c_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"10903_f_attack_animation.gif": {
+"file": "10903_f_attack_animation.gif",
+"path": "0/00/10903_f_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"10904_c_attack_animation.gif": {
+"file": "10904_c_attack_animation.gif",
+"path": "e/eb/10904_c_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"10904_f_attack_animation.gif": {
+"file": "10904_f_attack_animation.gif",
+"path": "6/6d/10904_f_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"10905_c_attack_animation.gif": {
+"file": "10905_c_attack_animation.gif",
+"path": "0/0e/10905_c_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"10905_f_attack_animation.gif": {
+"file": "10905_f_attack_animation.gif",
+"path": "8/81/10905_f_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"10906_c_attack_animation_2.gif": {
+"file": "10906_c_attack_animation_2.gif",
+"path": "8/88/10906_c_attack_animation_2.gif",
+"cat": "Cat_animations"
+},
+"10906_c_attack_animation.gif": {
+"file": "10906_c_attack_animation.gif",
+"path": "4/42/10906_c_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"10906_f_attack_animation_2.gif": {
+"file": "10906_f_attack_animation_2.gif",
+"path": "6/61/10906_f_attack_animation_2.gif",
+"cat": "Cat_animations"
+},
+"10906_f_attack_animation.gif": {
+"file": "10906_f_attack_animation.gif",
+"path": "2/29/10906_f_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"10907_c_attack_animation.gif": {
+"file": "10907_c_attack_animation.gif",
+"path": "5/5e/10907_c_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"10907_f_attack_animation.gif": {
+"file": "10907_f_attack_animation.gif",
+"path": "0/06/10907_f_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"10908_c_attack_animation_1.gif": {
+"file": "10908_c_attack_animation_1.gif",
+"path": "3/39/10908_c_attack_animation_1.gif",
+"cat": "Cat_animations"
+},
+"10908_c_attack_animation_2.gif": {
+"file": "10908_c_attack_animation_2.gif",
+"path": "f/f2/10908_c_attack_animation_2.gif",
+"cat": "Cat_animations"
+},
+"10908_f_attack_animation.gif": {
+"file": "10908_f_attack_animation.gif",
+"path": "d/d2/10908_f_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"10909_c_attack_animation.gif": {
+"file": "10909_c_attack_animation.gif",
+"path": "f/fd/10909_c_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"10909_f_attack_animation.gif": {
+"file": "10909_f_attack_animation.gif",
+"path": "2/22/10909_f_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"10910_c_attack_animation.gif": {
+"file": "10910_c_attack_animation.gif",
+"path": "4/48/10910_c_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"10910_f_attack_animation.gif": {
+"file": "10910_f_attack_animation.gif",
+"path": "1/1f/10910_f_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"10911_c_attack_animation.gif": {
+"file": "10911_c_attack_animation.gif",
+"path": "d/d5/10911_c_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"10911_f_attack_animation.gif": {
+"file": "10911_f_attack_animation.gif",
+"path": "9/99/10911_f_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"10912_c_attack_animation.gif": {
+"file": "10912_c_attack_animation.gif",
+"path": "8/81/10912_c_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"10912_f_attack_animation.gif": {
+"file": "10912_f_attack_animation.gif",
+"path": "7/74/10912_f_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"10915_c_attack_animation.gif": {
+"file": "10915_c_attack_animation.gif",
+"path": "5/59/10915_c_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"10916_c_attack_animation.gif": {
+"file": "10916_c_attack_animation.gif",
+"path": "5/5b/10916_c_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"10916_f_attack_animation.gif": {
+"file": "10916_f_attack_animation.gif",
+"path": "c/c6/10916_f_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"10917_c_attack_animation.gif": {
+"file": "10917_c_attack_animation.gif",
+"path": "b/b5/10917_c_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"10917_f_attack_animation.gif": {
+"file": "10917_f_attack_animation.gif",
+"path": "f/fc/10917_f_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"111_c_Attack.gif": {
+"file": "111_c_Attack.gif",
+"path": "e/ea/111_c_Attack.gif",
+"cat": "Cat_animations"
+},
+"111_f_Attack.gif": {
+"file": "111_f_Attack.gif",
+"path": "b/be/111_f_Attack.gif",
+"cat": "Cat_animations"
+},
+"111_s_Attack.gif": {
+"file": "111_s_Attack.gif",
+"path": "c/c6/111_s_Attack.gif",
+"cat": "Cat_animations"
+},
+"129_c_attack_animation.gif": {
+"file": "129_c_attack_animation.gif",
+"path": "5/5e/129_c_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"129_f_attack_animation.gif": {
+"file": "129_f_attack_animation.gif",
+"path": "f/f3/129_f_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"129_s_attack_animation.gif": {
+"file": "129_s_attack_animation.gif",
+"path": "3/30/129_s_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"140_c_attack_animation.gif": {
+"file": "140_c_attack_animation.gif",
+"path": "4/42/140_c_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"140_f_attack_animation.gif": {
+"file": "140_f_attack_animation.gif",
+"path": "6/6c/140_f_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"158_s_Attack.gif": {
+"file": "158_s_Attack.gif",
+"path": "f/fd/158_s_Attack.gif",
+"cat": "Cat_animations"
+},
+"158_u_Attack.gif": {
+"file": "158_u_Attack.gif",
+"path": "4/4d/158_u_Attack.gif",
+"cat": "Cat_animations"
+},
+"2_Tekoruga_Attack_Animation.gif": {
+"file": "2_Tekoruga_Attack_Animation.gif",
+"path": "6/62/2_Tekoruga_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"20180814_072142.gif": {
+"file": "20180814_072142.gif",
+"path": "0/0f/20180814_072142.gif",
+"cat": "Cat_animations"
+},
+"20180814_090343.gif": {
+"file": "20180814_090343.gif",
+"path": "a/ab/20180814_090343.gif",
+"cat": "Cat_animations"
+},
+"20180814_091700.gif": {
+"file": "20180814_091700.gif",
+"path": "d/d3/20180814_091700.gif",
+"cat": "Cat_animations"
+},
+"20180814_092203.gif": {
+"file": "20180814_092203.gif",
+"path": "4/4a/20180814_092203.gif",
+"cat": "Cat_animations"
+},
+"20180814_173646.gif": {
+"file": "20180814_173646.gif",
+"path": "7/76/20180814_173646.gif",
+"cat": "Cat_animations"
+},
+"20180814_181125.gif": {
+"file": "20180814_181125.gif",
+"path": "7/7a/20180814_181125.gif",
+"cat": "Cat_animations"
+},
+"20180815_142819.gif": {
+"file": "20180815_142819.gif",
+"path": "0/02/20180815_142819.gif",
+"cat": "Cat_animations"
+},
+"20190318_180152.gif": {
+"file": "20190318_180152.gif",
+"path": "8/8e/20190318_180152.gif",
+"cat": "Cat_animations"
+},
+"20210805_110225.gif": {
+"file": "20210805_110225.gif",
+"path": "c/c2/20210805_110225.gif",
+"cat": "Cat_animations"
+},
+"20210805_115429.gif": {
+"file": "20210805_115429.gif",
+"path": "1/16/20210805_115429.gif",
+"cat": "Cat_animations"
+},
+"20210805_154902.gif": {
+"file": "20210805_154902.gif",
+"path": "b/b1/20210805_154902.gif",
+"cat": "Cat_animations"
+},
+"20231026_154842.gif": {
+"file": "20231026_154842.gif",
+"path": "7/77/20231026_154842.gif",
+"cat": "Cat_animations"
+},
+"223_c_attack.gif": {
+"file": "223_c_attack.gif",
+"path": "1/11/223_c_attack.gif",
+"cat": "Cat_animations"
+},
+"223_f_attack.gif": {
+"file": "223_f_attack.gif",
+"path": "5/58/223_f_attack.gif",
+"cat": "Cat_animations"
+},
+"223_s_attack.gif": {
+"file": "223_s_attack.gif",
+"path": "9/91/223_s_attack.gif",
+"cat": "Cat_animations"
+},
+"243_c_Attack.gif": {
+"file": "243_c_Attack.gif",
+"path": "9/91/243_c_Attack.gif",
+"cat": "Cat_animations"
+},
+"243_f_Attack.gif": {
+"file": "243_f_Attack.gif",
+"path": "b/b0/243_f_Attack.gif",
+"cat": "Cat_animations"
+},
+"248_c_attack_animation.gif": {
+"file": "248_c_attack_animation.gif",
+"path": "d/db/248_c_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"248_f_attack_animation.gif": {
+"file": "248_f_attack_animation.gif",
+"path": "7/78/248_f_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"248_s_attack_animation.gif": {
+"file": "248_s_attack_animation.gif",
+"path": "4/49/248_s_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"319_c_attack_animation.gif": {
+"file": "319_c_attack_animation.gif",
+"path": "a/a0/319_c_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"319_f_attack_animation.gif": {
+"file": "319_f_attack_animation.gif",
+"path": "5/58/319_f_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"321_1atkani.gif": {
+"file": "321_1atkani.gif",
+"path": "2/29/321_1atkani.gif",
+"cat": "Cat_animations"
+},
+"321_2atkani.gif": {
+"file": "321_2atkani.gif",
+"path": "a/af/321_2atkani.gif",
+"cat": "Cat_animations"
+},
+"342_c_attack_animation.gif": {
+"file": "342_c_attack_animation.gif",
+"path": "c/c6/342_c_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"342_f_attack_animation.gif": {
+"file": "342_f_attack_animation.gif",
+"path": "6/60/342_f_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"381_c_attack_animation.gif": {
+"file": "381_c_attack_animation.gif",
+"path": "d/d6/381_c_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"381_f_attack_animation.gif": {
+"file": "381_f_attack_animation.gif",
+"path": "b/b2/381_f_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"3yuantf.gif": {
+"file": "3yuantf.gif",
+"path": "3/30/3yuantf.gif",
+"cat": "Cat_animations"
+},
+"435_c_EN_Attack.gif": {
+"file": "435_c_EN_Attack.gif",
+"path": "7/7d/435_c_EN_Attack.gif",
+"cat": "Cat_animations"
+},
+"435_f_Attack.gif": {
+"file": "435_f_Attack.gif",
+"path": "1/19/435_f_Attack.gif",
+"cat": "Cat_animations"
+},
+"494_c_Attack.gif": {
+"file": "494_c_Attack.gif",
+"path": "4/48/494_c_Attack.gif",
+"cat": "Cat_animations"
+},
+"494_f_Attack.gif": {
+"file": "494_f_Attack.gif",
+"path": "c/c1/494_f_Attack.gif",
+"cat": "Cat_animations"
+},
+"51pecv.gif": {
+"file": "51pecv.gif",
+"path": "f/f6/51pecv.gif",
+"cat": "Cat_animations"
+},
+"527_s_Attack.gif": {
+"file": "527_s_Attack.gif",
+"path": "d/d3/527_s_Attack.gif",
+"cat": "Cat_animations"
+},
+"532_s_attack.gif": {
+"file": "532_s_attack.gif",
+"path": "5/51/532_s_attack.gif",
+"cat": "Cat_animations"
+},
+"542_c_attack_animation.gif": {
+"file": "542_c_attack_animation.gif",
+"path": "0/07/542_c_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"542_f_attack_animation.gif": {
+"file": "542_f_attack_animation.gif",
+"path": "8/84/542_f_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"566_s_attack_animation.gif": {
+"file": "566_s_attack_animation.gif",
+"path": "b/b2/566_s_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"613_s_attack.gif": {
+"file": "613_s_attack.gif",
+"path": "d/d4/613_s_attack.gif",
+"cat": "Cat_animations"
+},
+"613-2attack.gif": {
+"file": "613-2attack.gif",
+"path": "6/60/613-2attack.gif",
+"cat": "Cat_animations"
+},
+"615_c_attack_animation.gif": {
+"file": "615_c_attack_animation.gif",
+"path": "6/6e/615_c_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"615_f_attack_animation.gif": {
+"file": "615_f_attack_animation.gif",
+"path": "3/30/615_f_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"616_c_attack_animation.gif": {
+"file": "616_c_attack_animation.gif",
+"path": "7/7b/616_c_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"616_f_attack_animation.gif": {
+"file": "616_f_attack_animation.gif",
+"path": "0/02/616_f_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"641_1.gif": {
+"file": "641_1.gif",
+"path": "a/a3/641_1.gif",
+"cat": "Cat_animations"
+},
+"643_c_attack_animation.gif": {
+"file": "643_c_attack_animation.gif",
+"path": "4/4f/643_c_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"643_f_attack_animation.gif": {
+"file": "643_f_attack_animation.gif",
+"path": "b/b4/643_f_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"643_s_attack_animation.gif": {
+"file": "643_s_attack_animation.gif",
+"path": "7/7a/643_s_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"647-2_Att.gif": {
+"file": "647-2_Att.gif",
+"path": "e/e0/647-2_Att.gif",
+"cat": "Cat_animations"
+},
+"653_s_attack.gif": {
+"file": "653_s_attack.gif",
+"path": "6/6f/653_s_attack.gif",
+"cat": "Cat_animations"
+},
+"657-1.gif": {
+"file": "657-1.gif",
+"path": "4/41/657-1.gif",
+"cat": "Cat_animations"
+},
+"657-2.gif": {
+"file": "657-2.gif",
+"path": "2/2a/657-2.gif",
+"cat": "Cat_animations"
+},
+"658_3.gif": {
+"file": "658_3.gif",
+"path": "0/02/658_3.gif",
+"cat": "Cat_animations"
+},
+"660_c_attack_animation.gif": {
+"file": "660_c_attack_animation.gif",
+"path": "7/7d/660_c_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"660_f_attack_animation.gif": {
+"file": "660_f_attack_animation.gif",
+"path": "a/aa/660_f_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"663_s_attack_animation.gif": {
+"file": "663_s_attack_animation.gif",
+"path": "1/18/663_s_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"664_s_attack_animation.gif": {
+"file": "664_s_attack_animation.gif",
+"path": "3/38/664_s_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"665_s_attack_animation.gif": {
+"file": "665_s_attack_animation.gif",
+"path": "8/88/665_s_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"669_s_attack_animation.gif": {
+"file": "669_s_attack_animation.gif",
+"path": "b/b2/669_s_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"670_s_attack_animation.gif": {
+"file": "670_s_attack_animation.gif",
+"path": "b/bc/670_s_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"675_s_attack_animation.gif": {
+"file": "675_s_attack_animation.gif",
+"path": "b/be/675_s_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"676_s_attack_animation.gif": {
+"file": "676_s_attack_animation.gif",
+"path": "9/98/676_s_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"689_c_attack_animation.gif": {
+"file": "689_c_attack_animation.gif",
+"path": "a/ab/689_c_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"689_f_attack_animation.gif": {
+"file": "689_f_attack_animation.gif",
+"path": "1/10/689_f_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"705_c_attack_animation.gif": {
+"file": "705_c_attack_animation.gif",
+"path": "a/a9/705_c_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"758_c_Attack.gif": {
+"file": "758_c_Attack.gif",
+"path": "0/0d/758_c_Attack.gif",
+"cat": "Cat_animations"
+},
+"758_f_Attack.gif": {
+"file": "758_f_Attack.gif",
+"path": "a/a4/758_f_Attack.gif",
+"cat": "Cat_animations"
+},
+"759_c_Attack.gif": {
+"file": "759_c_Attack.gif",
+"path": "7/73/759_c_Attack.gif",
+"cat": "Cat_animations"
+},
+"759_f_Attack.gif": {
+"file": "759_f_Attack.gif",
+"path": "1/1c/759_f_Attack.gif",
+"cat": "Cat_animations"
+},
+"Actress_attack.gif": {
+"file": "Actress_attack.gif",
+"path": "6/6a/Actress_attack.gif",
+"cat": "Cat_animations"
+},
+"Agiftofcatsattackanimation.gif": {
+"file": "Agiftofcatsattackanimation.gif",
+"path": "4/42/Agiftofcatsattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Akira_2.gif": {
+"file": "Akira_2.gif",
+"path": "b/b3/Akira_2.gif",
+"cat": "Cat_animations"
+},
+"Akuma_Hayabusa_attack_animation.gif": {
+"file": "Akuma_Hayabusa_attack_animation.gif",
+"path": "e/e1/Akuma_Hayabusa_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"Allenoneilattackanimation.gif": {
+"file": "Allenoneilattackanimation.gif",
+"path": "7/76/Allenoneilattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Allenoneilccattackanimation.gif": {
+"file": "Allenoneilccattackanimation.gif",
+"path": "1/17/Allenoneilccattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Almighty_lucifer_animation.gif": {
+"file": "Almighty_lucifer_animation.gif",
+"path": "8/82/Almighty_lucifer_animation.gif",
+"cat": "Cat_animations"
+},
+"Alright_Alright_Alright.gif": {
+"file": "Alright_Alright_Alright.gif",
+"path": "3/3e/Alright_Alright_Alright.gif",
+"cat": "Cat_animations"
+},
+"Angry_Delinquent_Cat_Attack_Animation.gif": {
+"file": "Angry_Delinquent_Cat_Attack_Animation.gif",
+"path": "a/a1/Angry_Delinquent_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"AnubisGIF.gif": {
+"file": "AnubisGIF.gif",
+"path": "9/96/AnubisGIF.gif",
+"cat": "Cat_animations"
+},
+"AphroditeGIF.gif": {
+"file": "AphroditeGIF.gif",
+"path": "2/29/AphroditeGIF.gif",
+"cat": "Cat_animations"
+},
+"Apple_Cat_Attack_Animation.gif": {
+"file": "Apple_Cat_Attack_Animation.gif",
+"path": "0/02/Apple_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Appleicat.gif": {
+"file": "Appleicat.gif",
+"path": "f/fb/Appleicat.gif",
+"cat": "Cat_animations"
+},
+"Artist.gif": {
+"file": "Artist.gif",
+"path": "5/5a/Artist.gif",
+"cat": "Cat_animations"
+},
+"Ashiran_Pasaran_Attack_Animation.gif": {
+"file": "Ashiran_Pasaran_Attack_Animation.gif",
+"path": "9/99/Ashiran_Pasaran_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Ashiruga's_Attack_Animation.gif": {
+"file": "Ashiruga's_Attack_Animation.gif",
+"path": "8/80/Ashiruga%27s_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Assassinlanpasalanattackanimation.gif": {
+"file": "Assassinlanpasalanattackanimation.gif",
+"path": "5/5d/Assassinlanpasalanattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Attack_animation_.gif": {
+"file": "Attack_animation_.gif",
+"path": "1/1d/Attack_animation_.gif",
+"cat": "Cat_animations"
+},
+"AwakendBahamutGIF.gif": {
+"file": "AwakendBahamutGIF.gif",
+"path": "9/91/AwakendBahamutGIF.gif",
+"cat": "Cat_animations"
+},
+"Baby_Cat_Attack_Animation.gif": {
+"file": "Baby_Cat_Attack_Animation.gif",
+"path": "6/6f/Baby_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Baby_Cats_Attack_Animation.gif": {
+"file": "Baby_Cats_Attack_Animation.gif",
+"path": "d/d3/Baby_Cats_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Baby_Gao.gif": {
+"file": "Baby_Gao.gif",
+"path": "c/c0/Baby_Gao.gif",
+"cat": "Cat_animations"
+},
+"Ballet_Cat_attack_animation.gif": {
+"file": "Ballet_Cat_attack_animation.gif",
+"path": "d/dd/Ballet_Cat_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"Baozi_Cat_Attack.gif": {
+"file": "Baozi_Cat_Attack.gif",
+"path": "1/12/Baozi_Cat_Attack.gif",
+"cat": "Cat_animations"
+},
+"Bararaga_Attack_Animation.gif": {
+"file": "Bararaga_Attack_Animation.gif",
+"path": "7/7b/Bararaga_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Bararan_Basaran_Attack_Animation.gif": {
+"file": "Bararan_Basaran_Attack_Animation.gif",
+"path": "b/b4/Bararan_Basaran_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Bardiel.gif": {
+"file": "Bardiel.gif",
+"path": "6/62/Bardiel.gif",
+"cat": "Cat_animations"
+},
+"Bath_Cat_Attack_Animation.gif": {
+"file": "Bath_Cat_Attack_Animation.gif",
+"path": "8/80/Bath_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Battle_God_-_Uesugi_Kenshin_Attack_Animation.gif": {
+"file": "Battle_God_-_Uesugi_Kenshin_Attack_Animation.gif",
+"path": "b/b5/Battle_God_-_Uesugi_Kenshin_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Battle_Soul3.gif": {
+"file": "Battle_Soul3.gif",
+"path": "9/98/Battle_Soul3.gif",
+"cat": "Cat_animations"
+},
+"Bazibastra's_Attack_Animation.gif": {
+"file": "Bazibastra's_Attack_Animation.gif",
+"path": "f/f6/Bazibastra%27s_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Bazibon_Attack_animation.gif": {
+"file": "Bazibon_Attack_animation.gif",
+"path": "a/a2/Bazibon_Attack_animation.gif",
+"cat": "Cat_animations"
+},
+"BCS_Lionheart_animation.gif": {
+"file": "BCS_Lionheart_animation.gif",
+"path": "0/03/BCS_Lionheart_animation.gif",
+"cat": "Cat_animations"
+},
+"Beanattack1.gif": {
+"file": "Beanattack1.gif",
+"path": "2/21/Beanattack1.gif",
+"cat": "Cat_animations"
+},
+"Beanattack2.gif": {
+"file": "Beanattack2.gif",
+"path": "d/d5/Beanattack2.gif",
+"cat": "Cat_animations"
+},
+"Beautiful_Bathtub_Cat_Attack_Animation.gif": {
+"file": "Beautiful_Bathtub_Cat_Attack_Animation.gif",
+"path": "e/e5/Beautiful_Bathtub_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Bebe.gif": {
+"file": "Bebe.gif",
+"path": "5/51/Bebe.gif",
+"cat": "Cat_animations"
+},
+"Beefcake_attack.gif": {
+"file": "Beefcake_attack.gif",
+"path": "0/03/Beefcake_attack.gif",
+"cat": "Cat_animations"
+},
+"Berserker_Cat_Attack_Animation.gif": {
+"file": "Berserker_Cat_Attack_Animation.gif",
+"path": "f/fc/Berserker_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Big_Baozi_Cat_Attack.gif": {
+"file": "Big_Baozi_Cat_Attack.gif",
+"path": "c/c1/Big_Baozi_Cat_Attack.gif",
+"cat": "Cat_animations"
+},
+"Blu_long_range_boi.gif": {
+"file": "Blu_long_range_boi.gif",
+"path": "f/f7/Blu_long_range_boi.gif",
+"cat": "Cat_animations"
+},
+"Boulder.gif": {
+"file": "Boulder.gif",
+"path": "0/09/Boulder.gif",
+"cat": "Cat_animations"
+},
+"Brainwashed_Gross.gif": {
+"file": "Brainwashed_Gross.gif",
+"path": "1/11/Brainwashed_Gross.gif",
+"cat": "Cat_animations"
+},
+"Brainwashed_Sexy_Legs.gif": {
+"file": "Brainwashed_Sexy_Legs.gif",
+"path": "5/57/Brainwashed_Sexy_Legs.gif",
+"cat": "Cat_animations"
+},
+"Butterfly_Cat_Attack_Animation.gif": {
+"file": "Butterfly_Cat_Attack_Animation.gif",
+"path": "b/be/Butterfly_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Cameramancatattackanimation.gif": {
+"file": "Cameramancatattackanimation.gif",
+"path": "7/71/Cameramancatattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Cancancatattackanimation.gif": {
+"file": "Cancancatattackanimation.gif",
+"path": "1/17/Cancancatattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Captain_Cat_attack_animation.gif": {
+"file": "Captain_Cat_attack_animation.gif",
+"path": "4/4c/Captain_Cat_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"CastawayCatAttackAnimation.gif": {
+"file": "CastawayCatAttackAnimation.gif",
+"path": "9/9e/CastawayCatAttackAnimation.gif",
+"cat": "Cat_animations"
+},
+"Castleyattackanimation.gif": {
+"file": "Castleyattackanimation.gif",
+"path": "6/6e/Castleyattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Cat_and_chocolate_attack.gif": {
+"file": "Cat_and_chocolate_attack.gif",
+"path": "8/84/Cat_and_chocolate_attack.gif",
+"cat": "Cat_animations"
+},
+"Cat_Base_Mini.gif": {
+"file": "Cat_Base_Mini.gif",
+"path": "d/dd/Cat_Base_Mini.gif",
+"cat": "Cat_animations"
+},
+"Cat_Machine_Attack_Animation.gif": {
+"file": "Cat_Machine_Attack_Animation.gif",
+"path": "0/0e/Cat_Machine_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Cat_Machine_Mk2_Attack_Animation.gif": {
+"file": "Cat_Machine_Mk2_Attack_Animation.gif",
+"path": "2/29/Cat_Machine_Mk2_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Cat_Princess_Attack.gif": {
+"file": "Cat_Princess_Attack.gif",
+"path": "2/2f/Cat_Princess_Attack.gif",
+"cat": "Cat_animations"
+},
+"Cat_royale.gif": {
+"file": "Cat_royale.gif",
+"path": "6/69/Cat_royale.gif",
+"cat": "Cat_animations"
+},
+"Cat_slave_chocolate_attack.gif": {
+"file": "Cat_slave_chocolate_attack.gif",
+"path": "6/64/Cat_slave_chocolate_attack.gif",
+"cat": "Cat_animations"
+},
+"CAT-6_Siege_Engine_attack_animation.gif": {
+"file": "CAT-6_Siege_Engine_attack_animation.gif",
+"path": "9/9b/CAT-6_Siege_Engine_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"CAT-8_Behemoth_attack_animation.gif": {
+"file": "CAT-8_Behemoth_attack_animation.gif",
+"path": "0/0f/CAT-8_Behemoth_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"Catarzan.gif": {
+"file": "Catarzan.gif",
+"path": "c/cd/Catarzan.gif",
+"cat": "Cat_animations"
+},
+"Catasaurus_Attack.gif": {
+"file": "Catasaurus_Attack.gif",
+"path": "7/74/Catasaurus_Attack.gif",
+"cat": "Cat_animations"
+},
+"Catburger.gif": {
+"file": "Catburger.gif",
+"path": "5/52/Catburger.gif",
+"cat": "Cat_animations"
+},
+"Catchiefattackanim.gif": {
+"file": "Catchiefattackanim.gif",
+"path": "e/ee/Catchiefattackanim.gif",
+"cat": "Cat_animations"
+},
+"Catclanheroes1.gif": {
+"file": "Catclanheroes1.gif",
+"path": "7/7d/Catclanheroes1.gif",
+"cat": "Cat_animations"
+},
+"Catclanheroes2.gif": {
+"file": "Catclanheroes2.gif",
+"path": "1/10/Catclanheroes2.gif",
+"cat": "Cat_animations"
+},
+"Catclanheroes3.gif": {
+"file": "Catclanheroes3.gif",
+"path": "4/4e/Catclanheroes3.gif",
+"cat": "Cat_animations"
+},
+"Catellite_Attack.gif": {
+"file": "Catellite_Attack.gif",
+"path": "6/6f/Catellite_Attack.gif",
+"cat": "Cat_animations"
+},
+"Catolanternattackanimation.gif": {
+"file": "Catolanternattackanimation.gif",
+"path": "8/88/Catolanternattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Catornadoattack.gif": {
+"file": "Catornadoattack.gif",
+"path": "b/bf/Catornadoattack.gif",
+"cat": "Cat_animations"
+},
+"CatornadoTFattack.gif": {
+"file": "CatornadoTFattack.gif",
+"path": "b/b3/CatornadoTFattack.gif",
+"cat": "Cat_animations"
+},
+"Catorpedoattackanimation.gif": {
+"file": "Catorpedoattackanimation.gif",
+"path": "4/45/Catorpedoattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Catsgiftattackanimation.gif": {
+"file": "Catsgiftattackanimation.gif",
+"path": "e/ed/Catsgiftattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Catsinthecradleattack.gif": {
+"file": "Catsinthecradleattack.gif",
+"path": "d/dc/Catsinthecradleattack.gif",
+"cat": "Cat_animations"
+},
+"Catwayatkani.gif": {
+"file": "Catwayatkani.gif",
+"path": "5/5a/Catwayatkani.gif",
+"cat": "Cat_animations"
+},
+"Chaosmoonattackanimation.gif": {
+"file": "Chaosmoonattackanimation.gif",
+"path": "6/60/Chaosmoonattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Cheerleader_animation.gif": {
+"file": "Cheerleader_animation.gif",
+"path": "2/2d/Cheerleader_animation.gif",
+"cat": "Cat_animations"
+},
+"Cheetah_Cat.gif": {
+"file": "Cheetah_Cat.gif",
+"path": "1/16/Cheetah_Cat.gif",
+"cat": "Cat_animations"
+},
+"Chicken.gif": {
+"file": "Chicken.gif",
+"path": "a/a0/Chicken.gif",
+"cat": "Cat_animations"
+},
+"Chocolate_cat_attack.gif": {
+"file": "Chocolate_cat_attack.gif",
+"path": "c/c4/Chocolate_cat_attack.gif",
+"cat": "Cat_animations"
+},
+"Chronos_the_Infinite's_attack_animation.gif": {
+"file": "Chronos_the_Infinite's_attack_animation.gif",
+"path": "d/d0/Chronos_the_Infinite%27s_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"Citizen_fish.gif": {
+"file": "Citizen_fish.gif",
+"path": "2/2a/Citizen_fish.gif",
+"cat": "Cat_animations"
+},
+"Clown.gif": {
+"file": "Clown.gif",
+"path": "0/0f/Clown.gif",
+"cat": "Cat_animations"
+},
+"CMMK3_Animation.gif": {
+"file": "CMMK3_Animation.gif",
+"path": "2/29/CMMK3_Animation.gif",
+"cat": "Cat_animations"
+},
+"Colossal_Benkei.gif": {
+"file": "Colossal_Benkei.gif",
+"path": "1/19/Colossal_Benkei.gif",
+"cat": "Cat_animations"
+},
+"Commandocatattackanimation.gif": {
+"file": "Commandocatattackanimation.gif",
+"path": "7/75/Commandocatattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Cop_fixed.gif": {
+"file": "Cop_fixed.gif",
+"path": "c/c5/Cop_fixed.gif",
+"cat": "Cat_animations"
+},
+"Coppermine_Attack_Animation.gif": {
+"file": "Coppermine_Attack_Animation.gif",
+"path": "c/c0/Coppermine_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Coppermine_Type_k_Attack_Animation.gif": {
+"file": "Coppermine_Type_k_Attack_Animation.gif",
+"path": "c/cb/Coppermine_Type_k_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"CorruptedMonekoSoul.gif": {
+"file": "CorruptedMonekoSoul.gif",
+"path": "3/3b/CorruptedMonekoSoul.gif",
+"cat": "Cat_animations"
+},
+"Cow_Cat_Attack_Animation.gif": {
+"file": "Cow_Cat_Attack_Animation.gif",
+"path": "8/85/Cow_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Crazed_Beautful_Legs_Cat_Attack_Animation.gif": {
+"file": "Crazed_Beautful_Legs_Cat_Attack_Animation.gif",
+"path": "a/ac/Crazed_Beautful_Legs_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Crazed_Brave_Cat_Attack_Animation.gif": {
+"file": "Crazed_Brave_Cat_Attack_Animation.gif",
+"path": "5/50/Crazed_Brave_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Crazed_Cow_Cat_Attack_Animation.gif": {
+"file": "Crazed_Cow_Cat_Attack_Animation.gif",
+"path": "8/80/Crazed_Cow_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Crazed_Dragon_Cat_Attack_Animation.gif": {
+"file": "Crazed_Dragon_Cat_Attack_Animation.gif",
+"path": "5/55/Crazed_Dragon_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Crazed_Fish_Cat_Attack_Animation.gif": {
+"file": "Crazed_Fish_Cat_Attack_Animation.gif",
+"path": "d/d0/Crazed_Fish_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Crazed_Giraffe_Cat_Attack_Animation.gif": {
+"file": "Crazed_Giraffe_Cat_Attack_Animation.gif",
+"path": "0/0b/Crazed_Giraffe_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Crazed_Gross_Cat_Attack_Animation.gif": {
+"file": "Crazed_Gross_Cat_Attack_Animation.gif",
+"path": "d/d3/Crazed_Gross_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Crazed_Lizard_Cat_Attack_Animation.gif": {
+"file": "Crazed_Lizard_Cat_Attack_Animation.gif",
+"path": "1/1b/Crazed_Lizard_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Crazed_M._Titan_Cat_Attack_Animation.gif": {
+"file": "Crazed_M._Titan_Cat_Attack_Animation.gif",
+"path": "c/ce/Crazed_M._Titan_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Crazed_Macho_Cat_Attack_Animation.gif": {
+"file": "Crazed_Macho_Cat_Attack_Animation.gif",
+"path": "a/a8/Crazed_Macho_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Crazed_Tank_Cat_Attack_Animation.gif": {
+"file": "Crazed_Tank_Cat_Attack_Animation.gif",
+"path": "2/28/Crazed_Tank_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Crazed_Titan_Cat_Attack_Animation.gif": {
+"file": "Crazed_Titan_Cat_Attack_Animation.gif",
+"path": "f/f8/Crazed_Titan_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Crazed_UFO_Cat_Attack_Animation.gif": {
+"file": "Crazed_UFO_Cat_Attack_Animation.gif",
+"path": "b/bf/Crazed_UFO_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Crazed_Wall_Cat_Attack_Animation.gif": {
+"file": "Crazed_Wall_Cat_Attack_Animation.gif",
+"path": "8/80/Crazed_Wall_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Crazed_Whale_Cat_Attack_Animation.gif": {
+"file": "Crazed_Whale_Cat_Attack_Animation.gif",
+"path": "0/0f/Crazed_Whale_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Crazedbaoziatkani.gif": {
+"file": "Crazedbaoziatkani.gif",
+"path": "b/bf/Crazedbaoziatkani.gif",
+"cat": "Cat_animations"
+},
+"Crazedbigbaoziatkani.gif": {
+"file": "Crazedbigbaoziatkani.gif",
+"path": "b/bc/Crazedbigbaoziatkani.gif",
+"cat": "Cat_animations"
+},
+"Crimson_Minya_animation.gif": {
+"file": "Crimson_Minya_animation.gif",
+"path": "2/23/Crimson_Minya_animation.gif",
+"cat": "Cat_animations"
+},
+"Cuckoo-182-atk1.gif": {
+"file": "Cuckoo-182-atk1.gif",
+"path": "a/a7/Cuckoo-182-atk1.gif",
+"cat": "Cat_animations"
+},
+"Cuckoo-182-atk2.gif": {
+"file": "Cuckoo-182-atk2.gif",
+"path": "c/cc/Cuckoo-182-atk2.gif",
+"cat": "Cat_animations"
+},
+"Curry_Cat_attack_animation.gif": {
+"file": "Curry_Cat_attack_animation.gif",
+"path": "9/95/Curry_Cat_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"Cutter_Cat.gif": {
+"file": "Cutter_Cat.gif",
+"path": "f/f4/Cutter_Cat.gif",
+"cat": "Cat_animations"
+},
+"Cyberpunk_attack_animation.gif": {
+"file": "Cyberpunk_attack_animation.gif",
+"path": "e/ee/Cyberpunk_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"Cyborg_Cat_attack_animation.gif": {
+"file": "Cyborg_Cat_attack_animation.gif",
+"path": "4/41/Cyborg_Cat_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"Dancing_Flasher_Cat_Attack_Animation.gif": {
+"file": "Dancing_Flasher_Cat_Attack_Animation.gif",
+"path": "9/9e/Dancing_Flasher_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Dark_Cat_Attack_Animation.gif": {
+"file": "Dark_Cat_Attack_Animation.gif",
+"path": "c/ce/Dark_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Dark_Emperor_Catdam_Attack_Animation.gif": {
+"file": "Dark_Emperor_Catdam_Attack_Animation.gif",
+"path": "7/75/Dark_Emperor_Catdam_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Dark_Kasli_Member_Attack.gif": {
+"file": "Dark_Kasli_Member_Attack.gif",
+"path": "c/c6/Dark_Kasli_Member_Attack.gif",
+"cat": "Cat_animations"
+},
+"Dark_Kasli_Member_Idle.gif": {
+"file": "Dark_Kasli_Member_Idle.gif",
+"path": "8/8d/Dark_Kasli_Member_Idle.gif",
+"cat": "Cat_animations"
+},
+"Dark_Kasli_Member_KO.gif": {
+"file": "Dark_Kasli_Member_KO.gif",
+"path": "b/bd/Dark_Kasli_Member_KO.gif",
+"cat": "Cat_animations"
+},
+"Dark_Kasli_Member_Victory.gif": {
+"file": "Dark_Kasli_Member_Victory.gif",
+"path": "f/f3/Dark_Kasli_Member_Victory.gif",
+"cat": "Cat_animations"
+},
+"Dark_Lazer.gif": {
+"file": "Dark_Lazer.gif",
+"path": "b/b7/Dark_Lazer.gif",
+"cat": "Cat_animations"
+},
+"Dark_rider_attack.gif": {
+"file": "Dark_rider_attack.gif",
+"path": "8/8b/Dark_rider_attack.gif",
+"cat": "Cat_animations"
+},
+"Dark_valkyrie_attack.gif": {
+"file": "Dark_valkyrie_attack.gif",
+"path": "7/71/Dark_valkyrie_attack.gif",
+"cat": "Cat_animations"
+},
+"Dark.gif": {
+"file": "Dark.gif",
+"path": "6/68/Dark.gif",
+"cat": "Cat_animations"
+},
+"Darktanyan_Evolved.gif": {
+"file": "Darktanyan_Evolved.gif",
+"path": "d/d8/Darktanyan_Evolved.gif",
+"cat": "Cat_animations"
+},
+"Darktanyan.gif": {
+"file": "Darktanyan.gif",
+"path": "b/b2/Darktanyan.gif",
+"cat": "Cat_animations"
+},
+"Dartanyan.gif": {
+"file": "Dartanyan.gif",
+"path": "3/3c/Dartanyan.gif",
+"cat": "Cat_animations"
+},
+"Date_Masamune_Attack_Animation.gif": {
+"file": "Date_Masamune_Attack_Animation.gif",
+"path": "b/bd/Date_Masamune_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Delinquent_Cat_Attack_Animation.gif": {
+"file": "Delinquent_Cat_Attack_Animation.gif",
+"path": "1/1b/Delinquent_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Deliverycatattackanimation.gif": {
+"file": "Deliverycatattackanimation.gif",
+"path": "b/b5/Deliverycatattackanimation.gif",
+"cat": "Cat_animations"
+},
+"DEP_Atk_Animation.gif": {
+"file": "DEP_Atk_Animation.gif",
+"path": "f/f2/DEP_Atk_Animation.gif",
+"cat": "Cat_animations"
+},
+"Devil_Cat.gif": {
+"file": "Devil_Cat.gif",
+"path": "0/0f/Devil_Cat.gif",
+"cat": "Cat_animations"
+},
+"Dioramusu_Attack_Animation.gif": {
+"file": "Dioramusu_Attack_Animation.gif",
+"path": "9/95/Dioramusu_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Divine_Coppermine_Attack_Animation.gif": {
+"file": "Divine_Coppermine_Attack_Animation.gif",
+"path": "b/b1/Divine_Coppermine_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Divinethundiaattackanimation.gif": {
+"file": "Divinethundiaattackanimation.gif",
+"path": "1/1a/Divinethundiaattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Doktor_heaven_attack_animation.gif": {
+"file": "Doktor_heaven_attack_animation.gif",
+"path": "f/fc/Doktor_heaven_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"DOLPHIN_GIRL_COLOR.gif": {
+"file": "DOLPHIN_GIRL_COLOR.gif",
+"path": "1/1d/DOLPHIN_GIRL_COLOR.gif",
+"cat": "Cat_animations"
+},
+"DOLPHIN_GIRL.gif": {
+"file": "DOLPHIN_GIRL.gif",
+"path": "3/33/DOLPHIN_GIRL.gif",
+"cat": "Cat_animations"
+},
+"Donaldmordenattackanimation.gif": {
+"file": "Donaldmordenattackanimation.gif",
+"path": "d/db/Donaldmordenattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Dragon_King_Vars_Attack_Animation.gif": {
+"file": "Dragon_King_Vars_Attack_Animation.gif",
+"path": "8/80/Dragon_King_Vars_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Dragonslayer_Raiden_Attack_Animation.gif": {
+"file": "Dragonslayer_Raiden_Attack_Animation.gif",
+"path": "5/5c/Dragonslayer_Raiden_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Drama_attack.gif": {
+"file": "Drama_attack.gif",
+"path": "7/71/Drama_attack.gif",
+"cat": "Cat_animations"
+},
+"Drednot-idle.gif": {
+"file": "Drednot-idle.gif",
+"path": "c/c5/Drednot-idle.gif",
+"cat": "Cat_animations"
+},
+"Driller_Cat.gif": {
+"file": "Driller_Cat.gif",
+"path": "2/20/Driller_Cat.gif",
+"cat": "Cat_animations"
+},
+"Droid_Attack.gif": {
+"file": "Droid_Attack.gif",
+"path": "6/63/Droid_Attack.gif",
+"cat": "Cat_animations"
+},
+"Droneatkani.gif": {
+"file": "Droneatkani.gif",
+"path": "f/fd/Droneatkani.gif",
+"cat": "Cat_animations"
+},
+"Drunken_Master_Cat_X.gif": {
+"file": "Drunken_Master_Cat_X.gif",
+"path": "4/44/Drunken_Master_Cat_X.gif",
+"cat": "Cat_animations"
+},
+"Duckduckgo.gif": {
+"file": "Duckduckgo.gif",
+"path": "4/43/Duckduckgo.gif",
+"cat": "Cat_animations"
+},
+"Earth_King_Sodom_Attack_Animation.gif": {
+"file": "Earth_King_Sodom_Attack_Animation.gif",
+"path": "1/19/Earth_King_Sodom_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Easter_Cat.gif": {
+"file": "Easter_Cat.gif",
+"path": "7/77/Easter_Cat.gif",
+"cat": "Cat_animations"
+},
+"Easter_Egg_Cat_Attack.gif": {
+"file": "Easter_Egg_Cat_Attack.gif",
+"path": "b/bc/Easter_Egg_Cat_Attack.gif",
+"cat": "Cat_animations"
+},
+"Eggy_Cat_Attack.gif": {
+"file": "Eggy_Cat_Attack.gif",
+"path": "5/57/Eggy_Cat_Attack.gif",
+"cat": "Cat_animations"
+},
+"Eriattackanimation.gif": {
+"file": "Eriattackanimation.gif",
+"path": "6/61/Eriattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Ericcattackanimation.gif": {
+"file": "Ericcattackanimation.gif",
+"path": "a/a6/Ericcattackanimation.gif",
+"cat": "Cat_animations"
+},
+"ErphuanTFAction.gif": {
+"file": "ErphuanTFAction.gif",
+"path": "f/fc/ErphuanTFAction.gif",
+"cat": "Cat_animations"
+},
+"Evangelist.gif": {
+"file": "Evangelist.gif",
+"path": "d/d8/Evangelist.gif",
+"cat": "Cat_animations"
+},
+"Exaltedganeshaattackanimation.gif": {
+"file": "Exaltedganeshaattackanimation.gif",
+"path": "c/c5/Exaltedganeshaattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Executioner.gif": {
+"file": "Executioner.gif",
+"path": "c/cb/Executioner.gif",
+"cat": "Cat_animations"
+},
+"Ezgif-3-529dc1521b.gif": {
+"file": "Ezgif-3-529dc1521b.gif",
+"path": "c/ca/Ezgif-3-529dc1521b.gif",
+"cat": "Cat_animations"
+},
+"Ezgif-3-6127b7d8cf.gif": {
+"file": "Ezgif-3-6127b7d8cf.gif",
+"path": "3/3e/Ezgif-3-6127b7d8cf.gif",
+"cat": "Cat_animations"
+},
+"Ezgif-4-6d765f77bb.gif": {
+"file": "Ezgif-4-6d765f77bb.gif",
+"path": "f/fb/Ezgif-4-6d765f77bb.gif",
+"cat": "Cat_animations"
+},
+"Ezgif-4-cd94c8f34f.gif": {
+"file": "Ezgif-4-cd94c8f34f.gif",
+"path": "2/21/Ezgif-4-cd94c8f34f.gif",
+"cat": "Cat_animations"
+},
+"Ezgif-5-74a9bd9ba8.gif": {
+"file": "Ezgif-5-74a9bd9ba8.gif",
+"path": "2/27/Ezgif-5-74a9bd9ba8.gif",
+"cat": "Cat_animations"
+},
+"Ezgif.com-crop.gif": {
+"file": "Ezgif.com-crop.gif",
+"path": "5/5f/Ezgif.com-crop.gif",
+"cat": "Cat_animations"
+},
+"Ezgif.com-optimize_(2).gif": {
+"file": "Ezgif.com-optimize_(2).gif",
+"path": "6/62/Ezgif.com-optimize_%282%29.gif",
+"cat": "Cat_animations"
+},
+"Face_Cat_Attack_Animation.gif": {
+"file": "Face_Cat_Attack_Animation.gif",
+"path": "d/dc/Face_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Farmboy_Cat_Attack.gif": {
+"file": "Farmboy_Cat_Attack.gif",
+"path": "b/bc/Farmboy_Cat_Attack.gif",
+"cat": "Cat_animations"
+},
+"Faster_flying_train.gif": {
+"file": "Faster_flying_train.gif",
+"path": "3/37/Faster_flying_train.gif",
+"cat": "Cat_animations"
+},
+"FelyneAttack.gif": {
+"file": "FelyneAttack.gif",
+"path": "f/f5/FelyneAttack.gif",
+"cat": "Cat_animations"
+},
+"FelyneSpawn.gif": {
+"file": "FelyneSpawn.gif",
+"path": "7/78/FelyneSpawn.gif",
+"cat": "Cat_animations"
+},
+"Fenrir_attack.gif": {
+"file": "Fenrir_attack.gif",
+"path": "b/bb/Fenrir_attack.gif",
+"cat": "Cat_animations"
+},
+"Fioattackanimation.gif": {
+"file": "Fioattackanimation.gif",
+"path": "2/24/Fioattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Fioccattackanimation.gif": {
+"file": "Fioccattackanimation.gif",
+"path": "b/b4/Fioccattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Firesquad_animation.gif": {
+"file": "Firesquad_animation.gif",
+"path": "e/e1/Firesquad_animation.gif",
+"cat": "Cat_animations"
+},
+"Fish_Cat_Attack_Animation.gif": {
+"file": "Fish_Cat_Attack_Animation.gif",
+"path": "6/63/Fish_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Flamenco_animation.gif": {
+"file": "Flamenco_animation.gif",
+"path": "6/6b/Flamenco_animation.gif",
+"cat": "Cat_animations"
+},
+"Flight_Unit_R.E.I._Attack.gif": {
+"file": "Flight_Unit_R.E.I._Attack.gif",
+"path": "6/6e/Flight_Unit_R.E.I._Attack.gif",
+"cat": "Cat_animations"
+},
+"Flowerattack1.gif": {
+"file": "Flowerattack1.gif",
+"path": "e/e4/Flowerattack1.gif",
+"cat": "Cat_animations"
+},
+"Flowerattack2.gif": {
+"file": "Flowerattack2.gif",
+"path": "8/8f/Flowerattack2.gif",
+"cat": "Cat_animations"
+},
+"Flowerattack3.gif": {
+"file": "Flowerattack3.gif",
+"path": "9/93/Flowerattack3.gif",
+"cat": "Cat_animations"
+},
+"Flying_Ninja.gif": {
+"file": "Flying_Ninja.gif",
+"path": "a/a0/Flying_Ninja.gif",
+"cat": "Cat_animations"
+},
+"Flying_train.gif": {
+"file": "Flying_train.gif",
+"path": "2/23/Flying_train.gif",
+"cat": "Cat_animations"
+},
+"Foodstallcatattackanimation.gif": {
+"file": "Foodstallcatattackanimation.gif",
+"path": "0/05/Foodstallcatattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Fortressyattackanimation.gif": {
+"file": "Fortressyattackanimation.gif",
+"path": "f/fb/Fortressyattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Freegifmaker.me_2bQ2A.gif": {
+"file": "Freegifmaker.me_2bQ2A.gif",
+"path": "2/2b/Freegifmaker.me_2bQ2A.gif",
+"cat": "Cat_animations"
+},
+"Freegifmaker.me_2bQ2E.gif": {
+"file": "Freegifmaker.me_2bQ2E.gif",
+"path": "5/51/Freegifmaker.me_2bQ2E.gif",
+"cat": "Cat_animations"
+},
+"Freegifmaker.me_2bQ2S.gif": {
+"file": "Freegifmaker.me_2bQ2S.gif",
+"path": "f/f6/Freegifmaker.me_2bQ2S.gif",
+"cat": "Cat_animations"
+},
+"Freegifmaker.me_2bQ2U.gif": {
+"file": "Freegifmaker.me_2bQ2U.gif",
+"path": "7/7b/Freegifmaker.me_2bQ2U.gif",
+"cat": "Cat_animations"
+},
+"Freegifmaker.me_2bQ2x.gif": {
+"file": "Freegifmaker.me_2bQ2x.gif",
+"path": "8/87/Freegifmaker.me_2bQ2x.gif",
+"cat": "Cat_animations"
+},
+"Freegifmaker.me_2bQ32.gif": {
+"file": "Freegifmaker.me_2bQ32.gif",
+"path": "c/c6/Freegifmaker.me_2bQ32.gif",
+"cat": "Cat_animations"
+},
+"Friedshrimpcatattack.gif": {
+"file": "Friedshrimpcatattack.gif",
+"path": "1/12/Friedshrimpcatattack.gif",
+"cat": "Cat_animations"
+},
+"Frostykaiattackanimation.gif": {
+"file": "Frostykaiattackanimation.gif",
+"path": "b/bb/Frostykaiattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Frostykaitypemuattackanimation.gif": {
+"file": "Frostykaitypemuattackanimation.gif",
+"path": "7/75/Frostykaitypemuattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Funghiattackanimation.gif": {
+"file": "Funghiattackanimation.gif",
+"path": "1/14/Funghiattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Funghincatattackanimation.gif": {
+"file": "Funghincatattackanimation.gif",
+"path": "1/19/Funghincatattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Fuu_Attack.gif": {
+"file": "Fuu_Attack.gif",
+"path": "7/7e/Fuu_Attack.gif",
+"cat": "Cat_animations"
+},
+"Gaia_the_Creator's_attack_animation.gif": {
+"file": "Gaia_the_Creator's_attack_animation.gif",
+"path": "3/34/Gaia_the_Creator%27s_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"Gaia_the_Supreme's_Attack_animation.gif": {
+"file": "Gaia_the_Supreme's_Attack_animation.gif",
+"path": "8/83/Gaia_the_Supreme%27s_Attack_animation.gif",
+"cat": "Cat_animations"
+},
+"Ganglion_the_Ancient.gif": {
+"file": "Ganglion_the_Ancient.gif",
+"path": "c/c0/Ganglion_the_Ancient.gif",
+"cat": "Cat_animations"
+},
+"Ganglion-tf.anim.gif": {
+"file": "Ganglion-tf.anim.gif",
+"path": "5/51/Ganglion-tf.anim.gif",
+"cat": "Cat_animations"
+},
+"Ganglion.gif": {
+"file": "Ganglion.gif",
+"path": "c/c4/Ganglion.gif",
+"cat": "Cat_animations"
+},
+"Gardenercatattack.gif": {
+"file": "Gardenercatattack.gif",
+"path": "a/a4/Gardenercatattack.gif",
+"cat": "Cat_animations"
+},
+"GEDioAttack.gif": {
+"file": "GEDioAttack.gif",
+"path": "d/db/GEDioAttack.gif",
+"cat": "Cat_animations"
+},
+"Generalmordenattackanimation.gif": {
+"file": "Generalmordenattackanimation.gif",
+"path": "e/e2/Generalmordenattackanimation.gif",
+"cat": "Cat_animations"
+},
+"GER.gif": {
+"file": "GER.gif",
+"path": "f/f1/GER.gif",
+"cat": "Cat_animations"
+},
+"Gigavolta.gif": {
+"file": "Gigavolta.gif",
+"path": "8/85/Gigavolta.gif",
+"cat": "Cat_animations"
+},
+"Giphy_(1)-0.gif": {
+"file": "Giphy_(1)-0.gif",
+"path": "e/e1/Giphy_%281%29-0.gif",
+"cat": "Cat_animations"
+},
+"Giphy_(3).gif": {
+"file": "Giphy_(3).gif",
+"path": "d/d7/Giphy_%283%29.gif",
+"cat": "Cat_animations"
+},
+"Giraffe_Cat_Attack_Animation.gif": {
+"file": "Giraffe_Cat_Attack_Animation.gif",
+"path": "6/6b/Giraffe_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"God_Dragon_Kamukura_Attack_Animation.gif": {
+"file": "God_Dragon_Kamukura_Attack_Animation.gif",
+"path": "f/ff/God_Dragon_Kamukura_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Godattack1.gif": {
+"file": "Godattack1.gif",
+"path": "8/8e/Godattack1.gif",
+"cat": "Cat_animations"
+},
+"Godattack2.gif": {
+"file": "Godattack2.gif",
+"path": "b/b5/Godattack2.gif",
+"cat": "Cat_animations"
+},
+"Godemperorkamukuraattackanimation.gif": {
+"file": "Godemperorkamukuraattackanimation.gif",
+"path": "a/a1/Godemperorkamukuraattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Godemperormegidoraattackanimation.gif": {
+"file": "Godemperormegidoraattackanimation.gif",
+"path": "4/4f/Godemperormegidoraattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Godemperorsodomattackanimation.gif": {
+"file": "Godemperorsodomattackanimation.gif",
+"path": "3/35/Godemperorsodomattackanimation.gif",
+"cat": "Cat_animations"
+},
+"GOlD.gif": {
+"file": "GOlD.gif",
+"path": "9/9a/GOlD.gif",
+"cat": "Cat_animations"
+},
+"Golfer.gif": {
+"file": "Golfer.gif",
+"path": "f/f7/Golfer.gif",
+"cat": "Cat_animations"
+},
+"Good-Luck_Ebisu_Atk_Anim.gif": {
+"file": "Good-Luck_Ebisu_Atk_Anim.gif",
+"path": "8/8c/Good-Luck_Ebisu_Atk_Anim.gif",
+"cat": "Cat_animations"
+},
+"Greater_Demon_Cat_Attack_Animation.gif": {
+"file": "Greater_Demon_Cat_Attack_Animation.gif",
+"path": "b/b9/Greater_Demon_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Grosswhitecatattackanimation.gif": {
+"file": "Grosswhitecatattackanimation.gif",
+"path": "4/44/Grosswhitecatattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Grudge_Cat.gif": {
+"file": "Grudge_Cat.gif",
+"path": "d/d2/Grudge_Cat.gif",
+"cat": "Cat_animations"
+},
+"Guardian_Gamereon_Attack_Animation.gif": {
+"file": "Guardian_Gamereon_Attack_Animation.gif",
+"path": "c/c0/Guardian_Gamereon_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Gudebaconplateatkani.gif": {
+"file": "Gudebaconplateatkani.gif",
+"path": "8/8b/Gudebaconplateatkani.gif",
+"cat": "Cat_animations"
+},
+"Gudebene_cat(true_form)_attack_animation.gif": {
+"file": "Gudebene_cat(true_form)_attack_animation.gif",
+"path": "b/b1/Gudebene_cat%28true_form%29_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"Gudeomeletatkani.gif": {
+"file": "Gudeomeletatkani.gif",
+"path": "0/07/Gudeomeletatkani.gif",
+"cat": "Cat_animations"
+},
+"Gudeplateatkani.gif": {
+"file": "Gudeplateatkani.gif",
+"path": "7/70/Gudeplateatkani.gif",
+"cat": "Cat_animations"
+},
+"Gudetamaatkani.gif": {
+"file": "Gudetamaatkani.gif",
+"path": "d/df/Gudetamaatkani.gif",
+"cat": "Cat_animations"
+},
+"Hacker_Cat_Attack_Animation.gif": {
+"file": "Hacker_Cat_Attack_Animation.gif",
+"path": "1/16/Hacker_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Hallowindyalphaattackanimation.gif": {
+"file": "Hallowindyalphaattackanimation.gif",
+"path": "2/29/Hallowindyalphaattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Hallowindyattackanimation.gif": {
+"file": "Hallowindyattackanimation.gif",
+"path": "2/2c/Hallowindyattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Haniwa_Cat.gif": {
+"file": "Haniwa_Cat.gif",
+"path": "8/8c/Haniwa_Cat.gif",
+"cat": "Cat_animations"
+},
+"Harisen_Cat_VS_MODE_Attack.gif": {
+"file": "Harisen_Cat_VS_MODE_Attack.gif",
+"path": "5/5f/Harisen_Cat_VS_MODE_Attack.gif",
+"cat": "Cat_animations"
+},
+"Hatsunemikugif.gif": {
+"file": "Hatsunemikugif.gif",
+"path": "4/4c/Hatsunemikugif.gif",
+"cat": "Cat_animations"
+},
+"Hattori_Hanzo.gif": {
+"file": "Hattori_Hanzo.gif",
+"path": "e/ed/Hattori_Hanzo.gif",
+"cat": "Cat_animations"
+},
+"Hayabusa.gif": {
+"file": "Hayabusa.gif",
+"path": "5/50/Hayabusa.gif",
+"cat": "Cat_animations"
+},
+"Heartful_Nurse_Cat_Attack_Animation.gif": {
+"file": "Heartful_Nurse_Cat_Attack_Animation.gif",
+"path": "e/ef/Heartful_Nurse_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Hermit1.gif": {
+"file": "Hermit1.gif",
+"path": "e/e2/Hermit1.gif",
+"cat": "Cat_animations"
+},
+"Hermit2.gif": {
+"file": "Hermit2.gif",
+"path": "5/5f/Hermit2.gif",
+"cat": "Cat_animations"
+},
+"Hip_Hop_Cat_Attack_Animation.gif": {
+"file": "Hip_Hop_Cat_Attack_Animation.gif",
+"path": "9/9a/Hip_Hop_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Hitman.gif": {
+"file": "Hitman.gif",
+"path": "6/65/Hitman.gif",
+"cat": "Cat_animations"
+},
+"Holy_Dragon_Megidora_Attack_Animation.gif": {
+"file": "Holy_Dragon_Megidora_Attack_Animation.gif",
+"path": "0/0f/Holy_Dragon_Megidora_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Homura&CatAttack.gif": {
+"file": "Homura&CatAttack.gif",
+"path": "4/49/Homura%26CatAttack.gif",
+"cat": "Cat_animations"
+},
+"HomuraAttack.gif": {
+"file": "HomuraAttack.gif",
+"path": "9/91/HomuraAttack.gif",
+"cat": "Cat_animations"
+},
+"Hugehermitattackanimation.gif": {
+"file": "Hugehermitattackanimation.gif",
+"path": "7/73/Hugehermitattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Hugehermitccattackanimation.gif": {
+"file": "Hugehermitccattackanimation.gif",
+"path": "b/b6/Hugehermitccattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Hurricatattack.gif": {
+"file": "Hurricatattack.gif",
+"path": "7/78/Hurricatattack.gif",
+"cat": "Cat_animations"
+},
+"Hyakutaroattackanimation.gif": {
+"file": "Hyakutaroattackanimation.gif",
+"path": "c/c8/Hyakutaroattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Hyakutaroccattackanimation.gif": {
+"file": "Hyakutaroccattackanimation.gif",
+"path": "e/ed/Hyakutaroccattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Hyper_mr_attack.gif": {
+"file": "Hyper_mr_attack.gif",
+"path": "d/d2/Hyper_mr_attack.gif",
+"cat": "Cat_animations"
+},
+"Ice_Cat_Attack_Animation.gif": {
+"file": "Ice_Cat_Attack_Animation.gif",
+"path": "f/fa/Ice_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Ice_Queen_Cat_Attack_Animation.gif": {
+"file": "Ice_Queen_Cat_Attack_Animation.gif",
+"path": "6/6a/Ice_Queen_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Ice_Skater_attack.gif": {
+"file": "Ice_Skater_attack.gif",
+"path": "7/76/Ice_Skater_attack.gif",
+"cat": "Cat_animations"
+},
+"Icecrystal.gif": {
+"file": "Icecrystal.gif",
+"path": "2/2e/Icecrystal.gif",
+"cat": "Cat_animations"
+},
+"IdiN_attack.gif": {
+"file": "IdiN_attack.gif",
+"path": "2/24/IdiN_attack.gif",
+"cat": "Cat_animations"
+},
+"IdiN2_attack.gif": {
+"file": "IdiN2_attack.gif",
+"path": "2/2f/IdiN2_attack.gif",
+"cat": "Cat_animations"
+},
+"Imageedit_1_6883458066.gif": {
+"file": "Imageedit_1_6883458066.gif",
+"path": "3/3a/Imageedit_1_6883458066.gif",
+"cat": "Cat_animations"
+},
+"Imageedit_10_2959178283.gif": {
+"file": "Imageedit_10_2959178283.gif",
+"path": "2/22/Imageedit_10_2959178283.gif",
+"cat": "Cat_animations"
+},
+"Imageedit_10_9210800074.gif": {
+"file": "Imageedit_10_9210800074.gif",
+"path": "4/42/Imageedit_10_9210800074.gif",
+"cat": "Cat_animations"
+},
+"Imageedit_11_5058053772.gif": {
+"file": "Imageedit_11_5058053772.gif",
+"path": "b/b1/Imageedit_11_5058053772.gif",
+"cat": "Cat_animations"
+},
+"Imageedit_12_3659950643.gif": {
+"file": "Imageedit_12_3659950643.gif",
+"path": "f/fc/Imageedit_12_3659950643.gif",
+"cat": "Cat_animations"
+},
+"Imageedit_12_3678604889.gif": {
+"file": "Imageedit_12_3678604889.gif",
+"path": "1/19/Imageedit_12_3678604889.gif",
+"cat": "Cat_animations"
+},
+"Imageedit_12_6920601338.gif": {
+"file": "Imageedit_12_6920601338.gif",
+"path": "1/14/Imageedit_12_6920601338.gif",
+"cat": "Cat_animations"
+},
+"Imageedit_12_9792841542.gif": {
+"file": "Imageedit_12_9792841542.gif",
+"path": "e/e2/Imageedit_12_9792841542.gif",
+"cat": "Cat_animations"
+},
+"Imageedit_15_2456451408.gif": {
+"file": "Imageedit_15_2456451408.gif",
+"path": "f/fb/Imageedit_15_2456451408.gif",
+"cat": "Cat_animations"
+},
+"Imageedit_17_8732755094.gif": {
+"file": "Imageedit_17_8732755094.gif",
+"path": "a/a6/Imageedit_17_8732755094.gif",
+"cat": "Cat_animations"
+},
+"Imageedit_2_3383124660.gif": {
+"file": "Imageedit_2_3383124660.gif",
+"path": "1/19/Imageedit_2_3383124660.gif",
+"cat": "Cat_animations"
+},
+"Imageedit_2_4433830332.gif": {
+"file": "Imageedit_2_4433830332.gif",
+"path": "d/d8/Imageedit_2_4433830332.gif",
+"cat": "Cat_animations"
+},
+"Imageedit_2_6841572675.gif": {
+"file": "Imageedit_2_6841572675.gif",
+"path": "b/b3/Imageedit_2_6841572675.gif",
+"cat": "Cat_animations"
+},
+"Imageedit_2_7079508993.gif": {
+"file": "Imageedit_2_7079508993.gif",
+"path": "5/5d/Imageedit_2_7079508993.gif",
+"cat": "Cat_animations"
+},
+"Imageedit_2_7231524892.gif": {
+"file": "Imageedit_2_7231524892.gif",
+"path": "1/1a/Imageedit_2_7231524892.gif",
+"cat": "Cat_animations"
+},
+"Imageedit_2_7947253160.gif": {
+"file": "Imageedit_2_7947253160.gif",
+"path": "5/52/Imageedit_2_7947253160.gif",
+"cat": "Cat_animations"
+},
+"Imageedit_2_8351569812.gif": {
+"file": "Imageedit_2_8351569812.gif",
+"path": "0/0f/Imageedit_2_8351569812.gif",
+"cat": "Cat_animations"
+},
+"Imageedit_21_7791840210.gif": {
+"file": "Imageedit_21_7791840210.gif",
+"path": "6/63/Imageedit_21_7791840210.gif",
+"cat": "Cat_animations"
+},
+"Imageedit_23_4653425894.gif": {
+"file": "Imageedit_23_4653425894.gif",
+"path": "5/55/Imageedit_23_4653425894.gif",
+"cat": "Cat_animations"
+},
+"Imageedit_3_7784882374.gif": {
+"file": "Imageedit_3_7784882374.gif",
+"path": "3/36/Imageedit_3_7784882374.gif",
+"cat": "Cat_animations"
+},
+"Imageedit_4_4518793094.gif": {
+"file": "Imageedit_4_4518793094.gif",
+"path": "9/97/Imageedit_4_4518793094.gif",
+"cat": "Cat_animations"
+},
+"Imageedit_5_3590734541.gif": {
+"file": "Imageedit_5_3590734541.gif",
+"path": "8/83/Imageedit_5_3590734541.gif",
+"cat": "Cat_animations"
+},
+"Imageedit_7_2644780453.gif": {
+"file": "Imageedit_7_2644780453.gif",
+"path": "9/90/Imageedit_7_2644780453.gif",
+"cat": "Cat_animations"
+},
+"Imageedit_7_3060742802.gif": {
+"file": "Imageedit_7_3060742802.gif",
+"path": "5/57/Imageedit_7_3060742802.gif",
+"cat": "Cat_animations"
+},
+"Imageedit_7_6043463762.gif": {
+"file": "Imageedit_7_6043463762.gif",
+"path": "e/e1/Imageedit_7_6043463762.gif",
+"cat": "Cat_animations"
+},
+"Imageedit_8_9424982778.gif": {
+"file": "Imageedit_8_9424982778.gif",
+"path": "d/d0/Imageedit_8_9424982778.gif",
+"cat": "Cat_animations"
+},
+"Imageedit_9_6933465782.gif": {
+"file": "Imageedit_9_6933465782.gif",
+"path": "6/64/Imageedit_9_6933465782.gif",
+"cat": "Cat_animations"
+},
+"Immortalkeijiattackanimation.gif": {
+"file": "Immortalkeijiattackanimation.gif",
+"path": "a/a2/Immortalkeijiattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Immortalyukimuraattackanimation.gif": {
+"file": "Immortalyukimuraattackanimation.gif",
+"path": "3/37/Immortalyukimuraattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Immshingenatkani.gif": {
+"file": "Immshingenatkani.gif",
+"path": "7/71/Immshingenatkani.gif",
+"cat": "Cat_animations"
+},
+"Inferno_akira.gif": {
+"file": "Inferno_akira.gif",
+"path": "d/d1/Inferno_akira.gif",
+"cat": "Cat_animations"
+},
+"Iron_Claw_X.gif": {
+"file": "Iron_Claw_X.gif",
+"path": "c/c0/Iron_Claw_X.gif",
+"cat": "Cat_animations"
+},
+"Island_Animation.gif": {
+"file": "Island_Animation.gif",
+"path": "f/fa/Island_Animation.gif",
+"cat": "Cat_animations"
+},
+"Island_Cat_Attack_Animation.gif": {
+"file": "Island_Cat_Attack_Animation.gif",
+"path": "8/8d/Island_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Iz_the_Alluring_Dancer_(Attack_Animation).gif": {
+"file": "Iz_the_Alluring_Dancer_(Attack_Animation).gif",
+"path": "5/51/Iz_the_Alluring_Dancer_%28Attack_Animation%29.gif",
+"cat": "Cat_animations"
+},
+"Jamiera_Cat_Attack_Animation.gif": {
+"file": "Jamiera_Cat_Attack_Animation.gif",
+"path": "9/99/Jamiera_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Jelly_Cat_Attack.gif": {
+"file": "Jelly_Cat_Attack.gif",
+"path": "c/cf/Jelly_Cat_Attack.gif",
+"cat": "Cat_animations"
+},
+"Jiangshi_Cat_attack_animation.gif": {
+"file": "Jiangshi_Cat_attack_animation.gif",
+"path": "a/a3/Jiangshi_Cat_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"Jizo's_Moving_Castle_Attack_Animation.gif": {
+"file": "Jizo's_Moving_Castle_Attack_Animation.gif",
+"path": "6/67/Jizo%27s_Moving_Castle_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Jurassic_Cat_Attack.gif": {
+"file": "Jurassic_Cat_Attack.gif",
+"path": "f/f3/Jurassic_Cat_Attack.gif",
+"cat": "Cat_animations"
+},
+"Jurassic_Cat_Sitter_Attack.gif": {
+"file": "Jurassic_Cat_Sitter_Attack.gif",
+"path": "6/68/Jurassic_Cat_Sitter_Attack.gif",
+"cat": "Cat_animations"
+},
+"Justice_Sakura.gif": {
+"file": "Justice_Sakura.gif",
+"path": "1/1e/Justice_Sakura.gif",
+"cat": "Cat_animations"
+},
+"Kachi_animation.gif": {
+"file": "Kachi_animation.gif",
+"path": "b/b9/Kachi_animation.gif",
+"cat": "Cat_animations"
+},
+"Kai_Attack_Animation.gif": {
+"file": "Kai_Attack_Animation.gif",
+"path": "d/d6/Kai_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Kai_Type_u_Attack_Animation.gif": {
+"file": "Kai_Type_u_Attack_Animation.gif",
+"path": "b/b8/Kai_Type_u_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"KalisaDivineAttack.gif": {
+"file": "KalisaDivineAttack.gif",
+"path": "b/b5/KalisaDivineAttack.gif",
+"cat": "Cat_animations"
+},
+"Kamukura_Attack_Animation.gif": {
+"file": "Kamukura_Attack_Animation.gif",
+"path": "b/b1/Kamukura_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Kannaattack1.gif": {
+"file": "Kannaattack1.gif",
+"path": "5/53/Kannaattack1.gif",
+"cat": "Cat_animations"
+},
+"Kannaattack2.gif": {
+"file": "Kannaattack2.gif",
+"path": "b/ba/Kannaattack2.gif",
+"cat": "Cat_animations"
+},
+"Kasa_Jizo_Attack_Animation.gif": {
+"file": "Kasa_Jizo_Attack_Animation.gif",
+"path": "4/4c/Kasa_Jizo_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Kasli1.gif": {
+"file": "Kasli1.gif",
+"path": "3/30/Kasli1.gif",
+"cat": "Cat_animations"
+},
+"Kasli2.gif": {
+"file": "Kasli2.gif",
+"path": "e/e2/Kasli2.gif",
+"cat": "Cat_animations"
+},
+"Kdocatk.gif": {
+"file": "Kdocatk.gif",
+"path": "1/15/Kdocatk.gif",
+"cat": "Cat_animations"
+},
+"Kidnappercatsattackanimation.gif": {
+"file": "Kidnappercatsattackanimation.gif",
+"path": "f/fb/Kidnappercatsattackanimation.gif",
+"cat": "Cat_animations"
+},
+"KirinAttack.gif": {
+"file": "KirinAttack.gif",
+"path": "b/b3/KirinAttack.gif",
+"cat": "Cat_animations"
+},
+"KirinCatKirinAttack.gif": {
+"file": "KirinCatKirinAttack.gif",
+"path": "3/33/KirinCatKirinAttack.gif",
+"cat": "Cat_animations"
+},
+"KirinSpawn.gif": {
+"file": "KirinSpawn.gif",
+"path": "9/99/KirinSpawn.gif",
+"cat": "Cat_animations"
+},
+"KirinXAttack.gif": {
+"file": "KirinXAttack.gif",
+"path": "f/f3/KirinXAttack.gif",
+"cat": "Cat_animations"
+},
+"KirinXSpawn.gif": {
+"file": "KirinXSpawn.gif",
+"path": "3/36/KirinXSpawn.gif",
+"cat": "Cat_animations"
+},
+"Kotatsu_Cat_Attack_Animation.gif": {
+"file": "Kotatsu_Cat_Attack_Animation.gif",
+"path": "6/69/Kotatsu_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Kubiran_Pasaran_Attack_Animation.gif": {
+"file": "Kubiran_Pasaran_Attack_Animation.gif",
+"path": "c/c6/Kubiran_Pasaran_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Kubiruga_Attack_Animation.gif": {
+"file": "Kubiruga_Attack_Animation.gif",
+"path": "9/99/Kubiruga_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Kung_Fu_Cat_X.gif": {
+"file": "Kung_Fu_Cat_X.gif",
+"path": "6/6a/Kung_Fu_Cat_X.gif",
+"cat": "Cat_animations"
+},
+"Kuu_Attack_Animation.gif": {
+"file": "Kuu_Attack_Animation.gif",
+"path": "3/31/Kuu_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Kuu_Divine.gif": {
+"file": "Kuu_Divine.gif",
+"path": "0/00/Kuu_Divine.gif",
+"cat": "Cat_animations"
+},
+"Kuu_Type_y_Attack_Animation.gif": {
+"file": "Kuu_Type_y_Attack_Animation.gif",
+"path": "e/e1/Kuu_Type_y_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Kyoko&CatAttack.gif": {
+"file": "Kyoko&CatAttack.gif",
+"path": "b/b4/Kyoko%26CatAttack.gif",
+"cat": "Cat_animations"
+},
+"KyokoAttack.gif": {
+"file": "KyokoAttack.gif",
+"path": "5/5d/KyokoAttack.gif",
+"cat": "Cat_animations"
+},
+"Leaf_attack.gif": {
+"file": "Leaf_attack.gif",
+"path": "3/3b/Leaf_attack.gif",
+"cat": "Cat_animations"
+},
+"Legelan_Pasalan_attack_animation.gif": {
+"file": "Legelan_Pasalan_attack_animation.gif",
+"path": "b/b2/Legelan_Pasalan_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"Legeluga_attack_animation.gif": {
+"file": "Legeluga_attack_animation.gif",
+"path": "f/fc/Legeluga_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"Lesser_Demon_Cat_Attack_Animation.gif": {
+"file": "Lesser_Demon_Cat_Attack_Animation.gif",
+"path": "6/69/Lesser_Demon_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Li'l_jamiera_attack_animation.gif": {
+"file": "Li'l_jamiera_attack_animation.gif",
+"path": "7/78/Li%27l_jamiera_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"Li'l_m_titan_attack_animation.gif": {
+"file": "Li'l_m_titan_attack_animation.gif",
+"path": "a/a4/Li%27l_m_titan_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"Li'l_titan_attack_animation.gif": {
+"file": "Li'l_titan_attack_animation.gif",
+"path": "2/29/Li%27l_titan_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"LifeguardCatsAttack.gif": {
+"file": "LifeguardCatsAttack.gif",
+"path": "6/63/LifeguardCatsAttack.gif",
+"cat": "Cat_animations"
+},
+"Lil'_Nyandam_Attack_Animation.gif": {
+"file": "Lil'_Nyandam_Attack_Animation.gif",
+"path": "0/02/Lil%27_Nyandam_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Lion_Cat_Attack_Animation.gif": {
+"file": "Lion_Cat_Attack_Animation.gif",
+"path": "9/96/Lion_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Livinglegendattackanimation.gif": {
+"file": "Livinglegendattackanimation.gif",
+"path": "f/f6/Livinglegendattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Loincloth_Cat.gif": {
+"file": "Loincloth_Cat.gif",
+"path": "c/c4/Loincloth_Cat.gif",
+"cat": "Cat_animations"
+},
+"Lollycat_attack.gif": {
+"file": "Lollycat_attack.gif",
+"path": "2/28/Lollycat_attack.gif",
+"cat": "Cat_animations"
+},
+"Lollycat.gif": {
+"file": "Lollycat.gif",
+"path": "3/3b/Lollycat.gif",
+"cat": "Cat_animations"
+},
+"LuckyCatCapsule.gif": {
+"file": "LuckyCatCapsule.gif",
+"path": "0/07/LuckyCatCapsule.gif",
+"cat": "Cat_animations"
+},
+"Lumbercatattack.gif": {
+"file": "Lumbercatattack.gif",
+"path": "5/5b/Lumbercatattack.gif",
+"cat": "Cat_animations"
+},
+"LuminaAction.gif": {
+"file": "LuminaAction.gif",
+"path": "2/2f/LuminaAction.gif",
+"cat": "Cat_animations"
+},
+"LuminariaAction.gif": {
+"file": "LuminariaAction.gif",
+"path": "8/8c/LuminariaAction.gif",
+"cat": "Cat_animations"
+},
+"M_grandmaster_attack.gif": {
+"file": "M_grandmaster_attack.gif",
+"path": "3/33/M_grandmaster_attack.gif",
+"cat": "Cat_animations"
+},
+"MachoCyrstalCat.gif": {
+"file": "MachoCyrstalCat.gif",
+"path": "2/26/MachoCyrstalCat.gif",
+"cat": "Cat_animations"
+},
+"MachoLegsAtk.gif": {
+"file": "MachoLegsAtk.gif",
+"path": "c/c4/MachoLegsAtk.gif",
+"cat": "Cat_animations"
+},
+"Madame_Sumo_Cat.gif": {
+"file": "Madame_Sumo_Cat.gif",
+"path": "0/0c/Madame_Sumo_Cat.gif",
+"cat": "Cat_animations"
+},
+"Madoka&CatAttack.gif": {
+"file": "Madoka&CatAttack.gif",
+"path": "8/8e/Madoka%26CatAttack.gif",
+"cat": "Cat_animations"
+},
+"MadokaAttack.gif": {
+"file": "MadokaAttack.gif",
+"path": "1/15/MadokaAttack.gif",
+"cat": "Cat_animations"
+},
+"Maeda_Keiji_Attack_Animation.gif": {
+"file": "Maeda_Keiji_Attack_Animation.gif",
+"path": "9/9e/Maeda_Keiji_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Mallet_Cat_VS_Mode_Attack.gif": {
+"file": "Mallet_Cat_VS_Mode_Attack.gif",
+"path": "9/99/Mallet_Cat_VS_Mode_Attack.gif",
+"cat": "Cat_animations"
+},
+"MalletCatAttack.gif": {
+"file": "MalletCatAttack.gif",
+"path": "5/5a/MalletCatAttack.gif",
+"cat": "Cat_animations"
+},
+"Mami'n'Cat.gif": {
+"file": "Mami'n'Cat.gif",
+"path": "0/0c/Mami%27n%27Cat.gif",
+"cat": "Cat_animations"
+},
+"MamiTomoe.gif": {
+"file": "MamiTomoe.gif",
+"path": "f/f6/MamiTomoe.gif",
+"cat": "Cat_animations"
+},
+"MangaBoogieCatAttack_Idle.gif": {
+"file": "MangaBoogieCatAttack_Idle.gif",
+"path": "c/cb/MangaBoogieCatAttack_Idle.gif",
+"cat": "Cat_animations"
+},
+"MangaBoogieDragonCatAttack_Idle.gif": {
+"file": "MangaBoogieDragonCatAttack_Idle.gif",
+"path": "d/d3/MangaBoogieDragonCatAttack_Idle.gif",
+"cat": "Cat_animations"
+},
+"Manic_Eraser_Cat_Attack_Animation.gif": {
+"file": "Manic_Eraser_Cat_Attack_Animation.gif",
+"path": "9/91/Manic_Eraser_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Manic_Flying_Cat_Attack_Animation.gif": {
+"file": "Manic_Flying_Cat_Attack_Animation.gif",
+"path": "d/d2/Manic_Flying_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Manic_Jamiera_Cat_attack_animation.gif": {
+"file": "Manic_Jamiera_Cat_attack_animation.gif",
+"path": "d/d2/Manic_Jamiera_Cat_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"Manic_King_Dragon_Attack_Animation.gif": {
+"file": "Manic_King_Dragon_Attack_Animation.gif",
+"path": "1/13/Manic_King_Dragon_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Manic_Lion_Cat_attack_animation.gif": {
+"file": "Manic_Lion_Cat_attack_animation.gif",
+"path": "9/99/Manic_Lion_Cat_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"Manic_Macho_Legs_Attack_Animation.gif": {
+"file": "Manic_Macho_Legs_Attack_Animation.gif",
+"path": "a/a8/Manic_Macho_Legs_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Manicdarkcatattackanimation.gif": {
+"file": "Manicdarkcatattackanimation.gif",
+"path": "9/9f/Manicdarkcatattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Manicmohawkcatattackanimation.gif": {
+"file": "Manicmohawkcatattackanimation.gif",
+"path": "2/27/Manicmohawkcatattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Marauder_Cat_Attack_Animation.gif": {
+"file": "Marauder_Cat_Attack_Animation.gif",
+"path": "e/ea/Marauder_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Marcoattackanimation.gif": {
+"file": "Marcoattackanimation.gif",
+"path": "3/34/Marcoattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Marcoccattackanimation.gif": {
+"file": "Marcoccattackanimation.gif",
+"path": "d/da/Marcoccattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Marinmizu_GIF.gif": {
+"file": "Marinmizu_GIF.gif",
+"path": "6/66/Marinmizu_GIF.gif",
+"cat": "Cat_animations"
+},
+"Marspeopleattackanimation.gif": {
+"file": "Marspeopleattackanimation.gif",
+"path": "3/3d/Marspeopleattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Marspeopleccattackanimation.gif": {
+"file": "Marspeopleccattackanimation.gif",
+"path": "0/0b/Marspeopleccattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Masai_cat_attack_animation.gif": {
+"file": "Masai_cat_attack_animation.gif",
+"path": "9/95/Masai_cat_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"Matador_animation.gif": {
+"file": "Matador_animation.gif",
+"path": "8/8f/Matador_animation.gif",
+"cat": "Cat_animations"
+},
+"Mechabun1.gif": {
+"file": "Mechabun1.gif",
+"path": "a/af/Mechabun1.gif",
+"cat": "Cat_animations"
+},
+"Mechabun2.gif": {
+"file": "Mechabun2.gif",
+"path": "d/d3/Mechabun2.gif",
+"cat": "Cat_animations"
+},
+"Mechabun3.gif": {
+"file": "Mechabun3.gif",
+"path": "b/b7/Mechabun3.gif",
+"cat": "Cat_animations"
+},
+"Megacatattackanimation.gif": {
+"file": "Megacatattackanimation.gif",
+"path": "c/cc/Megacatattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Megacatexattackanimation.gif": {
+"file": "Megacatexattackanimation.gif",
+"path": "9/9a/Megacatexattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Megidora_Attack_Animation.gif": {
+"file": "Megidora_Attack_Animation.gif",
+"path": "8/8c/Megidora_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Meikai_no_Karifa_Attack_Animation.gif": {
+"file": "Meikai_no_Karifa_Attack_Animation.gif",
+"path": "2/21/Meikai_no_Karifa_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Meikai_no_X_Karifa_Attack_Animation.gif": {
+"file": "Meikai_no_X_Karifa_Attack_Animation.gif",
+"path": "7/71/Meikai_no_X_Karifa_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"MelynxAttack.gif": {
+"file": "MelynxAttack.gif",
+"path": "3/38/MelynxAttack.gif",
+"cat": "Cat_animations"
+},
+"MelynxSpawn.gif": {
+"file": "MelynxSpawn.gif",
+"path": "c/c5/MelynxSpawn.gif",
+"cat": "Cat_animations"
+},
+"Meowlameowlaattackanimation.gif": {
+"file": "Meowlameowlaattackanimation.gif",
+"path": "6/63/Meowlameowlaattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Mercatattackanimation.gif": {
+"file": "Mercatattackanimation.gif",
+"path": "d/d7/Mercatattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Midsummercatattackanimation.gif": {
+"file": "Midsummercatattackanimation.gif",
+"path": "1/11/Midsummercatattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Midsummerrabbitattackanimation.gif": {
+"file": "Midsummerrabbitattackanimation.gif",
+"path": "3/3e/Midsummerrabbitattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Mighty_drednot_animation.gif": {
+"file": "Mighty_drednot_animation.gif",
+"path": "c/cd/Mighty_drednot_animation.gif",
+"cat": "Cat_animations"
+},
+"Mighty_Kat-A-Pult_attack_animation.gif": {
+"file": "Mighty_Kat-A-Pult_attack_animation.gif",
+"path": "b/bf/Mighty_Kat-A-Pult_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"Mightybomburrattackanimation.gif": {
+"file": "Mightybomburrattackanimation.gif",
+"path": "f/f1/Mightybomburrattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Miku_tokyo.gif": {
+"file": "Miku_tokyo.gif",
+"path": "5/52/Miku_tokyo.gif",
+"cat": "Cat_animations"
+},
+"Minka_attack.gif": {
+"file": "Minka_attack.gif",
+"path": "5/5f/Minka_attack.gif",
+"cat": "Cat_animations"
+},
+"Mintattackanimation.gif": {
+"file": "Mintattackanimation.gif",
+"path": "e/e8/Mintattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Minya_animation.gif": {
+"file": "Minya_animation.gif",
+"path": "5/5c/Minya_animation.gif",
+"cat": "Cat_animations"
+},
+"Mitama_New.gif": {
+"file": "Mitama_New.gif",
+"path": "0/00/Mitama_New.gif",
+"cat": "Cat_animations"
+},
+"Mitama.gif": {
+"file": "Mitama.gif",
+"path": "a/a9/Mitama.gif",
+"cat": "Cat_animations"
+},
+"MitamaOracle.gif": {
+"file": "MitamaOracle.gif",
+"path": "3/34/MitamaOracle.gif",
+"cat": "Cat_animations"
+},
+"Mizli_GIF.gif": {
+"file": "Mizli_GIF.gif",
+"path": "5/58/Mizli_GIF.gif",
+"cat": "Cat_animations"
+},
+"Mizuririn_attack_animation.gif": {
+"file": "Mizuririn_attack_animation.gif",
+"path": "c/c6/Mizuririn_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"MM2020_Osaka.gif": {
+"file": "MM2020_Osaka.gif",
+"path": "8/82/MM2020_Osaka.gif",
+"cat": "Cat_animations"
+},
+"Mmmmmmmmm1.gif": {
+"file": "Mmmmmmmmm1.gif",
+"path": "9/97/Mmmmmmmmm1.gif",
+"cat": "Cat_animations"
+},
+"Mmmmmmmmm2.gif": {
+"file": "Mmmmmmmmm2.gif",
+"path": "7/7d/Mmmmmmmmm2.gif",
+"cat": "Cat_animations"
+},
+"Mohawk_Cat.gif": {
+"file": "Mohawk_Cat.gif",
+"path": "9/95/Mohawk_Cat.gif",
+"cat": "Cat_animations"
+},
+"Mola.gif": {
+"file": "Mola.gif",
+"path": "2/24/Mola.gif",
+"cat": "Cat_animations"
+},
+"Molakingattackanimation.gif": {
+"file": "Molakingattackanimation.gif",
+"path": "6/60/Molakingattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Momoco_attack_animation.gif": {
+"file": "Momoco_attack_animation.gif",
+"path": "c/c5/Momoco_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"Momotaro_Attack_Animation.gif": {
+"file": "Momotaro_Attack_Animation.gif",
+"path": "7/70/Momotaro_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Moneko_true_attack.gif": {
+"file": "Moneko_true_attack.gif",
+"path": "d/dd/Moneko_true_attack.gif",
+"cat": "Cat_animations"
+},
+"Monekoattack1.gif": {
+"file": "Monekoattack1.gif",
+"path": "e/ec/Monekoattack1.gif",
+"cat": "Cat_animations"
+},
+"Monekoattack2.gif": {
+"file": "Monekoattack2.gif",
+"path": "0/08/Monekoattack2.gif",
+"cat": "Cat_animations"
+},
+"Mother_attack.gif": {
+"file": "Mother_attack.gif",
+"path": "b/b3/Mother_attack.gif",
+"cat": "Cat_animations"
+},
+"Mr_attack.gif": {
+"file": "Mr_attack.gif",
+"path": "4/48/Mr_attack.gif",
+"cat": "Cat_animations"
+},
+"Mr._Hands_Attack_Animation.gif": {
+"file": "Mr._Hands_Attack_Animation.gif",
+"path": "8/88/Mr._Hands_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"MRK1.gif": {
+"file": "MRK1.gif",
+"path": "5/5d/MRK1.gif",
+"cat": "Cat_animations"
+},
+"MRK2.gif": {
+"file": "MRK2.gif",
+"path": "3/32/MRK2.gif",
+"cat": "Cat_animations"
+},
+"MRK3.gif": {
+"file": "MRK3.gif",
+"path": "3/3d/MRK3.gif",
+"cat": "Cat_animations"
+},
+"Mrninjaattackanimation.gif": {
+"file": "Mrninjaattackanimation.gif",
+"path": "1/11/Mrninjaattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Musashi.gif": {
+"file": "Musashi.gif",
+"path": "b/b6/Musashi.gif",
+"cat": "Cat_animations"
+},
+"Mythical_Titan_Cat_Attack_Animation.gif": {
+"file": "Mythical_Titan_Cat_Attack_Animation.gif",
+"path": "6/61/Mythical_Titan_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"NagisaBebe.gif": {
+"file": "NagisaBebe.gif",
+"path": "e/e5/NagisaBebe.gif",
+"cat": "Cat_animations"
+},
+"Nekoskyfortressattackanimation.gif": {
+"file": "Nekoskyfortressattackanimation.gif",
+"path": "c/c3/Nekoskyfortressattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Nekotaroattackanimation.gif": {
+"file": "Nekotaroattackanimation.gif",
+"path": "c/cf/Nekotaroattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Nerd_Cat_Attack_Animation.gif": {
+"file": "Nerd_Cat_Attack_Animation.gif",
+"path": "e/eb/Nerd_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Newyearsnenekoattackanimation.gif": {
+"file": "Newyearsnenekoattackanimation.gif",
+"path": "0/0e/Newyearsnenekoattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Ninja_Cat.gif": {
+"file": "Ninja_Cat.gif",
+"path": "e/e2/Ninja_Cat.gif",
+"cat": "Cat_animations"
+},
+"Ninja_Frog_Cat.gif": {
+"file": "Ninja_Frog_Cat.gif",
+"path": "c/c0/Ninja_Frog_Cat.gif",
+"cat": "Cat_animations"
+},
+"Nisetamaatkani.gif": {
+"file": "Nisetamaatkani.gif",
+"path": "5/56/Nisetamaatkani.gif",
+"cat": "Cat_animations"
+},
+"Nisetamacatatkani.gif": {
+"file": "Nisetamacatatkani.gif",
+"path": "4/4b/Nisetamacatatkani.gif",
+"cat": "Cat_animations"
+},
+"No.gif": {
+"file": "No.gif",
+"path": "b/bd/No.gif",
+"cat": "Cat_animations"
+},
+"Nobiluga_Evol.gif": {
+"file": "Nobiluga_Evol.gif",
+"path": "b/b5/Nobiluga_Evol.gif",
+"cat": "Cat_animations"
+},
+"Nobiluga.gif": {
+"file": "Nobiluga.gif",
+"path": "d/dd/Nobiluga.gif",
+"cat": "Cat_animations"
+},
+"Normal_Bahamut_Cat_Attack_Animation.gif": {
+"file": "Normal_Bahamut_Cat_Attack_Animation.gif",
+"path": "5/5d/Normal_Bahamut_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Nurse_Cat_Attack_Animation.gif": {
+"file": "Nurse_Cat_Attack_Animation.gif",
+"path": "6/61/Nurse_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Nyandam.gif": {
+"file": "Nyandam.gif",
+"path": "b/b2/Nyandam.gif",
+"cat": "Cat_animations"
+},
+"Octopus_Cat_attack_animation.gif": {
+"file": "Octopus_Cat_attack_animation.gif",
+"path": "2/2d/Octopus_Cat_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"Oda_Nobunaga_Attack_Animation.gif": {
+"file": "Oda_Nobunaga_Attack_Animation.gif",
+"path": "6/6f/Oda_Nobunaga_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Odin.gif": {
+"file": "Odin.gif",
+"path": "6/60/Odin.gif",
+"cat": "Cat_animations"
+},
+"OniHayaAnim.gif": {
+"file": "OniHayaAnim.gif",
+"path": "8/80/OniHayaAnim.gif",
+"cat": "Cat_animations"
+},
+"Optimusprime-gif.gif": {
+"file": "Optimusprime-gif.gif",
+"path": "1/17/Optimusprime-gif.gif",
+"cat": "Cat_animations"
+},
+"Paipaiattackanimation.gif": {
+"file": "Paipaiattackanimation.gif",
+"path": "4/43/Paipaiattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Paipaideluxe.gif": {
+"file": "Paipaideluxe.gif",
+"path": "5/5b/Paipaideluxe.gif",
+"cat": "Cat_animations"
+},
+"Paipaizattackanimation.gif": {
+"file": "Paipaizattackanimation.gif",
+"path": "3/3e/Paipaizattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Paladin_Cat_Attack_Animation.gif": {
+"file": "Paladin_Cat_Attack_Animation.gif",
+"path": "d/d2/Paladin_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Panties_attack.gif": {
+"file": "Panties_attack.gif",
+"path": "4/4f/Panties_attack.gif",
+"cat": "Cat_animations"
+},
+"Paris_Cat_attack_animation.gif": {
+"file": "Paris_Cat_attack_animation.gif",
+"path": "6/60/Paris_Cat_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"Pastry_Cat_animation.gif": {
+"file": "Pastry_Cat_animation.gif",
+"path": "4/4f/Pastry_Cat_animation.gif",
+"cat": "Cat_animations"
+},
+"PCATK1.gif": {
+"file": "PCATK1.gif",
+"path": "e/e0/PCATK1.gif",
+"cat": "Cat_animations"
+},
+"PCATK2.gif": {
+"file": "PCATK2.gif",
+"path": "9/92/PCATK2.gif",
+"cat": "Cat_animations"
+},
+"PCATK3.gif": {
+"file": "PCATK3.gif",
+"path": "a/af/PCATK3.gif",
+"cat": "Cat_animations"
+},
+"Piccolanisdumblol.gif": {
+"file": "Piccolanisdumblol.gif",
+"path": "8/88/Piccolanisdumblol.gif",
+"cat": "Cat_animations"
+},
+"Pikotaroattackanimation.gif": {
+"file": "Pikotaroattackanimation.gif",
+"path": "0/01/Pikotaroattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Pirate_Cat_attack_animation.gif": {
+"file": "Pirate_Cat_attack_animation.gif",
+"path": "8/8d/Pirate_Cat_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"Planecatattackanimation.gif": {
+"file": "Planecatattackanimation.gif",
+"path": "6/6b/Planecatattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Pogo_cat_attack_animation.gif": {
+"file": "Pogo_cat_attack_animation.gif",
+"path": "d/df/Pogo_cat_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"Princess_Kaguya_Attack_Animation.gif": {
+"file": "Princess_Kaguya_Attack_Animation.gif",
+"path": "8/84/Princess_Kaguya_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Professor_abyss_attack_animation.gif": {
+"file": "Professor_abyss_attack_animation.gif",
+"path": "4/49/Professor_abyss_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"Pumpcatattackanimation.gif": {
+"file": "Pumpcatattackanimation.gif",
+"path": "4/48/Pumpcatattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Rabbit_Champion_Satoru_Attack.gif": {
+"file": "Rabbit_Champion_Satoru_Attack.gif",
+"path": "7/76/Rabbit_Champion_Satoru_Attack.gif",
+"cat": "Cat_animations"
+},
+"Radiantaphroditeattackanimation.gif": {
+"file": "Radiantaphroditeattackanimation.gif",
+"path": "8/82/Radiantaphroditeattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Radical_cat_attack.gif": {
+"file": "Radical_cat_attack.gif",
+"path": "3/3b/Radical_cat_attack.gif",
+"cat": "Cat_animations"
+},
+"Raiden_Attack_Animation.gif": {
+"file": "Raiden_Attack_Animation.gif",
+"path": "8/82/Raiden_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Raiden_Enemy_Attack.gif": {
+"file": "Raiden_Enemy_Attack.gif",
+"path": "2/2e/Raiden_Enemy_Attack.gif",
+"cat": "Cat_animations"
+},
+"Raiden_Enemy_Defeat.gif": {
+"file": "Raiden_Enemy_Defeat.gif",
+"path": "e/ee/Raiden_Enemy_Defeat.gif",
+"cat": "Cat_animations"
+},
+"Raiden_Enemy_Idle.gif": {
+"file": "Raiden_Enemy_Idle.gif",
+"path": "f/f7/Raiden_Enemy_Idle.gif",
+"cat": "Cat_animations"
+},
+"Raiden_Member_Victory.gif": {
+"file": "Raiden_Member_Victory.gif",
+"path": "4/43/Raiden_Member_Victory.gif",
+"cat": "Cat_animations"
+},
+"Ramen.gif": {
+"file": "Ramen.gif",
+"path": "0/01/Ramen.gif",
+"cat": "Cat_animations"
+},
+"Rampagecatsattackanimation.gif": {
+"file": "Rampagecatsattackanimation.gif",
+"path": "1/1c/Rampagecatsattackanimation.gif",
+"cat": "Cat_animations"
+},
+"RareCatCapsule.gif": {
+"file": "RareCatCapsule.gif",
+"path": "0/06/RareCatCapsule.gif",
+"cat": "Cat_animations"
+},
+"RathalosAttack.gif": {
+"file": "RathalosAttack.gif",
+"path": "8/84/RathalosAttack.gif",
+"cat": "Cat_animations"
+},
+"RathalosSpawn.gif": {
+"file": "RathalosSpawn.gif",
+"path": "b/b0/RathalosSpawn.gif",
+"cat": "Cat_animations"
+},
+"RathianAttack.gif": {
+"file": "RathianAttack.gif",
+"path": "c/cf/RathianAttack.gif",
+"cat": "Cat_animations"
+},
+"RathianSpawn.gif": {
+"file": "RathianSpawn.gif",
+"path": "5/5b/RathianSpawn.gif",
+"cat": "Cat_animations"
+},
+"REIatk.gif": {
+"file": "REIatk.gif",
+"path": "9/93/REIatk.gif",
+"cat": "Cat_animations"
+},
+"REIatk2.gif": {
+"file": "REIatk2.gif",
+"path": "9/9e/REIatk2.gif",
+"cat": "Cat_animations"
+},
+"Result-1.gif": {
+"file": "Result-1.gif",
+"path": "c/c0/Result-1.gif",
+"cat": "Cat_animations"
+},
+"Riceball_Cat.gif": {
+"file": "Riceball_Cat.gif",
+"path": "8/81/Riceball_Cat.gif",
+"cat": "Cat_animations"
+},
+"Rinandlengif.gif": {
+"file": "Rinandlengif.gif",
+"path": "9/99/Rinandlengif.gif",
+"cat": "Cat_animations"
+},
+"Ritual_Cat.gif": {
+"file": "Ritual_Cat.gif",
+"path": "f/fa/Ritual_Cat.gif",
+"cat": "Cat_animations"
+},
+"Robocatattackanimation.gif": {
+"file": "Robocatattackanimation.gif",
+"path": "6/61/Robocatattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Rocker.gif": {
+"file": "Rocker.gif",
+"path": "c/c9/Rocker.gif",
+"cat": "Cat_animations"
+},
+"Roecatattack.gif": {
+"file": "Roecatattack.gif",
+"path": "7/7e/Roecatattack.gif",
+"cat": "Cat_animations"
+},
+"Rover_Cat_Attack.gif": {
+"file": "Rover_Cat_Attack.gif",
+"path": "e/ee/Rover_Cat_Attack.gif",
+"cat": "Cat_animations"
+},
+"Rover_Cat_Mk_II_Attack.gif": {
+"file": "Rover_Cat_Mk_II_Attack.gif",
+"path": "4/4f/Rover_Cat_Mk_II_Attack.gif",
+"cat": "Cat_animations"
+},
+"Sachiel.gif": {
+"file": "Sachiel.gif",
+"path": "d/da/Sachiel.gif",
+"cat": "Cat_animations"
+},
+"Sadako_Cat_Attack_Animation.gif": {
+"file": "Sadako_Cat_Attack_Animation.gif",
+"path": "4/4a/Sadako_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Sakura.gif": {
+"file": "Sakura.gif",
+"path": "1/17/Sakura.gif",
+"cat": "Cat_animations"
+},
+"Sakuramikugif.gif": {
+"file": "Sakuramikugif.gif",
+"path": "c/c1/Sakuramikugif.gif",
+"cat": "Cat_animations"
+},
+"Salaryman_Cat.gif": {
+"file": "Salaryman_Cat.gif",
+"path": "9/97/Salaryman_Cat.gif",
+"cat": "Cat_animations"
+},
+"Salon_Cat_attack_animation.gif": {
+"file": "Salon_Cat_attack_animation.gif",
+"path": "8/8f/Salon_Cat_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"Sanada_Yukimura_Attack_Animation.gif": {
+"file": "Sanada_Yukimura_Attack_Animation.gif",
+"path": "2/29/Sanada_Yukimura_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Santa_Kuu_Animation.gif": {
+"file": "Santa_Kuu_Animation.gif",
+"path": "8/83/Santa_Kuu_Animation.gif",
+"cat": "Cat_animations"
+},
+"Santa_Kuu_Type_Y_Animation.gif": {
+"file": "Santa_Kuu_Type_Y_Animation.gif",
+"path": "5/55/Santa_Kuu_Type_Y_Animation.gif",
+"cat": "Cat_animations"
+},
+"Sayaka&CatAttack.gif": {
+"file": "Sayaka&CatAttack.gif",
+"path": "8/8c/Sayaka%26CatAttack.gif",
+"cat": "Cat_animations"
+},
+"SayakaAttack.gif": {
+"file": "SayakaAttack.gif",
+"path": "0/0c/SayakaAttack.gif",
+"cat": "Cat_animations"
+},
+"School_Sakura.gif": {
+"file": "School_Sakura.gif",
+"path": "3/39/School_Sakura.gif",
+"cat": "Cat_animations"
+},
+"Seafarer.gif": {
+"file": "Seafarer.gif",
+"path": "9/90/Seafarer.gif",
+"cat": "Cat_animations"
+},
+"Seresu_Attack.gif": {
+"file": "Seresu_Attack.gif",
+"path": "3/34/Seresu_Attack.gif",
+"cat": "Cat_animations"
+},
+"SG1.gif": {
+"file": "SG1.gif",
+"path": "f/f2/SG1.gif",
+"cat": "Cat_animations"
+},
+"SG2.gif": {
+"file": "SG2.gif",
+"path": "a/a3/SG2.gif",
+"cat": "Cat_animations"
+},
+"Shadow_akira.gif": {
+"file": "Shadow_akira.gif",
+"path": "7/71/Shadow_akira.gif",
+"cat": "Cat_animations"
+},
+"Shishilan_Pasalan_attack_animation.gif": {
+"file": "Shishilan_Pasalan_attack_animation.gif",
+"path": "0/0b/Shishilan_Pasalan_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"Shishiru_&_Komari.gif": {
+"file": "Shishiru_&_Komari.gif",
+"path": "b/b3/Shishiru_%26_Komari.gif",
+"cat": "Cat_animations"
+},
+"Shrimpcatattack.gif": {
+"file": "Shrimpcatattack.gif",
+"path": "7/70/Shrimpcatattack.gif",
+"cat": "Cat_animations"
+},
+"Siilycargif.gif": {
+"file": "Siilycargif.gif",
+"path": "0/00/Siilycargif.gif",
+"cat": "Cat_animations"
+},
+"Singer_Cat_Attack.gif": {
+"file": "Singer_Cat_Attack.gif",
+"path": "a/a0/Singer_Cat_Attack.gif",
+"cat": "Cat_animations"
+},
+"Skelecat.gif": {
+"file": "Skelecat.gif",
+"path": "b/b4/Skelecat.gif",
+"cat": "Cat_animations"
+},
+"Skirt_Cat.gif": {
+"file": "Skirt_Cat.gif",
+"path": "2/2a/Skirt_Cat.gif",
+"cat": "Cat_animations"
+},
+"Slapstick_attack.gif": {
+"file": "Slapstick_attack.gif",
+"path": "5/55/Slapstick_attack.gif",
+"cat": "Cat_animations"
+},
+"Slime_Cat_Attack.gif": {
+"file": "Slime_Cat_Attack.gif",
+"path": "b/b8/Slime_Cat_Attack.gif",
+"cat": "Cat_animations"
+},
+"Smol_tanker_man.gif": {
+"file": "Smol_tanker_man.gif",
+"path": "2/2c/Smol_tanker_man.gif",
+"cat": "Cat_animations"
+},
+"Soapcatattackanim.gif": {
+"file": "Soapcatattackanim.gif",
+"path": "1/14/Soapcatattackanim.gif",
+"cat": "Cat_animations"
+},
+"Soba_Cat_Attack.gif": {
+"file": "Soba_Cat_Attack.gif",
+"path": "5/59/Soba_Cat_Attack.gif",
+"cat": "Cat_animations"
+},
+"Sodom_Attack_Animation.gif": {
+"file": "Sodom_Attack_Animation.gif",
+"path": "6/63/Sodom_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Splendidganeshaattackanimation.gif": {
+"file": "Splendidganeshaattackanimation.gif",
+"path": "6/6f/Splendidganeshaattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Spookythundiaattackanimation.gif": {
+"file": "Spookythundiaattackanimation.gif",
+"path": "a/a2/Spookythundiaattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Spookythundiabetaattackanimation.gif": {
+"file": "Spookythundiabetaattackanimation.gif",
+"path": "f/fc/Spookythundiabetaattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Sportsdaycatattackanimation.gif": {
+"file": "Sportsdaycatattackanimation.gif",
+"path": "d/d7/Sportsdaycatattackanimation.gif",
+"cat": "Cat_animations"
+},
+"SpringDroid_Attack.gif": {
+"file": "SpringDroid_Attack.gif",
+"path": "2/29/SpringDroid_Attack.gif",
+"cat": "Cat_animations"
+},
+"St._Patricks_Day_2017.gif": {
+"file": "St._Patricks_Day_2017.gif",
+"path": "8/82/St._Patricks_Day_2017.gif",
+"cat": "Cat_animations"
+},
+"Stone.gif": {
+"file": "Stone.gif",
+"path": "4/41/Stone.gif",
+"cat": "Cat_animations"
+},
+"Sumo_Cat.gif": {
+"file": "Sumo_Cat.gif",
+"path": "b/b6/Sumo_Cat.gif",
+"cat": "Cat_animations"
+},
+"Super_Galaxy_Cosmo_Attack_Animation.gif": {
+"file": "Super_Galaxy_Cosmo_Attack_Animation.gif",
+"path": "f/fc/Super_Galaxy_Cosmo_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Super_mr_attack.gif": {
+"file": "Super_mr_attack.gif",
+"path": "b/b1/Super_mr_attack.gif",
+"cat": "Cat_animations"
+},
+"Super_saiyan_fish.gif": {
+"file": "Super_saiyan_fish.gif",
+"path": "2/2b/Super_saiyan_fish.gif",
+"cat": "Cat_animations"
+},
+"Supermacy_King_Dragon_Dioramusu_Attack_Animation.gif": {
+"file": "Supermacy_King_Dragon_Dioramusu_Attack_Animation.gif",
+"path": "0/0e/Supermacy_King_Dragon_Dioramusu_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"SuperOPCat.gif": {
+"file": "SuperOPCat.gif",
+"path": "f/f2/SuperOPCat.gif",
+"cat": "Cat_animations"
+},
+"SuperstarMonekoSoul.gif": {
+"file": "SuperstarMonekoSoul.gif",
+"path": "a/ae/SuperstarMonekoSoul.gif",
+"cat": "Cat_animations"
+},
+"SurferCatAttackAnimation.gif": {
+"file": "SurferCatAttackAnimation.gif",
+"path": "7/77/SurferCatAttackAnimation.gif",
+"cat": "Cat_animations"
+},
+"Sv-001attackanimation.gif": {
+"file": "Sv-001attackanimation.gif",
+"path": "d/d3/Sv-001attackanimation.gif",
+"cat": "Cat_animations"
+},
+"Sv-001ccattackanimation.gif": {
+"file": "Sv-001ccattackanimation.gif",
+"path": "6/68/Sv-001ccattackanimation.gif",
+"cat": "Cat_animations"
+},
+"SweetBroCatsAttack.gif": {
+"file": "SweetBroCatsAttack.gif",
+"path": "a/aa/SweetBroCatsAttack.gif",
+"cat": "Cat_animations"
+},
+"SweetheartNenekoAttack.gif": {
+"file": "SweetheartNenekoAttack.gif",
+"path": "a/ab/SweetheartNenekoAttack.gif",
+"cat": "Cat_animations"
+},
+"SweetLoveMekakoAttack.gif": {
+"file": "SweetLoveMekakoAttack.gif",
+"path": "7/77/SweetLoveMekakoAttack.gif",
+"cat": "Cat_animations"
+},
+"Swimmer_Cat_Attack_Animation.gif": {
+"file": "Swimmer_Cat_Attack_Animation.gif",
+"path": "5/5a/Swimmer_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Takeda_Shingen_Attack_Animation.gif": {
+"file": "Takeda_Shingen_Attack_Animation.gif",
+"path": "b/b2/Takeda_Shingen_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Tanker_man_2.0.gif": {
+"file": "Tanker_man_2.0.gif",
+"path": "3/31/Tanker_man_2.0.gif",
+"cat": "Cat_animations"
+},
+"Tanker_man.gif": {
+"file": "Tanker_man.gif",
+"path": "3/3e/Tanker_man.gif",
+"cat": "Cat_animations"
+},
+"Tankyattackanimation.gif": {
+"file": "Tankyattackanimation.gif",
+"path": "4/48/Tankyattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Tankyncatattackanimation.gif": {
+"file": "Tankyncatattackanimation.gif",
+"path": "7/7b/Tankyncatattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Tarmaattackanimation.gif": {
+"file": "Tarmaattackanimation.gif",
+"path": "4/41/Tarmaattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Tarmaccattackanimation.gif": {
+"file": "Tarmaccattackanimation.gif",
+"path": "9/9e/Tarmaccattackanimation.gif",
+"cat": "Cat_animations"
+},
+"The_Death_Moon_Attack_Animation.gif": {
+"file": "The_Death_Moon_Attack_Animation.gif",
+"path": "2/27/The_Death_Moon_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"The_Grateful_Crane_Attack_Animation.gif": {
+"file": "The_Grateful_Crane_Attack_Animation.gif",
+"path": "7/71/The_Grateful_Crane_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"The_Peach_Angels_Attack_Animation.gif": {
+"file": "The_Peach_Angels_Attack_Animation.gif",
+"path": "1/10/The_Peach_Angels_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"This_Cat_is_Disgustingly_Beautiful.gif": {
+"file": "This_Cat_is_Disgustingly_Beautiful.gif",
+"path": "8/81/This_Cat_is_Disgustingly_Beautiful.gif",
+"cat": "Cat_animations"
+},
+"Thundia_Attack_Animation.gif": {
+"file": "Thundia_Attack_Animation.gif",
+"path": "5/57/Thundia_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Thundia_Type_b_Attack_Animation.gif": {
+"file": "Thundia_Type_b_Attack_Animation.gif",
+"path": "e/ee/Thundia_Type_b_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Tights_Cat.gif": {
+"file": "Tights_Cat.gif",
+"path": "9/90/Tights_Cat.gif",
+"cat": "Cat_animations"
+},
+"Tincatattackanimation.gif": {
+"file": "Tincatattackanimation.gif",
+"path": "3/3c/Tincatattackanimation.gif",
+"cat": "Cat_animations"
+},
+"TinyMola.gif": {
+"file": "TinyMola.gif",
+"path": "5/5b/TinyMola.gif",
+"cat": "Cat_animations"
+},
+"Titan_Cat_Attack_Animation.gif": {
+"file": "Titan_Cat_Attack_Animation.gif",
+"path": "8/80/Titan_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Togelan_Attack.gif": {
+"file": "Togelan_Attack.gif",
+"path": "c/c5/Togelan_Attack.gif",
+"cat": "Cat_animations"
+},
+"Togeluga_Attack.gif": {
+"file": "Togeluga_Attack.gif",
+"path": "b/bf/Togeluga_Attack.gif",
+"cat": "Cat_animations"
+},
+"Total_Madoka_Death.gif": {
+"file": "Total_Madoka_Death.gif",
+"path": "1/19/Total_Madoka_Death.gif",
+"cat": "Cat_animations"
+},
+"Train.gif": {
+"file": "Train.gif",
+"path": "e/ef/Train.gif",
+"cat": "Cat_animations"
+},
+"Tropicalkalisaattackanimation.gif": {
+"file": "Tropicalkalisaattackanimation.gif",
+"path": "f/f0/Tropicalkalisaattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Tropicalkalisaxattackanimation.gif": {
+"file": "Tropicalkalisaxattackanimation.gif",
+"path": "b/b5/Tropicalkalisaxattackanimation.gif",
+"cat": "Cat_animations"
+},
+"True_Valkyrie_Cat_Attack_Animation.gif": {
+"file": "True_Valkyrie_Cat_Attack_Animation.gif",
+"path": "7/7e/True_Valkyrie_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Twinstarsatkani.gif": {
+"file": "Twinstarsatkani.gif",
+"path": "4/4b/Twinstarsatkani.gif",
+"cat": "Cat_animations"
+},
+"Twinstarsphiatkani.gif": {
+"file": "Twinstarsphiatkani.gif",
+"path": "6/65/Twinstarsphiatkani.gif",
+"cat": "Cat_animations"
+},
+"Uesugi_Kenshin_Attack_Animation.gif": {
+"file": "Uesugi_Kenshin_Attack_Animation.gif",
+"path": "2/24/Uesugi_Kenshin_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"UFOCollabAttack.gif": {
+"file": "UFOCollabAttack.gif",
+"path": "2/28/UFOCollabAttack.gif",
+"cat": "Cat_animations"
+},
+"Ultra_delinquent_attack.gif": {
+"file": "Ultra_delinquent_attack.gif",
+"path": "c/c6/Ultra_delinquent_attack.gif",
+"cat": "Cat_animations"
+},
+"Ultra_tanker_man_2.0.gif": {
+"file": "Ultra_tanker_man_2.0.gif",
+"path": "7/74/Ultra_tanker_man_2.0.gif",
+"cat": "Cat_animations"
+},
+"Ultralanpasalanattackanimation.gif": {
+"file": "Ultralanpasalanattackanimation.gif",
+"path": "a/a0/Ultralanpasalanattackanimation.gif",
+"cat": "Cat_animations"
+},
+"UnidentifiedFelineObject.gif": {
+"file": "UnidentifiedFelineObject.gif",
+"path": "2/26/UnidentifiedFelineObject.gif",
+"cat": "Cat_animations"
+},
+"Unit13.gif": {
+"file": "Unit13.gif",
+"path": "0/01/Unit13.gif",
+"cat": "Cat_animations"
+},
+"Unknown_Cat_Attack_Animation.gif": {
+"file": "Unknown_Cat_Attack_Animation.gif",
+"path": "2/25/Unknown_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Urashima_Taro_Attack_Animation.gif": {
+"file": "Urashima_Taro_Attack_Animation.gif",
+"path": "3/3a/Urashima_Taro_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Uril_surge.gif": {
+"file": "Uril_surge.gif",
+"path": "1/1a/Uril_surge.gif",
+"cat": "Cat_animations"
+},
+"Ururun_Cat_Attack_Animation.gif": {
+"file": "Ururun_Cat_Attack_Animation.gif",
+"path": "b/bc/Ururun_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Ururun_Wolf_Attack_Animation.gif": {
+"file": "Ururun_Wolf_Attack_Animation.gif",
+"path": "a/a6/Ururun_Wolf_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Ururun.gif": {
+"file": "Ururun.gif",
+"path": "e/e4/Ururun.gif",
+"cat": "Cat_animations"
+},
+"Ushiwakamaru.gif": {
+"file": "Ushiwakamaru.gif",
+"path": "f/f3/Ushiwakamaru.gif",
+"cat": "Cat_animations"
+},
+"Valkiseef.gif": {
+"file": "Valkiseef.gif",
+"path": "1/1e/Valkiseef.gif",
+"cat": "Cat_animations"
+},
+"Valkyrie_Cat_Attack_Animation.gif": {
+"file": "Valkyrie_Cat_Attack_Animation.gif",
+"path": "7/75/Valkyrie_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Value_meal_cat.gif": {
+"file": "Value_meal_cat.gif",
+"path": "b/b2/Value_meal_cat.gif",
+"cat": "Cat_animations"
+},
+"Vars_Attack_Animation.gif": {
+"file": "Vars_Attack_Animation.gif",
+"path": "6/65/Vars_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Videotogif_2018.05.07_03.24.10.gif": {
+"file": "Videotogif_2018.05.07_03.24.10.gif",
+"path": "d/d7/Videotogif_2018.05.07_03.24.10.gif",
+"cat": "Cat_animations"
+},
+"Videotogif_2018.05.07_03.35.16.gif": {
+"file": "Videotogif_2018.05.07_03.35.16.gif",
+"path": "4/4e/Videotogif_2018.05.07_03.35.16.gif",
+"cat": "Cat_animations"
+},
+"Videotogif_2018.05.07_14.22.31.gif": {
+"file": "Videotogif_2018.05.07_14.22.31.gif",
+"path": "f/fe/Videotogif_2018.05.07_14.22.31.gif",
+"cat": "Cat_animations"
+},
+"Videotogif_2018.05.23_20.18.17.gif": {
+"file": "Videotogif_2018.05.23_20.18.17.gif",
+"path": "9/92/Videotogif_2018.05.23_20.18.17.gif",
+"cat": "Cat_animations"
+},
+"Voli_Animation.gif": {
+"file": "Voli_Animation.gif",
+"path": "e/e9/Voli_Animation.gif",
+"cat": "Cat_animations"
+},
+"Volley_Cat_attack_animation.gif": {
+"file": "Volley_Cat_attack_animation.gif",
+"path": "9/96/Volley_Cat_attack_animation.gif",
+"cat": "Cat_animations"
+},
+"Volta_Attack_animation.gif": {
+"file": "Volta_Attack_animation.gif",
+"path": "4/44/Volta_Attack_animation.gif",
+"cat": "Cat_animations"
+},
+"Waitress_Animation.gif": {
+"file": "Waitress_Animation.gif",
+"path": "e/ef/Waitress_Animation.gif",
+"cat": "Cat_animations"
+},
+"Wargod_Date_Masamune_Attack_Animation.gif": {
+"file": "Wargod_Date_Masamune_Attack_Animation.gif",
+"path": "6/61/Wargod_Date_Masamune_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Wargod_Maeda_Keiji_Attack_Attack.gif": {
+"file": "Wargod_Maeda_Keiji_Attack_Attack.gif",
+"path": "c/c2/Wargod_Maeda_Keiji_Attack_Attack.gif",
+"cat": "Cat_animations"
+},
+"Wargod_Oda_Nobunaga_Attack_Animation.gif": {
+"file": "Wargod_Oda_Nobunaga_Attack_Animation.gif",
+"path": "3/31/Wargod_Oda_Nobunaga_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Wargod_Sanada_Yukimura_Attack_Animation.gif": {
+"file": "Wargod_Sanada_Yukimura_Attack_Animation.gif",
+"path": "e/eb/Wargod_Sanada_Yukimura_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Wargod_Takeda_Shingen_Attack_Animation.gif": {
+"file": "Wargod_Takeda_Shingen_Attack_Animation.gif",
+"path": "c/c9/Wargod_Takeda_Shingen_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Weedwacker.gif": {
+"file": "Weedwacker.gif",
+"path": "b/bb/Weedwacker.gif",
+"cat": "Cat_animations"
+},
+"Whale_Cat_Attack_Animation.gif": {
+"file": "Whale_Cat_Attack_Animation.gif",
+"path": "e/eb/Whale_Cat_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Whitecatattackanimation.gif": {
+"file": "Whitecatattackanimation.gif",
+"path": "2/22/Whitecatattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Windy_Attack_Animation.gif": {
+"file": "Windy_Attack_Animation.gif",
+"path": "9/98/Windy_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"Windy_Type_a_Attack_Animation.gif": {
+"file": "Windy_Type_a_Attack_Animation.gif",
+"path": "a/af/Windy_Type_a_Attack_Animation.gif",
+"cat": "Cat_animations"
+},
+"YakisobaUFOCollabAttack.gif": {
+"file": "YakisobaUFOCollabAttack.gif",
+"path": "d/d9/YakisobaUFOCollabAttack.gif",
+"cat": "Cat_animations"
+},
+"Yearsendnenekoattackanimation.gif": {
+"file": "Yearsendnenekoattackanimation.gif",
+"path": "9/91/Yearsendnenekoattackanimation.gif",
+"cat": "Cat_animations"
+},
+"Yoichi_Attack.gif": {
+"file": "Yoichi_Attack.gif",
+"path": "2/23/Yoichi_Attack.gif",
+"cat": "Cat_animations"
+},
+"Yulala1.gif": {
+"file": "Yulala1.gif",
+"path": "e/ec/Yulala1.gif",
+"cat": "Cat_animations"
+},
+"Yulala2.gif": {
+"file": "Yulala2.gif",
+"path": "c/c8/Yulala2.gif",
+"cat": "Cat_animations"
+},
+"Zeruel.gif": {
+"file": "Zeruel.gif",
+"path": "c/c7/Zeruel.gif",
+"cat": "Cat_animations"
+},
+"ZeusGIF.gif": {
+"file": "ZeusGIF.gif",
+"path": "8/83/ZeusGIF.gif",
+"cat": "Cat_animations"
+},
+"Zombie_Cat.gif": {
+"file": "Zombie_Cat.gif",
+"path": "a/a7/Zombie_Cat.gif",
+"cat": "Cat_animations"
+},
+"602_e_animation_en.gif": {
+"file": "602_e_animation_en.gif",
+"path": "9/9b/602_e_animation_en.gif",
+"cat": "Enemy_animations"
+},
+"602_e_animation_fr.gif": {
+"file": "602_e_animation_fr.gif",
+"path": "7/7f/602_e_animation_fr.gif",
+"cat": "Enemy_animations"
+},
+"602_e_animation_jp.gif": {
+"file": "602_e_animation_jp.gif",
+"path": "b/b9/602_e_animation_jp.gif",
+"cat": "Enemy_animations"
+},
+"602_e_animation_kr.gif": {
+"file": "602_e_animation_kr.gif",
+"path": "f/f4/602_e_animation_kr.gif",
+"cat": "Enemy_animations"
+},
+"602_e_animation_tw.gif": {
+"file": "602_e_animation_tw.gif",
+"path": "b/b6/602_e_animation_tw.gif",
+"cat": "Enemy_animations"
+},
+"606.gif": {
+"file": "606.gif",
+"path": "4/45/606.gif",
+"cat": "Enemy_animations"
+},
+"608.gif": {
+"file": "608.gif",
+"path": "0/08/608.gif",
+"cat": "Enemy_animations"
+},
+"609.gif": {
+"file": "609.gif",
+"path": "6/69/609.gif",
+"cat": "Enemy_animations"
+},
+"611.gif": {
+"file": "611.gif",
+"path": "3/33/611.gif",
+"cat": "Enemy_animations"
+},
+"614_attack.gif": {
+"file": "614_attack.gif",
+"path": "d/d3/614_attack.gif",
+"cat": "Enemy_animations"
+},
+"615_attack.gif": {
+"file": "615_attack.gif",
+"path": "c/c9/615_attack.gif",
+"cat": "Enemy_animations"
+},
+"624_attack.gif": {
+"file": "624_attack.gif",
+"path": "f/f3/624_attack.gif",
+"cat": "Enemy_animations"
+},
+"A_W?.gif": {
+"file": "A_W?.gif",
+"path": "a/ad/A_W%3F.gif",
+"cat": "Enemy_animations"
+},
+"Ackey.gif": {
+"file": "Ackey.gif",
+"path": "6/65/Ackey.gif",
+"cat": "Enemy_animations"
+},
+"AForAhGreat,HereWeGoAgain.gif": {
+"file": "AForAhGreat,HereWeGoAgain.gif",
+"path": "9/9c/AForAhGreat%2CHereWeGoAgain.gif",
+"cat": "Enemy_animations"
+},
+"AHugger.gif": {
+"file": "AHugger.gif",
+"path": "7/78/AHugger.gif",
+"cat": "Enemy_animations"
+},
+"ArmedSquid.gif": {
+"file": "ArmedSquid.gif",
+"path": "c/c9/ArmedSquid.gif",
+"cat": "Enemy_animations"
+},
+"Audience_Bears.gif": {
+"file": "Audience_Bears.gif",
+"path": "9/96/Audience_Bears.gif",
+"cat": "Enemy_animations"
+},
+"Axoloty.gif": {
+"file": "Axoloty.gif",
+"path": "4/4d/Axoloty.gif",
+"cat": "Enemy_animations"
+},
+"B_B_Bunny.gif": {
+"file": "B_B_Bunny.gif",
+"path": "a/ad/B_B_Bunny.gif",
+"cat": "Enemy_animations"
+},
+"BaaBaa.gif": {
+"file": "BaaBaa.gif",
+"path": "5/5a/BaaBaa.gif",
+"cat": "Enemy_animations"
+},
+"BahamutWithAngerIssues.gif": {
+"file": "BahamutWithAngerIssues.gif",
+"path": "2/2a/BahamutWithAngerIssues.gif",
+"cat": "Enemy_animations"
+},
+"BaronSealAttack.gif": {
+"file": "BaronSealAttack.gif",
+"path": "3/30/BaronSealAttack.gif",
+"cat": "Enemy_animations"
+},
+"Berserkory.gif": {
+"file": "Berserkory.gif",
+"path": "0/03/Berserkory.gif",
+"cat": "Enemy_animations"
+},
+"BigPengZInTheNeck.gif": {
+"file": "BigPengZInTheNeck.gif",
+"path": "0/0a/BigPengZInTheNeck.gif",
+"cat": "Enemy_animations"
+},
+"BIGWafer.gif": {
+"file": "BIGWafer.gif",
+"path": "a/ac/BIGWafer.gif",
+"cat": "Enemy_animations"
+},
+"Black_Cyclone_Attack_Animation.gif": {
+"file": "Black_Cyclone_Attack_Animation.gif",
+"path": "9/99/Black_Cyclone_Attack_Animation.gif",
+"cat": "Enemy_animations"
+},
+"Blue_bear.gif": {
+"file": "Blue_bear.gif",
+"path": "3/3d/Blue_bear.gif",
+"cat": "Enemy_animations"
+},
+"Blue_doggy.gif": {
+"file": "Blue_doggy.gif",
+"path": "6/62/Blue_doggy.gif",
+"cat": "Enemy_animations"
+},
+"Blue_face.gif": {
+"file": "Blue_face.gif",
+"path": "8/8f/Blue_face.gif",
+"cat": "Enemy_animations"
+},
+"Blue_gorilla.gif": {
+"file": "Blue_gorilla.gif",
+"path": "7/7e/Blue_gorilla.gif",
+"cat": "Enemy_animations"
+},
+"Blue_penguin.gif": {
+"file": "Blue_penguin.gif",
+"path": "3/38/Blue_penguin.gif",
+"cat": "Enemy_animations"
+},
+"Blue_witches_kids.gif": {
+"file": "Blue_witches_kids.gif",
+"path": "8/83/Blue_witches_kids.gif",
+"cat": "Enemy_animations"
+},
+"Boxwitch.gif": {
+"file": "Boxwitch.gif",
+"path": "e/ef/Boxwitch.gif",
+"cat": "Enemy_animations"
+},
+"Brollow.gif": {
+"file": "Brollow.gif",
+"path": "e/e3/Brollow.gif",
+"cat": "Enemy_animations"
+},
+"BunSymbiote.gif": {
+"file": "BunSymbiote.gif",
+"path": "6/6f/BunSymbiote.gif",
+"cat": "Enemy_animations"
+},
+"Calamary_attack.gif": {
+"file": "Calamary_attack.gif",
+"path": "1/18/Calamary_attack.gif",
+"cat": "Enemy_animations"
+},
+"Charlotteupgradedversion.gif": {
+"file": "Charlotteupgradedversion.gif",
+"path": "c/c7/Charlotteupgradedversion.gif",
+"cat": "Enemy_animations"
+},
+"Chickafryattackanimation.gif": {
+"file": "Chickafryattackanimation.gif",
+"path": "6/68/Chickafryattackanimation.gif",
+"cat": "Enemy_animations"
+},
+"ChiefPeng.gif": {
+"file": "ChiefPeng.gif",
+"path": "c/c9/ChiefPeng.gif",
+"cat": "Enemy_animations"
+},
+"Cli-One.gif": {
+"file": "Cli-One.gif",
+"path": "7/7e/Cli-One.gif",
+"cat": "Enemy_animations"
+},
+"Clionel_attack.gif": {
+"file": "Clionel_attack.gif",
+"path": "b/b5/Clionel_attack.gif",
+"cat": "Enemy_animations"
+},
+"CoffinZoge.gif": {
+"file": "CoffinZoge.gif",
+"path": "b/bb/CoffinZoge.gif",
+"cat": "Enemy_animations"
+},
+"Croco.gif": {
+"file": "Croco.gif",
+"path": "4/49/Croco.gif",
+"cat": "Enemy_animations"
+},
+"CTO_Seal.gif": {
+"file": "CTO_Seal.gif",
+"path": "a/a2/CTO_Seal.gif",
+"cat": "Enemy_animations"
+},
+"Daboo_attack.gif": {
+"file": "Daboo_attack.gif",
+"path": "d/d3/Daboo_attack.gif",
+"cat": "Enemy_animations"
+},
+"Dagschund.gif": {
+"file": "Dagschund.gif",
+"path": "f/fd/Dagschund.gif",
+"cat": "Enemy_animations"
+},
+"Dead_Donny_Dash.gif": {
+"file": "Dead_Donny_Dash.gif",
+"path": "4/4e/Dead_Donny_Dash.gif",
+"cat": "Enemy_animations"
+},
+"DeadBore.gif": {
+"file": "DeadBore.gif",
+"path": "e/e1/DeadBore.gif",
+"cat": "Enemy_animations"
+},
+"Death_Angel_Z-Onel.gif": {
+"file": "Death_Angel_Z-Onel.gif",
+"path": "0/06/Death_Angel_Z-Onel.gif",
+"cat": "Enemy_animations"
+},
+"DoberTheWaver.gif": {
+"file": "DoberTheWaver.gif",
+"path": "4/4c/DoberTheWaver.gif",
+"cat": "Enemy_animations"
+},
+"Doge_attack.gif": {
+"file": "Doge_attack.gif",
+"path": "7/75/Doge_attack.gif",
+"cat": "Enemy_animations"
+},
+"Dogeolanternattackanimation.gif": {
+"file": "Dogeolanternattackanimation.gif",
+"path": "b/be/Dogeolanternattackanimation.gif",
+"cat": "Enemy_animations"
+},
+"Dolphina.gif": {
+"file": "Dolphina.gif",
+"path": "b/b8/Dolphina.gif",
+"cat": "Enemy_animations"
+},
+"Dracowlaattackanimation.gif": {
+"file": "Dracowlaattackanimation.gif",
+"path": "7/7f/Dracowlaattackanimation.gif",
+"cat": "Enemy_animations"
+},
+"Duche.gif": {
+"file": "Duche.gif",
+"path": "0/05/Duche.gif",
+"cat": "Enemy_animations"
+},
+"E_612.gif": {
+"file": "E_612.gif",
+"path": "d/de/E_612.gif",
+"cat": "Enemy_animations"
+},
+"E_613.gif": {
+"file": "E_613.gif",
+"path": "0/04/E_613.gif",
+"cat": "Enemy_animations"
+},
+"E_615.gif": {
+"file": "E_615.gif",
+"path": "1/12/E_615.gif",
+"cat": "Enemy_animations"
+},
+"Emperor_santa_attack.gif": {
+"file": "Emperor_santa_attack.gif",
+"path": "b/ba/Emperor_santa_attack.gif",
+"cat": "Enemy_animations"
+},
+"Evilisland.gif": {
+"file": "Evilisland.gif",
+"path": "5/55/Evilisland.gif",
+"cat": "Enemy_animations"
+},
+"Festivalmssignattackanimation.gif": {
+"file": "Festivalmssignattackanimation.gif",
+"path": "4/49/Festivalmssignattackanimation.gif",
+"cat": "Enemy_animations"
+},
+"FireworkGuysWithBIGFireworks.gif": {
+"file": "FireworkGuysWithBIGFireworks.gif",
+"path": "f/f0/FireworkGuysWithBIGFireworks.gif",
+"cat": "Enemy_animations"
+},
+"Floating_god.gif": {
+"file": "Floating_god.gif",
+"path": "c/cc/Floating_god.gif",
+"cat": "Enemy_animations"
+},
+"Flying_blue_fish.gif": {
+"file": "Flying_blue_fish.gif",
+"path": "b/b3/Flying_blue_fish.gif",
+"cat": "Enemy_animations"
+},
+"Frankenbear.gif": {
+"file": "Frankenbear.gif",
+"path": "5/5a/Frankenbear.gif",
+"cat": "Enemy_animations"
+},
+"Frogge.gif": {
+"file": "Frogge.gif",
+"path": "3/31/Frogge.gif",
+"cat": "Enemy_animations"
+},
+"Golden_R._Ost_Animation.gif": {
+"file": "Golden_R._Ost_Animation.gif",
+"path": "9/9e/Golden_R._Ost_Animation.gif",
+"cat": "Enemy_animations"
+},
+"Goldoge.gif": {
+"file": "Goldoge.gif",
+"path": "f/f9/Goldoge.gif",
+"cat": "Enemy_animations"
+},
+"Gory.gif": {
+"file": "Gory.gif",
+"path": "e/ec/Gory.gif",
+"cat": "Enemy_animations"
+},
+"Goryblackattack.gif": {
+"file": "Goryblackattack.gif",
+"path": "5/58/Goryblackattack.gif",
+"cat": "Enemy_animations"
+},
+"Green_bee.gif": {
+"file": "Green_bee.gif",
+"path": "8/8e/Green_bee.gif",
+"cat": "Enemy_animations"
+},
+"Green_bird.gif": {
+"file": "Green_bird.gif",
+"path": "7/7e/Green_bird.gif",
+"cat": "Enemy_animations"
+},
+"Green_circle.gif": {
+"file": "Green_circle.gif",
+"path": "4/45/Green_circle.gif",
+"cat": "Enemy_animations"
+},
+"Green_doggy_base.gif": {
+"file": "Green_doggy_base.gif",
+"path": "e/ee/Green_doggy_base.gif",
+"cat": "Enemy_animations"
+},
+"Green_doggy.gif": {
+"file": "Green_doggy.gif",
+"path": "5/58/Green_doggy.gif",
+"cat": "Enemy_animations"
+},
+"Green_fire_circle.gif": {
+"file": "Green_fire_circle.gif",
+"path": "1/10/Green_fire_circle.gif",
+"cat": "Enemy_animations"
+},
+"Green_flying_white_thing.gif": {
+"file": "Green_flying_white_thing.gif",
+"path": "2/23/Green_flying_white_thing.gif",
+"cat": "Enemy_animations"
+},
+"Green_head.gif": {
+"file": "Green_head.gif",
+"path": "d/df/Green_head.gif",
+"cat": "Enemy_animations"
+},
+"Green_lemur.gif": {
+"file": "Green_lemur.gif",
+"path": "c/c2/Green_lemur.gif",
+"cat": "Enemy_animations"
+},
+"Green_mask_boi.gif": {
+"file": "Green_mask_boi.gif",
+"path": "3/37/Green_mask_boi.gif",
+"cat": "Enemy_animations"
+},
+"Green_mkd.gif": {
+"file": "Green_mkd.gif",
+"path": "1/13/Green_mkd.gif",
+"cat": "Enemy_animations"
+},
+"Green_moth.gif": {
+"file": "Green_moth.gif",
+"path": "4/4a/Green_moth.gif",
+"cat": "Enemy_animations"
+},
+"Green_nyandam.gif": {
+"file": "Green_nyandam.gif",
+"path": "1/15/Green_nyandam.gif",
+"cat": "Enemy_animations"
+},
+"Green_rino.gif": {
+"file": "Green_rino.gif",
+"path": "5/52/Green_rino.gif",
+"cat": "Enemy_animations"
+},
+"Green_spiky_circl.gif": {
+"file": "Green_spiky_circl.gif",
+"path": "5/53/Green_spiky_circl.gif",
+"cat": "Enemy_animations"
+},
+"Green_squirrel.gif": {
+"file": "Green_squirrel.gif",
+"path": "4/41/Green_squirrel.gif",
+"cat": "Enemy_animations"
+},
+"Green_statue_thing.gif": {
+"file": "Green_statue_thing.gif",
+"path": "d/d0/Green_statue_thing.gif",
+"cat": "Enemy_animations"
+},
+"Green_teacher.gif": {
+"file": "Green_teacher.gif",
+"path": "8/85/Green_teacher.gif",
+"cat": "Enemy_animations"
+},
+"Green_uhhhh_deer.gif": {
+"file": "Green_uhhhh_deer.gif",
+"path": "1/15/Green_uhhhh_deer.gif",
+"cat": "Enemy_animations"
+},
+"Green_ururun.gif": {
+"file": "Green_ururun.gif",
+"path": "f/f8/Green_ururun.gif",
+"cat": "Enemy_animations"
+},
+"Green_yulala.gif": {
+"file": "Green_yulala.gif",
+"path": "a/a4/Green_yulala.gif",
+"cat": "Enemy_animations"
+},
+"H.NahOnCatamins.gif": {
+"file": "H.NahOnCatamins.gif",
+"path": "3/31/H.NahOnCatamins.gif",
+"cat": "Enemy_animations"
+},
+"Hackey.gif": {
+"file": "Hackey.gif",
+"path": "7/72/Hackey.gif",
+"cat": "Enemy_animations"
+},
+"Hermitenemy.gif": {
+"file": "Hermitenemy.gif",
+"path": "2/2e/Hermitenemy.gif",
+"cat": "Enemy_animations"
+},
+"HometownType10_Attack.gif": {
+"file": "HometownType10_Attack.gif",
+"path": "e/e9/HometownType10_Attack.gif",
+"cat": "Enemy_animations"
+},
+"IcyDoge.gif": {
+"file": "IcyDoge.gif",
+"path": "7/79/IcyDoge.gif",
+"cat": "Enemy_animations"
+},
+"Idle4thBirthdayCake.gif": {
+"file": "Idle4thBirthdayCake.gif",
+"path": "0/0b/Idle4thBirthdayCake.gif",
+"cat": "Enemy_animations"
+},
+"Idle5thBirthday.gif": {
+"file": "Idle5thBirthday.gif",
+"path": "1/13/Idle5thBirthday.gif",
+"cat": "Enemy_animations"
+},
+"Idle606.gif": {
+"file": "Idle606.gif",
+"path": "7/71/Idle606.gif",
+"cat": "Enemy_animations"
+},
+"Idle607.gif": {
+"file": "Idle607.gif",
+"path": "3/38/Idle607.gif",
+"cat": "Enemy_animations"
+},
+"Idle608.gif": {
+"file": "Idle608.gif",
+"path": "b/bb/Idle608.gif",
+"cat": "Enemy_animations"
+},
+"Idle611.gif": {
+"file": "Idle611.gif",
+"path": "3/35/Idle611.gif",
+"cat": "Enemy_animations"
+},
+"Idle6thBirthday.gif": {
+"file": "Idle6thBirthday.gif",
+"path": "4/46/Idle6thBirthday.gif",
+"cat": "Enemy_animations"
+},
+"Idle7thBirthday.gif": {
+"file": "Idle7thBirthday.gif",
+"path": "2/2d/Idle7thBirthday.gif",
+"cat": "Enemy_animations"
+},
+"Idle8thBirthday.gif": {
+"file": "Idle8thBirthday.gif",
+"path": "8/82/Idle8thBirthday.gif",
+"cat": "Enemy_animations"
+},
+"Idle9thBirthdayCake.gif": {
+"file": "Idle9thBirthdayCake.gif",
+"path": "8/8a/Idle9thBirthdayCake.gif",
+"cat": "Enemy_animations"
+},
+"IdleAkaneTendo.gif": {
+"file": "IdleAkaneTendo.gif",
+"path": "6/67/IdleAkaneTendo.gif",
+"cat": "Enemy_animations"
+},
+"IdleAkuma.gif": {
+"file": "IdleAkuma.gif",
+"path": "f/f7/IdleAkuma.gif",
+"cat": "Enemy_animations"
+},
+"IdleAlois.gif": {
+"file": "IdleAlois.gif",
+"path": "6/65/IdleAlois.gif",
+"cat": "Enemy_animations"
+},
+"IdleAlpacky.gif": {
+"file": "IdleAlpacky.gif",
+"path": "9/9e/IdleAlpacky.gif",
+"cat": "Enemy_animations"
+},
+"IdleAngelFanboyJP.gif": {
+"file": "IdleAngelFanboyJP.gif",
+"path": "d/d0/IdleAngelFanboyJP.gif",
+"cat": "Enemy_animations"
+},
+"IdleAngelicSlenpir.gif": {
+"file": "IdleAngelicSlenpir.gif",
+"path": "1/10/IdleAngelicSlenpir.gif",
+"cat": "Enemy_animations"
+},
+"IdleArcher.gif": {
+"file": "IdleArcher.gif",
+"path": "2/24/IdleArcher.gif",
+"cat": "Enemy_animations"
+},
+"IdleAshura.gif": {
+"file": "IdleAshura.gif",
+"path": "2/2b/IdleAshura.gif",
+"cat": "Enemy_animations"
+},
+"IdleAudienceBears.gif": {
+"file": "IdleAudienceBears.gif",
+"path": "1/11/IdleAudienceBears.gif",
+"cat": "Enemy_animations"
+},
+"IdleAuraJP.gif": {
+"file": "IdleAuraJP.gif",
+"path": "d/d0/IdleAuraJP.gif",
+"cat": "Enemy_animations"
+},
+"IdleAxoloty.gif": {
+"file": "IdleAxoloty.gif",
+"path": "2/26/IdleAxoloty.gif",
+"cat": "Enemy_animations"
+},
+"IdleAyanok\u014djiSh\u014d.gif": {
+"file": "IdleAyanok\u014djiSh\u014d.gif",
+"path": "4/40/IdleAyanok%C5%8DjiSh%C5%8D.gif",
+"cat": "Enemy_animations"
+},
+"IdleAyumiManbosaki.gif": {
+"file": "IdleAyumiManbosaki.gif",
+"path": "d/d2/IdleAyumiManbosaki.gif",
+"cat": "Enemy_animations"
+},
+"IdleBaconAngel.gif": {
+"file": "IdleBaconAngel.gif",
+"path": "b/ba/IdleBaconAngel.gif",
+"cat": "Enemy_animations"
+},
+"IdleBangBang.gif": {
+"file": "IdleBangBang.gif",
+"path": "4/4e/IdleBangBang.gif",
+"cat": "Enemy_animations"
+},
+"IdleBardiel.gif": {
+"file": "IdleBardiel.gif",
+"path": "e/e0/IdleBardiel.gif",
+"cat": "Enemy_animations"
+},
+"IdleBattleBalloon.gif": {
+"file": "IdleBattleBalloon.gif",
+"path": "5/5e/IdleBattleBalloon.gif",
+"cat": "Enemy_animations"
+},
+"IdleBattleBalloonUFO.gif": {
+"file": "IdleBattleBalloonUFO.gif",
+"path": "3/38/IdleBattleBalloonUFO.gif",
+"cat": "Enemy_animations"
+},
+"IdleBearkini.gif": {
+"file": "IdleBearkini.gif",
+"path": "7/7b/IdleBearkini.gif",
+"cat": "Enemy_animations"
+},
+"IdleBeastlyNero.gif": {
+"file": "IdleBeastlyNero.gif",
+"path": "9/96/IdleBeastlyNero.gif",
+"cat": "Enemy_animations"
+},
+"IdleBeatenByTyrant.gif": {
+"file": "IdleBeatenByTyrant.gif",
+"path": "6/66/IdleBeatenByTyrant.gif",
+"cat": "Enemy_animations"
+},
+"IdleBeefcake.gif": {
+"file": "IdleBeefcake.gif",
+"path": "9/98/IdleBeefcake.gif",
+"cat": "Enemy_animations"
+},
+"IdleBelial.gif": {
+"file": "IdleBelial.gif",
+"path": "8/8a/IdleBelial.gif",
+"cat": "Enemy_animations"
+},
+"IdleBiggestChadBison.gif": {
+"file": "IdleBiggestChadBison.gif",
+"path": "d/d4/IdleBiggestChadBison.gif",
+"cat": "Enemy_animations"
+},
+"IdleBlackCyclone.gif": {
+"file": "IdleBlackCyclone.gif",
+"path": "c/cf/IdleBlackCyclone.gif",
+"cat": "Enemy_animations"
+},
+"IdleBlackOkame.gif": {
+"file": "IdleBlackOkame.gif",
+"path": "1/19/IdleBlackOkame.gif",
+"cat": "Enemy_animations"
+},
+"IdleBlackWind.gif": {
+"file": "IdleBlackWind.gif",
+"path": "8/8b/IdleBlackWind.gif",
+"cat": "Enemy_animations"
+},
+"IdleBlitzen.gif": {
+"file": "IdleBlitzen.gif",
+"path": "0/0a/IdleBlitzen.gif",
+"cat": "Enemy_animations"
+},
+"IdleBoraphim.gif": {
+"file": "IdleBoraphim.gif",
+"path": "5/5b/IdleBoraphim.gif",
+"cat": "Enemy_animations"
+},
+"IdleBore.gif": {
+"file": "IdleBore.gif",
+"path": "0/03/IdleBore.gif",
+"cat": "Enemy_animations"
+},
+"IdleBrynhildr.gif": {
+"file": "IdleBrynhildr.gif",
+"path": "d/dd/IdleBrynhildr.gif",
+"cat": "Enemy_animations"
+},
+"IdleBunBunBlack.gif": {
+"file": "IdleBunBunBlack.gif",
+"path": "8/8c/IdleBunBunBlack.gif",
+"cat": "Enemy_animations"
+},
+"IdleBurningPhoenix.gif": {
+"file": "IdleBurningPhoenix.gif",
+"path": "0/0e/IdleBurningPhoenix.gif",
+"cat": "Enemy_animations"
+},
+"IdleCalaMaria.gif": {
+"file": "IdleCalaMaria.gif",
+"path": "6/66/IdleCalaMaria.gif",
+"cat": "Enemy_animations"
+},
+"IdleCalamary.gif": {
+"file": "IdleCalamary.gif",
+"path": "3/3f/IdleCalamary.gif",
+"cat": "Enemy_animations"
+},
+"IdleCamelle.gif": {
+"file": "IdleCamelle.gif",
+"path": "7/74/IdleCamelle.gif",
+"cat": "Enemy_animations"
+},
+"IdleCancerIncarnate.gif": {
+"file": "IdleCancerIncarnate.gif",
+"path": "e/eb/IdleCancerIncarnate.gif",
+"cat": "Enemy_animations"
+},
+"IdleCarnyOtta.gif": {
+"file": "IdleCarnyOtta.gif",
+"path": "3/39/IdleCarnyOtta.gif",
+"cat": "Enemy_animations"
+},
+"IdleCatKartP.gif": {
+"file": "IdleCatKartP.gif",
+"path": "0/0a/IdleCatKartP.gif",
+"cat": "Enemy_animations"
+},
+"IdleCavalrySoldier.gif": {
+"file": "IdleCavalrySoldier.gif",
+"path": "a/ab/IdleCavalrySoldier.gif",
+"cat": "Enemy_animations"
+},
+"IdleCelesseJP.gif": {
+"file": "IdleCelesseJP.gif",
+"path": "3/3d/IdleCelesseJP.gif",
+"cat": "Enemy_animations"
+},
+"IdleChibaguFormOne.gif": {
+"file": "IdleChibaguFormOne.gif",
+"path": "d/d7/IdleChibaguFormOne.gif",
+"cat": "Enemy_animations"
+},
+"IdleChibaguFormTwo.gif": {
+"file": "IdleChibaguFormTwo.gif",
+"path": "7/78/IdleChibaguFormTwo.gif",
+"cat": "Enemy_animations"
+},
+"IdleChickaFry.gif": {
+"file": "IdleChickaFry.gif",
+"path": "3/3c/IdleChickaFry.gif",
+"cat": "Enemy_animations"
+},
+"IdleChickfulA.gif": {
+"file": "IdleChickfulA.gif",
+"path": "b/bc/IdleChickfulA.gif",
+"cat": "Enemy_animations"
+},
+"IdleChinFace.gif": {
+"file": "IdleChinFace.gif",
+"path": "f/fe/IdleChinFace.gif",
+"cat": "Enemy_animations"
+},
+"IdleChocolate.gif": {
+"file": "IdleChocolate.gif",
+"path": "e/e6/IdleChocolate.gif",
+"cat": "Enemy_animations"
+},
+"IdleChun-Li.gif": {
+"file": "IdleChun-Li.gif",
+"path": "e/e8/IdleChun-Li.gif",
+"cat": "Enemy_animations"
+},
+"IdleCli-One.gif": {
+"file": "IdleCli-One.gif",
+"path": "7/7b/IdleCli-One.gif",
+"cat": "Enemy_animations"
+},
+"IdleCodenameRedRiding.gif": {
+"file": "IdleCodenameRedRiding.gif",
+"path": "4/49/IdleCodenameRedRiding.gif",
+"cat": "Enemy_animations"
+},
+"IdleCornelia.gif": {
+"file": "IdleCornelia.gif",
+"path": "4/42/IdleCornelia.gif",
+"cat": "Enemy_animations"
+},
+"IdleCorruptedMoneko.gif": {
+"file": "IdleCorruptedMoneko.gif",
+"path": "4/47/IdleCorruptedMoneko.gif",
+"cat": "Enemy_animations"
+},
+"IdleCorruptedValkyrie.gif": {
+"file": "IdleCorruptedValkyrie.gif",
+"path": "8/86/IdleCorruptedValkyrie.gif",
+"cat": "Enemy_animations"
+},
+"IdleCosmicCyclone.gif": {
+"file": "IdleCosmicCyclone.gif",
+"path": "2/2b/IdleCosmicCyclone.gif",
+"cat": "Enemy_animations"
+},
+"IdleCrazedAxe.gif": {
+"file": "IdleCrazedAxe.gif",
+"path": "9/90/IdleCrazedAxe.gif",
+"cat": "Enemy_animations"
+},
+"IdleCrazedBird.gif": {
+"file": "IdleCrazedBird.gif",
+"path": "8/86/IdleCrazedBird.gif",
+"cat": "Enemy_animations"
+},
+"IdleCrazedCat.gif": {
+"file": "IdleCrazedCat.gif",
+"path": "1/14/IdleCrazedCat.gif",
+"cat": "Enemy_animations"
+},
+"IdleCrazedCow.gif": {
+"file": "IdleCrazedCow.gif",
+"path": "e/e0/IdleCrazedCow.gif",
+"cat": "Enemy_animations"
+},
+"IdleCrazedFish.gif": {
+"file": "IdleCrazedFish.gif",
+"path": "3/34/IdleCrazedFish.gif",
+"cat": "Enemy_animations"
+},
+"IdleCrazedGross.gif": {
+"file": "IdleCrazedGross.gif",
+"path": "0/06/IdleCrazedGross.gif",
+"cat": "Enemy_animations"
+},
+"IdleCrazedLizard.gif": {
+"file": "IdleCrazedLizard.gif",
+"path": "4/4d/IdleCrazedLizard.gif",
+"cat": "Enemy_animations"
+},
+"IdleCrazedMoneko.gif": {
+"file": "IdleCrazedMoneko.gif",
+"path": "0/0c/IdleCrazedMoneko.gif",
+"cat": "Enemy_animations"
+},
+"IdleCrazedTank.gif": {
+"file": "IdleCrazedTank.gif",
+"path": "d/d9/IdleCrazedTank.gif",
+"cat": "Enemy_animations"
+},
+"IdleCrazedTitan.gif": {
+"file": "IdleCrazedTitan.gif",
+"path": "5/50/IdleCrazedTitan.gif",
+"cat": "Enemy_animations"
+},
+"IdleCrazedYuki.gif": {
+"file": "IdleCrazedYuki.gif",
+"path": "4/49/IdleCrazedYuki.gif",
+"cat": "Enemy_animations"
+},
+"IdleCruelAngelClionel.gif": {
+"file": "IdleCruelAngelClionel.gif",
+"path": "6/60/IdleCruelAngelClionel.gif",
+"cat": "Enemy_animations"
+},
+"IdleCTOSeal.gif": {
+"file": "IdleCTOSeal.gif",
+"path": "f/f8/IdleCTOSeal.gif",
+"cat": "Enemy_animations"
+},
+"IdleCyberFace.gif": {
+"file": "IdleCyberFace.gif",
+"path": "b/bc/IdleCyberFace.gif",
+"cat": "Enemy_animations"
+},
+"IdleCyberPrettyCat.gif": {
+"file": "IdleCyberPrettyCat.gif",
+"path": "4/4a/IdleCyberPrettyCat.gif",
+"cat": "Enemy_animations"
+},
+"IdleCyclops.gif": {
+"file": "IdleCyclops.gif",
+"path": "e/e0/IdleCyclops.gif",
+"cat": "Enemy_animations"
+},
+"IdleDancer.gif": {
+"file": "IdleDancer.gif",
+"path": "b/b8/IdleDancer.gif",
+"cat": "Enemy_animations"
+},
+"IdleDarkEmperorSanta.gif": {
+"file": "IdleDarkEmperorSanta.gif",
+"path": "e/e2/IdleDarkEmperorSanta.gif",
+"cat": "Enemy_animations"
+},
+"IdleDarkPriestMamon.gif": {
+"file": "IdleDarkPriestMamon.gif",
+"path": "1/10/IdleDarkPriestMamon.gif",
+"cat": "Enemy_animations"
+},
+"IdleDeathAngelZ-Onel.gif": {
+"file": "IdleDeathAngelZ-Onel.gif",
+"path": "3/3f/IdleDeathAngelZ-Onel.gif",
+"cat": "Enemy_animations"
+},
+"IdleDhalism.gif": {
+"file": "IdleDhalism.gif",
+"path": "6/66/IdleDhalism.gif",
+"cat": "Enemy_animations"
+},
+"IdleDirectorKurosawah.gif": {
+"file": "IdleDirectorKurosawah.gif",
+"path": "4/42/IdleDirectorKurosawah.gif",
+"cat": "Enemy_animations"
+},
+"IdleDivineArchangel.gif": {
+"file": "IdleDivineArchangel.gif",
+"path": "3/34/IdleDivineArchangel.gif",
+"cat": "Enemy_animations"
+},
+"IdleDivineCyclone.gif": {
+"file": "IdleDivineCyclone.gif",
+"path": "c/c0/IdleDivineCyclone.gif",
+"cat": "Enemy_animations"
+},
+"IdleDONALDMORDEN.gif": {
+"file": "IdleDONALDMORDEN.gif",
+"path": "7/72/IdleDONALDMORDEN.gif",
+"cat": "Enemy_animations"
+},
+"IdleDrac-Owl-A.gif": {
+"file": "IdleDrac-Owl-A.gif",
+"path": "7/72/IdleDrac-Owl-A.gif",
+"cat": "Enemy_animations"
+},
+"IdleDragonRider.gif": {
+"file": "IdleDragonRider.gif",
+"path": "e/ec/IdleDragonRider.gif",
+"cat": "Enemy_animations"
+},
+"IdleEasterBunny.gif": {
+"file": "IdleEasterBunny.gif",
+"path": "e/e8/IdleEasterBunny.gif",
+"cat": "Enemy_animations"
+},
+"IdleEasterDuche.gif": {
+"file": "IdleEasterDuche.gif",
+"path": "6/68/IdleEasterDuche.gif",
+"cat": "Enemy_animations"
+},
+"IdleEHonda.gif": {
+"file": "IdleEHonda.gif",
+"path": "2/28/IdleEHonda.gif",
+"cat": "Enemy_animations"
+},
+"IdleElderSloth.gif": {
+"file": "IdleElderSloth.gif",
+"path": "1/1c/IdleElderSloth.gif",
+"cat": "Enemy_animations"
+},
+"IdleElizabethTheLVth.gif": {
+"file": "IdleElizabethTheLVth.gif",
+"path": "3/39/IdleElizabethTheLVth.gif",
+"cat": "Enemy_animations"
+},
+"IdleEternalSleepingBeauty.gif": {
+"file": "IdleEternalSleepingBeauty.gif",
+"path": "8/84/IdleEternalSleepingBeauty.gif",
+"cat": "Enemy_animations"
+},
+"IdleEverlordWanWan.gif": {
+"file": "IdleEverlordWanWan.gif",
+"path": "6/6e/IdleEverlordWanWan.gif",
+"cat": "Enemy_animations"
+},
+"IdleFatassDabooOfTheDead.gif": {
+"file": "IdleFatassDabooOfTheDead.gif",
+"path": "4/4e/IdleFatassDabooOfTheDead.gif",
+"cat": "Enemy_animations"
+},
+"IdleFestivalMsSign.gif": {
+"file": "IdleFestivalMsSign.gif",
+"path": "c/c7/IdleFestivalMsSign.gif",
+"cat": "Enemy_animations"
+},
+"IdleFidgetSpinner.gif": {
+"file": "IdleFidgetSpinner.gif",
+"path": "0/0a/IdleFidgetSpinner.gif",
+"cat": "Enemy_animations"
+},
+"IdleFirework.gif": {
+"file": "IdleFirework.gif",
+"path": "1/12/IdleFirework.gif",
+"cat": "Enemy_animations"
+},
+"IdleFireworkGuysFormTwo.gif": {
+"file": "IdleFireworkGuysFormTwo.gif",
+"path": "8/87/IdleFireworkGuysFormTwo.gif",
+"cat": "Enemy_animations"
+},
+"IdleFlamingDragonRider.gif": {
+"file": "IdleFlamingDragonRider.gif",
+"path": "9/97/IdleFlamingDragonRider.gif",
+"cat": "Enemy_animations"
+},
+"IdleFreya.gif": {
+"file": "IdleFreya.gif",
+"path": "1/1b/IdleFreya.gif",
+"cat": "Enemy_animations"
+},
+"IdleFuuJP.gif": {
+"file": "IdleFuuJP.gif",
+"path": "5/55/IdleFuuJP.gif",
+"cat": "Enemy_animations"
+},
+"IdleGalacticOverseerNyandam.gif": {
+"file": "IdleGalacticOverseerNyandam.gif",
+"path": "b/bf/IdleGalacticOverseerNyandam.gif",
+"cat": "Enemy_animations"
+},
+"IdleGardeneelBros.gif": {
+"file": "IdleGardeneelBros.gif",
+"path": "9/9c/IdleGardeneelBros.gif",
+"cat": "Enemy_animations"
+},
+"IdleGekirinchii.gif": {
+"file": "IdleGekirinchii.gif",
+"path": "c/c8/IdleGekirinchii.gif",
+"cat": "Enemy_animations"
+},
+"IdleGertrud.gif": {
+"file": "IdleGertrud.gif",
+"path": "c/c7/IdleGertrud.gif",
+"cat": "Enemy_animations"
+},
+"IdleGilgamesh.gif": {
+"file": "IdleGilgamesh.gif",
+"path": "6/6e/IdleGilgamesh.gif",
+"cat": "Enemy_animations"
+},
+"IdleGoldenROst.gif": {
+"file": "IdleGoldenROst.gif",
+"path": "1/18/IdleGoldenROst.gif",
+"cat": "Enemy_animations"
+},
+"IdleGolem.gif": {
+"file": "IdleGolem.gif",
+"path": "7/7a/IdleGolem.gif",
+"cat": "Enemy_animations"
+},
+"IdleGorilliam.gif": {
+"file": "IdleGorilliam.gif",
+"path": "f/f3/IdleGorilliam.gif",
+"cat": "Enemy_animations"
+},
+"IdleGoryGroom.gif": {
+"file": "IdleGoryGroom.gif",
+"path": "7/77/IdleGoryGroom.gif",
+"cat": "Enemy_animations"
+},
+"IdleGudeDogeMachine.gif": {
+"file": "IdleGudeDogeMachine.gif",
+"path": "8/82/IdleGudeDogeMachine.gif",
+"cat": "Enemy_animations"
+},
+"IdleGudegude\u00e0LaMode.gif": {
+"file": "IdleGudegude\u00e0LaMode.gif",
+"path": "2/27/IdleGudegude%C3%A0LaMode.gif",
+"cat": "Enemy_animations"
+},
+"IdleGuile.gif": {
+"file": "IdleGuile.gif",
+"path": "2/20/IdleGuile.gif",
+"cat": "Enemy_animations"
+},
+"IdleHannya.gif": {
+"file": "IdleHannya.gif",
+"path": "3/38/IdleHannya.gif",
+"cat": "Enemy_animations"
+},
+"IdleHAPPI&MajiCat&Cat.gif": {
+"file": "IdleHAPPI&MajiCat&Cat.gif",
+"path": "f/f5/IdleHAPPI%26MajiCat%26Cat.gif",
+"cat": "Enemy_animations"
+},
+"IdleHAPPI.gif": {
+"file": "IdleHAPPI.gif",
+"path": "1/13/IdleHAPPI.gif",
+"cat": "Enemy_animations"
+},
+"IdleHappy100.gif": {
+"file": "IdleHappy100.gif",
+"path": "6/61/IdleHappy100.gif",
+"cat": "Enemy_animations"
+},
+"IdleHappyBirthdayCake.gif": {
+"file": "IdleHappyBirthdayCake.gif",
+"path": "f/f0/IdleHappyBirthdayCake.gif",
+"cat": "Enemy_animations"
+},
+"IdleHatsuneMiku.gif": {
+"file": "IdleHatsuneMiku.gif",
+"path": "1/15/IdleHatsuneMiku.gif",
+"cat": "Enemy_animations"
+},
+"IdleHeadRococo.gif": {
+"file": "IdleHeadRococo.gif",
+"path": "b/b9/IdleHeadRococo.gif",
+"cat": "Enemy_animations"
+},
+"IdleHealerJP.gif": {
+"file": "IdleHealerJP.gif",
+"path": "2/2e/IdleHealerJP.gif",
+"cat": "Enemy_animations"
+},
+"IdleHearschtJP.gif": {
+"file": "IdleHearschtJP.gif",
+"path": "9/9d/IdleHearschtJP.gif",
+"cat": "Enemy_animations"
+},
+"IdleHeavenlyHeraldPappu.gif": {
+"file": "IdleHeavenlyHeraldPappu.gif",
+"path": "1/1a/IdleHeavenlyHeraldPappu.gif",
+"cat": "Enemy_animations"
+},
+"IdleHeavyAssaultCAT.gif": {
+"file": "IdleHeavyAssaultCAT.gif",
+"path": "5/5d/IdleHeavyAssaultCAT.gif",
+"cat": "Enemy_animations"
+},
+"IdleHenry.gif": {
+"file": "IdleHenry.gif",
+"path": "6/60/IdleHenry.gif",
+"cat": "Enemy_animations"
+},
+"IdleHerachrist.gif": {
+"file": "IdleHerachrist.gif",
+"path": "a/a9/IdleHerachrist.gif",
+"cat": "Enemy_animations"
+},
+"IdleHI-DO.gif": {
+"file": "IdleHI-DO.gif",
+"path": "1/15/IdleHI-DO.gif",
+"cat": "Enemy_animations"
+},
+"IdleHibikiRyoga.gif": {
+"file": "IdleHibikiRyoga.gif",
+"path": "a/a6/IdleHibikiRyoga.gif",
+"cat": "Enemy_animations"
+},
+"IdleHighBoi.gif": {
+"file": "IdleHighBoi.gif",
+"path": "7/7d/IdleHighBoi.gif",
+"cat": "Enemy_animations"
+},
+"IdleHikakin.gif": {
+"file": "IdleHikakin.gif",
+"path": "b/b2/IdleHikakin.gif",
+"cat": "Enemy_animations"
+},
+"IdleHNah.gif": {
+"file": "IdleHNah.gif",
+"path": "1/11/IdleHNah.gif",
+"cat": "Enemy_animations"
+},
+"IdleHomulily.gif": {
+"file": "IdleHomulily.gif",
+"path": "a/aa/IdleHomulily.gif",
+"cat": "Enemy_animations"
+},
+"IdleHoshiGrandmarnier.gif": {
+"file": "IdleHoshiGrandmarnier.gif",
+"path": "2/2e/IdleHoshiGrandmarnier.gif",
+"cat": "Enemy_animations"
+},
+"IdleIllyasviel.gif": {
+"file": "IdleIllyasviel.gif",
+"path": "c/c6/IdleIllyasviel.gif",
+"cat": "Enemy_animations"
+},
+"IdleIMPhace.gif": {
+"file": "IdleIMPhace.gif",
+"path": "b/bf/IdleIMPhace.gif",
+"cat": "Enemy_animations"
+},
+"IdleInumusha.gif": {
+"file": "IdleInumusha.gif",
+"path": "c/c8/IdleInumusha.gif",
+"cat": "Enemy_animations"
+},
+"IdleIronClawX.gif": {
+"file": "IdleIronClawX.gif",
+"path": "1/19/IdleIronClawX.gif",
+"cat": "Enemy_animations"
+},
+"IdleJKBunBun.gif": {
+"file": "IdleJKBunBun.gif",
+"path": "b/b5/IdleJKBunBun.gif",
+"cat": "Enemy_animations"
+},
+"IdleJuniorGodofLightValkyrie.gif": {
+"file": "IdleJuniorGodofLightValkyrie.gif",
+"path": "1/18/IdleJuniorGodofLightValkyrie.gif",
+"cat": "Enemy_animations"
+},
+"IdleJUPITERKING.gif": {
+"file": "IdleJUPITERKING.gif",
+"path": "0/03/IdleJUPITERKING.gif",
+"cat": "Enemy_animations"
+},
+"IdleKabukimonoAshura.gif": {
+"file": "IdleKabukimonoAshura.gif",
+"path": "6/6c/IdleKabukimonoAshura.gif",
+"cat": "Enemy_animations"
+},
+"IdleKagamineRin&Len.gif": {
+"file": "IdleKagamineRin&Len.gif",
+"path": "6/6a/IdleKagamineRin%26Len.gif",
+"cat": "Enemy_animations"
+},
+"IdleKano&Souma.gif": {
+"file": "IdleKano&Souma.gif",
+"path": "1/14/IdleKano%26Souma.gif",
+"cat": "Enemy_animations"
+},
+"IdleKen.gif": {
+"file": "IdleKen.gif",
+"path": "8/8c/IdleKen.gif",
+"cat": "Enemy_animations"
+},
+"IdleKingWahWah.gif": {
+"file": "IdleKingWahWah.gif",
+"path": "6/6e/IdleKingWahWah.gif",
+"cat": "Enemy_animations"
+},
+"IdleKiss&Koi.gif": {
+"file": "IdleKiss&Koi.gif",
+"path": "0/0d/IdleKiss%26Koi.gif",
+"cat": "Enemy_animations"
+},
+"IdleKite.gif": {
+"file": "IdleKite.gif",
+"path": "4/46/IdleKite.gif",
+"cat": "Enemy_animations"
+},
+"IdleKyubey.gif": {
+"file": "IdleKyubey.gif",
+"path": "c/cc/IdleKyubey.gif",
+"cat": "Enemy_animations"
+},
+"IdleKyubey2.gif": {
+"file": "IdleKyubey2.gif",
+"path": "6/65/IdleKyubey2.gif",
+"cat": "Enemy_animations"
+},
+"IdleLancer.gif": {
+"file": "IdleLancer.gif",
+"path": "3/3a/IdleLancer.gif",
+"cat": "Enemy_animations"
+},
+"IdleLe'Boin.gif": {
+"file": "IdleLe'Boin.gif",
+"path": "2/2f/IdleLe%27Boin.gif",
+"cat": "Enemy_animations"
+},
+"IdleLe'Grim.gif": {
+"file": "IdleLe'Grim.gif",
+"path": "8/8f/IdleLe%27Grim.gif",
+"cat": "Enemy_animations"
+},
+"IdleLe'Noir.gif": {
+"file": "IdleLe'Noir.gif",
+"path": "a/ac/IdleLe%27Noir.gif",
+"cat": "Enemy_animations"
+},
+"IdleLe'Saint.gif": {
+"file": "IdleLe'Saint.gif",
+"path": "5/54/IdleLe%27Saint.gif",
+"cat": "Enemy_animations"
+},
+"IdleLe'Solar.gif": {
+"file": "IdleLe'Solar.gif",
+"path": "b/bb/IdleLe%27Solar.gif",
+"cat": "Enemy_animations"
+},
+"IdleLi'lBunBun.gif": {
+"file": "IdleLi'lBunBun.gif",
+"path": "6/67/IdleLi%27lBunBun.gif",
+"cat": "Enemy_animations"
+},
+"IdleLi'lFlying.gif": {
+"file": "IdleLi'lFlying.gif",
+"path": "b/b1/IdleLi%27lFlying.gif",
+"cat": "Enemy_animations"
+},
+"IdleLi'lJamiera.gif": {
+"file": "IdleLi'lJamiera.gif",
+"path": "4/41/IdleLi%27lJamiera.gif",
+"cat": "Enemy_animations"
+},
+"IdleLi'lKingDragon.gif": {
+"file": "IdleLi'lKingDragon.gif",
+"path": "a/a5/IdleLi%27lKingDragon.gif",
+"cat": "Enemy_animations"
+},
+"IdleLi'lMachoLegs.gif": {
+"file": "IdleLi'lMachoLegs.gif",
+"path": "e/ea/IdleLi%27lMachoLegs.gif",
+"cat": "Enemy_animations"
+},
+"IdleLi'lZyclone.gif": {
+"file": "IdleLi'lZyclone.gif",
+"path": "c/c4/IdleLi%27lZyclone.gif",
+"cat": "Enemy_animations"
+},
+"IdleLoinclothCat.gif": {
+"file": "IdleLoinclothCat.gif",
+"path": "c/c1/IdleLoinclothCat.gif",
+"cat": "Enemy_animations"
+},
+"IdleLollycat.gif": {
+"file": "IdleLollycat.gif",
+"path": "5/51/IdleLollycat.gif",
+"cat": "Enemy_animations"
+},
+"IdleLordGravey.gif": {
+"file": "IdleLordGravey.gif",
+"path": "f/fe/IdleLordGravey.gif",
+"cat": "Enemy_animations"
+},
+"IdleLostWorldYuki.gif": {
+"file": "IdleLostWorldYuki.gif",
+"path": "2/26/IdleLostWorldYuki.gif",
+"cat": "Enemy_animations"
+},
+"IdleLuckySloth.gif": {
+"file": "IdleLuckySloth.gif",
+"path": "5/57/IdleLuckySloth.gif",
+"cat": "Enemy_animations"
+},
+"IdleMaawth.gif": {
+"file": "IdleMaawth.gif",
+"path": "b/b4/IdleMaawth.gif",
+"cat": "Enemy_animations"
+},
+"IdleMadamtheSavannah.gif": {
+"file": "IdleMadamtheSavannah.gif",
+"path": "9/9a/IdleMadamtheSavannah.gif",
+"cat": "Enemy_animations"
+},
+"IdleMajiCat&CatTourGroup.gif": {
+"file": "IdleMajiCat&CatTourGroup.gif",
+"path": "a/a4/IdleMajiCat%26CatTourGroup.gif",
+"cat": "Enemy_animations"
+},
+"IdleMammothe.gif": {
+"file": "IdleMammothe.gif",
+"path": "3/30/IdleMammothe.gif",
+"cat": "Enemy_animations"
+},
+"IdleManicDark.gif": {
+"file": "IdleManicDark.gif",
+"path": "1/18/IdleManicDark.gif",
+"cat": "Enemy_animations"
+},
+"IdleManicEraser.gif": {
+"file": "IdleManicEraser.gif",
+"path": "e/e7/IdleManicEraser.gif",
+"cat": "Enemy_animations"
+},
+"IdleManicFlying.gif": {
+"file": "IdleManicFlying.gif",
+"path": "5/52/IdleManicFlying.gif",
+"cat": "Enemy_animations"
+},
+"IdleManicIsland.gif": {
+"file": "IdleManicIsland.gif",
+"path": "c/c9/IdleManicIsland.gif",
+"cat": "Enemy_animations"
+},
+"IdleManicJamiera.gif": {
+"file": "IdleManicJamiera.gif",
+"path": "1/1e/IdleManicJamiera.gif",
+"cat": "Enemy_animations"
+},
+"IdleManicKingDragon.gif": {
+"file": "IdleManicKingDragon.gif",
+"path": "c/c3/IdleManicKingDragon.gif",
+"cat": "Enemy_animations"
+},
+"IdleManicLion.gif": {
+"file": "IdleManicLion.gif",
+"path": "f/f5/IdleManicLion.gif",
+"cat": "Enemy_animations"
+},
+"IdleManicMachoLegs.gif": {
+"file": "IdleManicMachoLegs.gif",
+"path": "f/f9/IdleManicMachoLegs.gif",
+"cat": "Enemy_animations"
+},
+"IdleManicMohawk.gif": {
+"file": "IdleManicMohawk.gif",
+"path": "7/70/IdleManicMohawk.gif",
+"cat": "Enemy_animations"
+},
+"IdleMartin.gif": {
+"file": "IdleMartin.gif",
+"path": "7/7a/IdleMartin.gif",
+"cat": "Enemy_animations"
+},
+"IdleMasterUril.gif": {
+"file": "IdleMasterUril.gif",
+"path": "2/2a/IdleMasterUril.gif",
+"cat": "Enemy_animations"
+},
+"IdleMasterXaDun.gif": {
+"file": "IdleMasterXaDun.gif",
+"path": "0/0b/IdleMasterXaDun.gif",
+"cat": "Enemy_animations"
+},
+"IdleMechaBun.gif": {
+"file": "IdleMechaBun.gif",
+"path": "c/c2/IdleMechaBun.gif",
+"cat": "Enemy_animations"
+},
+"IdleMegaCat.gif": {
+"file": "IdleMegaCat.gif",
+"path": "c/c2/IdleMegaCat.gif",
+"cat": "Enemy_animations"
+},
+"IdleMegaCatEX.gif": {
+"file": "IdleMegaCatEX.gif",
+"path": "8/80/IdleMegaCatEX.gif",
+"cat": "Enemy_animations"
+},
+"IdleMegaMooth.gif": {
+"file": "IdleMegaMooth.gif",
+"path": "b/b0/IdleMegaMooth.gif",
+"cat": "Enemy_animations"
+},
+"IdleMegurineWaifu.gif": {
+"file": "IdleMegurineWaifu.gif",
+"path": "d/db/IdleMegurineWaifu.gif",
+"cat": "Enemy_animations"
+},
+"IdleMentoriJP.gif": {
+"file": "IdleMentoriJP.gif",
+"path": "4/4e/IdleMentoriJP.gif",
+"cat": "Enemy_animations"
+},
+"IdleMerc&CatCCJP.gif": {
+"file": "IdleMerc&CatCCJP.gif",
+"path": "b/b9/IdleMerc%26CatCCJP.gif",
+"cat": "Enemy_animations"
+},
+"IdleMercurySloth.gif": {
+"file": "IdleMercurySloth.gif",
+"path": "8/8f/IdleMercurySloth.gif",
+"cat": "Enemy_animations"
+},
+"IdleMessier.gif": {
+"file": "IdleMessier.gif",
+"path": "1/15/IdleMessier.gif",
+"cat": "Enemy_animations"
+},
+"IdleMetalBall.gif": {
+"file": "IdleMetalBall.gif",
+"path": "6/6a/IdleMetalBall.gif",
+"cat": "Enemy_animations"
+},
+"IdleMetalCyclone.gif": {
+"file": "IdleMetalCyclone.gif",
+"path": "f/fb/IdleMetalCyclone.gif",
+"cat": "Enemy_animations"
+},
+"IdleMidniteD..gif": {
+"file": "IdleMidniteD..gif",
+"path": "0/0b/IdleMidniteD..gif",
+"cat": "Enemy_animations"
+},
+"IdleMightyGuiZuli.gif": {
+"file": "IdleMightyGuiZuli.gif",
+"path": "a/a8/IdleMightyGuiZuli.gif",
+"cat": "Enemy_animations"
+},
+"IdleMihara&Cat.gif": {
+"file": "IdleMihara&Cat.gif",
+"path": "c/c7/IdleMihara%26Cat.gif",
+"cat": "Enemy_animations"
+},
+"IdleMikuBear.gif": {
+"file": "IdleMikuBear.gif",
+"path": "d/d9/IdleMikuBear.gif",
+"cat": "Enemy_animations"
+},
+"IdleMisheriaJP.gif": {
+"file": "IdleMisheriaJP.gif",
+"path": "5/53/IdleMisheriaJP.gif",
+"cat": "Enemy_animations"
+},
+"IdleMissHaka.gif": {
+"file": "IdleMissHaka.gif",
+"path": "0/08/IdleMissHaka.gif",
+"cat": "Enemy_animations"
+},
+"IdleMobius.gif": {
+"file": "IdleMobius.gif",
+"path": "e/e9/IdleMobius.gif",
+"cat": "Enemy_animations"
+},
+"IdleMonkeyKingFormOne.gif": {
+"file": "IdleMonkeyKingFormOne.gif",
+"path": "8/84/IdleMonkeyKingFormOne.gif",
+"cat": "Enemy_animations"
+},
+"IdleMonkeyKingFormTwo.gif": {
+"file": "IdleMonkeyKingFormTwo.gif",
+"path": "9/92/IdleMonkeyKingFormTwo.gif",
+"cat": "Enemy_animations"
+},
+"IdleMooth.gif": {
+"file": "IdleMooth.gif",
+"path": "c/ce/IdleMooth.gif",
+"cat": "Enemy_animations"
+},
+"IdleMousse.gif": {
+"file": "IdleMousse.gif",
+"path": "0/03/IdleMousse.gif",
+"cat": "Enemy_animations"
+},
+"IdleMrMer.gif": {
+"file": "IdleMrMer.gif",
+"path": "9/95/IdleMrMer.gif",
+"cat": "Enemy_animations"
+},
+"IdleMrMole.gif": {
+"file": "IdleMrMole.gif",
+"path": "f/f0/IdleMrMole.gif",
+"cat": "Enemy_animations"
+},
+"IdleMsMadonna.gif": {
+"file": "IdleMsMadonna.gif",
+"path": "a/ad/IdleMsMadonna.gif",
+"cat": "Enemy_animations"
+},
+"IdleMsSignJP.gif": {
+"file": "IdleMsSignJP.gif",
+"path": "d/d3/IdleMsSignJP.gif",
+"cat": "Enemy_animations"
+},
+"IdleNazousagi.gif": {
+"file": "IdleNazousagi.gif",
+"path": "7/7e/IdleNazousagi.gif",
+"cat": "Enemy_animations"
+},
+"IdleNekondoSP.gif": {
+"file": "IdleNekondoSP.gif",
+"path": "8/84/IdleNekondoSP.gif",
+"cat": "Enemy_animations"
+},
+"IdleNimoyBore.gif": {
+"file": "IdleNimoyBore.gif",
+"path": "c/c6/IdleNimoyBore.gif",
+"cat": "Enemy_animations"
+},
+"IdleNimueFormOne.gif": {
+"file": "IdleNimueFormOne.gif",
+"path": "b/be/IdleNimueFormOne.gif",
+"cat": "Enemy_animations"
+},
+"IdleNimueFormTwo.gif": {
+"file": "IdleNimueFormTwo.gif",
+"path": "3/38/IdleNimueFormTwo.gif",
+"cat": "Enemy_animations"
+},
+"IdleNisetamaArmy.gif": {
+"file": "IdleNisetamaArmy.gif",
+"path": "e/e7/IdleNisetamaArmy.gif",
+"cat": "Enemy_animations"
+},
+"IdleNonoJP.gif": {
+"file": "IdleNonoJP.gif",
+"path": "a/a0/IdleNonoJP.gif",
+"cat": "Enemy_animations"
+},
+"IdleNornJP.gif": {
+"file": "IdleNornJP.gif",
+"path": "c/cb/IdleNornJP.gif",
+"cat": "Enemy_animations"
+},
+"IdleNyandallin.gif": {
+"file": "IdleNyandallin.gif",
+"path": "3/30/IdleNyandallin.gif",
+"cat": "Enemy_animations"
+},
+"IdleOdin.gif": {
+"file": "IdleOdin.gif",
+"path": "2/2a/IdleOdin.gif",
+"cat": "Enemy_animations"
+},
+"IdleOldManMola.gif": {
+"file": "IdleOldManMola.gif",
+"path": "8/88/IdleOldManMola.gif",
+"cat": "Enemy_animations"
+},
+"IdleOlgaJP.gif": {
+"file": "IdleOlgaJP.gif",
+"path": "f/ff/IdleOlgaJP.gif",
+"cat": "Enemy_animations"
+},
+"IdleOrutosoJP.gif": {
+"file": "IdleOrutosoJP.gif",
+"path": "a/a2/IdleOrutosoJP.gif",
+"cat": "Enemy_animations"
+},
+"IdlePastry.gif": {
+"file": "IdlePastry.gif",
+"path": "9/90/IdlePastry.gif",
+"cat": "Enemy_animations"
+},
+"IdlePerfectCyclone.gif": {
+"file": "IdlePerfectCyclone.gif",
+"path": "b/b6/IdlePerfectCyclone.gif",
+"cat": "Enemy_animations"
+},
+"IdlePiggeBack.gif": {
+"file": "IdlePiggeBack.gif",
+"path": "2/2e/IdlePiggeBack.gif",
+"cat": "Enemy_animations"
+},
+"IdlePiggeVictorious.gif": {
+"file": "IdlePiggeVictorious.gif",
+"path": "a/a4/IdlePiggeVictorious.gif",
+"cat": "Enemy_animations"
+},
+"IdlePikotaro.gif": {
+"file": "IdlePikotaro.gif",
+"path": "3/36/IdlePikotaro.gif",
+"cat": "Enemy_animations"
+},
+"IdlePossessedEmpress.gif": {
+"file": "IdlePossessedEmpress.gif",
+"path": "e/e7/IdlePossessedEmpress.gif",
+"cat": "Enemy_animations"
+},
+"IdlePrincessHead.gif": {
+"file": "IdlePrincessHead.gif",
+"path": "0/00/IdlePrincessHead.gif",
+"cat": "Enemy_animations"
+},
+"IdlePrisoner.gif": {
+"file": "IdlePrisoner.gif",
+"path": "c/cd/IdlePrisoner.gif",
+"cat": "Enemy_animations"
+},
+"IdlePuffsley'sComet.gif": {
+"file": "IdlePuffsley'sComet.gif",
+"path": "0/02/IdlePuffsley%27sComet.gif",
+"cat": "Enemy_animations"
+},
+"IdleQueenB.gif": {
+"file": "IdleQueenB.gif",
+"path": "1/15/IdleQueenB.gif",
+"cat": "Enemy_animations"
+},
+"IdleRainD.an.gif": {
+"file": "IdleRainD.an.gif",
+"path": "4/44/IdleRainD.an.gif",
+"cat": "Enemy_animations"
+},
+"IdleRamiel.gif": {
+"file": "IdleRamiel.gif",
+"path": "4/45/IdleRamiel.gif",
+"cat": "Enemy_animations"
+},
+"IdleRampageCats.gif": {
+"file": "IdleRampageCats.gif",
+"path": "a/a8/IdleRampageCats.gif",
+"cat": "Enemy_animations"
+},
+"IdleRanmaSaotome(M).gif": {
+"file": "IdleRanmaSaotome(M).gif",
+"path": "c/cb/IdleRanmaSaotome%28M%29.gif",
+"cat": "Enemy_animations"
+},
+"IdleRathalos.gif": {
+"file": "IdleRathalos.gif",
+"path": "e/e5/IdleRathalos.gif",
+"cat": "Enemy_animations"
+},
+"IdleRathian.gif": {
+"file": "IdleRathian.gif",
+"path": "e/e2/IdleRathian.gif",
+"cat": "Enemy_animations"
+},
+"IdleRazorback.gif": {
+"file": "IdleRazorback.gif",
+"path": "8/81/IdleRazorback.gif",
+"cat": "Enemy_animations"
+},
+"IdleRedBall.gif": {
+"file": "IdleRedBall.gif",
+"path": "a/aa/IdleRedBall.gif",
+"cat": "Enemy_animations"
+},
+"IdleRedCyclone.gif": {
+"file": "IdleRedCyclone.gif",
+"path": "7/75/IdleRedCyclone.gif",
+"cat": "Enemy_animations"
+},
+"IdleRedoOfHealer.gif": {
+"file": "IdleRedoOfHealer.gif",
+"path": "0/01/IdleRedoOfHealer.gif",
+"cat": "Enemy_animations"
+},
+"IdleRedWind.gif": {
+"file": "IdleRedWind.gif",
+"path": "1/1c/IdleRedWind.gif",
+"cat": "Enemy_animations"
+},
+"IdleReiJP.gif": {
+"file": "IdleReiJP.gif",
+"path": "8/8c/IdleReiJP.gif",
+"cat": "Enemy_animations"
+},
+"IdleRiceball.gif": {
+"file": "IdleRiceball.gif",
+"path": "d/db/IdleRiceball.gif",
+"cat": "Enemy_animations"
+},
+"IdleRider.gif": {
+"file": "IdleRider.gif",
+"path": "b/b8/IdleRider.gif",
+"cat": "Enemy_animations"
+},
+"IdleRinToshaka.gif": {
+"file": "IdleRinToshaka.gif",
+"path": "c/cd/IdleRinToshaka.gif",
+"cat": "Enemy_animations"
+},
+"IdleRitual.gif": {
+"file": "IdleRitual.gif",
+"path": "f/f6/IdleRitual.gif",
+"cat": "Enemy_animations"
+},
+"IdleROst.gif": {
+"file": "IdleROst.gif",
+"path": "1/10/IdleROst.gif",
+"cat": "Enemy_animations"
+},
+"IdleRyu.gif": {
+"file": "IdleRyu.gif",
+"path": "4/47/IdleRyu.gif",
+"cat": "Enemy_animations"
+},
+"IdleSaber.gif": {
+"file": "IdleSaber.gif",
+"path": "5/53/IdleSaber.gif",
+"cat": "Enemy_animations"
+},
+"IdleSaberAlter.gif": {
+"file": "IdleSaberAlter.gif",
+"path": "e/e2/IdleSaberAlter.gif",
+"cat": "Enemy_animations"
+},
+"IdleSachiel.gif": {
+"file": "IdleSachiel.gif",
+"path": "e/e5/IdleSachiel.gif",
+"cat": "Enemy_animations"
+},
+"IdleSagat.gif": {
+"file": "IdleSagat.gif",
+"path": "0/01/IdleSagat.gif",
+"cat": "Enemy_animations"
+},
+"IdleSaionjiHitomi.gif": {
+"file": "IdleSaionjiHitomi.gif",
+"path": "1/19/IdleSaionjiHitomi.gif",
+"cat": "Enemy_animations"
+},
+"IdleSakuraAndroid.gif": {
+"file": "IdleSakuraAndroid.gif",
+"path": "c/ca/IdleSakuraAndroid.gif",
+"cat": "Enemy_animations"
+},
+"IdleSakuraMiku.gif": {
+"file": "IdleSakuraMiku.gif",
+"path": "7/77/IdleSakuraMiku.gif",
+"cat": "Enemy_animations"
+},
+"IdleSamuraiDoggy.gif": {
+"file": "IdleSamuraiDoggy.gif",
+"path": "1/1f/IdleSamuraiDoggy.gif",
+"cat": "Enemy_animations"
+},
+"IdleSaotomeHikaru.gif": {
+"file": "IdleSaotomeHikaru.gif",
+"path": "b/b6/IdleSaotomeHikaru.gif",
+"cat": "Enemy_animations"
+},
+"IdleSatanClaus.gif": {
+"file": "IdleSatanClaus.gif",
+"path": "a/a8/IdleSatanClaus.gif",
+"cat": "Enemy_animations"
+},
+"IdleSatanmaria.gif": {
+"file": "IdleSatanmaria.gif",
+"path": "c/c3/IdleSatanmaria.gif",
+"cat": "Enemy_animations"
+},
+"IdleSathankhamunVIII.gif": {
+"file": "IdleSathankhamunVIII.gif",
+"path": "a/ac/IdleSathankhamunVIII.gif",
+"cat": "Enemy_animations"
+},
+"IdleSCC.gif": {
+"file": "IdleSCC.gif",
+"path": "2/2a/IdleSCC.gif",
+"cat": "Enemy_animations"
+},
+"IdleScisseroo.gif": {
+"file": "IdleScisseroo.gif",
+"path": "0/0f/IdleScisseroo.gif",
+"cat": "Enemy_animations"
+},
+"IdleSelena.gif": {
+"file": "IdleSelena.gif",
+"path": "1/16/IdleSelena.gif",
+"cat": "Enemy_animations"
+},
+"IdleSerumJP.gif": {
+"file": "IdleSerumJP.gif",
+"path": "4/4d/IdleSerumJP.gif",
+"cat": "Enemy_animations"
+},
+"IdleShakurelTiger.gif": {
+"file": "IdleShakurelTiger.gif",
+"path": "7/77/IdleShakurelTiger.gif",
+"cat": "Enemy_animations"
+},
+"IdleShinGodzilla.gif": {
+"file": "IdleShinGodzilla.gif",
+"path": "9/9b/IdleShinGodzilla.gif",
+"cat": "Enemy_animations"
+},
+"IdleShiratoriSh\u014dchikubai.gif": {
+"file": "IdleShiratoriSh\u014dchikubai.gif",
+"path": "3/3a/IdleShiratoriSh%C5%8Dchikubai.gif",
+"cat": "Enemy_animations"
+},
+"IdleShyBoy.gif": {
+"file": "IdleShyBoy.gif",
+"path": "4/46/IdleShyBoy.gif",
+"cat": "Enemy_animations"
+},
+"IdleSisterLione.gif": {
+"file": "IdleSisterLione.gif",
+"path": "8/87/IdleSisterLione.gif",
+"cat": "Enemy_animations"
+},
+"IdleSkelecat.gif": {
+"file": "IdleSkelecat.gif",
+"path": "7/7d/IdleSkelecat.gif",
+"cat": "Enemy_animations"
+},
+"IdleSluggyAngel.gif": {
+"file": "IdleSluggyAngel.gif",
+"path": "6/6c/IdleSluggyAngel.gif",
+"cat": "Enemy_animations"
+},
+"IdleSluggyBlack.gif": {
+"file": "IdleSluggyBlack.gif",
+"path": "9/95/IdleSluggyBlack.gif",
+"cat": "Enemy_animations"
+},
+"IdleSluggyRed.gif": {
+"file": "IdleSluggyRed.gif",
+"path": "5/5a/IdleSluggyRed.gif",
+"cat": "Enemy_animations"
+},
+"IdleSnowWaifu.gif": {
+"file": "IdleSnowWaifu.gif",
+"path": "9/95/IdleSnowWaifu.gif",
+"cat": "Enemy_animations"
+},
+"IdleSpace-timeCyclops.gif": {
+"file": "IdleSpace-timeCyclops.gif",
+"path": "0/04/IdleSpace-timeCyclops.gif",
+"cat": "Enemy_animations"
+},
+"IdleStDober.gif": {
+"file": "IdleStDober.gif",
+"path": "e/ec/IdleStDober.gif",
+"cat": "Enemy_animations"
+},
+"IdleStPiggethe2nd.gif": {
+"file": "IdleStPiggethe2nd.gif",
+"path": "f/f1/IdleStPiggethe2nd.gif",
+"cat": "Enemy_animations"
+},
+"IdleSunfishJones.gif": {
+"file": "IdleSunfishJones.gif",
+"path": "e/e3/IdleSunfishJones.gif",
+"cat": "Enemy_animations"
+},
+"IdleSunnyCelebedoodle.gif": {
+"file": "IdleSunnyCelebedoodle.gif",
+"path": "1/10/IdleSunnyCelebedoodle.gif",
+"cat": "Enemy_animations"
+},
+"IdleSuperHyppoh.gif": {
+"file": "IdleSuperHyppoh.gif",
+"path": "b/b5/IdleSuperHyppoh.gif",
+"cat": "Enemy_animations"
+},
+"IdleSuperMetalHippoe.gif": {
+"file": "IdleSuperMetalHippoe.gif",
+"path": "1/14/IdleSuperMetalHippoe.gif",
+"cat": "Enemy_animations"
+},
+"IdleSuruzu.gif": {
+"file": "IdleSuruzu.gif",
+"path": "b/b6/IdleSuruzu.gif",
+"cat": "Enemy_animations"
+},
+"IdleSVEBalrog.gif": {
+"file": "IdleSVEBalrog.gif",
+"path": "1/1d/IdleSVEBalrog.gif",
+"cat": "Enemy_animations"
+},
+"IdleTakayuki&LovelyYuki.gif": {
+"file": "IdleTakayuki&LovelyYuki.gif",
+"path": "0/07/IdleTakayuki%26LovelyYuki.gif",
+"cat": "Enemy_animations"
+},
+"IdleTayuka.gif": {
+"file": "IdleTayuka.gif",
+"path": "c/ce/IdleTayuka.gif",
+"cat": "Enemy_animations"
+},
+"IdleTeacherBear.gif": {
+"file": "IdleTeacherBear.gif",
+"path": "f/f4/IdleTeacherBear.gif",
+"cat": "Enemy_animations"
+},
+"IdleTeacherBunBun.gif": {
+"file": "IdleTeacherBunBun.gif",
+"path": "0/06/IdleTeacherBunBun.gif",
+"cat": "Enemy_animations"
+},
+"IdleTeacherCybear.gif": {
+"file": "IdleTeacherCybear.gif",
+"path": "f/ff/IdleTeacherCybear.gif",
+"cat": "Enemy_animations"
+},
+"IdleTheFace.gif": {
+"file": "IdleTheFace.gif",
+"path": "9/94/IdleTheFace.gif",
+"cat": "Enemy_animations"
+},
+"IdleTheRedMalice.gif": {
+"file": "IdleTheRedMalice.gif",
+"path": "0/0a/IdleTheRedMalice.gif",
+"cat": "Enemy_animations"
+},
+"IdleTHESLOTH.gif": {
+"file": "IdleTHESLOTH.gif",
+"path": "e/e3/IdleTHESLOTH.gif",
+"cat": "Enemy_animations"
+},
+"IdleThunderclapBlackCavalrySoldier.gif": {
+"file": "IdleThunderclapBlackCavalrySoldier.gif",
+"path": "e/ea/IdleThunderclapBlackCavalrySoldier.gif",
+"cat": "Enemy_animations"
+},
+"IdleTitiCCJP.gif": {
+"file": "IdleTitiCCJP.gif",
+"path": "e/ea/IdleTitiCCJP.gif",
+"cat": "Enemy_animations"
+},
+"IdleTodokemiJP.gif": {
+"file": "IdleTodokemiJP.gif",
+"path": "d/d5/IdleTodokemiJP.gif",
+"cat": "Enemy_animations"
+},
+"IdleTwoCan.gif": {
+"file": "IdleTwoCan.gif",
+"path": "7/72/IdleTwoCan.gif",
+"cat": "Enemy_animations"
+},
+"IdleType10.gif": {
+"file": "IdleType10.gif",
+"path": "f/f4/IdleType10.gif",
+"cat": "Enemy_animations"
+},
+"IdleUnicycle.gif": {
+"file": "IdleUnicycle.gif",
+"path": "6/63/IdleUnicycle.gif",
+"cat": "Enemy_animations"
+},
+"IdleUrurunWolf.gif": {
+"file": "IdleUrurunWolf.gif",
+"path": "d/d0/IdleUrurunWolf.gif",
+"cat": "Enemy_animations"
+},
+"IdleVarietyBears.gif": {
+"file": "IdleVarietyBears.gif",
+"path": "1/10/IdleVarietyBears.gif",
+"cat": "Enemy_animations"
+},
+"IdleVega.gif": {
+"file": "IdleVega.gif",
+"path": "e/e8/IdleVega.gif",
+"cat": "Enemy_animations"
+},
+"IdleVolcanoGolem.gif": {
+"file": "IdleVolcanoGolem.gif",
+"path": "a/a4/IdleVolcanoGolem.gif",
+"cat": "Enemy_animations"
+},
+"IdleWaifuShampoo.gif": {
+"file": "IdleWaifuShampoo.gif",
+"path": "8/8e/IdleWaifuShampoo.gif",
+"cat": "Enemy_animations"
+},
+"IdleWhiteBall.gif": {
+"file": "IdleWhiteBall.gif",
+"path": "7/77/IdleWhiteBall.gif",
+"cat": "Enemy_animations"
+},
+"IdleWhiteCyclone.gif": {
+"file": "IdleWhiteCyclone.gif",
+"path": "a/a5/IdleWhiteCyclone.gif",
+"cat": "Enemy_animations"
+},
+"IdleWind.gif": {
+"file": "IdleWind.gif",
+"path": "3/30/IdleWind.gif",
+"cat": "Enemy_animations"
+},
+"IdleWondermaria.gif": {
+"file": "IdleWondermaria.gif",
+"path": "6/6d/IdleWondermaria.gif",
+"cat": "Enemy_animations"
+},
+"IdleWrestling.gif": {
+"file": "IdleWrestling.gif",
+"path": "3/37/IdleWrestling.gif",
+"cat": "Enemy_animations"
+},
+"IdleWyvern.gif": {
+"file": "IdleWyvern.gif",
+"path": "9/9e/IdleWyvern.gif",
+"cat": "Enemy_animations"
+},
+"IdleXmasPudding.gif": {
+"file": "IdleXmasPudding.gif",
+"path": "9/93/IdleXmasPudding.gif",
+"cat": "Enemy_animations"
+},
+"IdleYakisobaFace.gif": {
+"file": "IdleYakisobaFace.gif",
+"path": "9/9c/IdleYakisobaFace.gif",
+"cat": "Enemy_animations"
+},
+"IdleYoichiJP.gif": {
+"file": "IdleYoichiJP.gif",
+"path": "7/78/IdleYoichiJP.gif",
+"cat": "Enemy_animations"
+},
+"IdleYoungManMola.gif": {
+"file": "IdleYoungManMola.gif",
+"path": "a/ab/IdleYoungManMola.gif",
+"cat": "Enemy_animations"
+},
+"IdleYuki.gif": {
+"file": "IdleYuki.gif",
+"path": "0/05/IdleYuki.gif",
+"cat": "Enemy_animations"
+},
+"IdleZamelle.gif": {
+"file": "IdleZamelle.gif",
+"path": "d/d2/IdleZamelle.gif",
+"cat": "Enemy_animations"
+},
+"IdleZangief.gif": {
+"file": "IdleZangief.gif",
+"path": "2/2d/IdleZangief.gif",
+"cat": "Enemy_animations"
+},
+"IdleZyclone.gif": {
+"file": "IdleZyclone.gif",
+"path": "d/d1/IdleZyclone.gif",
+"cat": "Enemy_animations"
+},
+"Idle\ud83d\udeae.gif": {
+"file": "Idle\ud83d\udeae.gif",
+"path": "e/ef/Idle%F0%9F%9A%AE.gif",
+"cat": "Enemy_animations"
+},
+"ImperatorSael.gif": {
+"file": "ImperatorSael.gif",
+"path": "d/de/ImperatorSael.gif",
+"cat": "Enemy_animations"
+},
+"Inumusha.gif": {
+"file": "Inumusha.gif",
+"path": "0/0d/Inumusha.gif",
+"cat": "Enemy_animations"
+},
+"Johnnyleon.gif": {
+"file": "Johnnyleon.gif",
+"path": "8/82/Johnnyleon.gif",
+"cat": "Enemy_animations"
+},
+"KangRoo.gif": {
+"file": "KangRoo.gif",
+"path": "b/b8/KangRoo.gif",
+"cat": "Enemy_animations"
+},
+"KreepyKirsten.gif": {
+"file": "KreepyKirsten.gif",
+"path": "8/8d/KreepyKirsten.gif",
+"cat": "Enemy_animations"
+},
+"Le'boin.gif": {
+"file": "Le'boin.gif",
+"path": "4/49/Le%27boin.gif",
+"cat": "Enemy_animations"
+},
+"LeBehemoth.gif": {
+"file": "LeBehemoth.gif",
+"path": "0/03/LeBehemoth.gif",
+"cat": "Enemy_animations"
+},
+"Leggsyattack.gif": {
+"file": "Leggsyattack.gif",
+"path": "8/8d/Leggsyattack.gif",
+"cat": "Enemy_animations"
+},
+"LeggsyRUN.gif": {
+"file": "LeggsyRUN.gif",
+"path": "c/ce/LeggsyRUN.gif",
+"cat": "Enemy_animations"
+},
+"Lemurr.gif": {
+"file": "Lemurr.gif",
+"path": "2/2d/Lemurr.gif",
+"cat": "Enemy_animations"
+},
+"Lesolarattack.gif": {
+"file": "Lesolarattack.gif",
+"path": "b/bb/Lesolarattack.gif",
+"cat": "Enemy_animations"
+},
+"Li'l_Zyclone.gif": {
+"file": "Li'l_Zyclone.gif",
+"path": "0/01/Li%27l_Zyclone.gif",
+"cat": "Enemy_animations"
+},
+"Lil_Doge.gif": {
+"file": "Lil_Doge.gif",
+"path": "8/87/Lil_Doge.gif",
+"cat": "Enemy_animations"
+},
+"Lordenma.gif": {
+"file": "Lordenma.gif",
+"path": "d/d9/Lordenma.gif",
+"cat": "Enemy_animations"
+},
+"Lordenmaattack.gif": {
+"file": "Lordenmaattack.gif",
+"path": "8/88/Lordenmaattack.gif",
+"cat": "Enemy_animations"
+},
+"LuckyDags.gif": {
+"file": "LuckyDags.gif",
+"path": "7/72/LuckyDags.gif",
+"cat": "Enemy_animations"
+},
+"Martin.gif": {
+"file": "Martin.gif",
+"path": "7/74/Martin.gif",
+"cat": "Enemy_animations"
+},
+"MerlionAnim.gif": {
+"file": "MerlionAnim.gif",
+"path": "0/01/MerlionAnim.gif",
+"cat": "Enemy_animations"
+},
+"Mesocosmocyclone.gif": {
+"file": "Mesocosmocyclone.gif",
+"path": "7/71/Mesocosmocyclone.gif",
+"cat": "Enemy_animations"
+},
+"METALBEARATACKWALK.gif": {
+"file": "METALBEARATACKWALK.gif",
+"path": "8/8c/METALBEARATACKWALK.gif",
+"cat": "Enemy_animations"
+},
+"MetallicHippo.gif": {
+"file": "MetallicHippo.gif",
+"path": "9/90/MetallicHippo.gif",
+"cat": "Enemy_animations"
+},
+"Midnite_D.gif": {
+"file": "Midnite_D.gif",
+"path": "0/07/Midnite_D.gif",
+"cat": "Enemy_animations"
+},
+"Mooth.gif": {
+"file": "Mooth.gif",
+"path": "a/ad/Mooth.gif",
+"cat": "Enemy_animations"
+},
+"MsSignJP.gif": {
+"file": "MsSignJP.gif",
+"path": "5/56/MsSignJP.gif",
+"cat": "Enemy_animations"
+},
+"OhnoitsJagando.gif": {
+"file": "OhnoitsJagando.gif",
+"path": "6/6e/OhnoitsJagando.gif",
+"cat": "Enemy_animations"
+},
+"OneHorn.gif": {
+"file": "OneHorn.gif",
+"path": "e/ee/OneHorn.gif",
+"cat": "Enemy_animations"
+},
+"Pigge.gif": {
+"file": "Pigge.gif",
+"path": "6/6e/Pigge.gif",
+"cat": "Enemy_animations"
+},
+"Pikotaroenemyattackanimation.gif": {
+"file": "Pikotaroenemyattackanimation.gif",
+"path": "9/9a/Pikotaroenemyattackanimation.gif",
+"cat": "Enemy_animations"
+},
+"Project_a_attack.gif": {
+"file": "Project_a_attack.gif",
+"path": "6/6d/Project_a_attack.gif",
+"cat": "Enemy_animations"
+},
+"R.Ost.gif": {
+"file": "R.Ost.gif",
+"path": "b/b8/R.Ost.gif",
+"cat": "Enemy_animations"
+},
+"Ragin'_Gory.gif": {
+"file": "Ragin'_Gory.gif",
+"path": "9/90/Ragin%27_Gory.gif",
+"cat": "Enemy_animations"
+},
+"Raynard.gif": {
+"file": "Raynard.gif",
+"path": "f/f6/Raynard.gif",
+"cat": "Enemy_animations"
+},
+"Red_Cyclone.gif": {
+"file": "Red_Cyclone.gif",
+"path": "8/80/Red_Cyclone.gif",
+"cat": "Enemy_animations"
+},
+"Sabatattackanimation.gif": {
+"file": "Sabatattackanimation.gif",
+"path": "5/54/Sabatattackanimation.gif",
+"cat": "Enemy_animations"
+},
+"SadSal.gif": {
+"file": "SadSal.gif",
+"path": "0/03/SadSal.gif",
+"cat": "Enemy_animations"
+},
+"SasineBear.gif": {
+"file": "SasineBear.gif",
+"path": "0/0d/SasineBear.gif",
+"cat": "Enemy_animations"
+},
+"Satan_claus_attack.gif": {
+"file": "Satan_claus_attack.gif",
+"path": "4/4b/Satan_claus_attack.gif",
+"cat": "Enemy_animations"
+},
+"Satan.gif": {
+"file": "Satan.gif",
+"path": "5/59/Satan.gif",
+"cat": "Enemy_animations"
+},
+"SCCANIM.gif": {
+"file": "SCCANIM.gif",
+"path": "b/bb/SCCANIM.gif",
+"cat": "Enemy_animations"
+},
+"Shadowboxerkattack.gif": {
+"file": "Shadowboxerkattack.gif",
+"path": "c/c8/Shadowboxerkattack.gif",
+"cat": "Enemy_animations"
+},
+"Shield_monster.gif": {
+"file": "Shield_monster.gif",
+"path": "5/50/Shield_monster.gif",
+"cat": "Enemy_animations"
+},
+"ShyBoy.gif": {
+"file": "ShyBoy.gif",
+"path": "e/e9/ShyBoy.gif",
+"cat": "Enemy_animations"
+},
+"Sinnersnache.gif": {
+"file": "Sinnersnache.gif",
+"path": "1/14/Sinnersnache.gif",
+"cat": "Enemy_animations"
+},
+"Snatch.gif": {
+"file": "Snatch.gif",
+"path": "0/01/Snatch.gif",
+"cat": "Enemy_animations"
+},
+"SquireRel.gif": {
+"file": "SquireRel.gif",
+"path": "e/e0/SquireRel.gif",
+"cat": "Enemy_animations"
+},
+"St._Dober.gif": {
+"file": "St._Dober.gif",
+"path": "7/7c/St._Dober.gif",
+"cat": "Enemy_animations"
+},
+"Teacherbearattack.gif": {
+"file": "Teacherbearattack.gif",
+"path": "d/d8/Teacherbearattack.gif",
+"cat": "Enemy_animations"
+},
+"TheFace.gif": {
+"file": "TheFace.gif",
+"path": "0/05/TheFace.gif",
+"cat": "Enemy_animations"
+},
+"TheFlyingNinja.gif": {
+"file": "TheFlyingNinja.gif",
+"path": "e/e3/TheFlyingNinja.gif",
+"cat": "Enemy_animations"
+},
+"ThisIsSoCursed.gif": {
+"file": "ThisIsSoCursed.gif",
+"path": "4/42/ThisIsSoCursed.gif",
+"cat": "Enemy_animations"
+},
+"THISTHINGWASTERRIBLETORENDER.gif": {
+"file": "THISTHINGWASTERRIBLETORENDER.gif",
+"path": "8/85/THISTHINGWASTERRIBLETORENDER.gif",
+"cat": "Enemy_animations"
+},
+"THISTOOKAGES.gif": {
+"file": "THISTOOKAGES.gif",
+"path": "b/b6/THISTOOKAGES.gif",
+"cat": "Enemy_animations"
+},
+"THISTOOKAGESAGAIN.gif": {
+"file": "THISTOOKAGESAGAIN.gif",
+"path": "4/4d/THISTOOKAGESAGAIN.gif",
+"cat": "Enemy_animations"
+},
+"Ultrabaaattack.gif": {
+"file": "Ultrabaaattack.gif",
+"path": "9/9e/Ultrabaaattack.gif",
+"cat": "Enemy_animations"
+},
+"Un-green_yulala.gif": {
+"file": "Un-green_yulala.gif",
+"path": "9/93/Un-green_yulala.gif",
+"cat": "Enemy_animations"
+},
+"Ursamajor.gif": {
+"file": "Ursamajor.gif",
+"path": "c/c0/Ursamajor.gif",
+"cat": "Enemy_animations"
+},
+"VampireThingy.gif": {
+"file": "VampireThingy.gif",
+"path": "b/bc/VampireThingy.gif",
+"cat": "Enemy_animations"
+},
+"Walking_god_with_clothes.gif": {
+"file": "Walking_god_with_clothes.gif",
+"path": "2/20/Walking_god_with_clothes.gif",
+"cat": "Enemy_animations"
+},
+"Walpurgisnatch.gif": {
+"file": "Walpurgisnatch.gif",
+"path": "7/7c/Walpurgisnatch.gif",
+"cat": "Enemy_animations"
+},
+"Wild_Doge.gif": {
+"file": "Wild_Doge.gif",
+"path": "f/f1/Wild_Doge.gif",
+"cat": "Enemy_animations"
+},
+"Yakisoba_Face.gif": {
+"file": "Yakisoba_Face.gif",
+"path": "5/58/Yakisoba_Face.gif",
+"cat": "Enemy_animations"
+},
+"YakisobaUFO.gif": {
+"file": "YakisobaUFO.gif",
+"path": "9/90/YakisobaUFO.gif",
+"cat": "Enemy_animations"
+},
+"Youcan.gif": {
+"file": "Youcan.gif",
+"path": "3/38/Youcan.gif",
+"cat": "Enemy_animations"
+},
+"Zamelle.gif": {
+"file": "Zamelle.gif",
+"path": "d/d1/Zamelle.gif",
+"cat": "Enemy_animations"
+},
+"ZeroLuzaAttack.gif": {
+"file": "ZeroLuzaAttack.gif",
+"path": "5/51/ZeroLuzaAttack.gif",
+"cat": "Enemy_animations"
+}
+}

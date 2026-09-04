@@ -1,0 +1,512 @@
+{
+ "cat": {
+  "kind": "cat",
+  "num": 0,
+  "title": "Cat",
+  "atk_gif": "e/e8/000_m_attack_animation.gif"
+ },
+ "tank": {
+  "kind": "cat",
+  "num": 1,
+  "title": "Eraser Cat",
+  "atk_gif": "0/0e/001_m_attack_animation.gif"
+ },
+ "axe": {
+  "kind": "cat",
+  "num": 2,
+  "title": "Axe Cat",
+  "atk_gif": "c/c7/002_m_attack_animation.gif"
+ },
+ "gross": {
+  "kind": "cat",
+  "num": 3,
+  "title": "Gross Cat",
+  "atk_gif": "f/f6/003_m_attack_animation.gif"
+ },
+ "cow": {
+  "kind": "cat",
+  "num": 4,
+  "title": "Cow Cat",
+  "atk_gif": "b/bd/004_m_attack_animation.gif"
+ },
+ "bird": {
+  "kind": "cat",
+  "num": 5,
+  "title": "Bird Cat"
+ },
+ "fish": {
+  "kind": "cat",
+  "num": 6,
+  "title": "Fish Cat",
+  "atk_gif": "b/bd/006_m_attack_animation.gif"
+ },
+ "lizard": {
+  "kind": "cat",
+  "num": 7,
+  "title": "Dragon Cat",
+  "atk_gif": "8/8d/007_m_attack_animation.gif"
+ },
+ "titan": {
+  "kind": "cat",
+  "num": 8,
+  "title": "Titan Cat",
+  "atk_gif": "d/db/008_m_attack_animation.gif"
+ },
+ "boogie": {
+  "kind": "cat",
+  "num": 22,
+  "title": "Boogie Cat",
+  "atk_gif": "c/cb/MangaBoogieCatAttack_Idle.gif"
+ },
+ "mr": {
+  "kind": "cat",
+  "num": 11,
+  "title": "Mr.",
+  "atk_gif": "4/48/Mr_attack.gif"
+ },
+ "bahamut": {
+  "kind": "cat",
+  "num": 25,
+  "title": "Bahamut Cat",
+  "atk_gif": "5/5d/Normal_Bahamut_Cat_Attack_Animation.gif"
+ },
+ "kungfu": {
+  "kind": "cat",
+  "num": 10,
+  "title": "Kung Fu Cat",
+  "atk_gif": "0/04/010_m_attack_animation.gif"
+ },
+ "rock": {
+  "kind": "cat",
+  "num": 581,
+  "title": "Stone Cat"
+ },
+ "neko": {
+  "kind": "cat",
+  "num": 34,
+  "title": "Nekoluga"
+ },
+ "pogo": {
+  "kind": "cat",
+  "num": 37,
+  "title": "Pogo Cat",
+  "atk_gif": "d/df/Pogo_cat_attack_animation.gif"
+ },
+ "sushi": {
+  "kind": "cat",
+  "num": 61,
+  "title": "Sushi Cat"
+ },
+ "cutter": {
+  "kind": "cat",
+  "num": 445,
+  "title": "Cutter Cat",
+  "atk_gif": "f/f4/Cutter_Cat.gif"
+ },
+ "pirate": {
+  "kind": "cat",
+  "num": 48,
+  "title": "Pirate Cat",
+  "atk_gif": "8/8d/Pirate_Cat_attack_animation.gif"
+ },
+ "thief": {
+  "kind": "cat",
+  "num": 49,
+  "title": "Thief Cat"
+ },
+ "sorcerer": {
+  "kind": "cat",
+  "num": 55,
+  "title": "Witch Cat"
+ },
+ "guitar": {
+  "kind": "cat",
+  "num": 148,
+  "title": "Rocker Cat"
+ },
+ "can": {
+  "kind": "cat",
+  "num": 32,
+  "title": "Hip Hop Cat",
+  "atk_gif": "9/9a/Hip_Hop_Cat_Attack_Animation.gif"
+ },
+ "cyborg": {
+  "kind": "cat",
+  "num": 41,
+  "title": "Cyborg Cat",
+  "atk_gif": "4/41/Cyborg_Cat_attack_animation.gif"
+ },
+ "seafarer": {
+  "kind": "cat",
+  "num": 199,
+  "title": "Surfer Cat",
+  "atk_gif": "7/77/SurferCatAttackAnimation.gif"
+ },
+ "slime": {
+  "kind": "cat",
+  "num": 527,
+  "title": "Slime Cat",
+  "atk_gif": "b/b8/Slime_Cat_Attack.gif"
+ },
+ "paladin": {
+  "kind": "cat",
+  "num": 57,
+  "title": "Marauder Cat",
+  "atk_gif": "e/ea/Marauder_Cat_Attack_Animation.gif"
+ },
+ "medusa": {
+  "kind": "cat",
+  "num": 521,
+  "title": "Medusa Cat"
+ },
+ "catman": {
+  "kind": "cat",
+  "num": 196,
+  "title": "Catman"
+ },
+ "mechabun": {
+  "kind": "cat",
+  "num": 426,
+  "title": "Mecha-Bun"
+ },
+ "noble": {
+  "kind": "cat",
+  "num": 450,
+  "title": "High Lord Babel"
+ },
+ "kaguya": {
+  "kind": "cat",
+  "num": 614,
+  "title": "Kaguya of the Coast"
+ },
+ "dioramos": {
+  "kind": "cat",
+  "num": 177,
+  "title": "Dioramos"
+ },
+ "gao": {
+  "kind": "cat",
+  "num": 269,
+  "title": "Baby Gao",
+  "atk_gif": "c/c0/Baby_Gao.gif"
+ },
+ "luza": {
+  "kind": "cat",
+  "num": null,
+  "title": "Tecoluga"
+ },
+ "gatr": {
+  "kind": "cat",
+  "num": 461,
+  "title": "Legeluga",
+  "atk_gif": "f/fc/Legeluga_attack_animation.gif"
+ },
+ "island": {
+  "kind": "cat",
+  "num": 6,
+  "title": "Fish Cat",
+  "atk_gif": "b/bd/006_m_attack_animation.gif"
+ },
+ "archer": {
+  "kind": "cat",
+  "num": 56,
+  "title": "Archer Cat"
+ },
+ "fortune": {
+  "kind": "cat",
+  "num": 51,
+  "title": "Fortune Teller Cat"
+ },
+ "jurassic": {
+  "kind": "cat",
+  "num": 46,
+  "title": "Jurassic Cat Sitter",
+  "atk_gif": "6/68/Jurassic_Cat_Sitter_Attack.gif"
+ },
+ "kotatsu": {
+  "kind": "cat",
+  "num": 33,
+  "title": "Kotatsu Cat",
+  "atk_gif": "6/69/Kotatsu_Cat_Attack_Animation.gif"
+ },
+ "valkyrie": {
+  "kind": "cat",
+  "num": 24,
+  "title": "Valkyrie Cat",
+  "atk_gif": "7/75/Valkyrie_Cat_Attack_Animation.gif"
+ },
+ "lilcat": {
+  "kind": "cat",
+  "num": 209,
+  "title": "Li'l Cat"
+ },
+ "liltank": {
+  "kind": "cat",
+  "num": 210,
+  "title": "Li'l Tank Cat"
+ },
+ "moneko": {
+  "kind": "cat",
+  "num": 16,
+  "title": "Moneko",
+  "atk_gif": "e/ec/Monekoattack1.gif"
+ },
+ "neneko": {
+  "kind": "cat",
+  "num": 131,
+  "title": "Neneko",
+  "atk_gif": "a/ab/SweetheartNenekoAttack.gif"
+ },
+ "doge": {
+  "kind": "enemy",
+  "num": 0,
+  "title": "Doge",
+  "atk_gif": "7/75/Doge_attack.gif"
+ },
+ "snache": {
+  "kind": "enemy",
+  "num": 1,
+  "title": "Snache"
+ },
+ "those": {
+  "kind": "enemy",
+  "num": 2,
+  "title": "Those Guys"
+ },
+ "baa": {
+  "kind": "enemy",
+  "num": 7,
+  "title": "Baa Baa"
+ },
+ "jackie": {
+  "kind": "enemy",
+  "num": 5,
+  "title": "Jackie Peng"
+ },
+ "leboin": {
+  "kind": "enemy",
+  "num": 9,
+  "title": "Le'boin",
+  "walk_gif": "2/2f/IdleLe%27Boin.gif"
+ },
+ "hippoe": {
+  "kind": "enemy",
+  "num": 3,
+  "title": "Hippoe"
+ },
+ "sirseal": {
+  "kind": "enemy",
+  "num": 8,
+  "title": "Sir Seal"
+ },
+ "onehorn": {
+  "kind": "enemy",
+  "num": 11,
+  "title": "One Horn"
+ },
+ "teacher": {
+  "kind": "enemy",
+  "num": 12,
+  "title": "Teacher Bear",
+  "walk_gif": "f/f4/IdleTeacherBear.gif",
+  "atk_gif": "d/d8/Teacherbearattack.gif"
+ },
+ "croco": {
+  "kind": "enemy",
+  "num": 13,
+  "title": "Croco"
+ },
+ "shibalien": {
+  "kind": "enemy",
+  "num": 167,
+  "title": "Shibalien"
+ },
+ "face": {
+  "kind": "enemy",
+  "num": 18,
+  "title": "The Face",
+  "walk_gif": "9/94/IdleTheFace.gif"
+ },
+ "nyandam": {
+  "kind": "enemy",
+  "num": 23,
+  "title": "Dark Emperor Nyandam"
+ },
+ "ghostdoge": {
+  "kind": "enemy",
+  "num": 284,
+  "title": "Zoge"
+ },
+ "angelgabriel": {
+  "kind": "enemy",
+  "num": 114,
+  "title": "Gabriel"
+ },
+ "angelseraph": {
+  "kind": "enemy",
+  "num": 254,
+  "title": "Mr. Angel"
+ },
+ "metallic": {
+  "kind": "enemy",
+  "num": 47,
+  "title": "Metal Hippoe"
+ },
+ "metallicdoge": {
+  "kind": "enemy",
+  "num": 147,
+  "title": "Metal Doge"
+ },
+ "zombieelephant": {
+  "kind": "enemy",
+  "num": 641,
+  "title": "Elephantidae Papaou"
+ },
+ "zombibear": {
+  "kind": "enemy",
+  "num": 427,
+  "title": "Cadaver Bear"
+ },
+ "relicdoge": {
+  "kind": "enemy",
+  "num": 407,
+  "title": "Relic Doge"
+ },
+ "relichippo": {
+  "kind": "enemy",
+  "num": 113,
+  "title": "Heavenly Hippoe"
+ },
+ "akudoge": {
+  "kind": "enemy",
+  "num": 552,
+  "title": "Aku Doge"
+ },
+ "akucerberus": {
+  "kind": "enemy",
+  "num": 554,
+  "title": "Cerberus Kids"
+ },
+ "behemothcroc": {
+  "kind": "enemy",
+  "num": 655,
+  "title": "Crocodylidae Kurocroc"
+ },
+ "behemothbear": {
+  "kind": "enemy",
+  "num": 100,
+  "title": "Bearkini",
+  "walk_gif": "7/7b/IdleBearkini.gif"
+ },
+ "witchen": {
+  "kind": "enemy",
+  "num": 121,
+  "title": "Drury Witch"
+ },
+ "clionel": {
+  "kind": "enemy",
+  "num": 232,
+  "title": "Cruel Angel Clionel",
+  "walk_gif": "6/60/IdleCruelAngelClionel.gif"
+ },
+ "dogedark": {
+  "kind": "enemy",
+  "num": 46,
+  "title": "Doge Dark"
+ },
+ "gory": {
+  "kind": "enemy",
+  "num": 6,
+  "title": "Gory",
+  "atk_gif": "5/58/Goryblackattack.gif"
+ },
+ "wanwan": {
+  "kind": "enemy",
+  "num": 506,
+  "title": "Everlord Wanwan",
+  "walk_gif": "6/6e/IdleEverlordWanWan.gif"
+ },
+ "owlbrow": {
+  "kind": "enemy",
+  "num": 37,
+  "title": "Owlbrow"
+ },
+ "camelle": {
+  "kind": "enemy",
+  "num": 35,
+  "title": "Camelle",
+  "walk_gif": "7/74/IdleCamelle.gif"
+ },
+ "mastera": {
+  "kind": "enemy",
+  "num": 31,
+  "title": "Master A."
+ },
+ "bore": {
+  "kind": "enemy",
+  "num": 38,
+  "title": "Bore",
+  "walk_gif": "0/03/IdleBore.gif"
+ },
+ "kurosawah": {
+  "kind": "enemy",
+  "num": 53,
+  "title": "Director Kurosawah",
+  "walk_gif": "4/42/IdleDirectorKurosawah.gif"
+ },
+ "gregor": {
+  "kind": "enemy",
+  "num": 362,
+  "title": "General GreGory"
+ },
+ "lesolar": {
+  "kind": "enemy",
+  "num": 363,
+  "title": "Le'Solar",
+  "walk_gif": "b/bb/IdleLe%27Solar.gif",
+  "atk_gif": "b/bb/Lesolarattack.gif"
+ },
+ "spacefish": {
+  "kind": "enemy",
+  "num": 366,
+  "title": "Spacefish Jones"
+ },
+ "projecta": {
+  "kind": "enemy",
+  "num": 364,
+  "title": "Project A",
+  "atk_gif": "6/6d/Project_a_attack.gif"
+ },
+ "phace": {
+  "kind": "enemy",
+  "num": 174,
+  "title": "I.M. Phace",
+  "walk_gif": "b/bf/IdleIMPhace.gif"
+ },
+ "dober": {
+  "kind": "enemy",
+  "num": 44,
+  "title": "Dober P.D"
+ },
+ "sael": {
+  "kind": "enemy",
+  "num": 170,
+  "title": "Imperator Sael"
+ },
+ "elizabeth": {
+  "kind": "enemy",
+  "num": 178,
+  "title": "Elizabeth the LVIth"
+ },
+ "sunfish": {
+  "kind": "enemy",
+  "num": 119,
+  "title": "Sunfish Jones",
+  "walk_gif": "e/e3/IdleSunfishJones.gif"
+ },
+ "celeboodle": {
+  "kind": "enemy",
+  "num": 42,
+  "title": "Celeboodle"
+ }
+}

@@ -67,8 +67,10 @@ const SPRIT=(()=>{
     return list[list.length-1];
   }
   const progIdx=(list,p)=>list.length?list[clamp(Math.floor(clamp(p,0,0.999)*list.length),0,list.length-1)]:0;
-  /* draw one manifest-v2 frame: anchor (ax,ay) lands at the origin;
-     sc = px per sheet-pixel; flip mirrors horizontally (sheets face RIGHT) */
+  /* draw one manifest-v4 frame: ax/ay are FRAME-RELATIVE (offset from the frame's
+     left/top edge to the unit origin — ax = body center, ay = feet line);
+     sc = px per sheet-pixel; flip mirrors horizontally (only for legacy non-native art:
+     official cutout strips are already natively oriented cats-LEFT / enemies-RIGHT) */
   function drawFrame(en,i,sc,flip){
     const fr=(en.frames||[])[i];
     if(!fr||fr.length<6)return false;
@@ -77,8 +79,8 @@ const SPRIT=(()=>{
     const sx=fr[0],sy=fr[1],sw=fr[2],sh=fr[3],ax=fr[4],ay=fr[5];
     const c=cx;
     c.save();
-    if(flip)c.scale(-1,1);
-    const dx=-(ax-sx)*sc,dy=-(ay-sy)*sc;
+    if(flip){c.scale(-1,1);c.translate(-sw*sc,0)} // mirror keeps the frame box in place
+    const dx=-ax*sc,dy=-ay*sc;                    // anchor offsets are frame-relative
     c.drawImage(im,sx,sy,sw,sh,dx,dy,sw*sc,sh*sc);
     c.restore();
     return true;
@@ -92,7 +94,13 @@ const SPRIT=(()=>{
     if(!fm)return false;
     const s=(o.s||1);
     const TARGET=kind==='enemy'?86:74;
-    const flip=(o.dir||0)<0; // sheets face RIGHT (VLM-verified): cats march dir=-1 → flip to face LEFT; enemies dir=+1 unflipped
+    /* Native orientation (official cutout art): cats are drawn facing LEFT,
+       enemies facing RIGHT — exactly how they march. NO flip in normal play
+       (the original never mirrors sprites, even while knocked back).
+       Legacy wiki-sheet entries keep the old convention: sheets face RIGHT →
+       flip when dir<0. */
+    const native=(fm.walk&&fm.walk.src==='cutout')||(fm.atk&&fm.atk.src==='cutout');
+    const flip=native?false:((o.dir||0)<0);
     const c=cx;
     c.save();
     c.translate(o.x||0,o.y||0); // drawUnit pre-translates to the unit; absolute call sites pass real coords

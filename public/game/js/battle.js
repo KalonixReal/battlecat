@@ -6,7 +6,7 @@
    The camera therefore starts at the RIGHT end (home base) and the front line
    advances leftward as the battle progresses. */
 const FIELD_W=2600,ENEMY_BASE_X=120,CAT_BASE_X=FIELD_W-120,GROUND_Y=560;
-const WALK_MUL=1.5; // global movement pacing — wiki speed x9 px/s felt sluggish crossing the field vs the original
+const WALK_MUL=1.0; // official pacing: WALK_SPD (data.js) maps wiki SPD → px/s; no extra multiplier (parity with the original)
 let B=null;
 const WORKER_COST=[40,120,280,560,1000,1600,2400],WORKER_MUL=[1,1.35,1.7,2.1,2.6,3.2,3.9,4.7];
 const WALLET_COST=[30,90,180,360,720,1440,2880],WALLET_MAX=[1,2,3,4,5,6,8,10];
@@ -228,8 +228,8 @@ function updateUnit(u,dt){
   let halt=!!(wall||front);
   if(!halt){const tg=findTargets(u);if(tg.some(t=>!t.base))halt=true}
   u.halted=halt;
-  if(halt)u.animT+=dt*0.5
-  else{u.x+=u.dir*spd*WALK_MUL*dt;u.animT+=dt*1.2*WALK_MUL}
+  if(halt)u.animT+=dt // halted units keep marching in place (original walk-in-place idle)
+  else{u.x+=u.dir*spd*WALK_MUL*dt;u.animT+=dt} // walk frames play at their official authored timing (50ms/frame)
   u.x=clamp(u.x,ENEMY_BASE_X+30,CAT_BASE_X-30)}
 function fireCannon(){
   if(B.result||B.paused)return; // pause freezes the field AND player actions
@@ -301,29 +301,15 @@ function updateBattle(dt){
   if(Bn.shake>0)Bn.shake=Math.max(0,Bn.shake-30*d);
   if(Bn.warnT>0)Bn.warnT-=d;
   Bn.catBase.alarm=Math.max(0,Bn.catBase.alarm-d);Bn.enemyBase.alarm=Math.max(0,Bn.enemyBase.alarm-d);
-  /* ===== FRONT-LINE AUTO-FOLLOW CAMERA (original behavior) =====
-     The camera eases after the battle front (the furthest-advanced cat — cats push
-     LEFTWARD here). Manual scrolling takes over instantly and auto-follow resumes
-     ~2.6s after release. Enemy breakthrough near the home base snaps attention home. */
-  /* camera FLING momentum (released drag): glides with exponential friction,
-     hard-clamped to the field bounds — runs regardless of camHold (the release
-     just set camHold) and keeps auto-follow at bay until it settles */
+  /* ===== CAMERA (original behavior) =====
+     The camera NEVER auto-follows — the player controls it by dragging (grab-the-
+     world: the battlefield follows the finger) and releases with a fling that
+     glides with friction, hard-clamped to the field bounds. The view starts at
+     the home base (right end) and only moves when the player moves it. */
   if(G.flingCam&&!B.result){
-    Bn.cam=clamp(Bn.cam+G.flingCam.v*dt,0,FIELD_W-1280);
-    Bn.camHold=Math.max(Bn.camHold,0.35);
+    Bn.cam=clamp(Bn.cam-G.flingCam.v*dt,0,FIELD_W-1280); // grab-the-world: content follows the finger's release direction
     G.flingCam.v*=Math.pow(0.002,dt);
     if(Math.abs(G.flingCam.v)<40||Bn.cam<=0||Bn.cam>=FIELD_W-1280)G.flingCam=null}
-  if(Bn.camHold>0)Bn.camHold-=dt;
-  else if(!B.result){
-    const cats=Bn.units.filter(v=>v.side==='cat'&&v.state!=='die'&&v.state!=='burrow'&&v.state!=='revive');
-    const frontX=cats.length?Math.min(...cats.map(v=>v.x)):Bn.catBase.x; // leftmost cat = front line
-    const homeRisk=Bn.units.some(v=>v.side==='enemy'&&v.state!=='die'&&v.x>Bn.catBase.x-560); // breakthrough!
-    let target;
-    if(homeRisk)target=Bn.catBase.x-640+380;                    // defend home: keep the base in view
-    else target=clamp(frontX-640+360,0,FIELD_W-1280);            // front sits ~28% from the screen's left edge
-    const dc=target-Bn.cam;
-    if(Math.abs(dc)>2)Bn.cam=clamp(Bn.cam+dc*Math.min(1,dt*1.6),0,FIELD_W-1280) // critically-damped ease (soft drift like the original)
-  }
   // wallet / worker / cannon buttons handled in UI
 }
 function endBattle(win){

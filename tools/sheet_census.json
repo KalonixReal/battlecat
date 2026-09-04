@@ -1,0 +1,1106 @@
+{
+ "cat:0": {
+  "sheet": "000_f.png",
+  "status": "ok",
+  "comps": 9,
+  "figs": 8,
+  "medarea": 1626,
+  "type": "full",
+  "size": [
+   256,
+   115
+  ]
+ },
+ "tank:0": {
+  "sheet": "001_f.png",
+  "status": "ok",
+  "comps": 9,
+  "figs": 8,
+  "medarea": 3208,
+  "type": "full",
+  "size": [
+   256,
+   199
+  ]
+ },
+ "axe:0": {
+  "sheet": "002_f.png",
+  "status": "ok",
+  "comps": 11,
+  "figs": 8,
+  "medarea": 2804,
+  "type": "full",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "gross:0": {
+  "sheet": "003_f.png",
+  "status": "ok",
+  "comps": 38,
+  "figs": 15,
+  "medarea": 3708,
+  "type": "atlas",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "cow:0": {
+  "sheet": "004_f.png",
+  "status": "ok",
+  "comps": 12,
+  "figs": 9,
+  "medarea": 3293,
+  "type": "full",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "bird:0": {
+  "sheet": "005_f.png",
+  "status": "ok",
+  "comps": 30,
+  "figs": 12,
+  "medarea": 2006,
+  "type": "full",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "fish:0": {
+  "sheet": "006_f.png",
+  "status": "ok",
+  "comps": 15,
+  "figs": 12,
+  "medarea": 4428,
+  "type": "full",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "lizard:0": {
+  "sheet": "007_f.png",
+  "status": "ok",
+  "comps": 33,
+  "figs": 13,
+  "medarea": 2329,
+  "type": "full",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "titan:0": {
+  "sheet": "008_f.png",
+  "status": "ok",
+  "comps": 24,
+  "figs": 17,
+  "medarea": 1718,
+  "type": "atlas",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "boogie:0": {
+  "sheet": "022_f.png",
+  "status": "ok",
+  "comps": 36,
+  "figs": 22,
+  "medarea": 1803,
+  "type": "atlas",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "mr:0": {
+  "sheet": "011_f.png",
+  "status": "ok",
+  "comps": 35,
+  "figs": 30,
+  "medarea": 295,
+  "type": "atlas",
+  "size": [
+   256,
+   241
+  ]
+ },
+ "bahamut:0": {
+  "sheet": "025_f.png",
+  "status": "ok",
+  "comps": 50,
+  "figs": 41,
+  "medarea": 943,
+  "type": "atlas",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "kungfu:0": {
+  "sheet": "010_f.png",
+  "status": "ok",
+  "comps": 36,
+  "figs": 21,
+  "medarea": 459,
+  "type": "atlas",
+  "size": [
+   256,
+   150
+  ]
+ },
+ "rock:0": {
+  "sheet": "581_f.png",
+  "status": "ok",
+  "comps": 46,
+  "figs": 21,
+  "medarea": 1268,
+  "type": "atlas",
+  "size": [
+   439,
+   127
+  ]
+ },
+ "neko:0": {
+  "sheet": "034_f.png",
+  "status": "ok",
+  "comps": 9,
+  "figs": 8,
+  "medarea": 276,
+  "type": "atlas",
+  "size": [
+   128,
+   63
+  ]
+ },
+ "pogo:0": {
+  "sheet": "037_f.png",
+  "status": "ok",
+  "comps": 80,
+  "figs": 27,
+  "medarea": 603,
+  "type": "atlas",
+  "size": [
+   256,
+   256
+  ]
+ },
+ "sushi:0": {
+  "sheet": "061_f.png",
+  "status": "ok",
+  "comps": 24,
+  "figs": 20,
+  "medarea": 2457,
+  "type": "atlas",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "cutter:0": {
+  "sheet": "445_f.png",
+  "status": "ok",
+  "comps": 79,
+  "figs": 60,
+  "medarea": 746,
+  "type": "atlas",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "pirate:0": {
+  "sheet": "048_f.png",
+  "status": "ok",
+  "comps": 31,
+  "figs": 21,
+  "medarea": 461,
+  "type": "atlas",
+  "size": [
+   256,
+   256
+  ]
+ },
+ "thief:0": {
+  "sheet": "049_f.png",
+  "status": "ok",
+  "comps": 29,
+  "figs": 19,
+  "medarea": 691,
+  "type": "atlas",
+  "size": [
+   256,
+   256
+  ]
+ },
+ "sorcerer:0": {
+  "sheet": "055_f.png",
+  "status": "ok",
+  "comps": 51,
+  "figs": 34,
+  "medarea": 1131,
+  "type": "atlas",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "guitar:0": {
+  "sheet": "148_f.png",
+  "status": "ok",
+  "comps": 22,
+  "figs": 21,
+  "medarea": 304,
+  "type": "atlas",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "can:0": {
+  "sheet": "032_f.png",
+  "status": "ok",
+  "comps": 44,
+  "figs": 34,
+  "medarea": 512,
+  "type": "atlas",
+  "size": [
+   256,
+   256
+  ]
+ },
+ "cyborg:0": {
+  "sheet": "041_f.png",
+  "status": "ok",
+  "comps": 18,
+  "figs": 4,
+  "medarea": 3240,
+  "type": "full",
+  "size": [
+   256,
+   256
+  ]
+ },
+ "seafarer:0": {
+  "sheet": "199_f.png",
+  "status": "ok",
+  "comps": 127,
+  "figs": 64,
+  "medarea": 524,
+  "type": "atlas",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "slime:0": {
+  "sheet": "527_f.png",
+  "status": "ok",
+  "comps": 52,
+  "figs": 25,
+  "medarea": 1216,
+  "type": "atlas",
+  "size": [
+   302,
+   234
+  ]
+ },
+ "paladin:0": {
+  "sheet": "057_f.png",
+  "status": "ok",
+  "comps": 79,
+  "figs": 36,
+  "medarea": 708,
+  "type": "atlas",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "medusa:0": {
+  "sheet": "521_f.png",
+  "status": "ok",
+  "comps": 123,
+  "figs": 113,
+  "medarea": 223,
+  "type": "atlas",
+  "size": [
+   387,
+   203
+  ]
+ },
+ "catman:0": {
+  "sheet": "196_f.png",
+  "status": "ok",
+  "comps": 67,
+  "figs": 38,
+  "medarea": 935,
+  "type": "atlas",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "mechabun:0": {
+  "sheet": "426_f.png",
+  "status": "ok",
+  "comps": 67,
+  "figs": 39,
+  "medarea": 964,
+  "type": "atlas",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "noble:0": {
+  "sheet": "450_f.png",
+  "status": "ok",
+  "comps": 260,
+  "figs": 76,
+  "medarea": 1409,
+  "type": "atlas",
+  "size": [
+   512,
+   512
+  ]
+ },
+ "kaguya:0": {
+  "sheet": "614_f.png",
+  "status": "ok",
+  "comps": 30,
+  "figs": 27,
+  "medarea": 505,
+  "type": "atlas",
+  "size": [
+   128,
+   226
+  ]
+ },
+ "dioramos:0": {
+  "sheet": "177_f.png",
+  "status": "ok",
+  "comps": 36,
+  "figs": 36,
+  "medarea": 948,
+  "type": "atlas",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "gao:0": {
+  "sheet": "269_f.png",
+  "status": "ok",
+  "comps": 63,
+  "figs": 40,
+  "medarea": 519,
+  "type": "atlas",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "gatr:0": {
+  "sheet": "461_f.png",
+  "status": "ok",
+  "comps": 68,
+  "figs": 9,
+  "medarea": 2506,
+  "type": "full",
+  "size": [
+   205,
+   184
+  ]
+ },
+ "island:0": {
+  "sheet": "006_f.png",
+  "status": "ok",
+  "comps": 15,
+  "figs": 12,
+  "medarea": 4428,
+  "type": "full",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "archer:0": {
+  "sheet": "056_f.png",
+  "status": "ok",
+  "comps": 17,
+  "figs": 17,
+  "medarea": 386,
+  "type": "atlas",
+  "size": [
+   256,
+   128
+  ]
+ },
+ "fortune:0": {
+  "sheet": "051_f.png",
+  "status": "ok",
+  "comps": 19,
+  "figs": 17,
+  "medarea": 786,
+  "type": "atlas",
+  "size": [
+   256,
+   128
+  ]
+ },
+ "jurassic:0": {
+  "sheet": "046_f.png",
+  "status": "ok",
+  "comps": 16,
+  "figs": 15,
+  "medarea": 718,
+  "type": "atlas",
+  "size": [
+   128,
+   256
+  ]
+ },
+ "kotatsu:0": {
+  "sheet": "033_f.png",
+  "status": "ok",
+  "comps": 36,
+  "figs": 28,
+  "medarea": 583,
+  "type": "atlas",
+  "size": [
+   256,
+   256
+  ]
+ },
+ "valkyrie:0": {
+  "sheet": "024_f.png",
+  "status": "ok",
+  "comps": 43,
+  "figs": 42,
+  "medarea": 1278,
+  "type": "atlas",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "lilcat:0": {
+  "sheet": "209_f.png",
+  "status": "ok",
+  "comps": 10,
+  "figs": 7,
+  "medarea": 907,
+  "type": "full",
+  "size": [
+   128,
+   128
+  ]
+ },
+ "liltank:0": {
+  "sheet": "210_f.png",
+  "status": "ok",
+  "comps": 9,
+  "figs": 8,
+  "medarea": 2009,
+  "type": "full",
+  "size": [
+   256,
+   256
+  ]
+ },
+ "moneko:0": {
+  "sheet": "016_f.png",
+  "status": "ok",
+  "comps": 64,
+  "figs": 50,
+  "medarea": 995,
+  "type": "atlas",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "neneko:0": {
+  "sheet": "131_f.png",
+  "status": "ok",
+  "comps": 64,
+  "figs": 50,
+  "medarea": 957,
+  "type": "atlas",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "doge:0": {
+  "sheet": "000_e.png",
+  "status": "ok",
+  "comps": 9,
+  "figs": 8,
+  "medarea": 1936,
+  "type": "full",
+  "size": [
+   256,
+   115
+  ]
+ },
+ "snache:0": {
+  "sheet": "001_e.png",
+  "status": "ok",
+  "comps": 9,
+  "figs": 8,
+  "medarea": 1513,
+  "type": "full",
+  "size": [
+   256,
+   184
+  ]
+ },
+ "those:0": {
+  "sheet": "002_e.png",
+  "status": "ok",
+  "comps": 34,
+  "figs": 19,
+  "medarea": 975,
+  "type": "atlas",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "baa:0": {
+  "sheet": "007_e.png",
+  "status": "ok",
+  "comps": 15,
+  "figs": 10,
+  "medarea": 4455,
+  "type": "full",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "jackie:0": {
+  "sheet": "005_e.png",
+  "status": "ok",
+  "comps": 34,
+  "figs": 18,
+  "medarea": 3308,
+  "type": "atlas",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "leboin:0": {
+  "sheet": "009_e.png",
+  "status": "ok",
+  "comps": 21,
+  "figs": 10,
+  "medarea": 5254,
+  "type": "full",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "hippoe:0": {
+  "sheet": "003_e.png",
+  "status": "ok",
+  "comps": 14,
+  "figs": 8,
+  "medarea": 5998,
+  "type": "full",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "sirseal:0": {
+  "sheet": "008_e.png",
+  "status": "ok",
+  "comps": 19,
+  "figs": 10,
+  "medarea": 5093,
+  "type": "full",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "onehorn:0": {
+  "sheet": "011_e.png",
+  "status": "ok",
+  "comps": 20,
+  "figs": 15,
+  "medarea": 5950,
+  "type": "atlas",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "teacher:0": {
+  "sheet": "012_e.png",
+  "status": "ok",
+  "comps": 29,
+  "figs": 17,
+  "medarea": 1280,
+  "type": "atlas",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "croco:0": {
+  "sheet": "013_e.png",
+  "status": "ok",
+  "comps": 15,
+  "figs": 12,
+  "medarea": 2349,
+  "type": "full",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "shibalien:0": {
+  "sheet": "167_e.png",
+  "status": "ok",
+  "comps": 18,
+  "figs": 18,
+  "medarea": 198,
+  "type": "atlas",
+  "size": [
+   128,
+   256
+  ]
+ },
+ "face:0": {
+  "sheet": "018_e.png",
+  "status": "ok",
+  "comps": 11,
+  "figs": 6,
+  "medarea": 11389,
+  "type": "full",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "nyandam:0": {
+  "sheet": "023_e.png",
+  "status": "ok",
+  "comps": 46,
+  "figs": 26,
+  "medarea": 1135,
+  "type": "atlas",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "ghostdoge:0": {
+  "sheet": "284_e.png",
+  "status": "ok",
+  "comps": 25,
+  "figs": 24,
+  "medarea": 555,
+  "type": "atlas",
+  "size": [
+   128,
+   256
+  ]
+ },
+ "angelgabriel:0": {
+  "sheet": "114_e.png",
+  "status": "ok",
+  "comps": 9,
+  "figs": 8,
+  "medarea": 2484,
+  "type": "full",
+  "size": [
+   256,
+   128
+  ]
+ },
+ "angelseraph:0": {
+  "sheet": "254_e.png",
+  "status": "ok",
+  "comps": 26,
+  "figs": 26,
+  "medarea": 293,
+  "type": "atlas",
+  "size": [
+   128,
+   256
+  ]
+ },
+ "metallic:0": {
+  "sheet": "047_e.png",
+  "status": "ok",
+  "comps": 14,
+  "figs": 8,
+  "medarea": 5998,
+  "type": "full",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "metallicdoge:0": {
+  "sheet": "147_e.png",
+  "status": "ok",
+  "comps": 14,
+  "figs": 7,
+  "medarea": 1636,
+  "type": "full",
+  "size": [
+   128,
+   128
+  ]
+ },
+ "zombieelephant:0": {
+  "sheet": "641_e.png",
+  "status": "ok",
+  "comps": 43,
+  "figs": 15,
+  "medarea": 3577,
+  "type": "atlas",
+  "size": [
+   455,
+   239
+  ]
+ },
+ "zombibear:0": {
+  "sheet": "427_e.png",
+  "status": "ok",
+  "comps": 51,
+  "figs": 32,
+  "medarea": 1125,
+  "type": "atlas",
+  "size": [
+   497,
+   254
+  ]
+ },
+ "relicdoge:0": {
+  "sheet": "407_e.png",
+  "status": "ok",
+  "comps": 11,
+  "figs": 8,
+  "medarea": 2191,
+  "type": "full",
+  "size": [
+   128,
+   256
+  ]
+ },
+ "relichippo:0": {
+  "sheet": "113_e.png",
+  "status": "ok",
+  "comps": 14,
+  "figs": 9,
+  "medarea": 6700,
+  "type": "full",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "akudoge:0": {
+  "sheet": "552_e.png",
+  "status": "ok",
+  "comps": 11,
+  "figs": 10,
+  "medarea": 1765,
+  "type": "full",
+  "size": [
+   189,
+   124
+  ]
+ },
+ "akucerberus:0": {
+  "sheet": "554_e.png",
+  "status": "ok",
+  "comps": 40,
+  "figs": 28,
+  "medarea": 1175,
+  "type": "atlas",
+  "size": [
+   302,
+   255
+  ]
+ },
+ "behemothcroc:0": {
+  "sheet": "655_e.png",
+  "status": "ok",
+  "comps": 38,
+  "figs": 29,
+  "medarea": 1592,
+  "type": "atlas",
+  "size": [
+   487,
+   255
+  ]
+ },
+ "behemothbear:0": {
+  "sheet": "100_e.png",
+  "status": "ok",
+  "comps": 29,
+  "figs": 14,
+  "medarea": 1592,
+  "type": "full",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "witchen:0": {
+  "sheet": "121_e.png",
+  "status": "ok",
+  "comps": 60,
+  "figs": 36,
+  "medarea": 392,
+  "type": "atlas",
+  "size": [
+   256,
+   256
+  ]
+ },
+ "clionel:0": {
+  "sheet": "232_e.png",
+  "status": "ok",
+  "comps": 86,
+  "figs": 46,
+  "medarea": 844,
+  "type": "atlas",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "dogedark:0": {
+  "sheet": "046_e.png",
+  "status": "ok",
+  "comps": 12,
+  "figs": 8,
+  "medarea": 2113,
+  "type": "full",
+  "size": [
+   256,
+   128
+  ]
+ },
+ "gory:0": {
+  "sheet": "006_e.png",
+  "status": "ok",
+  "comps": 39,
+  "figs": 12,
+  "medarea": 4445,
+  "type": "full",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "wanwan:0": {
+  "sheet": "506_e.png",
+  "status": "ok",
+  "comps": 105,
+  "figs": 100,
+  "medarea": 396,
+  "type": "atlas",
+  "size": [
+   512,
+   253
+  ]
+ },
+ "owlbrow:0": {
+  "sheet": "037_e.png",
+  "status": "ok",
+  "comps": 48,
+  "figs": 34,
+  "medarea": 565,
+  "type": "atlas",
+  "size": [
+   256,
+   256
+  ]
+ },
+ "camelle:0": {
+  "sheet": "035_e.png",
+  "status": "ok",
+  "comps": 34,
+  "figs": 31,
+  "medarea": 673,
+  "type": "atlas",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "mastera:0": {
+  "sheet": "031_e.png",
+  "status": "ok",
+  "comps": 81,
+  "figs": 41,
+  "medarea": 971,
+  "type": "atlas",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "bore:0": {
+  "sheet": "038_e.png",
+  "status": "ok",
+  "comps": 31,
+  "figs": 31,
+  "medarea": 429,
+  "type": "atlas",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "kurosawah:0": {
+  "sheet": "053_e.png",
+  "status": "ok",
+  "comps": 46,
+  "figs": 26,
+  "medarea": 1103,
+  "type": "atlas",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "gregor:0": {
+  "sheet": "362_e.png",
+  "status": "ok",
+  "comps": 133,
+  "figs": 30,
+  "medarea": 924,
+  "type": "atlas",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "lesolar:0": {
+  "sheet": "363_e.png",
+  "status": "ok",
+  "comps": 24,
+  "figs": 20,
+  "medarea": 1782,
+  "type": "atlas",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "spacefish:0": {
+  "sheet": "366_e.png",
+  "status": "ok",
+  "comps": 54,
+  "figs": 23,
+  "medarea": 766,
+  "type": "atlas",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "projecta:0": {
+  "sheet": "364_e.png",
+  "status": "ok",
+  "comps": 131,
+  "figs": 43,
+  "medarea": 977,
+  "type": "atlas",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "phace:0": {
+  "sheet": "174_e.png",
+  "status": "ok",
+  "comps": 16,
+  "figs": 15,
+  "medarea": 1391,
+  "type": "atlas",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "dober:0": {
+  "sheet": "044_e.png",
+  "status": "ok",
+  "comps": 30,
+  "figs": 24,
+  "medarea": 331,
+  "type": "atlas",
+  "size": [
+   256,
+   128
+  ]
+ },
+ "sael:0": {
+  "sheet": "170_e.png",
+  "status": "ok",
+  "comps": 52,
+  "figs": 10,
+  "medarea": 4864,
+  "type": "full",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "elizabeth:0": {
+  "sheet": "178_e.png",
+  "status": "ok",
+  "comps": 50,
+  "figs": 12,
+  "medarea": 4983,
+  "type": "full",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "sunfish:0": {
+  "sheet": "119_e.png",
+  "status": "ok",
+  "comps": 42,
+  "figs": 20,
+  "medarea": 1570,
+  "type": "atlas",
+  "size": [
+   512,
+   256
+  ]
+ },
+ "celeboodle:0": {
+  "sheet": "042_e.png",
+  "status": "ok",
+  "comps": 18,
+  "figs": 18,
+  "medarea": 326,
+  "type": "atlas",
+  "size": [
+   128,
+   128
+  ]
+ }
+}

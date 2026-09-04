@@ -20,6 +20,7 @@ function loop(ts){const dt=Math.min(0.05,(ts-lastTs)/1000||0.016);lastTs=ts;G.t+
   cx.restore();
   requestAnimationFrame(loop)}
 loadSave();
+if(typeof earthMap==='function')earthMap(); // preload the real Earth map AT BOOT — the stage-select map never flashes a placeholder (r22 user report)
 // sanitize team slots against the live roster: an invalid id (edited/imported save) would crash
 // catStats() every battle frame — drop it to an empty slot instead
 SV.teams=SV.teams.map(t=>t.map(id=>id&&CATMAP[id]?id:''));
