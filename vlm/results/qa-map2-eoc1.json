@@ -1,7 +1,0 @@
-{
- "id": "qa-map2-eoc1",
- "ok": true,
- "model": "gemini-3.5-flash-lite",
- "text": "ABSTRACT_MAP\n\nThe image shows an abstract parchment-style map with a dotted path connecting rectangular country nodes (such as Korea, Japan, China, India, etc.) and a compass rose, rather than a realistic geographic world map of Earth.",
- "ts": 1788502530.728562
-}
