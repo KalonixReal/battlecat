@@ -2565,3 +2565,26 @@ Work Log:
 - MAP original rule: banners only on current + Clear! ribbons on cleared; other stages are dots
 - QA: 16 screens clean, 0 console errors, lint 0 errors, E2E real-input battle WIN with 3 crowns; 2 verification recordings in download/
 - PUSHED: a5e04e5, 7582fd5, b7f51d0, 6954c0d
+
+---
+Task ID: r23
+Agent: main (Z.ai Code)
+Task: "square box flashes white during a cat's attack — fix; test EVERYTHING (buttons/missions/battles/content); UI overlaps (price overlapped by symbol); website branch with index.html at root"
+
+Work Log:
+- WHITE-FLASH ROOT-CAUSED: battle.js drawUnit applied the hit-blink via source-atop fillRect on the MAIN canvas — source-atop composites against everything already drawn, so every hit painted a 120x130 white BOX over the background. Replaced with per-pixel white silhouette (ctx.filter brightness(30)) applied inside SPRIT.draw + both art.js painter drawImage paths — ONLY the unit's own pixels whiten (original behavior). Verified 3 ways: 13s+12s combat recordings pixel-scanned (zero transient boxes), pinned-flash screenshot shows full white silhouette, no box.
+- MAP BANNER HITBOX (CRITICAL, found by real-click E2E): BTN registers raw coords but map banners draw under the mapCam translate — hitboxes sat in world space while clicks test design space; with mapCam.x=1692 the banner hitbox was at x=2514 (off-screen) — MAP TAPS NEVER LANDED. Fixed by registering nd* hits in screen space (-mapCam+16/70). Verified: real click opens Korea modal.
+- CHAPTERS SCROLL SIGN (CRITICAL): rows drew at y+scrollChap — scrolling moved rows DOWN; chapters below the fold (eoc2+... ALL locked story chapters, SoL, UL, Aku) were UNREACHABLE by mouse. Fixed to y-scrollChap (matches equip/guide/combos convention). Verified: SoL row clickable at scroll 650.
+- 8 UI overlap fixes: equip Slots/Team text moved clear of ALL COMBOS (x=1206); upgrade blue XP label gap 8->16 + thinner outline; trophy progress bar colW-322 (progress text no longer runs under reward chips — "2 / 5" fully visible); shrine KEEPER'S DRESS diamonds moved to rx+142 (label no longer collides); expedition "Slot 2: Rank 30" caption y 148->145 (descenders were clipped by panel border); home rank card +4px (caption descenders); battle deck cost badge REWRITTEN (cent symbol was drawn 8px INTO the digits + plate measured with stale font — "50¢/100¢" now clean, verified); worker pill $-cost re-centered right of the arrow with auto-shrink (4-digit costs touched the arrow).
+- Gacha carousel right arrow moved 1090->916 (was drawn INSIDE the TODAY'S FEATURED panel over the "RARE - 25% BOOST" text — found by z-ai VLM critic pass).
+- Victory result stats chip right edge 1150->1080 (overlapped enemy-base art).
+- Leaderboard API 500 -> fixed (prisma db push; {"ok":true}) — WORLD DOJO FEED now LIVE on the leaderboard screen.
+- EXTENSIVE TESTING (user mandate): 15-screen sweep zero console errors; content sweep 46/46 cats + 60/60 enemies spawn-tested (0 fails; 43+46 real sprites, 17 painter-fallback: neko/pogo/can + 13 enemies with no usable wiki sheets); 548/548 stages generate (9 story chapters x48 + sol 48 + ul 48 + aku 8 + dojo 12); 18/18 battles start across ALL chapter kinds; real-click E2E title->home->chapters(scroll)->map(banner)->modal->battle->deploy x3->worker->pause->resume->speed x2->cannon->drag(grab-the-world 1:1 verified)->retry->retreat; gacha pull flow (rare ticket consumed, capsule anim phases 0->2, OK); defeat->Continue (3 CF charged, base revived, horde re-kill = correct, one-continue rule hides button after use); victory auto-play (3 crowns, rank up 1->2, treasure drop "Idol of Empire", Ok->map, cleared+saved); missions modal live counters; SoL full chain (chapters->world->submap->modal->battle) real-clicked; unlock rules verified (eoc2/sol need eoc1:47 etc.).
+- GITHUB WEBSITE BRANCH: gh-pages pushed (orphan, single commit, index.html at ROOT, .nojekyll, only-website content: index+js+fonts+assets minus build-time raw//animdata caches, ~130MB). Re-deployed after fixes. Main pushed 2x (3a5505d, e946c37).
+- Gemini direct API still region-blocked from sandbox egress (404/FAILED_PRECONDITION) -> used z-ai VLM (glm-5v-turbo) for 2 blind critic passes (10 screens): all clean after fixes.
+
+Stage Summary:
+- All user-reported issues fixed and machine-verified (white flash, price/symbol overlap, +6 more overlaps found by sweep)
+- 2 CRITICAL playability bugs found by real-input testing and fixed (map banner hitboxes, chapters scroll sign)
+- Full content + flow gauntlet green; leaderboard LIVE; gh-pages website branch live with index.html at root
+- Known-remaining: 17 painter-fallback units (no usable wiki/BCU sheets — Miraheze GIF pipeline still the next-phase upgrade), per-unit walk frame timing still uniform 110ms
