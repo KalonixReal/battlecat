@@ -211,291 +211,389 @@ function modalDraw(){const m=G.modal;if(!m)return;
   cx.restore()}
 
 /* ============================== SCREEN: TITLE / HOME ============================== */
+'use strict';
+/* ============================== AUTHENTIC TITLE SCREEN ==============================
+   The real game's title: EoCBackground (orange sunburst + landmarks + cat crowd),
+   the official MenuTitle logo, and the real Play button texture. Background swaps to
+   ItF / CotC art as those campaigns are cleared (like the original). */
+const UIIMG={imgs:{}};
+function uiImg(name){
+  let im=UIIMG.imgs[name];
+  if(im===undefined){
+    im=new Image();
+    im.onload=()=>{UIIMG.imgs[name]=im};
+    im.onerror=()=>{UIIMG.imgs[name]=null};
+    im.src='assets/ui/'+name;
+    UIIMG.imgs[name]=im;
+  }
+  return (im&&im.complete&&im.naturalWidth>0)?im:null;
+}
+function chapterClearedAny(id){const c=SV.cleared[id];if(!c)return false;for(const k in c)return true;return false}
 function drawTitle(dt){
-  // orange sunset gradient like the original title
-  const g=cx.createLinearGradient(0,0,0,720);g.addColorStop(0,'#ff9a00');g.addColorStop(.55,'#ffb31f');g.addColorStop(1,'#ffd23f');
-  cx.fillStyle=g;cx.fillRect(0,0,1280,720);
-  // sun rays
-  cx.save();cx.translate(640,300);cx.globalAlpha=.08;cx.fillStyle='#fff';
-  for(let i=0;i<12;i++){cx.rotate(TAU/12);cx.beginPath();cx.moveTo(0,0);cx.lineTo(900,-70);cx.lineTo(900,70);cx.closePath();cx.fill()}
-  cx.restore();
-  // cloud band + landmark silhouettes (simplified skyline) — clouds drift slowly
-  cx.fillStyle='rgba(255,255,255,.85)';
-  const cdrift=(off,sp)=>{let wx=(off-G.t*sp)%1600;if(wx<-260)wx+=1600;return wx};
-  cloudDraw(cdrift(140,7),320,1.6);cloudDraw(cdrift(430,5),290,1.3);cloudDraw(cdrift(900,8),320,1.7);cloudDraw(cdrift(1150,4),300,1.2);
-  // drifting cat-face hot-air balloon (subtle title charm) — kept above the logo so it never covers the wordmark
-  {const bx=cdrift(1350,11),by=118+Math.sin(G.t*0.9)*12;
-   cx.save();cx.translate(bx,by);cx.rotate(Math.sin(G.t*0.7)*0.06);
-   cx.fillStyle='#e85840';cx.beginPath();cx.ellipse(0,0,26,30,0,0,TAU);cx.fill();
-   cx.fillStyle='#ffd23f';cx.beginPath();cx.ellipse(0,0,26,30,0,0,Math.PI/2);cx.fill();
-   cx.beginPath();cx.ellipse(0,0,26,30,0,-Math.PI/2,0);cx.fill();
-   cx.lineWidth=2.5;cx.strokeStyle='#7a2a1c';cx.beginPath();cx.ellipse(0,0,26,30,0,0,TAU);cx.stroke();
-   cx.strokeStyle='#7a2a1c';cx.lineWidth=1.5;
-   cx.beginPath();cx.moveTo(-16,24);cx.lineTo(-8,40);cx.moveTo(16,24);cx.lineTo(8,40);cx.stroke();
-   cx.fillStyle='#8a5a20';rr(cx,-9,40,18,12,3);cx.fill();
-   cx.fillStyle='#fff';cx.beginPath();cx.arc(0,-2,11,0,TAU);cx.fill();
-   cx.lineWidth=1.6;cx.strokeStyle='#3a3a44';cx.stroke();
-   cx.fillStyle='#3a3a44';cx.beginPath();cx.arc(-4,-3,1.7,0,TAU);cx.arc(4,-3,1.7,0,TAU);cx.fill();
-   cx.beginPath();cx.moveTo(-2.5,2);cx.lineTo(2.5,2);cx.lineTo(0,5);cx.closePath();cx.fill();
-   cx.restore()}
-  cx.fillStyle='rgba(120,80,20,.55)';
-  // pagoda silhouette
-  cx.beginPath();cx.moveTo(180,330);cx.lineTo(230,330);cx.lineTo(222,300);cx.lineTo(240,300);cx.lineTo(232,268);cx.lineTo(258,268);cx.lineTo(248,236);cx.lineTo(280,236);cx.lineTo(268,268);cx.lineTo(296,268);cx.lineTo(288,300);cx.lineTo(306,300);cx.lineTo(298,330);cx.lineTo(348,330);cx.closePath();cx.fill();
-  // torii silhouette
-  cx.fillRect(950,270,10,60);cx.fillRect(1010,270,10,60);cx.fillRect(938,262,94,10);cx.fillRect(946,276,78,8);
-  //tokyo tower
-  cx.beginPath();cx.moveTo(760,330);cx.lineTo(782,240);cx.lineTo(804,330);cx.closePath();cx.fill();
-  // cat-head crowd bottom (the iconic Basic Cat faces) — rows raised so each head reads as a
-  //   crowd member peeking up from the bottom edge (QA fix: rows used to be 60-85% cut)
-  const headRows=[[678,46,1.2],[640,38,1.02],[674,32,.86]];
-  headRows.forEach((row,ri)=>{const[y,step,sc]=row;
-    for(let x=-20;x<1320;x+=step){const h=46*sc+(Math.sin(x*7.3+ri)*3);
-      ART.catHead(x,y+h/2,h/2,false)}});
-  // grounding band: warm dark strip under the crowd so the heads sit ON something
-  {const gb=cx.createLinearGradient(0,694,0,720);gb.addColorStop(0,'rgba(122,42,28,0)');gb.addColorStop(1,'rgba(122,42,28,.55)');
-    cx.fillStyle=gb;cx.fillRect(0,694,1280,26)}
-  // logo: per-letter bouncy "Battle" pink + paw + "Cats" orange w/ rim (original title signature)
-  cx.save();cx.translate(640,215);
-  cx.rotate(-0.04);
-  cx.font=FONT(30);cx.textAlign='left';cx.lineWidth=8;cx.strokeStyle='#20303f';cx.strokeText('THE',-330,-38);cx.fillStyle='#fff';cx.fillText('THE',-330,-38);
-  cx.textAlign='center';cx.lineJoin='round';
-  const word=(s,x0,y0,size,fill,rim,ph)=>{cx.font=FONT(size);
-    const widths=[...s].map(ch=>cx.measureText(ch).width);const tot=widths.reduce((a,b)=>a+b,0);
-    let x=x0-tot/2;
-    [...s].forEach((ch,i)=>{const yy=y0+Math.sin(G.t*2.2+ph+i*0.55)*5;const rot=Math.sin(G.t*1.7+ph+i*0.5)*0.06;
-      cx.save();cx.translate(x+widths[i]/2,yy);cx.rotate(rot);
-      cx.lineWidth=size*0.18;cx.strokeStyle='#20303f';cx.strokeText(ch,0,0);
-      cx.lineWidth=size*0.10;cx.strokeStyle=rim;cx.strokeText(ch,0,0);
-      cx.fillStyle=fill;cx.fillText(ch,0,0);cx.restore();
-      x+=widths[i]})};
-  word('Battle',-118,0,92,'#ffb0d8','#ff77b0',0);
-  word('Cats',128,26,92,'#ffc93f','#2f6fd0',2.1);
-  // paw print tucked beside the “Cats” wordmark (a signature, not a smudge)
-  cx.fillStyle='#2b2b33';cx.beginPath();cx.arc(252,52,11,0,TAU);cx.fill();
-  [[240,40],[250,35],[261,40]].forEach(([tx,ty])=>{cx.beginPath();cx.arc(tx,ty+2,5,0,TAU);cx.fill()});
-  cx.restore();
-  // PLAY / SETTINGS pill buttons (PLAY pulses like the original)
-  cx.save();cx.translate(640,384);const pulse=1+Math.sin(G.t*4)*0.022;cx.scale(pulse,pulse);
-  cx.shadowColor='rgba(255,150,0,.6)';cx.shadowBlur=30;cx.fillStyle='rgba(255,210,63,.4)';rr(cx,-180,-46,360,92,46);cx.fill();cx.restore();
-  const bw=330;
-  { // attract-mode pulse: soft breathing glow + gentle scale around the PLAY button
-    const pl=1+Math.sin(G.t*2.2)*0.012;
-    cx.save();cx.translate(640,384);cx.scale(pl,pl);
-    cx.shadowColor='rgba(255,120,20,'+(0.45+Math.sin(G.t*2.2)*0.25).toFixed(3)+')';cx.shadowBlur=22+Math.sin(G.t*2.2)*10;
-    cx.fillStyle='rgba(255,210,63,.9)';rr(cx,-bw/2,-32,bw,64,32);cx.fill();
+  // authentic title background — EoC by default, ItF/CotC art once those chapters are cleared
+  const bgName=chapterClearedAny('cotc3')?'title_bg_cotc.png':chapterClearedAny('itf3')?'title_bg_itf.png':'title_bg.png';
+  const bg=uiImg(bgName)||uiImg('title_bg.png');
+  if(bg)cx.drawImage(bg,0,0,1280,720);
+  else{ // first-frame fallback while the png streams in: flat orange sunburst
+    const g=cx.createLinearGradient(0,0,0,720);g.addColorStop(0,'#ffa11f');g.addColorStop(.55,'#ffc235');g.addColorStop(1,'#ff8a1f');
+    cx.fillStyle=g;cx.fillRect(0,0,1280,720);
+    cx.save();cx.translate(640,300);cx.globalAlpha=.08;cx.fillStyle='#fff';
+    for(let i=0;i<12;i++){cx.rotate(TAU/12);cx.beginPath();cx.moveTo(0,0);cx.lineTo(900,-70);cx.lineTo(900,70);cx.closePath();cx.fill()}
     cx.restore();
-    txt(cx,'PLAY',640,385+Math.sin(G.t*2.2)*1.5,34,'#5a3b16','center',6,'#fff8e8',700);
-    BTN('play',640-bw/2,352,bw,64,()=>{SFX.click();push('home')},{flat:true,nohov:true})}
-  txt(cx,'© PONOS Corp.',14,18,13,'rgba(90,60,20,.85)','left');
-  txt(cx,'Version 12.6.0',1266,18,13,'rgba(90,60,20,.85)','right');
-
+  }
+  // official logo, gently bobbing (exact original artwork)
+  const logo=uiImg('title_logo.png');
+  if(logo){
+    const lw=560,lh=lw*logo.naturalHeight/logo.naturalWidth;
+    cx.save();cx.translate(640,200+Math.sin(G.t*1.5)*4);
+    cx.rotate(-0.022);
+    cx.shadowColor='rgba(130,60,0,.35)';cx.shadowBlur=16;cx.shadowOffsetY=6;
+    cx.drawImage(logo,-lw/2,-lh/2,lw,lh);
+    cx.restore();
+  }else{ // streamed-in fallback: bouncy per-letter wordmark
+    cx.save();cx.translate(640,215);cx.rotate(-0.04);
+    cx.font=FONT(30);cx.textAlign='left';cx.lineWidth=8;cx.strokeStyle='#20303f';cx.strokeText('THE',-330,-38);cx.fillStyle='#fff';cx.fillText('THE',-330,-38);
+    cx.textAlign='center';cx.lineJoin='round';
+    const word=(s,x0,y0,size,fill,rim,ph)=>{cx.font=FONT(size);
+      const widths=[...s].map(ch=>cx.measureText(ch).width);const tot=widths.reduce((a,b)=>a+b,0);
+      let x=x0-tot/2;
+      [...s].forEach((ch,i)=>{const yy=y0+Math.sin(G.t*2.2+ph+i*0.55)*5;const rot=Math.sin(G.t*1.7+ph+i*0.5)*0.06;
+        cx.save();cx.translate(x+widths[i]/2,yy);cx.rotate(rot);
+        cx.lineWidth=size*0.18;cx.strokeStyle='#20303f';cx.strokeText(ch,0,0);
+        cx.lineWidth=size*0.10;cx.strokeStyle=rim;cx.strokeText(ch,0,0);
+        cx.fillStyle=fill;cx.fillText(ch,0,0);cx.restore();
+        x+=widths[i]})};
+    word('Battle',-118,0,92,'#ffb0d8','#ff77b0',0);
+    word('Cats',128,26,92,'#ffc93f','#2f6fd0',2.1);
+    cx.restore();
+  }
+  // PLAY — the real button texture, pulsing like the original's attract mode
+  {const bw=300,bh=84,by=396;
+    cx.save();cx.translate(640,by);
+    const pulse=1+Math.sin(G.t*4)*0.03;cx.scale(pulse,pulse);
+    const pb=uiImg('play_button.png');
+    if(pb){cx.drawImage(pb,-bw/2,-bh/2,bw,bh)}
+    else{
+      cx.shadowColor='rgba(255,150,0,.6)';cx.shadowBlur=26;cx.shadowOffsetY=4;
+      const gg=cx.createLinearGradient(0,-bh/2,0,bh/2);gg.addColorStop(0,'#ffdf60');gg.addColorStop(.55,'#fdc321');gg.addColorStop(1,'#e89a10');
+      cx.fillStyle=gg;rr(cx,-bw/2,-bh/2,bw,bh,20);cx.fill();
+      cx.shadowColor='transparent';
+      cx.lineWidth=3.5;cx.strokeStyle='#1a1208';rr(cx,-bw/2,-bh/2,bw,bh,20);cx.stroke();
+      txt(cx,'Play',0,2,40,'#fff','center',7,'#1a1208',700);
+    }
+    cx.restore();
+    BTN('play',640-bw/2,by-bh/2,bw,bh,()=>{SFX.click();push('home')},{flat:true,nohov:true})}
+  txt(cx,'\u00A9 PONOS Corp.',14,18,13,'rgba(90,60,20,.9)','left',3,'rgba(255,235,200,.6)');
+  txt(cx,'Version 12.6.0',1266,18,13,'rgba(90,60,20,.9)','right',3,'rgba(255,235,200,.6)');
 }
 
-function drawHome(dt){bgSky();drawTopBar('');
+/* ============================== CAT BASE MENU (authentic v11.10 layout) ==============================
+   Teal karakusa double-doors fill the screen (Img009_3). LEFT door: user-rank bar +
+   calendar, Start!!/Upgrade/Equip gold buttons, Menu/Gamatoto/Missions icons, back arrow.
+   Door gap: storage fridge + capsule buttons on a wooden tray. RIGHT door: event banners,
+   the Cat's speech bubble, and the big Cat peeking over the bottom bar (Store / Cat Food). */
+const SPLASH_TIPS=[
+  'Welcome to the Cat Base! Prepare yourself for battle here! When you\u2019re ready, attack!',
+  'Have I mentioned Cat Treasures? They\u2019re really good. You can get a lot stronger just collecting Cat Treasures!',
+  'You can read about our enemies in the Enemy Encyclopedia.',
+  'Teaming up certain units will give bonuses to your battle abilities!',
+  'I heard some enemies can survive even a lethal strike! Scary\u2026',
+  'Clearing Event Stages sometimes gives you Items! Collect lots of items and use them to give you the upper hand during battle!',
+  'If you end the battle within 10 seconds of entering combat, Energy spent will be restored! Don\u2019t worry, items chosen for that fight will be given back too!',
+  'You can organize the cats you use in the Organize screen. Customize your Cat Army and start the battle!',
+  'Praise is good! Praise that you deserve is even better! You deserve praise if you tried!',
+  'Tap a stage\u2019s name to check what enemies will appear. You gotta play the stage at least once, though!',
+  'It\u2019s okay to cry. It\u2019s okay to run away. You were not made that strong.',
+  'Cat Jobs gives the most XP for your time! Try using this item on levels with already big XP rewards!'];
+function splashTip(){const d=new Date();const day=Math.floor(d.getTime()/86400000);return SPLASH_TIPS[day%SPLASH_TIPS.length]}
+/* word-wrap for the speech bubble */
+function wrapText(c,s,maxW){const words=s.split(' ');const lines=[];let cur='';
+  for(const w of words){const t=cur?cur+' '+w:w;
+    if(c.measureText(t).width>maxW&&cur){lines.push(cur);cur=w}else cur=t}
+  if(cur)lines.push(cur);return lines}
+/* the big Cat face that peeks over the bottom bar (painted to match the original exactly) */
+function bigCatFace(c,x,y,s){
+  c.save();c.translate(x,y);c.scale(s,s);
+  c.lineWidth=13;c.strokeStyle='#141414';c.lineJoin='round';c.fillStyle='#fff';
+  // ears — short triangles sitting ON the head silhouette
+  c.beginPath();c.moveTo(-118,-92);c.lineTo(-134,-176);c.lineTo(-38,-130);c.closePath();c.fill();c.stroke();
+  c.beginPath();c.moveTo(118,-92);c.lineTo(134,-176);c.lineTo(38,-130);c.closePath();c.fill();c.stroke();
+  // head
+  c.beginPath();c.ellipse(0,0,178,152,0,0,TAU);c.fill();c.stroke();
+  // eyes
+  c.fillStyle='#141414';
+  c.beginPath();c.arc(-58,-40,14,0,TAU);c.fill();
+  c.beginPath();c.arc(58,-40,14,0,TAU);c.fill();
+  // \u03c9 mouth: nose notch + side arcs + chin V (the iconic face)
+  c.strokeStyle='#141414';c.lineWidth=11;c.lineCap='round';
+  c.beginPath();
+  c.moveTo(-46,10);
+  c.quadraticCurveTo(-30,38,0,14);
+  c.quadraticCurveTo(30,38,46,10);
+  c.stroke();
+  c.beginPath();c.moveTo(-11,-14);c.lineTo(0,-2);c.lineTo(11,-14);c.stroke(); // nose bridge
+  c.beginPath();c.moveTo(-16,22);c.lineTo(0,52);c.lineTo(16,22);c.stroke();   // chin V
+  c.restore();
+}
+function goldBtnAuth(id,y,label,h,cb,o){ // the original's gold bar buttons (Start!!/Upgrade/Equip)
+  o=o||{};const bw=o.w||386,bh=h,x=o.x||26;
+  const pu=(o.pulse?1+Math.sin(G.t*3.2)*0.012:1);
+  cx.save();cx.translate(x+bw/2,y+bh/2);cx.scale(pu,pu);
+  const gg=cx.createLinearGradient(0,-bh/2,0,bh/2);
+  gg.addColorStop(0,'#ffe264');gg.addColorStop(.5,'#fdc321');gg.addColorStop(1,'#e8940f');
+  cx.shadowColor='rgba(40,22,4,.5)';cx.shadowBlur=6;cx.shadowOffsetY=4;
+  cx.fillStyle=gg;rr(cx,-bw/2,-bh/2,bw,bh,12);cx.fill();
+  cx.shadowColor='transparent';
+  cx.lineWidth=3.2;cx.strokeStyle='#221808';rr(cx,-bw/2,-bh/2,bw,bh,12);cx.stroke();
+  cx.lineWidth=1.3;cx.strokeStyle='rgba(255,255,255,.75)';rr(cx,-bw/2+3.5,-bh/2+3.5,bw-7,bh-10,9);cx.stroke();
+  txt(cx,label,0,1,o.fs||30,'#fff','center',6.5,'#221808',700);
+  cx.restore();
+  BTN(id,x,y,bw,bh,cb,{flat:true,nohov:true});
+}
+function drawHome(dt){
   ensureMissions();
   const mDone=MISSIONS.filter(m=>missionDone(m.id)&&!missionClaimed(m.id)).length;
-  /* ================= CAT BASE MENU (original layout) =================
-     LEFT: rank card + the three gold buttons (START!! / UPGRADE / EQUIP) + book menu
-           + GAMATOTO (expeditions) + missions checklist.
-     CENTER: the base scene — Cat Base, capsule cats, store, team parade (real sprites).
-     RIGHT: collection catalog.  NO bottom bar on this screen (matches the original). */
-  const LX=18,LW=312;
+  const doors=uiImg('doors_home.png');
+  if(doors)cx.drawImage(doors,0,0,1280,720);
+  else{const g=cx.createLinearGradient(0,0,0,720);g.addColorStop(0,'#8fb2a4');g.addColorStop(1,'#6f9a8a');cx.fillStyle=g;cx.fillRect(0,0,1280,720)}
 
-  /* ---- LEFT: rank card ---- */
+  /* ===== top bar: "Cat Base" + area swap | XP counter ===== */
+  {const g=cx.createLinearGradient(0,0,0,40);g.addColorStop(0,'#b57a35');g.addColorStop(1,'#7a4a18');
+    cx.fillStyle=g;cx.fillRect(0,0,1280,40);
+    cx.fillStyle='rgba(50,28,8,.5)';cx.fillRect(0,37,1280,3)}
+  txt(cx,'Cat Base',16,21,25,'#fff','left',5.5,'rgba(56,32,8,.95)',700);
+  { // swap-button (area select) — the \u21c4 chip beside the wordmark
+    cx.fillStyle='#e8d8b8';rr(cx,150,6,40,28,7);cx.fill();
+    cx.lineWidth=2.2;cx.strokeStyle='#5a3b16';rr(cx,150,6,40,28,7);cx.stroke();
+    cx.strokeStyle='#5a3b16';cx.lineWidth=3;cx.lineCap='round';
+    cx.beginPath();cx.moveTo(159,15);cx.lineTo(179,15);cx.moveTo(174,11);cx.lineTo(180,15);cx.lineTo(174,19);cx.stroke();
+    cx.beginPath();cx.moveTo(181,25);cx.lineTo(161,25);cx.moveTo(166,21);cx.lineTo(160,25);cx.lineTo(166,29);cx.stroke();
+    BTN('hareas',150,6,40,28,()=>{SFX.click();push('chapters')},{flat:true,nohov:true})}
+  { // XP: gold LED-style counter, tappable like the original's XP shop shortcut
+    const s=fmt(SV.xp);cx.font=FONT(31,700);const w=cx.measureText(s).width;
+    txt(cx,'XP',1258-w-46,21,20,'#ffd23f','left',4,'#5a3406',700);
+    txt(cx,s,1258,22,31,'#ffd23f','right',5.5,'#5a3406',700);
+    BTN('hxp',1080,4,190,32,()=>{SFX.click();push('store')},{flat:true,nohov:true})}
+
+  /* ===== LEFT door ===== */
+  // user-rank bar + (i) + calendar
   {const t1=800*Math.pow(SV.rank,1/0.55),t0=800*Math.pow(SV.rank-1,1/0.55);
     const fr=clamp((SV.xpTotal-t0)/Math.max(1,t1-t0),0,1);
-    creamPanel(LX,62,LW,48); // +4px so the XP caption's descenders clear the bottom border
-    cx.fillStyle='#8a3ab8';cx.beginPath();cx.arc(LX+24,84,15,0,TAU);cx.fill();
-    cx.lineWidth=2.5;cx.strokeStyle='#4a1a6a';cx.stroke();
-    txt(cx,String(SV.rank),LX+24,85,13,'#fff','center',2.5,'#4a1a6a',700);
-    txt(cx,'USER RANK',LX+46,76,11,'#8a5a2a','left',2,'#fff',700);
-    cx.fillStyle='rgba(90,59,22,.16)';rr(cx,LX+44,84,LW-62,10,5);cx.fill();
-    const pg2=cx.createLinearGradient(LX+44,0,LX+44+LW-62,0);pg2.addColorStop(0,'#c9a8f8');pg2.addColorStop(1,'#8a3ab8');
-    cx.fillStyle=pg2;rr(cx,LX+44,84,Math.max(8,(LW-62)*fr),10,5);cx.fill();
-    cx.lineWidth=1.2;cx.strokeStyle='rgba(90,59,22,.4)';rr(cx,LX+44,84,LW-62,10,5);cx.stroke();
-    txt(cx,fmt(SV.xpTotal)+' XP',LX+46,103,9.5,'#8a6a4a','left',2,'#fff',400)}
-
-  /* ---- LEFT: the three gold buttons (original START!! / UPGRADE / EQUIP) ---- */
-  const goldBtn=(id,y,label,sub,cb,badge)=>{
-    const bw=LW,bh=y<260?58:48,x=LX;
-    const pu=1+Math.sin(G.t*3+(badge?4:0))*0.008;
-    cx.save();cx.translate(x+bw/2,y+bh/2);
-    const gg=cx.createLinearGradient(0,-bh/2,0,bh/2);gg.addColorStop(0,'#ffe27a');gg.addColorStop(.55,'#ffd23f');gg.addColorStop(1,'#e8a020');
-    cx.shadowColor='rgba(90,50,10,.45)';cx.shadowBlur=7;cx.shadowOffsetY=4;
-    cx.fillStyle=gg;rr(cx,-bw/2,-bh/2,bw,bh,14);cx.fill();cx.shadowColor='transparent';
-    cx.lineWidth=3.5;cx.strokeStyle='#8a5a20';rr(cx,-bw/2,-bh/2,bw,bh,14);cx.stroke();
-    cx.lineWidth=1.4;cx.strokeStyle='rgba(255,255,255,.8)';rr(cx,-bw/2+4,-bh/2+4,bw-8,bh-14,10);cx.stroke();
-    txt(cx,label,0,(sub?-8:1),(y<260?26:21),'#5a3b16','center',4.5,'#fff',700);
-    if(sub)txt(cx,sub,0,13,10.5,'#7a5220','center',2.5,'#fff8e8',700);
-    if(badge){cx.save();cx.translate(bw/2-16,-bh/2+2);cx.rotate(Math.sin(G.t*5)*0.12);
-      cx.fillStyle='#e84030';cx.beginPath();cx.arc(0,0,11,0,TAU);cx.fill();
-      cx.lineWidth=2;cx.strokeStyle='#7a1a10';cx.stroke();
-      txt(cx,String(badge),0,0.5,10.5,'#fff','center',2,'#7a1a10',700);cx.restore()}
+    // (i) round button
+    cx.fillStyle='#6a4416';cx.beginPath();cx.arc(42,86,17,0,TAU);cx.fill();
+    cx.lineWidth=2.5;cx.strokeStyle='#3a250a';cx.stroke();
+    cx.fillStyle='#e8d8b8';cx.beginPath();cx.arc(42,86,11.5,0,TAU);cx.fill();
+    txt(cx,'i',42,87,15,'#5a3b16','center',3,'#fff',700);
+    BTN('hinfo',25,69,34,34,()=>{SFX.click();openModal('THE BATTLE CATS',
+      ['Version 12.6.0 \u00b7 fan replica built on the original assets',
+       'User Rank '+SV.rank+' \u00b7 total XP '+fmt(SV.xpTotal)+' \u00b7 NP '+fmt(SV.np)],
+      [{n:'CLOSE',cb:()=>{}}])},{flat:true,nohov:true});
+    // rank bar (dark leather pill + gold LED number + fill)
+    cx.fillStyle='#4a2e0e';rr(cx,68,68,252,36,18);cx.fill();
+    cx.lineWidth=2.5;cx.strokeStyle='#2a1a06';rr(cx,68,68,252,36,18);cx.stroke();
+    cx.fillStyle='rgba(0,0,0,.4)';rr(cx,150,76,158,20,10);cx.fill();
+    if(fr>0){const pg=cx.createLinearGradient(150,0,308,0);pg.addColorStop(0,'#ffe264');pg.addColorStop(1,'#e8a010');
+      cx.fillStyle=pg;rr(cx,150,76,Math.max(10,158*fr),20,10);cx.fill()}
+    cx.lineWidth=1.5;cx.strokeStyle='rgba(255,220,140,.4)';rr(cx,150,76,158,20,10);cx.stroke();
+    txt(cx,fmt(SV.xpTotal),229,87,19,'#ffd23f','center',4,'rgba(20,10,0,.9)',700);
+    txt(cx,'RANK '+SV.rank,109,87,13,'#e8d8b8','center',3,'rgba(20,10,0,.9)',700);
+    BTN('hrank',68,68,252,36,()=>{SFX.click();toast('User Rank '+SV.rank+' \u00b7 '+fmt(SV.xpTotal)+' XP collected','#ffd23f')},{flat:true,nohov:true});
+    // calendar with cat face
+    cx.save();cx.translate(356,86);
+    cx.fillStyle='#f4ede0';rr(cx,-21,-19,42,38,5);cx.fill();
+    cx.lineWidth=2.4;cx.strokeStyle='#5a3b16';rr(cx,-21,-19,42,38,5);cx.stroke();
+    cx.fillStyle='#d83a2a';rr(cx,-21,-19,42,10,4);cx.fill();
+    cx.fillStyle='#8a5a20';cx.fillRect(-13,-25,5,10);cx.fillRect(8,-25,5,10);
+    cx.fillStyle='#4a3a28';cx.beginPath();cx.arc(-7,4,2.6,0,TAU);cx.arc(7,4,2.6,0,TAU);cx.fill();
+    cx.strokeStyle='#4a3a28';cx.lineWidth=1.8;cx.beginPath();cx.arc(0,8,3.6,0.2,Math.PI-0.2);cx.stroke();
+    cx.beginPath();cx.moveTo(-9,0);cx.lineTo(-6,-3);cx.lineTo(-3,0);cx.closePath();cx.fill();
+    cx.beginPath();cx.moveTo(9,0);cx.lineTo(6,-3);cx.lineTo(3,0);cx.closePath();cx.fill();
     cx.restore();
-    BTN(id,x,y,bw,bh,cb,{flat:true,nohov:true})};
-  goldBtn('hstart',116,'START!!',null,()=>{G.mapSub=0;push('chapters')});
-  goldBtn('hupg',182,'UPGRADE',catOwnedCount()+' cats owned',()=>{G.selCat=null;push('upgrade')});
-  goldBtn('hequip',238,'EQUIP','team '+(SV.teamSel+1)+' / 3',()=>push('equip'));
+    BTN('hcal',335,63,42,46,()=>{SFX.click();const evs=eventStages();
+      openModal('EVENT CALENDAR',evs.length?evs.slice(0,6).map(e=>e.s.name+' \u00b7 '+e.s.energy+' energy'):['No events today \u2014 check the Store for daily deals!'],
+      [{n:'VIEW EVENT STAGES',cb:()=>{G.chapter='event';G.mapSub=0;push('chapters')}},{n:'CLOSE',cb:()=>{}}])},{flat:true,nohov:true})}
 
-  /* ---- LEFT: menu book / GAMATOTO / missions ---- */
+  // Start!! / Upgrade / Equip (gold, authentic order + sizes)
+  goldBtnAuth('hstart',124,'Start!!',72,()=>{G.mapSub=0;G.mapFocusIdx=null;push('map')},{pulse:true,fs:31});
+  goldBtnAuth('hupg',206,'Upgrade',58,()=>{G.selCat=null;push('upgrade')},{fs:25});
+  goldBtnAuth('hequip',272,'Equip',58,()=>push('equip'),{fs:25});
+
+  // Menu / GAMATOTO / Missions — freestanding icons with labels beneath (original row)
   const bookDot=mDone>0||shrineInfo().freeLeft||expdAnyDone()||trophyClaimCount()||radarHotCount();
-  const rowBtn=(id,y,icon,label,cb,dot,dotCol)=>{
-    const bh=44,x=LX;
-    cx.save();cx.translate(x,y);
-    cx.fillStyle='#fffdf5';rr(cx,0,0,LW,bh,12);cx.fill();
-    cx.lineWidth=2.5;cx.strokeStyle='#a8845a';rr(cx,1,1,LW-2,bh-2,11);cx.stroke();
-    cx.fillStyle='#c8913a';cx.beginPath();cx.arc(30,22,17,0,TAU);cx.fill();
-    cx.lineWidth=2.2;cx.strokeStyle='#8a5a20';cx.stroke();
-    glyph(cx,icon,30,22,10.5,'#fff','#8a5a20');
-    txt(cx,label,58,23,17,'#5a3b16','left',3,'#fff',700);
-    if(dot){cx.save();cx.translate(LW-20,10);cx.rotate(Math.sin(G.t*5)*0.14);
-      cx.fillStyle=dotCol||'#e84030';cx.beginPath();cx.arc(0,0,9.5,0,TAU);cx.fill();
-      cx.lineWidth=2;cx.strokeStyle='rgba(60,20,10,.6)';cx.stroke();cx.restore()}
+  const homeIcon=(id,cxp,label,drawFn,hot,hotCol,cb)=>{
+    cx.save();cx.translate(cxp,398);
+    cx.fillStyle='rgba(30,50,40,.18)';cx.beginPath();cx.ellipse(0,44,40,7,0,0,TAU);cx.fill();
+    drawFn();
+    if(hot){cx.save();cx.translate(34,-40);cx.rotate(Math.sin(G.t*5)*0.14);
+      cx.fillStyle=hotCol||'#e84030';cx.beginPath();cx.arc(0,0,11,0,TAU);cx.fill();
+      cx.lineWidth=2;cx.strokeStyle='rgba(60,20,10,.6)';cx.stroke();
+      txt(cx,String(hot),0,0.5,11,'#fff','center',2,'rgba(60,20,10,.6)',700);cx.restore()}
+    txt(cx,label,0,64,14.5,'#fff','center',4.5,'rgba(50,30,10,.9)',700);
     cx.restore();
-    BTN(id,x,y,LW,bh,cb,{flat:true,nohov:true})};
-  rowBtn('hbook',294,'scroll','MENU',()=>{openBookMenu()},bookDot?mDone||'!':null);
-  rowBtn('hgamatoto',346,'compass','GAMATOTO',()=>push('expedition'),expdAnyDone()?'!':null,'#3abc6a');
-  rowBtn('hmissions',398,'medal','MISSIONS',()=>openMissionsModal(),mDone||null);
+    BTN(id,cxp-52,344,104,128,cb,{flat:true,nohov:true})};
+  homeIcon('hbook',100,'Menu',()=>{ // open book with cat mark
+    cx.save();cx.translate(0,-6);
+    cx.fillStyle='#fffdf5';cx.beginPath();
+    cx.moveTo(-34,-26);cx.quadraticCurveTo(-12,-34,0,-26);cx.quadraticCurveTo(12,-34,34,-26);
+    cx.lineTo(34,22);cx.quadraticCurveTo(12,30,0,22);cx.quadraticCurveTo(-12,30,-34,22);cx.closePath();cx.fill();
+    cx.lineWidth=3;cx.strokeStyle='#5a3b16';cx.stroke();
+    cx.beginPath();cx.moveTo(0,-26);cx.lineTo(0,22);cx.stroke();
+    cx.fillStyle='#e8951f';cx.beginPath();cx.arc(0,-2,9,0,TAU);cx.fill();
+    cx.lineWidth=1.8;cx.strokeStyle='#7a4a08';cx.stroke();
+    cx.fillStyle='#7a4a08';cx.beginPath();cx.arc(-3,-4,1.4,0,TAU);cx.arc(3,-4,1.4,0,TAU);cx.fill();
+    cx.strokeStyle='#7a4a08';cx.lineWidth=1.4;cx.beginPath();cx.arc(0,-1,3,0.2,Math.PI-0.2);cx.stroke();
+    cx.restore()},'','#e84030',()=>{SFX.click();openBookMenu()},0);
+  homeIcon('hgamatoto',244,'GAMATOTO',()=>{ // pickaxe + white hard-hat with brim
+    cx.save();cx.translate(0,-6);
+    cx.strokeStyle='#8a5a20';cx.lineWidth=5;cx.lineCap='round';
+    cx.beginPath();cx.moveTo(-30,26);cx.lineTo(14,-22);cx.stroke();
+    cx.strokeStyle='#5a3b16';cx.lineWidth=5;
+    cx.beginPath();cx.moveTo(-36,-18);cx.quadraticCurveTo(-2,-42,34,-16);cx.stroke();
+    cx.fillStyle='#f2f4f8';cx.beginPath();cx.arc(14,0,15,Math.PI,0);cx.closePath();cx.fill();
+    cx.lineWidth=2.4;cx.strokeStyle='#7a7e88';cx.stroke();
+    cx.fillStyle='#d8dce4';rr(cx,-4,0,36,5,2.5);cx.fill();
+    cx.strokeStyle='#7a7e88';cx.lineWidth=1.6;rr(cx,-4,0,36,5,2.5);cx.stroke();
+    cx.fillStyle='#fff';cx.beginPath();cx.arc(9,-2,2,0,TAU);cx.arc(19,-2,2,0,TAU);cx.fill();
+    cx.strokeStyle='#9aa0aa';cx.lineWidth=1.4;cx.beginPath();cx.arc(14,1,3,0.2,Math.PI-0.2);cx.stroke();
+    cx.restore()},expdAnyDone()?'!':'','#3abc6a',()=>{SFX.click();push('expedition')},0);
+  homeIcon('hmissions',388,'Missions',()=>{ // clipboard with red hearts
+    cx.save();cx.translate(0,-6);cx.rotate(0.06);
+    cx.fillStyle='#e8d8b8';rr(cx,-24,-30,48,60,6);cx.fill();
+    cx.lineWidth=3;cx.strokeStyle='#5a3b16';rr(cx,-24,-30,48,60,6);cx.stroke();
+    cx.fillStyle='#c8ccd4';rr(cx,-10,-36,20,12,4);cx.fill();
+    cx.lineWidth=2;cx.strokeStyle='#5a5e66';rr(cx,-10,-36,20,12,4);cx.stroke();
+    const heart=(hx,hy)=>{cx.fillStyle='#d83a2a';cx.save();cx.translate(hx,hy);cx.scale(1.15,1.15);
+      cx.beginPath();cx.moveTo(0,3);cx.bezierCurveTo(-6,-3,-3,-8,0,-4);cx.bezierCurveTo(3,-8,6,-3,0,3);cx.closePath();cx.fill();cx.restore()};
+    heart(-8,-12);heart(9,-12);heart(-8,4);heart(9,4);
+    cx.strokeStyle='#8a7a5a';cx.lineWidth=2;cx.beginPath();cx.moveTo(-14,20);cx.lineTo(14,20);cx.moveTo(-14,26);cx.lineTo(6,26);cx.stroke();
+    cx.restore()},mDone||'','#e84030',()=>{SFX.click();openMissionsModal()},0);
 
-  /* ---- CENTER: the Cat Base scene ---- */
-  const SX=340,SW=508; // scene rect x/width
-  cx.save();
-  cx.beginPath();cx.rect(SX,58,SW,602);cx.clip();
-  // sky
-  const sg=cx.createLinearGradient(0,58,0,470);sg.addColorStop(0,'#8ecff0');sg.addColorStop(.7,'#cdeafc');sg.addColorStop(1,'#e8f6d8');
-  cx.fillStyle=sg;cx.fillRect(SX,58,SW,412);
-  // sun
-  cx.save();cx.translate(SX+SW-70,120);cx.shadowColor='rgba(255,236,120,.9)';cx.shadowBlur=26;
-  cx.fillStyle='#ffe27a';cx.beginPath();cx.arc(0,0,26,0,TAU);cx.fill();cx.restore();
-  // drifting clouds
-  for(let ci=0;ci<4;ci++){const cxp=SX+((G.t*(6+ci*2.2)+ci*211)%(SW+180))-90,cyp=100+((ci*83)%130);
-    cx.fillStyle='rgba(255,255,255,'+(0.5+((ci*17)%25)/100)+')';
-    cx.beginPath();cx.arc(cxp,cyp,20,0,TAU);cx.arc(cxp+26,cyp-8,15,0,TAU);cx.arc(cxp+46,cyp+3,12,0,TAU);cx.fill()}
-  // distant hills
-  cx.fillStyle='#a8d8b8';cx.beginPath();cx.moveTo(SX,470);
-  for(let i=0;i<=6;i++){const hx=SX+i*SW/6;cx.quadraticCurveTo(hx-SW/24,412,hx,470)}
-  cx.lineTo(SX+SW,470);cx.closePath();cx.fill();
-  cx.fillStyle='#bce4c8';cx.beginPath();cx.moveTo(SX,470);
-  for(let i=0;i<=9;i++){const hx=SX+i*SW/9;cx.quadraticCurveTo(hx-SW/28,438,hx,470)}
-  cx.lineTo(SX+SW,470);cx.closePath();cx.fill();
-  // ground
-  const gg2=cx.createLinearGradient(0,470,0,660);gg2.addColorStop(0,'#8ac86a');gg2.addColorStop(1,'#5a9a44');
-  cx.fillStyle=gg2;cx.fillRect(SX,470,SW,190);
-  cx.fillStyle='rgba(255,255,255,.14)';cx.fillRect(SX,470,SW,3);
-  for(let i=0;i<34;i++){const px=SX+((i*97+31)%SW),py=486+((i*53)%160);
-    cx.fillStyle=i%3?'rgba(40,90,30,.25)':'rgba(255,255,255,.2)';
-    cx.beginPath();cx.ellipse(px,py,2.6,1.4,0,0,TAU);cx.fill()}
-  for(let i=0;i<9;i++){const px=SX+26+((i*131)%470),py=500+((i*77)%140);
-    cx.strokeStyle='rgba(46,110,36,.5)';cx.lineWidth=2;
-    cx.beginPath();cx.moveTo(px,py);cx.lineTo(px-2,py-6);cx.moveTo(px,py);cx.lineTo(px+3,py-7);cx.stroke()}
-  // Cat Base building (clickable → CAT BASE screen)
-  {const bxx=SX+SW/2,byy=560;
-    cx.save();cx.translate(bxx,byy);
-    cx.fillStyle='rgba(30,60,20,.25)';cx.beginPath();cx.ellipse(0,6,120,16,0,0,TAU);cx.fill();
-    cx.fillStyle='#e8e2d0';rr(cx,-84,-130,168,132,10);cx.fill();
-    cx.lineWidth=4;cx.strokeStyle='#8a7a5a';rr(cx,-84,-130,168,132,10);cx.stroke();
-    const roofG=cx.createLinearGradient(0,-190,0,-120);roofG.addColorStop(0,'#ff9a6a');roofG.addColorStop(1,'#e8683a');
-    cx.fillStyle=roofG;cx.beginPath();cx.moveTo(-98,-120);cx.lineTo(0,-196);cx.lineTo(98,-120);cx.closePath();cx.fill();
-    cx.lineWidth=4;cx.strokeStyle='#8a3a1a';cx.stroke();
-    cx.fillStyle='#ff9a6a';rr(cx,-16,-214,32,26,6);cx.fill();cx.lineWidth=3;cx.strokeStyle='#8a3a1a';rr(cx,-16,-214,32,26,6);cx.stroke();
-    cx.fillStyle='#8a5a20';rr(cx,-22,-44,44,46,8);cx.fill();
-    cx.lineWidth=3;cx.strokeStyle='#5a3b16';rr(cx,-22,-44,44,46,8);cx.stroke();
-    cx.fillStyle='#ffd23f';cx.beginPath();cx.arc(4,-22,4.5,0,TAU);cx.fill();
-    cx.fillStyle='#c8dcf8';rr(cx,-66,-104,44,40,6);cx.fill();cx.lineWidth=3;cx.strokeStyle='#7a8aa0';rr(cx,-66,-104,44,40,6);cx.stroke();
-    cx.fillStyle='rgba(255,255,255,.5)';cx.beginPath();cx.moveTo(-62,-64);cx.lineTo(-46,-84);cx.lineTo(-46,-64);cx.closePath();cx.fill();
-    cx.fillStyle='#c8dcf8';rr(cx,22,-104,44,40,6);cx.fill();cx.lineWidth=3;cx.strokeStyle='#7a8aa0';rr(cx,22,-104,44,40,6);cx.stroke();
-    cx.fillStyle='rgba(255,255,255,.5)';cx.beginPath();cx.moveTo(26,-64);cx.lineTo(42,-84);cx.lineTo(42,-64);cx.closePath();cx.fill();
-    const wob=Math.sin(G.t*1.6)*0.02;cx.rotate(wob);
-    ART.catIcon('cat',0,-58,13); // base guardian cat
-    cx.restore();
-    BTN('hbase',bxx-100,byy-200,200,206,()=>{SFX.click();push('base')},{flat:true,nohov:true})}
-  // capsule cats: green = daily/normal capsule (store), pink = rare capsule (gacha)
-  const caps=(x,fill,rim,id,cb)=>{
-    cx.save();cx.translate(x,608);
-    const bob=Math.sin(G.t*2.4+x)*3;cx.translate(0,bob);
-    cx.fillStyle='rgba(30,60,20,.25)';cx.beginPath();cx.ellipse(0,-bob+2,30,7,0,0,TAU);cx.fill();
-    const cg=cx.createRadialGradient(-8,-26,4,0,-20,40);cg.addColorStop(0,'#fff');cg.addColorStop(.3,fill);cg.addColorStop(1,rim);
-    cx.fillStyle=cg;cx.beginPath();cx.arc(0,-24,27,0,TAU);cx.fill();
-    cx.lineWidth=3;cx.strokeStyle=shade(rim,.7);cx.stroke();
-    cx.fillStyle='rgba(255,255,255,.55)';cx.beginPath();cx.ellipse(-9,-33,8,5,-0.6,0,TAU);cx.fill();
-    // cat face on capsule
-    cx.fillStyle='#3a2a1a';cx.beginPath();cx.arc(-8,-25,2.4,0,TAU);cx.arc(8,-25,2.4,0,TAU);cx.fill();
-    cx.strokeStyle='#3a2a1a';cx.lineWidth=1.8;cx.beginPath();cx.arc(0,-21,4,0.15,Math.PI-0.15);cx.stroke();
-    cx.fillStyle=shade(rim,.8);cx.beginPath();cx.moveTo(-14,-42);cx.lineTo(-17,-52);cx.lineTo(-7,-45);cx.closePath();cx.fill();
-    cx.beginPath();cx.moveTo(14,-42);cx.lineTo(17,-52);cx.lineTo(7,-45);cx.closePath();cx.fill();
-    cx.restore();
-    BTN(id,x-30,552,60,62,cb,{flat:true,nohov:true})};
-  caps(SX+72,'#7fe89a','#3a9a5a','hcapN',()=>{SFX.click();push('store')});
-  caps(SX+SW-72,'#ff9ad5','#e8489a','hcapR',()=>{SFX.click();push('gacha')});
-  // team parade: owned cats walking the field with REAL sprites
-  {const team=SV.teams[SV.teamSel].filter(id=>id&&catOwned(id));
-    const parade=team.length?team:['cat'];
-    parade.slice(0,6).forEach((id,i)=>{
-      const span=SW-160,ph=(G.t*0.045+i*0.16)%1;
-      let px=SX+80+ph*span;
-      let dir=(((G.t*0.045+i*0.16)%2)>1)?-1:1;
-      const py=486+((i*37)%40);
-      ART.cat({id,x:px,y:py,s:0.72,t:G.t*1.35+i*1.7,dir,e:{anim:'walk'}})})}
+  // back-to-title round arrow (bottom-left)
+  {cx.fillStyle='#fdc321';cx.beginPath();cx.arc(62,646,42,0,TAU);cx.fill();
+    cx.lineWidth=4;cx.strokeStyle='#221808';cx.stroke();
+    cx.fillStyle='rgba(255,255,255,.35)';cx.beginPath();cx.arc(62,646,35,Math.PI,TAU);cx.fill();
+    drawBackArrow(cx,62,646,22);
+    BTN('hback',20,604,84,84,()=>{SFX.click();push('title')},{flat:true,nohov:true})}
 
-  /* ---- bottom-left: back-to-title arrow (original position) ---- */
-  drawBackArrow(cx,52,646,24);BTN('hback',24,620,64,52,()=>{SFX.click();push('title')},{flat:true,nohov:true});
-  txt(cx,'Cat Base',52,684,11,'rgba(255,248,232,.85)','left',2.5,'rgba(90,50,10,.5)',700);
+  /* ===== door gap: wooden tray with Storage + the two capsule buttons ===== */
+  {const ty=576,tx=482,tw=318,th=104;
+    cx.save();cx.translate(0,Math.sin(G.t*1.8)*0);
+    cx.shadowColor='rgba(20,12,4,.5)';cx.shadowBlur=10;cx.shadowOffsetY=4;
+    const tg=cx.createLinearGradient(0,ty,0,ty+th);tg.addColorStop(0,'#9a6a2e');tg.addColorStop(1,'#6a4416');
+    cx.fillStyle=tg;rr(cx,tx,ty,tw,th,14);cx.fill();cx.restore();
+    cx.lineWidth=3;cx.strokeStyle='#4a2e0e';rr(cx,tx,ty,tw,th,14);cx.stroke();
+    cx.fillStyle='rgba(255,220,150,.14)';rr(cx,tx+3,ty+3,tw-6,12,8);cx.fill();
+    // storage fridge
+    {cx.save();cx.translate(tx+52,ty+42);
+      cx.fillStyle='#dfe3e8';rr(cx,-20,-30,40,62,5);cx.fill();
+      cx.lineWidth=2.4;cx.strokeStyle='#5a5e66';rr(cx,-20,-30,40,62,5);cx.stroke();
+      cx.beginPath();cx.moveTo(-20,-8);cx.lineTo(20,-8);cx.stroke();
+      cx.fillStyle='#8a8e96';cx.fillRect(6,-22,4,9);cx.fillRect(6,-4,4,7);
+      cx.restore();
+      txt(cx,'Storage',tx+52,ty+92,11,'#fff','center',3,'rgba(50,30,10,.95)',700);
+      BTN('hstorage',tx+16,ty+8,72,88,()=>{SFX.click();
+        const fruit=Object.entries(SV.fruit).filter(([,v])=>v>0).map(([k,v])=>k+' \u00d7'+v).join('  ')||'none yet';
+        openModal('STORAGE',['Catfruit: '+fruit,'Tickets: '+SV.tickets.rare+' Rare \u00b7 '+SV.tickets.gold+' Gold \u00b7 '+SV.tickets.plat+' Platinum','NP: '+fmt(SV.np),'Leadership: '+(SV.leadership!=null?SV.leadership:'-')],
+          [{n:'CLOSE',cb:()=>{}}])},{flat:true,nohov:true})}
+    // capsule buttons (green normal / yellow rare) — cat-face capsules like the original tray
+    const capBtn=(id,cxp,fill,rim,label,count,cb)=>{
+      cx.save();cx.translate(cxp,ty+44);
+      const bob=Math.sin(G.t*2.4+cxp)*2.5;cx.translate(0,bob);
+      const cg=cx.createRadialGradient(-8,-12,4,0,-6,34);cg.addColorStop(0,'#fff');cg.addColorStop(.35,fill);cg.addColorStop(1,rim);
+      cx.fillStyle=cg;cx.beginPath();cx.arc(0,0,26,0,TAU);cx.fill();
+      cx.lineWidth=3;cx.strokeStyle=shade(rim,.65);cx.stroke();
+      cx.fillStyle='rgba(255,255,255,.55)';cx.beginPath();cx.ellipse(-9,-9,8,5,-0.6,0,TAU);cx.fill();
+      cx.fillStyle='#3a2a1a';cx.beginPath();cx.arc(-8,-4,2.6,0,TAU);cx.arc(8,-4,2.6,0,TAU);cx.fill();
+      cx.strokeStyle='#3a2a1a';cx.lineWidth=2;cx.beginPath();cx.arc(0,0,4.4,0.15,Math.PI-0.15);cx.stroke();
+      cx.fillStyle=shade(rim,.7);cx.beginPath();cx.moveTo(-15,-18);cx.lineTo(-18,-29);cx.lineTo(-8,-21);cx.closePath();cx.fill();
+      cx.beginPath();cx.moveTo(15,-18);cx.lineTo(18,-29);cx.lineTo(8,-21);cx.closePath();cx.fill();
+      cx.restore();
+      // label plate
+      cx.fillStyle='#fffdf5';rr(cx,cxp-52,ty+74,104,20,9);cx.fill();
+      cx.lineWidth=1.8;cx.strokeStyle='#8a5a20';rr(cx,cxp-52,ty+74,104,20,9);cx.stroke();
+      cx.font=FONT(9.5,700);
+      let lab=label;while(cx.measureText(lab).width>98&&lab.length>4)lab=lab.slice(0,-2);
+      txt(cx,lab+(lab===label?'':'\u2026'),cxp,ty+85,9.5,'#5a3b16','center',2.5,'#fff',700);
+      if(count!=null){cx.save();cx.translate(cxp+30,ty+18);
+        cx.fillStyle='#e84030';cx.beginPath();cx.arc(0,0,12,0,TAU);cx.fill();
+        cx.lineWidth=2;cx.strokeStyle='#7a1a10';cx.stroke();
+        txt(cx,String(count),0,0.5,11,'#fff','center',2,'#7a1a10',700);cx.restore()}
+      BTN(id,cxp-46,ty+6,92,92,cb,{flat:true,nohov:true})};
+    capBtn('hcapN',tx+140,'#7fe89a','#3a9a5a','Cat capsule',null,()=>{SFX.click();G.gachaSel=0;push('gacha')});
+    capBtn('hcapR',tx+248,'#ffe264','#e8940f','Rare Cat capsule',SV.tickets.rare,()=>{SFX.click();G.gachaSel=0;push('gacha')})}
 
-  /* ---- event banner chip (top of scene) ---- */
+  /* ===== RIGHT door: event banners + (i) + speech bubble + the big Cat ===== */
   try{
     const evs=eventStages();const ban=activeBanners();
-    const chips=[];
-    if(evs.length)chips.push(['EVENT',evs[0].s.name,'#e85840','#8a1a10',()=>{G.chapter='event';G.mapSub=0;push('chapters')}]);
-    if(ban.length)chips.push(['GACHA',ban[0].n,'#c86adf','#5a1a7a',()=>push('gacha')]);
-    chips.forEach((ch,i)=>{
-      const cw=224,cxh=64,bx=SX+SW/2+(i-0.5)*(cw+12),by=96+Math.sin(G.t*2.4+i*1.7)*3;
-      cx.save();cx.translate(bx,by);cx.rotate(Math.sin(G.t*1.8+i*2.1)*0.03);
-      cx.shadowColor='rgba(0,0,0,.3)';cx.shadowBlur=6;cx.shadowOffsetY=3;
-      cx.fillStyle=ch[2];rr(cx,-cw/2,-cxh/2,cw,cxh,12);cx.fill();cx.shadowColor='transparent';
-      cx.lineWidth=2.5;cx.strokeStyle=ch[3];rr(cx,-cw/2,-cxh/2,cw,cxh,12);cx.stroke();
-      cx.fillStyle='#fff8e8';rr(cx,-cw/2+8,-cxh/2+24,cw-16,cxh-32,8);cx.fill();
-      txt(cx,ch[0],0,-cxh/2+13,11,'#fff','center',3,ch[3],700);
-      txt(cx,ch[1],0,4,ch[1].length>16?11.5:13,ch[3],'center',3,'#fff',700);
+    const banners=[];
+    if(ban.length)banners.push([ban[0].n,'#c86adf','#5a1a7a',()=>{G.gachaSel=0;push('gacha')}]);
+    banners.push(['Special Sale!','#3aa05a','#1a5a2a',()=>{SFX.click();push('store')}]);
+    banners.forEach((bn,i)=>{
+      const bw2=176,bh2=42,bx=868+i*184,by=66+Math.sin(G.t*2.2+i*1.9)*2.5;
+      cx.save();cx.translate(bx,by); // NOTE: everything (fill/stroke/arrows/label) draws INSIDE this translate
+      cx.shadowColor='rgba(20,12,4,.4)';cx.shadowBlur=5;cx.shadowOffsetY=2;
+      const bg2=cx.createLinearGradient(-bw2/2,0,bw2/2,0);bg2.addColorStop(0,bn[2]);bg2.addColorStop(.5,bn[1]);bg2.addColorStop(1,bn[2]);
+      cx.fillStyle=bg2;rr(cx,-bw2/2,-bh2/2,bw2,bh2,10);cx.fill();
+      cx.shadowColor='transparent';
+      cx.lineWidth=2.2;cx.strokeStyle=bn[2];rr(cx,-bw2/2,-bh2/2,bw2,bh2,10);cx.stroke();
+      cx.fillStyle='#ffd23f';cx.beginPath();cx.moveTo(-bw2/2+14,0);cx.lineTo(-bw2/2+22,-7);cx.lineTo(-bw2/2+22,7);cx.closePath();cx.fill();
+      cx.beginPath();cx.moveTo(bw2/2-14,0);cx.lineTo(bw2/2-22,-7);cx.lineTo(bw2/2-22,7);cx.closePath();cx.fill();
+      let nm=bn[0];cx.font=FONT(13.5,700);while(cx.measureText(nm).width>bw2-56&&nm.length>4)nm=nm.slice(0,-2);
+      txt(cx,nm+(nm===bn[0]?'':'\u2026'),0,0.5,13.5,'#fff','center',3.5,'rgba(20,10,20,.9)',700);
       cx.restore();
-      BTN('hbann'+i,bx-cw/2,by-cxh/2,cw,cxh,ch[4],{flat:true,nohov:true})});
+      BTN('hbann'+i,bx-bw2/2,by-bh2/2,bw2,bh2,bn[3],{flat:true,nohov:true})});
+    // green (i) at the far right of the banner row
+    cx.fillStyle='#2a8a4a';cx.beginPath();cx.arc(1258,66,16,0,TAU);cx.fill();
+    cx.lineWidth=2.5;cx.strokeStyle='#1a5a30';cx.stroke();
+    txt(cx,'i',1258,67,17,'#fff','center',3,'#1a5a30',700);
+    BTN('hinfo2',1242,50,32,32,()=>{SFX.click();
+      openModal('CAT BASE INFO',['The Cat Base is your home front.','Send the Cat Army to battle with Start!!, organize it in Equip,','and power it up in Upgrade.','Daily deals wait in the Store. Good luck!'],[{n:'CLOSE',cb:()=>{}}])},{flat:true,nohov:true});
   }catch(e){}
-  cx.restore(); // scene clip
 
-  /* ---- RIGHT: collection catalog (compact, zero-clip) ---- */
-  const RX=858,RW=404;
-  creamPanel(RX,62,RW,598);
-  txt(cx,'CATALOG',RX+18,86,17,'#b06a10','left',3.5,'#fff',700);
-  const owned=CATS.filter(c=>catOwned(c.id)).length;
-  const lines=[['Cats owned:',owned+' / '+CATS.length],['Forms maxed:',CATS.filter(c=>catOwned(c.id)&&catFormUnlockedCount(c.id)>=c.forms.length).length+' / '+CATS.reduce((a,c)=>a+c.forms.length,0)],['Chapters cleared:',Object.keys(SV.cleared).length+' / '+CHAPTERS.length],['User Rank:',SV.rank+' · XP '+fmt(SV.xpTotal)],['NP:',fmt(SV.np)],['Cat Food:',fmt(SV.cf)],['Tickets:','R:'+SV.tickets.rare+' G:'+SV.tickets.gold+' P:'+SV.tickets.plat],['Catfruit:',Object.entries(SV.fruit).filter(([,v])=>v>0).map(([k,v])=>k[0].toUpperCase()+':'+v).join(' ')||'none yet']];
-  lines.forEach((l,i)=>{txt(cx,l[0],RX+18,116+i*27,12.5,'#8a7a5a','left');txt(cx,String(l[1]),RX+RW-18,116+i*27,13,'#4a3a24','right',2.5,'#fff',700)});
-  // next trophy chip — full panel width, auto-shrink text (fixes the old clipping)
-  {const nxt=trophyList().filter(t=>!SV.trophies.claimed[t.id]).sort((a,b2)=>(trophyProg(b2)/b2.goal)-(trophyProg(a)/a.goal))[0];
-    if(nxt){const pr=Math.min(trophyProg(nxt),nxt.goal),fr=clamp(pr/nxt.goal,0,1);
-      const hy=348;
-      cx.fillStyle='rgba(196,106,223,.12)';rr(cx,RX+14,hy,RW-28,30,15);cx.fill();
-      cx.lineWidth=1.5;cx.strokeStyle='rgba(196,106,223,.45)';rr(cx,RX+14,hy,RW-28,30,15);cx.stroke();
-      glyph(cx,nxt.group.icon,RX+34,hy+15,9,'#c46adf','#fff');
-      let tfs=11.5;cx.font=FONT(tfs,700);
-      const label='NEXT TROPHY: '+nxt.n;
-      while(cx.measureText(label).width>RW-118&&tfs>8.5){tfs-=0.5;cx.font=FONT(tfs,700)}
-      txt(cx,label,RX+48,hy+15,tfs,'#8a4a9a','left',2,'#fff',700);
-      txt(cx,Math.round(fr*100)+'%',RX+RW-30,hy+15,11,'#c46adf','right',2,'#fff',700)}}
-  cx.strokeStyle='rgba(176,138,80,.5)';cx.lineWidth=1.5;cx.beginPath();cx.moveTo(RX+18,392);cx.lineTo(RX+RW-18,392);cx.stroke();
-  txt(cx,'YOUR CATS',RX+18,410,11,'#a89878','left',2,'#fff',700);
-  const done=CATS.filter(c=>catOwned(c.id));
-  {let bx=RX+30,by=446;
-    let row=0;
-    done.forEach(c=>{ART.catIcon(c.id,bx,by,15);
-      bx+=46;if(bx>RX+RW-46){bx=RX+30;by+=46;row++}});
-    if(!done.length)txt(cx,'Recruit cats to fill your Catdex!',RX+RW/2,452,12,'#a89878','center',2,'#fff',400)}
-  {const pw2=RW-36,px2=RX+18;let py2=626;
-    if(done.length>18)py2=626;
-    cx.fillStyle='rgba(90,59,22,.16)';rr(cx,px2,py2,pw2,10,5);cx.fill();
-    const fr=owned/CATS.length;
-    const pg=cx.createLinearGradient(px2,0,px2+pw2,0);pg.addColorStop(0,'#7fc86a');pg.addColorStop(1,'#3a9a5a');
-    cx.fillStyle=pg;rr(cx,px2,py2,Math.max(12,pw2*fr),10,5);cx.fill();
-    cx.lineWidth=1.5;cx.strokeStyle='rgba(90,59,22,.4)';rr(cx,px2,py2,pw2,10,5);cx.stroke();
-    txt(cx,Math.round(fr*100)+'% of the Catdex collected',px2+pw2/2,py2-8,10.5,'#5a3b16','center',2,'#fff',700)}
+  // big Cat (right corner, chin seated behind the bottom bar) + speech bubble
+  bigCatFace(cx,1130,568,1.0);
+  {const tip=splashTip();
+    cx.font=FONT(13.5,700);
+    const lines=wrapText(cx,tip,300);
+    const bw2=336,bh2=lines.length*20+26,bx=1128-258,by=398-bh2;
+    cx.fillStyle='rgba(20,14,6,.25)';rr(cx,bx+3,by+4,bw2,bh2,14);cx.fill();
+    cx.fillStyle='#f6f6ef';rr(cx,bx,by,bw2,bh2,14);cx.fill();
+    cx.lineWidth=3;cx.strokeStyle='#3a3a40';rr(cx,bx,by,bw2,bh2,14);cx.stroke();
+    cx.fillStyle='#f6f6ef';cx.beginPath();cx.moveTo(bx+bw2-108,by+bh2-3);cx.lineTo(bx+bw2-52,by+bh2+30);cx.lineTo(bx+bw2-58,by+bh2-3);cx.closePath();cx.fill();
+    cx.strokeStyle='#3a3a40';cx.lineWidth=3;
+    cx.beginPath();cx.moveTo(bx+bw2-110,by+bh2-2);cx.lineTo(bx+bw2-52,by+bh2+30);cx.stroke();
+    cx.beginPath();cx.moveTo(bx+bw2-52,by+bh2+30);cx.lineTo(bx+bw2-56,by+bh2-2);cx.stroke();
+    lines.forEach((l,i)=>txt(cx,l,bx+bw2/2,by+22+i*20,13.5,'#3a3a40','center'));
+    BTN('hcat',bx,by,bw2,bh2+20,()=>{SFX.meow?SFX.meow():SFX.click();toast(splashTip(),'#ffd23f')},{flat:true,nohov:true})}
+
+  /* ===== bottom bar: Store + Cat Food ===== */
+  {const g=cx.createLinearGradient(0,676,0,720);g.addColorStop(0,'#b57a35');g.addColorStop(1,'#7a4a18');
+    cx.fillStyle=g;cx.fillRect(0,676,1280,44);
+    cx.fillStyle='rgba(50,28,8,.5)';cx.fillRect(0,676,1280,3)}
+  { // Store button (gold pill + cart) — sits center-left in the bar like the original
+    const bw2=260,bh2=38,bx=660,by=679;
+    const gg=cx.createLinearGradient(0,by,0,by+bh2);gg.addColorStop(0,'#ffe264');gg.addColorStop(.55,'#fdc321');gg.addColorStop(1,'#e8940f');
+    cx.fillStyle=gg;rr(cx,bx,by,bw2,bh2,19);cx.fill();
+    cx.lineWidth=3;cx.strokeStyle='#221808';rr(cx,bx,by,bw2,bh2,19);cx.stroke();
+    glyph(cx,'cart',bx+52,by+bh2/2,11,'#fff','rgba(0,0,0,0)');
+    txt(cx,'Store',bx+bw2/2+22,by+bh2/2+1,24,'#fff','center',5.5,'#221808',700);
+    BTN('hstore',bx,by,bw2,bh2,()=>{SFX.click();push('store')},{flat:true,nohov:true})}
+  { // Cat Food: label + can icon + counter (right end of the bar, like the original)
+    cx.save();cx.translate(1188,698);
+    cx.fillStyle='#d83a2a';rr(cx,-16,-14,32,28,6);cx.fill();
+    cx.lineWidth=2.4;cx.strokeStyle='#7a1a10';rr(cx,-16,-14,32,28,6);cx.stroke();
+    cx.fillStyle='#e8e4da';rr(cx,-16,-18,32,10,4);cx.fill();
+    cx.lineWidth=1.8;cx.strokeStyle='#7a1a10';cx.beginPath();cx.moveTo(-16,-12);cx.lineTo(16,-12);cx.stroke();
+    cx.fillStyle='#fff';cx.beginPath();cx.arc(0,2,7.5,0,TAU);cx.fill();
+    cx.fillStyle='#d83a2a';cx.beginPath();cx.arc(-2,0.5,1.2,0,TAU);cx.arc(2,0.5,1.2,0,TAU);cx.fill();
+    cx.strokeStyle='#d83a2a';cx.lineWidth=1.2;cx.beginPath();cx.arc(0,3.5,2.6,0.2,Math.PI-0.2);cx.stroke();
+    cx.fillStyle='#ffd23f';cx.beginPath();cx.arc(14,12,8,0,TAU);cx.fill();
+    cx.lineWidth=1.8;cx.strokeStyle='#7a4a08';cx.stroke();
+    txt(cx,'+',14,12.5,12,'#7a4a08','center',2,'#fff',700);
+    cx.restore();
+    txt(cx,'Cat Food',1160,698,15,'#fff','right',4,'rgba(56,32,8,.95)',700);
+    txt(cx,fmt(SV.cf),1262,698,24,'#ffd23f','right',4.5,'#5a3406',700);
+    BTN('hcf',1128,680,152,38,()=>{SFX.click();push('store')},{flat:true,nohov:true})}
 }
 
 /* ---- MENU BOOK overlay (the original's open-book menu) ---- */
