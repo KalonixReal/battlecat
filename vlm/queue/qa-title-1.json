@@ -1,5 +1,0 @@
-{
- "id": "qa-title-1",
- "prompt": "This is a screenshot of a Battle Cats clone game title screen. Describe exactly what you see: layout, buttons, logo art, background, any visual defects (overlap, misalignment, wrong colors). Be specific and concise.",
- "image": "images/qa-title-1.png"
-}
