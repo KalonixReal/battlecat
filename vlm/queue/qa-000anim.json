@@ -1,0 +1,5 @@
+{
+ "id": "qa-000anim",
+ "prompt": "This shows every 12th frame of the Basic Cat's COMPLETE 169-frame animation loop from the Battle Cats wiki (in-game animation rip, 5.1 seconds). Frames f0-f60ish then f72-f168. Question: which frame ranges show WALKING (marching, neutral mouth) vs ATTACKING (mouth open, lunging, effects)? Is this a walk-then-attack loop? Roughly where does the attack start/end?",
+ "image": "images/qa-000anim.png"
+}
