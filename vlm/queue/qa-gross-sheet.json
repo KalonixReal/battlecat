@@ -1,0 +1,5 @@
+{
+ "id": "qa-gross-sheet",
+ "prompt": "Full raw sprite sheet for Gross Cat from Battle Cats wiki (512x256). Describe the layout: what rows exist, and in the TOP row (walking frames), does each walking frame include the cat's face/head on top of the legs? Is the walking row complete cat sprites (legs+face) or just legs?",
+ "image": "images/qa-gross-sheet.png"
+}
