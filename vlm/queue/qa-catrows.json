@@ -1,5 +1,0 @@
-{
- "id": "qa-catrows",
- "prompt": "This image compares frames from the Basic Cat sprite sheet (labels ROW1_fN = top row of the sheet, ROW2_fN = bottom row) with the KNOWN attack animation frames (GIFATK_fN, from the official attack animation GIF where the cat opens its mouth wide and lunges to bite). Questions: 1) Which sheet ROW matches the attack GIF content (open mouth/lunge poses)? 2) Which row shows the walking/marching cycle (legs moving, body bouncing)? 3) So what is the correct assignment: ROW1=walk/ROW2=attack, or ROW1=attack/ROW2=walk?",
- "image": "images/qa-catrows.png"
-}
