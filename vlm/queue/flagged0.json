@@ -1,0 +1,5 @@
+{
+ "id": "flagged0",
+ "prompt": "These are RAW spritesheets from the Battle Cats wiki for 6 units each (red label above each: unit id, number of detected rows, how many frames we extracted as 'walk'). For EACH sheet: describe each ROW of sprites (row 1 = top). Which row contains the WALK/MOVE cycle (repeated similar stances)? Which rows contain ATTACK animations (lunge/weapon/effect/dust)? Some sheets may have effect/projectile rows. Answer per unit: 'unit: row N = walk, rows M+ = attack/effect'.",
+ "image": "images/flagged0.png"
+}
