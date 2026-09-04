@@ -1,5 +1,0 @@
-{
- "id": "qa-contact-1",
- "prompt": "This contact sheet shows extracted sprite frames from a Battle Cats clone. Labels say 'walk fN' (walking animation frames) and 'ATK fN' (attack frames) for units: cat, tank, axe, gross, cow, bird, fish, lizard, titan, boogie, valkyrie. THE ORIGINAL Battle Cats game: walking cats do a distinctive hopping/bouncing march. Evaluate: 1) Do the 'walk' frames look like a coherent walking/marching cycle (multiple distinct poses of the same character)? 2) Do the 'ATK' frames look like attack poses (leaning back, striking, with effects)? 3) List units where walk frames look WRONG (contain effects, garbled slices, single static pose, or mixed content). Be brutally specific.",
- "image": "images/qa-contact-1.png"
-}
