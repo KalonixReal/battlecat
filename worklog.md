@@ -1203,3 +1203,54 @@ Stage Summary:
 - Real original sprites render in battle for 8 units (all 10 normal cats' sheets located; 2 pending master list)
 - Grab-the-world drag + original Cat Base home live and verified
 - REMAINING: z-ai quota (429) blocks the 2 master-list pages needed to number-map the other ~95 units (script ready: master-to-manifest.py); then build-sprites.py picks up everything in one run. Cat form icons for evolved forms partially present (cat/tank only).
+---
+Task ID: r19-sprites
+Agent: sprite-build subagent
+Task: Run tools/build-sprites.py for all 93 mapped units
+
+Work Log:
+- Attempt 1 as nohup background: downloaded ~66 raw files (110→176) in ~6 min then died silently (empty log; not the 1500s timeout, no OOM in dmesg, ~1.6GB RAM free) — likely sandbox background-process reaping. Cached downloads survived.
+- Attempt 2 in foreground (timeout 580): COMPLETED. "== sprites built: 92 units ==" / "with real sprites: 92; painter fallback: 1". Log saved to /tmp/build.log (95 lines, per-unit forms/src/frames report).
+- Attempt 3 (re-run per gap-fill instruction, cache made it fast): identical result 92/1, so the single MISS is structural, not transient.
+- MISS analysis — cat luza (Tecoluga): manifest gallery only holds 170_s.png + Uni170_s00.png (form-3 assets), but data.js defines <3 forms for luza so the script's `fi < n_forms` guard can never map it → painter fallback (by design).
+- Downloads: Fandom CDN MD5 hash-path URLs via plain urllib all worked; built-in 7×retry absorbed transient 503s; zero hard download failures logged. Raw cache: 110 → 212 files.
+- Verification: 111 s_*.png sheets (101 _w walk + 10 _a attack from animated webp/GIF with real per-frame durations) + 101 icon_*.png = 212 PNGs; PIL-validated all 212 (0 truncated/corrupt — important because attempt 1 was SIGKILLed mid-write; icons use copy-if-absent). sprites.json cross-check: every units/icons entry resolves to an on-disk file — NONE missing. Walk-sheet form coverage: form0=92, form1=5, form2=4 (multi-form: cat, tank, mr, neko, cyborg).
+- node --check public/game/js/sprites.js OK; node --check public/game/js/art.js OK. No game code modified.
+- Live-server spot check: GET /game/assets/sprites/sprites.json → 200 (37,957 bytes), sample sheet + icon → 200.
+- dev.log (last 30 lines): only routine GET / 200s; two transient 404s for sprites.json at ~03:02 during the build window (before the final 03:14 write; serving 200 now); log head has an unrelated EADDRINUSE from a duplicate dev-server start attempt.
+
+Stage Summary:
+- 92/93 units have real original Battle Cats sprites (46 cats + 46 enemies); 1 painter-fallback unit (luza/Tecoluga — wiki only exposes its form-3 sheet, unmappable to the game's form count)
+- 212 game-facing PNG files (111 walk/attack strips + 101 icons) + 101-icon manifest in sprites.json; 5 units with 2-3 forms each
+- public/game/assets/sprites/ = 15MB total (raw download cache 4.5MB → ~10.5MB shipped assets); all PNGs integrity-verified; assets serve HTTP 200 from the running dev server
+- No code changes; next actions: optional manifest entry for luza form-0 assets if found, and consider pruning/ignoring raw/ cache (4.5MB) from shipped output
+
+---
+Task ID: r20
+Agent: main (Z.ai Code)
+Task: User-reported: "animations are bugged, maybe the sprites aren't cut or flipped yet" (check uploaded mp4) + "map dragging is in wrong direction" + "many scroll thingies overlap some stuff" + search-first mandate
+
+Work Log:
+- ANALYZED the uploaded mp4 (19.7s, 1086x612, all one battle screen) — extracted 20 frames at 1fps; VLM quota was exhausted (429 all session; background retry loop set up)
+- ROOT-CAUSED the sprite bug by direct sheet analysis (scipy connected components): the wiki sheets are MULTI-ROW GRIDS (row 1 = walk frames, rows 2+ = attack frames, with shadow specks as separate components), but build-sprites.py v1 sliced them by transparent COLUMNS only:
+  1. Frames from different rows at the same x MERGED into garbled mega-frames (enemy:gory atk = one 280px blob = "sprites aren't cut")
+  2. The v1 anchor ax = whole-sheet content center → every walk frame anchored to the wrong sheet position → units jittered/teleported horizontally every frame
+  3. Touching frames (1-2px gaps or none: tank_f = one 243px run) never split
+- REWROTE tools/build-sprites.py (v2): connected-component labeling → speck/shadow attachment (small comps merge into big figs they sit on; big figs NEVER merge) → y-center row clustering (tol = max(18, 12% sheet height)) → walk row = topmost row with median area ≥ 20% of max figure area → attack = remaining rows in reading order (tiny effect figs filtered) → per-frame rects [sx,sy,sw,sh,ax,ay] with ax=frame center, ay=row median bottom (ground line) → mega-split only in walk row (>2.6× median width); attack GIFs mirrored at build time to sheet orientation (SHEETS_FACE_LEFT) so renderer flips uniformly; GIF refH calibrated so the standing pose matches the sheet's walk frame 0; sheet atk rows share walk refH (same pixel scale)
+- REWROTE public/game/js/sprites.js (v2 renderer): drawFrame uses per-frame [sx,sy,sw,sh,ax,ay] rects (was full-column slices from y=0 — broke multi-row sheets), scale = s*TARGET/refH (refH = median content height — was full strip height → units rendered ~half size), TARGET cats 74 / enemies 86
+- REBUILT sprites.json v2: 92/93 units (only luza painter-fallback — structural, wiki only has its form-3 sheet); spot-verified: cat walk 5 frames grounded at row bottom, gory walk 6 + atk 6 (no more mega-frame), doge walk 5 + gif atk 10, tank/hippoe/croco/axe/gross/teacher/leboin all slice correctly
+- DRAG DIRECTION: user's complaint timeline (video uploaded 03:21 after r19's grab-the-world flip) shows they want PAN-THE-CAMERA — flipped battle drag/wheel/fling AND stage-map drag to pan-the-camera (drag RIGHT looks RIGHT; fling glides in finger direction; map mapCam = cx+dx)
+- SCROLL OVERLAPS: added missing clip rects to the 3 unclipped scroll regions (chapters list, enemy guide grid, trophy stand) — content now scrolls UNDER top/bottom bars; verified pixel-exact: 0 header/footer px change while content region changes 117k px on scroll (guide). Equip grid + combos already had clips. The battle-screen "overlaps" in the user's video were the old garbled mega-frame sprites (fixed by the slicer rewrite)
+- QA: E2E flow title→home→chapters→map→stage modal→battle verified live; battle runs (t=19s, wallet grows, units spawn/fight); 11 screens screenshotted non-blank; node --check all OK; bun run lint 0 errors/12 pre-existing warnings; cache-bust ui/battle v34, sprites v2, index v32
+- VLM verification PENDING (quota 429 all session): sprite visual correctness (facing/cut/flip) to be confirmed when quota resets — deterministic evidence so far: frames grounded within 1px of ground line, animation pixel-diffs 1-4k px per 150ms, unit sizes plausible, attack GIFs match in-game orientation convention
+
+Stage Summary:
+- THE "sprites not cut" bug is root-caused and fixed: sheets are 2-row grids (walk row + attack rows), v1 column-slicing merged rows into mega-frames and anchored at sheet center causing teleport-jitter; v2 component slicer + per-frame anchors fix both
+- Map/battle drag now pan-the-camera (user-verified preference); scroll regions all clip
+- All deterministic checks pass; visual VLM confirmation queued behind rate limit
+
+Unresolved / next-phase priorities
+1. VLM visual confirmation of sprites (facing direction convention "sheets face LEFT" is weakly evidenced — RGB correlation favors it for doge/cat but needs eyes once quota resets; if wrong, flip SHEETS_FACE_LEFT and rebuild — cached, ~2 min)
+2. luza/Tecoluga painter fallback (wiki only exposes form-3 assets)
+3. Per-unit frame timing (walk dur currently uniform 110ms; original varies per unit)
+4. Boss/mega-unit size calibration (TARGET normalization vs original proportions) after visual check

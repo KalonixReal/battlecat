@@ -1,7 +1,7 @@
 {
  "cat": {
   "kind": "cat",
-  "wikiTitle": "Cat ",
+  "wikiTitle": "Cat",
   "gallery": [
    {
     "file": "Cattwdesc.PNG",
@@ -895,7 +895,7 @@
  },
  "tank": {
   "kind": "cat",
-  "wikiTitle": "Cat ",
+  "wikiTitle": "Eraser Cat",
   "gallery": [
    {
     "file": "Tankcattwdesc.PNG",
@@ -1423,7 +1423,7 @@
  },
  "axe": {
   "kind": "cat",
-  "wikiTitle": "Cat ",
+  "wikiTitle": "Axe Cat",
   "gallery": [
    {
     "file": "Axetw.PNG",
@@ -1685,7 +1685,7 @@
  },
  "gross": {
   "kind": "cat",
-  "wikiTitle": "Cat ",
+  "wikiTitle": "Gross Cat",
   "gallery": [
    {
     "file": "Grosstw.PNG",
@@ -2107,7 +2107,7 @@
  },
  "cow": {
   "kind": "cat",
-  "wikiTitle": "Cat ",
+  "wikiTitle": "Cow Cat",
   "gallery": [
    {
     "file": "Cowtw.PNG",
@@ -2405,7 +2405,7 @@
  },
  "bird": {
   "kind": "cat",
-  "wikiTitle": "Cat ",
+  "wikiTitle": "Bird Cat",
   "gallery": [
    {
     "file": "Birdtw.PNG",
@@ -2618,11 +2618,24 @@
     "sizeKB": 0
    }
   ],
-  "mainImages": []
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/91/Uni005_f00.png/revision/latest",
+    "file": "Uni005_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/f2/Uni005_c00.png/revision/latest",
+    "file": "Uni005_c00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/77/Uni005_s00.png/revision/latest",
+    "file": "Uni005_s00.png"
+   }
+  ]
  },
  "fish": {
   "kind": "cat",
-  "wikiTitle": "Cat ",
+  "wikiTitle": "Fish Cat",
   "gallery": [
    {
     "file": "Fishtw.PNG",
@@ -2905,6 +2918,848 @@
    {
     "url": "https://static.wikia.nocookie.net/battle-cats/images/a/ab/Uni643_f00.png/revision/latest",
     "file": "Uni643_f00.png"
+   }
+  ]
+ },
+ "lizard": {
+  "kind": "cat",
+  "wikiTitle": "Dragon Cat",
+  "gallery": [
+   {
+    "file": "007_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/56/007_f.png/revision/latest",
+    "caption": "Lizard Cat spritesheet",
+    "sizeKB": 0
+   },
+   {
+    "file": "007_c.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/d/d6/007_c.png/revision/latest",
+    "caption": "Dragon Cat spritesheet",
+    "sizeKB": 0
+   },
+   {
+    "file": "007_s.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/b7/007_s.png/revision/latest",
+    "caption": "King Dragon Cat spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/45/Uni007_f00.png/revision/latest",
+    "file": "Uni007_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/e4/Uni007_c00.png/revision/latest",
+    "file": "Uni007_c00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/98/Uni007_s00.png/revision/latest",
+    "file": "Uni007_s00.png"
+   }
+  ]
+ },
+ "titan": {
+  "kind": "cat",
+  "wikiTitle": "Titan Cat",
+  "gallery": [
+   {
+    "file": "008_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/2a/008_f.png/revision/latest",
+    "caption": "Titan Cat spritesheet",
+    "sizeKB": 0
+   },
+   {
+    "file": "008_c.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/62/008_c.png/revision/latest",
+    "caption": "Mythical Titan Cat spritesheet",
+    "sizeKB": 0
+   },
+   {
+    "file": "008_s.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/03/008_s.png/revision/latest",
+    "caption": "Jamiera Cat spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/3c/Uni008_f00.png/revision/latest",
+    "file": "Uni008_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/5e/Uni008_c00.png/revision/latest",
+    "file": "Uni008_c00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/28/Uni008_s00.png/revision/latest",
+    "file": "Uni008_s00.png"
+   }
+  ]
+ },
+ "boogie": {
+  "kind": "cat",
+  "wikiTitle": "Boogie Cat",
+  "gallery": [
+   {
+    "file": "022_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/16/022_f.png/revision/latest",
+    "caption": "Boogie Cat spritesheet",
+    "sizeKB": 0
+   },
+   {
+    "file": "022_c.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/60/022_c.png/revision/latest",
+    "caption": "Samba Cat spritesheet",
+    "sizeKB": 0
+   },
+   {
+    "file": "022_s.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/c0/022_s.png/revision/latest",
+    "caption": "Gato Amigo spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/25/Uni022_f00.png/revision/latest",
+    "file": "Uni022_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/54/Uni022_c00.png/revision/latest",
+    "file": "Uni022_c00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/d/d3/Uni022_s00.png/revision/latest",
+    "file": "Uni022_s00.png"
+   }
+  ]
+ },
+ "mr": {
+  "kind": "cat",
+  "wikiTitle": "Mr.",
+  "gallery": [
+   {
+    "file": "011_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/cf/011_f.png/revision/latest",
+    "caption": "Mr. spritesheet",
+    "sizeKB": 0
+   },
+   {
+    "file": "011_c.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/91/011_c.png/revision/latest",
+    "caption": "Super Mr. spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/eb/Uni011_f00.png/revision/latest",
+    "file": "Uni011_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/52/Uni011_c00.png/revision/latest",
+    "file": "Uni011_c00.png"
+   }
+  ]
+ },
+ "bahamut": {
+  "kind": "cat",
+  "wikiTitle": "Bahamut Cat",
+  "gallery": [
+   {
+    "file": "025_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/32/025_f.png/revision/latest",
+    "caption": "Bahamut Cat spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/bc/Uni025_f00.png/revision/latest",
+    "file": "Uni025_f00.png"
+   }
+  ]
+ },
+ "kungfu": {
+  "kind": "cat",
+  "wikiTitle": "Kung Fu Cat",
+  "gallery": [
+   {
+    "file": "010_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/a4/010_f.png/revision/latest",
+    "caption": "Kung Fu Cat spritesheet",
+    "sizeKB": 0
+   },
+   {
+    "file": "010_c.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/d/df/010_c.png/revision/latest",
+    "caption": "Drunken Master Cat spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/4b/Uni010_f00.png/revision/latest",
+    "file": "Uni010_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/f7/Uni010_c00.png/revision/latest",
+    "file": "Uni010_c00.png"
+   }
+  ]
+ },
+ "rock": {
+  "kind": "cat",
+  "wikiTitle": "Stone Cat",
+  "gallery": [
+   {
+    "file": "581_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/70/581_f.png/revision/latest",
+    "caption": "Stone Cat spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/b0/Uni581_f00.png/revision/latest",
+    "file": "Uni581_f00.png"
+   }
+  ]
+ },
+ "neko": {
+  "kind": "cat",
+  "wikiTitle": "Nekoluga",
+  "gallery": [
+   {
+    "file": "034_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/25/034_f.png/revision/latest",
+    "caption": "Nekoluga spritesheet",
+    "sizeKB": 0
+   },
+   {
+    "file": "034_c.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/63/034_c.png/revision/latest",
+    "caption": "Unknown Cat spritesheet",
+    "sizeKB": 0
+   },
+   {
+    "file": "034_s.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/f2/034_s.png/revision/latest",
+    "caption": "Ultralan Pasalan spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/7f/Uni034_f00.png/revision/latest",
+    "file": "Uni034_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/9d/Uni034_c00.png/revision/latest",
+    "file": "Uni034_c00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/aa/Uni034_s00.png/revision/latest",
+    "file": "Uni034_s00.png"
+   }
+  ]
+ },
+ "pogo": {
+  "kind": "cat",
+  "wikiTitle": "Pogo Cat",
+  "gallery": [
+   {
+    "file": "037_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/d/d5/037_f.png/revision/latest",
+    "caption": "Pogo Cat spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/ab/Uni037_f00.png/revision/latest",
+    "file": "Uni037_f00.png"
+   }
+  ]
+ },
+ "sushi": {
+  "kind": "cat",
+  "wikiTitle": "Sushi Cat",
+  "gallery": [
+   {
+    "file": "061_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/17/061_f.png/revision/latest",
+    "caption": "Sushi Cat spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/21/Uni061_f00.png/revision/latest",
+    "file": "Uni061_f00.png"
+   }
+  ]
+ },
+ "cutter": {
+  "kind": "cat",
+  "wikiTitle": "Cutter Cat",
+  "gallery": [
+   {
+    "file": "445_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/64/445_f.png/revision/latest",
+    "caption": "Cutter Cat spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/c6/Uni445_f00.png/revision/latest",
+    "file": "Uni445_f00.png"
+   }
+  ]
+ },
+ "pirate": {
+  "kind": "cat",
+  "wikiTitle": "Pirate Cat",
+  "gallery": [
+   {
+    "file": "048_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/04/048_f.png/revision/latest",
+    "caption": "Pirate Cat spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/84/Uni048_f00.png/revision/latest",
+    "file": "Uni048_f00.png"
+   }
+  ]
+ },
+ "thief": {
+  "kind": "cat",
+  "wikiTitle": "Thief Cat",
+  "gallery": [
+   {
+    "file": "049_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/bf/049_f.png/revision/latest",
+    "caption": "Thief Cat spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/f8/Uni049_f00.png/revision/latest",
+    "file": "Uni049_f00.png"
+   }
+  ]
+ },
+ "sorcerer": {
+  "kind": "cat",
+  "wikiTitle": "Witch Cat",
+  "gallery": [
+   {
+    "file": "055_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/45/055_f.png/revision/latest",
+    "caption": "Witch Cat spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/1e/Uni055_f00.png/revision/latest",
+    "file": "Uni055_f00.png"
+   }
+  ]
+ },
+ "guitar": {
+  "kind": "cat",
+  "wikiTitle": "Rocker Cat",
+  "gallery": [
+   {
+    "file": "148_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/26/148_f.png/revision/latest",
+    "caption": "Rocker Cat spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/0b/Uni148_f00.png/revision/latest",
+    "file": "Uni148_f00.png"
+   }
+  ]
+ },
+ "can": {
+  "kind": "cat",
+  "wikiTitle": "Hip Hop Cat",
+  "gallery": [
+   {
+    "file": "032_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/40/032_f.png/revision/latest",
+    "caption": "Hip Hop Cat spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/22/Uni032_f00.png/revision/latest",
+    "file": "Uni032_f00.png"
+   }
+  ]
+ },
+ "cyborg": {
+  "kind": "cat",
+  "wikiTitle": "Cyborg Cat",
+  "gallery": [
+   {
+    "file": "041_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/25/041_f.png/revision/latest",
+    "caption": "Salon Cat spritesheet",
+    "sizeKB": 0
+   },
+   {
+    "file": "041_c.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/5f/041_c.png/revision/latest",
+    "caption": "Paris Cat spritesheet",
+    "sizeKB": 0
+   },
+   {
+    "file": "041_s.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/7b/041_s.png/revision/latest",
+    "caption": "Cyborg Cat spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/5d/Uni041_f00.png/revision/latest",
+    "file": "Uni041_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/36/Uni041_c00.png/revision/latest",
+    "file": "Uni041_c00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/7e/Uni041_s00.png/revision/latest",
+    "file": "Uni041_s00.png"
+   }
+  ]
+ },
+ "seafarer": {
+  "kind": "cat",
+  "wikiTitle": "Surfer Cat",
+  "gallery": [
+   {
+    "file": "199_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/bf/199_f.png/revision/latest",
+    "caption": "Surfer Cat spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/ef/Uni199_f00.png/revision/latest",
+    "file": "Uni199_f00.png"
+   }
+  ]
+ },
+ "slime": {
+  "kind": "cat",
+  "wikiTitle": "Slime Cat",
+  "gallery": [
+   {
+    "file": "527_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/ef/527_f.png/revision/latest",
+    "caption": "Slime Cat spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/0f/Uni527_f00.png/revision/latest",
+    "file": "Uni527_f00.png"
+   }
+  ]
+ },
+ "paladin": {
+  "kind": "cat",
+  "wikiTitle": "Marauder Cat",
+  "gallery": [
+   {
+    "file": "057_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/a5/057_f.png/revision/latest",
+    "caption": "Marauder Cat spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/80/Uni057_f00.png/revision/latest",
+    "file": "Uni057_f00.png"
+   }
+  ]
+ },
+ "medusa": {
+  "kind": "cat",
+  "wikiTitle": "Medusa Cat",
+  "gallery": [
+   {
+    "file": "521_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/e3/521_f.png/revision/latest",
+    "caption": "Medusa Cat spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/47/Uni521_f00.png/revision/latest",
+    "file": "Uni521_f00.png"
+   }
+  ]
+ },
+ "catman": {
+  "kind": "cat",
+  "wikiTitle": "Catman",
+  "gallery": [
+   {
+    "file": "196_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/1f/196_f.png/revision/latest",
+    "caption": "Catman spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/fa/Uni196_f00.png/revision/latest",
+    "file": "Uni196_f00.png"
+   }
+  ]
+ },
+ "mechabun": {
+  "kind": "cat",
+  "wikiTitle": "Mecha-Bun",
+  "gallery": [
+   {
+    "file": "426_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/b9/426_f.png/revision/latest",
+    "caption": "Mecha-Bun spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/2c/Uni426_f00.png/revision/latest",
+    "file": "Uni426_f00.png"
+   }
+  ]
+ },
+ "noble": {
+  "kind": "cat",
+  "wikiTitle": "High Lord Babel",
+  "gallery": [
+   {
+    "file": "450_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/5e/450_f.png/revision/latest",
+    "caption": "High Lord Babel spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/6f/Uni450_f00.png/revision/latest",
+    "file": "Uni450_f00.png"
+   }
+  ]
+ },
+ "kaguya": {
+  "kind": "cat",
+  "wikiTitle": "Kaguya of the Coast",
+  "gallery": [
+   {
+    "file": "614_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/6e/614_f.png/revision/latest",
+    "caption": "Kaguya of the Coast spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/3e/Uni614_f00.png/revision/latest",
+    "file": "Uni614_f00.png"
+   }
+  ]
+ },
+ "dioramos": {
+  "kind": "cat",
+  "wikiTitle": "Dioramos",
+  "gallery": [
+   {
+    "file": "177_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/79/177_f.png/revision/latest",
+    "caption": "Dioramos spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/8d/Uni177_f00.png/revision/latest",
+    "file": "Uni177_f00.png"
+   }
+  ]
+ },
+ "gao": {
+  "kind": "cat",
+  "wikiTitle": "Baby Gao",
+  "gallery": [
+   {
+    "file": "269_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/31/269_f.png/revision/latest",
+    "caption": "Baby Gao spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/3c/Uni269_f00.png/revision/latest",
+    "file": "Uni269_f00.png"
+   }
+  ]
+ },
+ "luza": {
+  "kind": "cat",
+  "wikiTitle": "Tecoluga",
+  "gallery": [
+   {
+    "file": "170_s.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/07/170_s.png/revision/latest",
+    "caption": "Tecoluga spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/0d/Uni170_s00.png/revision/latest",
+    "file": "Uni170_s00.png"
+   }
+  ]
+ },
+ "gatr": {
+  "kind": "cat",
+  "wikiTitle": "Legeluga",
+  "gallery": [
+   {
+    "file": "461_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/b3/461_f.png/revision/latest",
+    "caption": "Legeluga spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/a6/Uni461_f00.png/revision/latest",
+    "file": "Uni461_f00.png"
+   }
+  ]
+ },
+ "island": {
+  "kind": "cat",
+  "wikiTitle": "Fish Cat",
+  "gallery": [
+   {
+    "file": "006_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/5d/006_f.png/revision/latest",
+    "caption": "Fish Cat spritesheet",
+    "sizeKB": 0
+   },
+   {
+    "file": "006_s.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/39/006_s.png/revision/latest",
+    "caption": "Fish Cat spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/41/Uni006_f00.png/revision/latest",
+    "file": "Uni006_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/23/Uni006_s00.png/revision/latest",
+    "file": "Uni006_s00.png"
+   }
+  ]
+ },
+ "archer": {
+  "kind": "cat",
+  "wikiTitle": "Archer Cat",
+  "gallery": [
+   {
+    "file": "056_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/11/056_f.png/revision/latest",
+    "caption": "Archer Cat spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/a7/Uni056_f00.png/revision/latest",
+    "file": "Uni056_f00.png"
+   }
+  ]
+ },
+ "fortune": {
+  "kind": "cat",
+  "wikiTitle": "Fortune Teller Cat",
+  "gallery": [
+   {
+    "file": "051_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/77/051_f.png/revision/latest",
+    "caption": "Fortune Teller Cat spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/67/Uni051_f00.png/revision/latest",
+    "file": "Uni051_f00.png"
+   }
+  ]
+ },
+ "jurassic": {
+  "kind": "cat",
+  "wikiTitle": "Jurassic Cat Sitter",
+  "gallery": [
+   {
+    "file": "046_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/d/dd/046_f.png/revision/latest",
+    "caption": "Jurassic Cat spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/96/Uni046_f00.png/revision/latest",
+    "file": "Uni046_f00.png"
+   }
+  ]
+ },
+ "kotatsu": {
+  "kind": "cat",
+  "wikiTitle": "Kotatsu Cat",
+  "gallery": [
+   {
+    "file": "033_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/90/033_f.png/revision/latest",
+    "caption": "Kotatsu Cat spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/45/Uni033_f00.png/revision/latest",
+    "file": "Uni033_f00.png"
+   }
+  ]
+ },
+ "valkyrie": {
+  "kind": "cat",
+  "wikiTitle": "Valkyrie Cat",
+  "gallery": [
+   {
+    "file": "024_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/f2/024_f.png/revision/latest",
+    "caption": "Valkyrie Cat spritesheet",
+    "sizeKB": 0
+   },
+   {
+    "file": "024_c.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/ec/024_c.png/revision/latest",
+    "caption": "True Valkyrie Cat spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/25/Uni024_f00.png/revision/latest",
+    "file": "Uni024_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/75/Uni024_c00.png/revision/latest",
+    "file": "Uni024_c00.png"
+   }
+  ]
+ },
+ "lilcat": {
+  "kind": "cat",
+  "wikiTitle": "Li'l Cat",
+  "gallery": [
+   {
+    "file": "209_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/91/209_f.png/revision/latest",
+    "caption": "Li'l Cat spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/26/Uni209_f00.png/revision/latest",
+    "file": "Uni209_f00.png"
+   }
+  ]
+ },
+ "liltank": {
+  "kind": "cat",
+  "wikiTitle": "Li'l Tank Cat",
+  "gallery": [
+   {
+    "file": "210_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/d/dd/210_f.png/revision/latest",
+    "caption": "Li'l Tank Cat spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/92/Uni210_f00.png/revision/latest",
+    "file": "Uni210_f00.png"
+   }
+  ]
+ },
+ "moneko": {
+  "kind": "cat",
+  "wikiTitle": "Moneko",
+  "gallery": [
+   {
+    "file": "016_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/38/016_f.png/revision/latest",
+    "caption": "Moneko spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/4d/Uni016_f00.png/revision/latest",
+    "file": "Uni016_f00.png"
+   }
+  ]
+ },
+ "neneko": {
+  "kind": "cat",
+  "wikiTitle": "Neneko",
+  "gallery": [
+   {
+    "file": "131_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/11/131_f.png/revision/latest",
+    "caption": "Neneko spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/5a/Uni131_f00.png/revision/latest",
+    "file": "Uni131_f00.png"
    }
   ]
  },
@@ -3379,6 +4234,834 @@
    {
     "url": "https://static.wikia.nocookie.net/battle-cats/images/1/11/Enemy_icon_685.png/revision/latest",
     "file": "Enemy_icon_685.png"
+   }
+  ]
+ },
+ "snache": {
+  "kind": "enemy",
+  "wikiTitle": "Snache",
+  "gallery": [
+   {
+    "file": "001_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/c0/001_e.png/revision/latest",
+    "caption": "Snache spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/70/Enemy_icon_001.png/revision/latest",
+    "file": "Enemy_icon_001.png"
+   }
+  ]
+ },
+ "those": {
+  "kind": "enemy",
+  "wikiTitle": "Those Guys",
+  "gallery": [
+   {
+    "file": "002_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/a7/002_e.png/revision/latest",
+    "caption": "Those Guys spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/0f/Enemy_icon_002.png/revision/latest",
+    "file": "Enemy_icon_002.png"
+   }
+  ]
+ },
+ "baa": {
+  "kind": "enemy",
+  "wikiTitle": "Baa Baa",
+  "gallery": [
+   {
+    "file": "007_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/40/007_e.png/revision/latest",
+    "caption": "Baa Baa spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/9f/Enemy_icon_007.png/revision/latest",
+    "file": "Enemy_icon_007.png"
+   }
+  ]
+ },
+ "jackie": {
+  "kind": "enemy",
+  "wikiTitle": "Jackie Peng",
+  "gallery": [
+   {
+    "file": "005_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/b2/005_e.png/revision/latest",
+    "caption": "Jackie Peng spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/9a/Enemy_icon_005.png/revision/latest",
+    "file": "Enemy_icon_005.png"
+   }
+  ]
+ },
+ "leboin": {
+  "kind": "enemy",
+  "wikiTitle": "Le'boin",
+  "gallery": [
+   {
+    "file": "009_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/e9/009_e.png/revision/latest",
+    "caption": "Le'boin spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/72/Enemy_icon_009.png/revision/latest",
+    "file": "Enemy_icon_009.png"
+   }
+  ]
+ },
+ "hippoe": {
+  "kind": "enemy",
+  "wikiTitle": "Hippoe",
+  "gallery": [
+   {
+    "file": "003_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/7b/003_e.png/revision/latest",
+    "caption": "Hippoe spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/05/Enemy_icon_003.png/revision/latest",
+    "file": "Enemy_icon_003.png"
+   }
+  ]
+ },
+ "sirseal": {
+  "kind": "enemy",
+  "wikiTitle": "Sir Seal",
+  "gallery": [
+   {
+    "file": "008_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/a0/008_e.png/revision/latest",
+    "caption": "Sir Seal spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/6e/Enemy_icon_008.png/revision/latest",
+    "file": "Enemy_icon_008.png"
+   }
+  ]
+ },
+ "onehorn": {
+  "kind": "enemy",
+  "wikiTitle": "One Horn",
+  "gallery": [
+   {
+    "file": "011_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/f9/011_e.png/revision/latest",
+    "caption": "One Horn spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/1f/Enemy_icon_011.png/revision/latest",
+    "file": "Enemy_icon_011.png"
+   }
+  ]
+ },
+ "teacher": {
+  "kind": "enemy",
+  "wikiTitle": "Teacher Bear",
+  "gallery": [
+   {
+    "file": "012_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/17/012_e.png/revision/latest",
+    "caption": "Teacher Bear spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/59/Enemy_icon_012.png/revision/latest",
+    "file": "Enemy_icon_012.png"
+   }
+  ]
+ },
+ "croco": {
+  "kind": "enemy",
+  "wikiTitle": "Croco",
+  "gallery": [
+   {
+    "file": "013_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/2d/013_e.png/revision/latest",
+    "caption": "Croco spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/82/Enemy_icon_013.png/revision/latest",
+    "file": "Enemy_icon_013.png"
+   }
+  ]
+ },
+ "shibalien": {
+  "kind": "enemy",
+  "wikiTitle": "Shibalien",
+  "gallery": [
+   {
+    "file": "167_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/07/167_e.png/revision/latest",
+    "caption": "Shibalien spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/19/Enemy_icon_167.png/revision/latest",
+    "file": "Enemy_icon_167.png"
+   }
+  ]
+ },
+ "face": {
+  "kind": "enemy",
+  "wikiTitle": "The Face",
+  "gallery": [
+   {
+    "file": "018_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/b8/018_e.png/revision/latest",
+    "caption": "The Face spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/d/d7/Enemy_icon_018.png/revision/latest",
+    "file": "Enemy_icon_018.png"
+   }
+  ]
+ },
+ "nyandam": {
+  "kind": "enemy",
+  "wikiTitle": "Dark Emperor Nyandam",
+  "gallery": [
+   {
+    "file": "023_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/0f/023_e.png/revision/latest",
+    "caption": "Dark Emperor Nyandam spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/04/Enemy_icon_023.png/revision/latest",
+    "file": "Enemy_icon_023.png"
+   }
+  ]
+ },
+ "ghostdoge": {
+  "kind": "enemy",
+  "wikiTitle": "Zoge",
+  "gallery": [
+   {
+    "file": "284_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/ed/284_e.png/revision/latest",
+    "caption": "Zoge spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/10/Enemy_icon_284.png/revision/latest",
+    "file": "Enemy_icon_284.png"
+   }
+  ]
+ },
+ "angelgabriel": {
+  "kind": "enemy",
+  "wikiTitle": "Gabriel",
+  "gallery": [
+   {
+    "file": "114_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/af/114_e.png/revision/latest",
+    "caption": "Gabriel spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/be/Enemy_icon_114.png/revision/latest",
+    "file": "Enemy_icon_114.png"
+   }
+  ]
+ },
+ "angelseraph": {
+  "kind": "enemy",
+  "wikiTitle": "Mr. Angel",
+  "gallery": [
+   {
+    "file": "254_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/c3/254_e.png/revision/latest",
+    "caption": "Mr. Angel spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/be/Enemy_icon_254.png/revision/latest",
+    "file": "Enemy_icon_254.png"
+   }
+  ]
+ },
+ "metallic": {
+  "kind": "enemy",
+  "wikiTitle": "Metal Hippoe",
+  "gallery": [
+   {
+    "file": "047_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/32/047_e.png/revision/latest",
+    "caption": "Metal Hippoe spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/07/Enemy_icon_047.png/revision/latest",
+    "file": "Enemy_icon_047.png"
+   }
+  ]
+ },
+ "metallicdoge": {
+  "kind": "enemy",
+  "wikiTitle": "Metal Doge",
+  "gallery": [
+   {
+    "file": "147_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/24/147_e.png/revision/latest",
+    "caption": "Metal Doge spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/3b/Enemy_icon_147.png/revision/latest",
+    "file": "Enemy_icon_147.png"
+   }
+  ]
+ },
+ "zombieelephant": {
+  "kind": "enemy",
+  "wikiTitle": "Elephantidae Papaou",
+  "gallery": [
+   {
+    "file": "641_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/62/641_e.png/revision/latest",
+    "caption": "Elephantidae Papaou spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/1e/Enemy_icon_641.png/revision/latest",
+    "file": "Enemy_icon_641.png"
+   }
+  ]
+ },
+ "zombibear": {
+  "kind": "enemy",
+  "wikiTitle": "Cadaver Bear",
+  "gallery": [
+   {
+    "file": "427_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/06/427_e.png/revision/latest",
+    "caption": "Cadaver Bear spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/07/Enemy_icon_427.png/revision/latest",
+    "file": "Enemy_icon_427.png"
+   }
+  ]
+ },
+ "relicdoge": {
+  "kind": "enemy",
+  "wikiTitle": "Relic Doge",
+  "gallery": [
+   {
+    "file": "407_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/d/dc/407_e.png/revision/latest",
+    "caption": "Relic Doge spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/01/Enemy_icon_407.png/revision/latest",
+    "file": "Enemy_icon_407.png"
+   }
+  ]
+ },
+ "relichippo": {
+  "kind": "enemy",
+  "wikiTitle": "Heavenly Hippoe",
+  "gallery": [
+   {
+    "file": "113_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/88/113_e.png/revision/latest",
+    "caption": "Heavenly Hippoe spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/bd/Enemy_icon_113.png/revision/latest",
+    "file": "Enemy_icon_113.png"
+   }
+  ]
+ },
+ "akudoge": {
+  "kind": "enemy",
+  "wikiTitle": "Aku Doge",
+  "gallery": [
+   {
+    "file": "552_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/71/552_e.png/revision/latest",
+    "caption": "Aku Doge spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/1d/Enemy_icon_552.png/revision/latest",
+    "file": "Enemy_icon_552.png"
+   }
+  ]
+ },
+ "akucerberus": {
+  "kind": "enemy",
+  "wikiTitle": "Cerberus Kids",
+  "gallery": [
+   {
+    "file": "554_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/36/554_e.png/revision/latest",
+    "caption": "Cerberus Kids spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/09/Enemy_icon_554.png/revision/latest",
+    "file": "Enemy_icon_554.png"
+   }
+  ]
+ },
+ "behemothcroc": {
+  "kind": "enemy",
+  "wikiTitle": "Crocodylidae Kurocroc",
+  "gallery": [
+   {
+    "file": "655_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/30/655_e.png/revision/latest",
+    "caption": "Crocodylidae Kurocroc spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/fb/Enemy_icon_655.png/revision/latest",
+    "file": "Enemy_icon_655.png"
+   }
+  ]
+ },
+ "behemothbear": {
+  "kind": "enemy",
+  "wikiTitle": "Bearkini",
+  "gallery": [
+   {
+    "file": "100_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/7d/100_e.png/revision/latest",
+    "caption": "Bearkini spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/2e/Enemy_icon_100.png/revision/latest",
+    "file": "Enemy_icon_100.png"
+   }
+  ]
+ },
+ "witchen": {
+  "kind": "enemy",
+  "wikiTitle": "Drury Witch",
+  "gallery": [
+   {
+    "file": "121_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/b5/121_e.png/revision/latest",
+    "caption": "Drury Witch spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/f3/Enemy_icon_121.png/revision/latest",
+    "file": "Enemy_icon_121.png"
+   }
+  ]
+ },
+ "clionel": {
+  "kind": "enemy",
+  "wikiTitle": "Cruel Angel Clionel",
+  "gallery": [
+   {
+    "file": "232_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/8e/232_e.png/revision/latest",
+    "caption": "Cruel Angel Clionel spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/f2/Enemy_icon_232.png/revision/latest",
+    "file": "Enemy_icon_232.png"
+   }
+  ]
+ },
+ "dogedark": {
+  "kind": "enemy",
+  "wikiTitle": "Doge Dark",
+  "gallery": [
+   {
+    "file": "046_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/d/d7/046_e.png/revision/latest",
+    "caption": "Doge Dark spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/22/Enemy_icon_046.png/revision/latest",
+    "file": "Enemy_icon_046.png"
+   }
+  ]
+ },
+ "gory": {
+  "kind": "enemy",
+  "wikiTitle": "Gory",
+  "gallery": [
+   {
+    "file": "006_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/60/006_e.png/revision/latest",
+    "caption": "Gory spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/50/Enemy_icon_006.png/revision/latest",
+    "file": "Enemy_icon_006.png"
+   }
+  ]
+ },
+ "wanwan": {
+  "kind": "enemy",
+  "wikiTitle": "Everlord Wanwan",
+  "gallery": [
+   {
+    "file": "506_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/77/506_e.png/revision/latest",
+    "caption": "Everlord Wanwan spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/96/Enemy_icon_506.png/revision/latest",
+    "file": "Enemy_icon_506.png"
+   }
+  ]
+ },
+ "owlbrow": {
+  "kind": "enemy",
+  "wikiTitle": "Owlbrow",
+  "gallery": [
+   {
+    "file": "037_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/f4/037_e.png/revision/latest",
+    "caption": "Owlbrow spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/31/Enemy_icon_037.png/revision/latest",
+    "file": "Enemy_icon_037.png"
+   }
+  ]
+ },
+ "camelle": {
+  "kind": "enemy",
+  "wikiTitle": "Camelle",
+  "gallery": [
+   {
+    "file": "035_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/a9/035_e.png/revision/latest",
+    "caption": "Camelle spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/7b/Enemy_icon_035.png/revision/latest",
+    "file": "Enemy_icon_035.png"
+   }
+  ]
+ },
+ "mastera": {
+  "kind": "enemy",
+  "wikiTitle": "Master A.",
+  "gallery": [
+   {
+    "file": "031_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/32/031_e.png/revision/latest",
+    "caption": "Master A. spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/f0/Enemy_icon_031.png/revision/latest",
+    "file": "Enemy_icon_031.png"
+   }
+  ]
+ },
+ "bore": {
+  "kind": "enemy",
+  "wikiTitle": "Bore",
+  "gallery": [
+   {
+    "file": "038_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/29/038_e.png/revision/latest",
+    "caption": "Bore spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/f7/Enemy_icon_038.png/revision/latest",
+    "file": "Enemy_icon_038.png"
+   }
+  ]
+ },
+ "kurosawah": {
+  "kind": "enemy",
+  "wikiTitle": "Director Kurosawah",
+  "gallery": [
+   {
+    "file": "053_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/a2/053_e.png/revision/latest",
+    "caption": "Director Kurosawah spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/f0/Enemy_icon_053.png/revision/latest",
+    "file": "Enemy_icon_053.png"
+   }
+  ]
+ },
+ "gregor": {
+  "kind": "enemy",
+  "wikiTitle": "General GreGory",
+  "gallery": [
+   {
+    "file": "362_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/ea/362_e.png/revision/latest",
+    "caption": "General GreGory spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/ea/Enemy_icon_362.png/revision/latest",
+    "file": "Enemy_icon_362.png"
+   }
+  ]
+ },
+ "lesolar": {
+  "kind": "enemy",
+  "wikiTitle": "Le'Solar",
+  "gallery": [
+   {
+    "file": "363_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/c0/363_e.png/revision/latest",
+    "caption": "Le'Solar spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/24/Enemy_icon_363.png/revision/latest",
+    "file": "Enemy_icon_363.png"
+   }
+  ]
+ },
+ "spacefish": {
+  "kind": "enemy",
+  "wikiTitle": "Spacefish Jones",
+  "gallery": [
+   {
+    "file": "366_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/1b/366_e.png/revision/latest",
+    "caption": "Spacefish Jones spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/6e/Enemy_icon_366.png/revision/latest",
+    "file": "Enemy_icon_366.png"
+   }
+  ]
+ },
+ "projecta": {
+  "kind": "enemy",
+  "wikiTitle": "Project A",
+  "gallery": [
+   {
+    "file": "364_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/a6/364_e.png/revision/latest",
+    "caption": "Project A spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/55/Enemy_icon_364.png/revision/latest",
+    "file": "Enemy_icon_364.png"
+   }
+  ]
+ },
+ "phace": {
+  "kind": "enemy",
+  "wikiTitle": "I.M. Phace",
+  "gallery": [
+   {
+    "file": "174_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/fa/174_e.png/revision/latest",
+    "caption": "I.M. Phace spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/05/Enemy_icon_174.png/revision/latest",
+    "file": "Enemy_icon_174.png"
+   }
+  ]
+ },
+ "dober": {
+  "kind": "enemy",
+  "wikiTitle": "Dober P.D",
+  "gallery": [
+   {
+    "file": "044_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/ba/044_e.png/revision/latest",
+    "caption": "Dober P.D spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/ea/Enemy_icon_044.png/revision/latest",
+    "file": "Enemy_icon_044.png"
+   }
+  ]
+ },
+ "sael": {
+  "kind": "enemy",
+  "wikiTitle": "Imperator Sael",
+  "gallery": [
+   {
+    "file": "170_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/5d/170_e.png/revision/latest",
+    "caption": "Imperator Sael spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/5e/Enemy_icon_170.png/revision/latest",
+    "file": "Enemy_icon_170.png"
+   }
+  ]
+ },
+ "elizabeth": {
+  "kind": "enemy",
+  "wikiTitle": "Elizabeth the LVIth",
+  "gallery": [
+   {
+    "file": "178_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/06/178_e.png/revision/latest",
+    "caption": "Elizabeth the LVIth spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/24/Enemy_icon_178.png/revision/latest",
+    "file": "Enemy_icon_178.png"
+   }
+  ]
+ },
+ "sunfish": {
+  "kind": "enemy",
+  "wikiTitle": "Sunfish Jones",
+  "gallery": [
+   {
+    "file": "119_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/26/119_e.png/revision/latest",
+    "caption": "Sunfish Jones spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/93/Enemy_icon_119.png/revision/latest",
+    "file": "Enemy_icon_119.png"
+   }
+  ]
+ },
+ "celeboodle": {
+  "kind": "enemy",
+  "wikiTitle": "Celeboodle",
+  "gallery": [
+   {
+    "file": "042_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/15/042_e.png/revision/latest",
+    "caption": "Celeboodle spritesheet",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/e6/Enemy_icon_042.png/revision/latest",
+    "file": "Enemy_icon_042.png"
    }
   ]
  }

@@ -1,13 +1,13 @@
 'use strict';
-/* ============================== REAL SPRITE RENDERER ==============================
-   Loads the original-game unit animations (frame strips + timings) built by
-   tools/build-sprites.py into assets/sprites/. Delegated to from ART.cat /
-   ART.enemy / ART.catIcon / ART.enemyIcon with a graceful painter fallback.
+/* ============================== REAL SPRITE RENDERER v2 ==============================
+   Renders the original-game unit animations built by tools/build-sprites.py v2
+   (connected-component slicing of the wiki's multi-row grid sheets).
 
-   Manifest: { units:{ "cat:cat": { forms:{ "0": {
-                 walk:{img,frames,idx,dur,ax,ay,fh}|null,
-                 atk :{img,frames,idx,dur,ax,ay,fh}|null } } } },
-              icons:{ "cat:cat:0":"icon_cat_0.png" } } */
+   Manifest v2 entry (walk/atk):
+     { img, frames: [[sx,sy,sw,sh,ax,ay], ...],   // sheet-space rect + anchor
+       idx: [frameNumbers], dur: [ms], refH: px }  // refH = typical content height
+   Anchor (ax,ay) in sheet space lands at the unit origin (feet);
+   ax = frame center (sheets) or frame-0 center (attack GIF strips — keeps lunge travel). */
 const SPRIT=(()=>{
   const M={units:{},icons:{},imgs:{},loading:false,loaded:false};
   const BASE='assets/sprites/';
@@ -67,21 +67,19 @@ const SPRIT=(()=>{
     return list[list.length-1];
   }
   const progIdx=(list,p)=>list.length?list[clamp(Math.floor(clamp(p,0,0.999)*list.length),0,list.length-1)]:0;
-  /* draw one strip frame: anchor (ax,ay) lands at the origin; TARGET px per scale unit */
-  function drawFrame(en,i,sc,flip,targetH){
+  /* draw one manifest-v2 frame: anchor (ax,ay) lands at the origin;
+     sc = px per sheet-pixel; flip mirrors horizontally (sheets face LEFT) */
+  function drawFrame(en,i,sc,flip){
     const fr=(en.frames||[])[i];
-    if(!fr)return false;
+    if(!fr||fr.length<6)return false;
     const im=img(BASE+en.img);
     if(!im||!im.complete||!im.naturalWidth)return false;
-    const fw=fr[1],fh=en.fh||im.height;
-    let ax,ay;
-    if(en.ax!==undefined&&en.ay!==undefined){ax=en.ax;ay=en.ay}
-    else{ax=fr[0]+fw/2;ay=fh-2}
+    const sx=fr[0],sy=fr[1],sw=fr[2],sh=fr[3],ax=fr[4],ay=fr[5];
     const c=cx;
     c.save();
     if(flip)c.scale(-1,1);
-    const dx=-(ax-fr[0])*sc,dy=-ay*sc;
-    c.drawImage(im,fr[0],0,fw,fh,dx,dy,fw*sc,fh*sc);
+    const dx=-(ax-sx)*sc,dy=-(ay-sy)*sc;
+    c.drawImage(im,sx,sy,sw,sh,dx,dy,sw*sc,sh*sc);
     c.restore();
     return true;
   }
@@ -93,11 +91,11 @@ const SPRIT=(()=>{
     const fm=formEntry(kind,o.id,fi);
     if(!fm)return false;
     const s=(o.s||1);
-    const TARGET=kind==='enemy'?86:78;
+    const TARGET=kind==='enemy'?86:74;
     const flip=(o.dir||0)>0; // sheets face LEFT (game data convention): flip when facing right
     const c=cx;
     c.save();
-    c.translate(o.x||0,o.y||0); // drawUnit pre-translates to the unit (x:0,y:0); absolute call sites pass real coords
+    c.translate(o.x||0,o.y||0); // drawUnit pre-translates to the unit; absolute call sites pass real coords
     if(e.weak)c.globalAlpha*=0.92;
     let ok=false;
     const anim=e.anim||'walk';
@@ -110,8 +108,8 @@ const SPRIT=(()=>{
           const p=anim==='windup'?(e.atkT||0)*0.42:0.42+(e.atkT||0)*0.58;
           fi2=progIdx(list,p);
         }else fi2=list[0];
-        const H=(en.fh||100);
-        ok=drawFrame(en,fi2,s*TARGET/Math.max(20,H),flip,TARGET);
+        const H=(en.refH||100);
+        ok=drawFrame(en,fi2,s*TARGET/Math.max(20,H),flip);
       }
     }
     if(!ok){
@@ -121,8 +119,8 @@ const SPRIT=(()=>{
         let fi2;
         if(e.idle||e.anim==='idle')fi2=list[0];
         else fi2=cycIdx(list,en.dur,(o.t||0));
-        const H=(en.fh||100);
-        ok=drawFrame(en,fi2,s*TARGET/Math.max(20,H),flip,TARGET);
+        const H=(en.refH||100);
+        ok=drawFrame(en,fi2,s*TARGET/Math.max(20,H),flip);
       }
     }
     c.restore();

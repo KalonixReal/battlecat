@@ -38,7 +38,7 @@ cv.addEventListener('pointerdown',e=>{const p=toDesign(e);AudioUnlock();G.pdown=
 });
 cv.addEventListener('pointermove',e=>{const p=toDesign(e);G.mouse=p;
   if(G.dragScroll){const h=G.dragScroll.h;
-    if(h.horiz){const d=p.x-G.dragScroll.sx;if(Math.abs(d)>6||G.dragScroll.moved){G.dragScroll.moved=true;h.setOff(G.dragScroll.off-d); /* GRAB-THE-WORLD: the battlefield follows the finger — drag LEFT looks RIGHT (toward the enemy base), exactly like the original */
+    if(h.horiz){const d=p.x-G.dragScroll.sx;if(Math.abs(d)>6||G.dragScroll.moved){G.dragScroll.moved=true;h.setOff(G.dragScroll.off+d); /* PAN-THE-CAMERA: drag RIGHT looks RIGHT — finger direction = look direction (user-verified) */
       if(G.flingCam)G.flingCam=null;
       const nt=now(),olt=G.dragScroll.lt||nt,olx=(G.dragScroll.lx!==undefined?G.dragScroll.lx:G.dragScroll.sx); // first segment measures from the drag START
       const iv=(p.x-olx)/Math.max(0.008,(nt-olt)/1000); // instantaneous px/s of this segment
@@ -56,8 +56,8 @@ cv.addEventListener('wheel',e=>{const p=toDesign(e);
   let sreg=null;for(let i=G.hits.length-1;i>=0;i--){const s=G.hits[i];if(!s||!s.scroll||s.hidden)continue;
     if(p.x>=s.x&&p.x<=s.x+s.w&&p.y>=s.y&&p.y<=s.y+s.h){sreg=s;break}}
   if(sreg){const dy=e.deltaY;
-    if(sreg.horiz){const dx=Math.abs(e.deltaX)>Math.abs(dy)?e.deltaX:dy; // GRAB-THE-WORLD wheel: roll right = world right = look LEFT (matches the drag), hard-clamped to bounds
-      sreg.setOff(clamp(sreg.off()-dx,0,(sreg.max&&sreg.max()>0)?sreg.max():1e9))}
+    if(sreg.horiz){const dx=Math.abs(e.deltaX)>Math.abs(dy)?e.deltaX:dy; // PAN-THE-CAMERA wheel: roll right = look right (matches the drag), hard-clamped to bounds
+      sreg.setOff(clamp(sreg.off()+dx,0,(sreg.max&&sreg.max()>0)?sreg.max():1e9))}
     else sreg.setOff(clamp(sreg.off()+dy,0,sreg.max()));
     e.preventDefault();e.stopPropagation()}
 },{passive:false});
@@ -65,8 +65,8 @@ function endPointer(e){if(G.dragScroll){const ds=G.dragScroll;
     if(!ds.moved){ // a tap (not a drag): fire the region's own onTap AND any button it swallowed
       if(ds.h.tap)ds.h.tap();
       if(ds.pendBtn&&ds.pendBtn.cb)ds.pendBtn.cb()}
-    else if(ds.h.horiz&&ds.v){ // FLING: horizontal momentum on release — world keeps moving with the finger's velocity (camera glides opposite)
-      if(now()-(ds.lt||0)<140&&Math.abs(ds.v)>380)G.flingCam={v:clamp(-ds.v,-2600,2600)}}
+    else if(ds.h.horiz&&ds.v){ // FLING: horizontal momentum on release — camera glides in the finger's direction
+      if(now()-(ds.lt||0)<140&&Math.abs(ds.v)>380)G.flingCam={v:clamp(ds.v,-2600,2600)}}
     if(ds.pendBtn)ds.pendBtn.active=false;
     G.dragScroll=null}
   if(e&&e.pointerId!==undefined){try{cv.releasePointerCapture(e.pointerId)}catch(e2){}}
@@ -638,6 +638,7 @@ function drawChapters(dt){
   const groups=[['story','EMPIRE OF CATS / INTO THE FUTURE / CATS OF THE COSMOS'],['sol','STORIES OF LEGEND'],['ul','UNCANNY LEGENDS'],['aku','THE AKU REALMS'],['dojo','CATCLAW DOJO'],['event','EVENT STAGES']];
   SCROLL('chl',0,54,1280,612,()=>G.scrollChap,v=>G.scrollChap=v,Math.max(0,CHAPTERS.length*74+groups.length*44-566));
   let y=80;let i=0;
+  cx.save();cx.beginPath();cx.rect(0,54,1280,612);cx.clip(); // clip: cards scroll UNDER the top bar/bottom bar
   groups.forEach(([kind,label])=>{
     txt(cx,label,24,y+G.scrollChap,14,'#7a5a2a','left');y+=26;
     CHAPTERS.filter(c=>c.kind===kind).forEach(c=>{
@@ -664,7 +665,7 @@ function drawChapters(dt){
         txt(cx,Math.round(pn*100)+'%',1204,47.5,11,clearedN?'#8a6a3a':'#b8a884','right',2,'#fff',700)}
       if(!unl)txt(cx,'Locked',1216,30,14,'#a89a78','right');
       cx.globalAlpha=1;cx.restore();y+=66;i++});
-    y+=14});brownBottomBar()
+    y+=14});cx.restore();brownBottomBar()
 }
 
 function drawMap(dt){const c=CHMAP[G.chapter];
@@ -708,7 +709,7 @@ function drawMap(dt){const c=CHMAP[G.chapter];
   if(!G.pdown)G.mapDrag=null;
   G.onDrag=(p,pd)=>{if(!G.mapDrag)return;const dx=p.x-G.mapDrag.sx,dy=p.y-G.mapDrag.sy;
     if(!pd.moved&&Math.abs(dx)+Math.abs(dy)>7)pd.moved=true;
-    if(pd.moved){G.mapCam.x=clamp(G.mapDrag.cx-dx,0,Math.max(0,mapW-1248));G.mapCam.y=clamp(G.mapDrag.cy-dy,0,Math.max(0,mapH-634))}};
+    if(pd.moved){G.mapCam.x=clamp(G.mapDrag.cx+dx,0,Math.max(0,mapW-1248));G.mapCam.y=clamp(G.mapDrag.cy+dy,0,Math.max(0,mapH-634))}}; // PAN-THE-CAMERA: drag direction = look direction
   // ---- parchment scene ----
   cx.save();cx.beginPath();cx.rect(16,70,1248,634);cx.clip();
   cx.drawImage(scene.cv,16-G.mapCam.x,70-G.mapCam.y);
@@ -1865,6 +1866,7 @@ function drawGuide(dt){drawTopBar('ENEMY GUIDE — BESTIARY',true);
   txt(cx,'Discovered '+seen.length+' / '+ENEMIES.length+' enemies. Encounter enemies in battle to register them!',20,80,13,'#8a6a3a','left',3,'#fff',400);
   const eList=ENEMIES;const perRow=10;const cw=118,ch=132;
   SCROLL('gd',0,94,1280,572,()=>G.scrollList,v=>G.scrollList=v,Math.max(0,Math.ceil(eList.length/perRow)*(ch+6)-566));
+  cx.save();cx.beginPath();cx.rect(0,94,1280,572);cx.clip(); // clip: cards scroll UNDER the top bar/bottom bar
   eList.forEach((e,i)=>{const col=i%perRow,row=Math.floor(i/perRow);const x=24+col*cw,y=104+row*(ch+6)-G.scrollList;
     if(y<80||y>650)return;const known=!!SV.bestiary[e.id];
     panel(x,y,cw-6,ch,known?'#fffdf5':'#e2d4ae',known?'#b08a50':'#cbb384');
@@ -1879,6 +1881,7 @@ function drawGuide(dt){drawTopBar('ENEMY GUIDE — BESTIARY',true);
       txt(cx,e.tr.length?e.tr.map(t=>t.toUpperCase()).join('·'):'TRAITLESS',x+(cw-6)/2,y+88,7.2,shade(tc2[0]||'#8a8272',.55),'center',2,'#fff',700);
       txt(cx,'?',x+(cw-6)/2,y+108,14,'#b8a884','center',2,'#fff',700);
       if(e.boss)txt(cx,'BOSS',x+(cw-6)/2,y+122,8.5,'#d0a08a','center',2,'#fff',700)}});
+  cx.restore();
   if(G.selEnemy)drawEnemyDetail();
   brownBottomBar()}
 function drawEnemyDetail(){const e=ENEMAP[G.selEnemy];cx.fillStyle='rgba(30,20,10,.66)';cx.fillRect(0,0,1280,720);
@@ -2274,6 +2277,7 @@ function drawTrophies(dt){bgSky();drawTopBar('TROPHY STAND',true);
   const contentH=Math.max(colH[0],colH[1]);
   SCROLL('tsc',0,156,1280,514,()=>G.scrollTrophy||0,v=>G.scrollTrophy=clamp(v,0,Math.max(0,contentH-514)),Math.max(0,contentH-514));
   const off=G.scrollTrophy||0;
+  cx.save();cx.beginPath();cx.rect(0,156,1280,514);cx.clip(); // clip: panels scroll UNDER the header/footer
   placed.forEach(({g,cI,x,y,h})=>{
     const sy=y-off;
     if(sy+h<140||sy>660)return; // cull off-screen panels
@@ -2331,6 +2335,7 @@ function drawTrophies(dt){bgSky();drawTopBar('TROPHY STAND',true);
         cx.restore()}
       else if(cl)txt(cx,'DONE',x+colW-45,ry+22,10.5,'#3a9a5a','center',2,'#fff',700);
       else BTN('tinfo'+t.id,x+colW-78,ry+6,66,30,()=>{toast(t.n+' — '+fmt(Math.min(prog,t.goal))+'/'+fmt(t.goal)+' · reward '+RW_TXT(t.rw),'#ffb060');SFX.click()},{col:'#e8d8b0',outline:'#8a7a5a',label:Math.round(fr*100)+'%',fs:11,tcol:'#8a6a3a'})})});
+  cx.restore();
   txt(cx,'Trophies track your whole adventure — crowns, summons, scouting, treasures and more!',640,700,11.5,'#8a6a3a','center',2.5,'#fff',400)}
 
 
