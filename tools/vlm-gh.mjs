@@ -6,7 +6,7 @@
 //   bun tools/vlm-gh.mjs run <imagePath> <id> <prompt> [model] (add+push)
 //   bun tools/vlm-gh.mjs status                                (workflow run state)
 //   bun tools/vlm-gh.mjs collect [idPrefix]                    (pull+print results)
-import { execSync } from 'child_process';
+import { execSync, execFileSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 
@@ -23,10 +23,10 @@ function sh(cmd, opts = {}) {
   return execSync(cmd, { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], ...opts }).toString();
 }
 function gh(method, urlPath, body) {
-  const args = ['-s', '--max-time', '30', '-X', method, `-H`, `Authorization: token ${TOKEN}`,
+  const args = ['-s', '--max-time', '30', '-X', method, '-H', `Authorization: token ${TOKEN}`,
     '-H', 'Accept: application/vnd.github+json', `https://api.github.com/repos/${REPO}/${urlPath}`];
-  if (body) args.push('-d', JSON.stringify(body));
-  const out = sh(`curl ${args.map(a => (a.includes(' ') || a.length === 0) ? `'${a.replace(/'/g, "'\\''")}'` : a).join(' ')}`);
+  if (body !== undefined) args.push('-H', 'Content-Type: application/json', '--data-binary', JSON.stringify(body));
+  const out = execFileSync('curl', args, { encoding: 'utf8' });
   try { return JSON.parse(out); } catch { return { raw: out }; }
 }
 
@@ -77,7 +77,14 @@ async function push() {
   sh('git add vlm/ .github/workflows/vlm.yml');
   const st = sh('git status --porcelain vlm/ .github/');
   if (st.trim()) sh('git commit -q -m "vlm: queue batch [skip ci]"');
-  sh('git push -q');
+  // sync with remote (worker commits results concurrently): stash unrelated changes, rebase, restore
+  let stashed = false;
+  try { sh('git stash -q'); stashed = true; } catch {}
+  for (let i = 0; i < 3; i++) {
+    try { sh('git pull --rebase -q'); break; } catch (e) { sh('git rebase --abort 2>/dev/null || true'); }
+  }
+  if (stashed) { try { sh('git stash pop -q'); } catch {} }
+  try { sh('git push -q'); } catch (e) { console.log('push failed:', e.message.slice(0, 150)); }
   const d = gh('POST', 'actions/workflows/vlm.yml/dispatches', { ref: 'main' });
   console.log('dispatched:', d.message === undefined ? 'OK' : JSON.stringify(d).slice(0, 200));
 }

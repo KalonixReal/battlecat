@@ -68,7 +68,7 @@ const SPRIT=(()=>{
   }
   const progIdx=(list,p)=>list.length?list[clamp(Math.floor(clamp(p,0,0.999)*list.length),0,list.length-1)]:0;
   /* draw one manifest-v2 frame: anchor (ax,ay) lands at the origin;
-     sc = px per sheet-pixel; flip mirrors horizontally (sheets face LEFT) */
+     sc = px per sheet-pixel; flip mirrors horizontally (sheets face RIGHT) */
   function drawFrame(en,i,sc,flip){
     const fr=(en.frames||[])[i];
     if(!fr||fr.length<6)return false;
@@ -92,7 +92,7 @@ const SPRIT=(()=>{
     if(!fm)return false;
     const s=(o.s||1);
     const TARGET=kind==='enemy'?86:74;
-    const flip=(o.dir||0)>0; // sheets face LEFT (game data convention): flip when facing right
+    const flip=(o.dir||0)<0; // sheets face RIGHT (VLM-verified): cats march dir=-1 → flip to face LEFT; enemies dir=+1 unflipped
     const c=cx;
     c.save();
     c.translate(o.x||0,o.y||0); // drawUnit pre-translates to the unit; absolute call sites pass real coords

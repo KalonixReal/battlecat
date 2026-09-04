@@ -13,8 +13,9 @@
 
    Attack GIFs (wiki animated rips, IN-GAME orientation: cats face LEFT, enemies face
    RIGHT) are mirrored at build time when needed so EVERYTHING shares the sheet
-   orientation (sheets face LEFT — game data convention), then the renderer flips
-   uniformly: flip = (dir > 0).
+   orientation (sheets face RIGHT — VLM-verified on raw wiki sheets), then the renderer
+   flips uniformly: flip = (dir < 0) — i.e. cats (dir=-1, marching left) get flipped
+   to face LEFT; enemies (dir=+1, marching right) render unflipped facing RIGHT.
 
    Output manifest v2 (public/game/assets/sprites/sprites.json):
      units: { "cat:cat": { forms: { "0": {
@@ -33,7 +34,7 @@ RAW = os.path.join(SPR, 'raw')
 os.makedirs(RAW, exist_ok=True)
 
 UA = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36'}
-SHEETS_FACE_LEFT = True   # game data convention; enemy GIF rips (in-game: right) get mirrored
+SHEETS_FACE_RIGHT = True  # VLM-verified: raw wiki sheets face RIGHT; cat GIF rips (in-game: left) get mirrored
 
 manifest = json.load(open(os.path.join(SPR, 'manifest.json')))
 
@@ -405,7 +406,7 @@ for uid, info in manifest.items():
         if fi in gif_atk:
             frames, durs = gif_frames(gif_atk[fi])
             if frames and len(frames) >= 2:
-                mirror = SHEETS_FACE_LEFT and kind == 'enemy'
+                mirror = SHEETS_FACE_RIGHT and kind == 'cat'
                 strip, E, f0h = gif_entry(frames, durs, mirror)
                 # size calibration: gif's standing pose (f0) should render at the
                 # same size as the sheet's walk frame 0 → refH scales the window
