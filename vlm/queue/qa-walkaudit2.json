@@ -1,0 +1,5 @@
+{
+ "id": "qa-walkaudit2",
+ "prompt": "Walking animation strips for 5 Battle Cats units (labeled). ORIGINAL game appearance: 1) Basic Cat: round white upright bipedal cat with simple face. 2) Tank Cat: VERY round/fat egg-shaped white cat. 3) Titan Cat: large muscular one-eyed humanoid cat. 4) Valkyrie Cat: winged helmet warrior cat. 5) Fish Cat: cat with fish body/head. For EACH strip: do the frames show the CORRECT character with a coherent walk cycle? Any garbled slices, wrong character, missing parts, or effect frames mixed in?",
+ "image": "images/qa-walkaudit2.png"
+}
