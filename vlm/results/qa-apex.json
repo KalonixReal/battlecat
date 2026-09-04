@@ -1,0 +1,7 @@
+{
+ "id": "qa-apex",
+ "ok": true,
+ "model": "gemini-3.5-flash-lite",
+ "text": "ATTACK=ROW2, WALK=ROW1",
+ "ts": 1788503665.3695204
+}
