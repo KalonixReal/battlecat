@@ -1,5 +1,0 @@
-{
- "id": "mp4grid",
- "prompt": "This is a grid of frames (2 per second, labeled t=0.0s to t=9.5s) extracted from a screen recording of a Battle Cats browser clone. The user reported: 'the animations are bugged, using attack animations as walking ones, sprites not cut or flipped'. Describe EXACTLY what visual bugs you see: (1) Are the cat/enemy sprites rendered correctly (clean single character per unit) or garbled/merged/uncut sprite pieces? (2) While units WALK across the field, do they play a walking cycle or attack poses? (3) Are sprites flipped correctly (cats should face LEFT toward enemy base, enemies RIGHT toward cat base)? (4) Any overlapping UI, wrong-sized sprites, or other artifacts? Be very specific about what is wrong.",
- "image": "images/mp4grid.png"
-}
