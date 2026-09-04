@@ -1,0 +1,5 @@
+{
+ "id": "rendered",
+ "prompt": "This shows 6 game units (red labels: enemy:hippoe, enemy:gory, enemy:doge, cat:cat, cat:tank, cat:titan). For each unit, the blue WALK strip shows the exact frames the game renders when the unit is WALKING, and the ATTACK strip shows frames used when ATTACKING. For EACH unit answer strictly: (1) WALK strip: is this a walking/moving cycle (legs alternating, bounce) or attack poses (lunging, weapon swinging, impact effects, dust clouds)? (2) ATTACK strip: attack poses or walking? (3) Any duplicated/garbled frames? End with a table: unit | walk_ok | atk_ok. Be precise - look for dust clouds, lunges, open mouths striking, weapon swings as ATTACK signs; alternating leg positions, repeated similar stances as WALK signs.",
+ "image": "images/rendered.png"
+}
