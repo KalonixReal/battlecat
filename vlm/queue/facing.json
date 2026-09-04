@@ -1,0 +1,5 @@
+{
+ "id": "facing",
+ "prompt": "Four game units are shown (red labels: CAT, TANK CAT, DOGE enemy, GORY enemy). For each unit: the RAW spritesheet's top row, the extracted WALK strip, and extracted ATTACK strip. For EACH strip answer: which direction do the characters FACE — LEFT or RIGHT? (Look at where the face/eyes/nose points, direction of movement implied by pose). Give a final table: unit | raw faces | walk strip faces | attack strip faces. In the original Battle Cats game: player CATS march LEFT toward the enemy base; ENEMIES march RIGHT toward the cat base.",
+ "image": "images/facing.png"
+}
