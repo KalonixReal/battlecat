@@ -1,0 +1,5 @@
+{
+ "id": "qa-map2-cotc1",
+ "prompt": "Stage-select map of a Battle Cats clone for Cats of the Cosmos. ORIGINAL: space/solar-system style map with stages on planets/moons. Is this clone showing a space map? Answer: SPACE_MAP or OTHER, describe briefly.",
+ "image": "images/qa-map2-cotc1.png"
+}

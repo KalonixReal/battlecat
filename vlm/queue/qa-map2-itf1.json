@@ -1,0 +1,5 @@
+{
+ "id": "qa-map2-itf1",
+ "prompt": "Stage-select map of a Battle Cats clone for Into the Future. ORIGINAL game: same Earth world map as EoC but with a futuristic/darker color scheme and stages on future-named locations. Is this clone showing a real Earth world map (futuristic style) or an abstract map? Answer: REAL_MAP or ABSTRACT_MAP, then describe briefly.",
+ "image": "images/qa-map2-itf1.png"
+}

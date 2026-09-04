@@ -1,0 +1,5 @@
+{
+ "id": "qa-map2-eoc1",
+ "prompt": "This is the stage-select map of a Battle Cats clone for Empire of Cats Ch.1. In the ORIGINAL game, EoC shows a REAL WORLD MAP of Earth (Asia visible, stages on real countries like Korea, Japan, China). Does this clone show a real Earth world map with stage nodes on real geographic locations? Or an abstract parchment/fantasy map? Answer: REAL_MAP or ABSTRACT_MAP, then describe what you see briefly.",
+ "image": "images/qa-map2-eoc1.png"
+}
