@@ -1,5 +1,0 @@
-{
- "id": "qa-walkmid",
- "prompt": "Battle Cats clone: 12 cat types marching LEFT toward enemy base, captured mid-walk (still far from base, so all in walking state). Unit types: basic cat, tank cat, axe cat, gross cat (legs+face), cow cat, bird cat, fish cat, lizard cat, titan cat, boogie cat, ninja cat, valkyrie cat. For EACH visible unit describe its pose: proper walking/marching? garbled? fragmented? missing parts? over-sized? Also check: do any units show ATTACK poses/effects while walking (slash lines, lunge)? Final verdict: do the walking animations look like the original game's marching cats?",
- "image": "images/qa-walkmid.png"
-}
