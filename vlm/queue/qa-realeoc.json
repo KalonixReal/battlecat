@@ -1,0 +1,5 @@
+{
+ "id": "qa-realeoc",
+ "prompt": "This is a Battle Cats clone stage-select map for Empire of Cats Ch.1. The ORIGINAL game shows a real Earth world map (parchment style, antique look) with stage nodes on real geographic locations (Korea, Japan, China...). Questions: 1) REAL_MAP or ABSTRACT_MAP? 2) Are stage nodes placed on real geographic locations (e.g. on Asia for Asian countries)? 3) Any visual problems (nodes off-map, banners overlapping badly, unreadable text)?",
+ "image": "images/qa-realeoc.png"
+}
