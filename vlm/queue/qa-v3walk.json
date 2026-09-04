@@ -1,5 +1,0 @@
-{
- "id": "qa-v3walk",
- "prompt": "Walking-frame strips for 12 Battle Cats units (labels like 'tank w0', 'medusa w2' = unit + frame number). Expected characters: cat=round white bipedal cat; tank=fat egg cat; titan=muscular giant; valkyrie=winged-helmet warrior; medusa=snake-haired cat; mr=suit cat with gun; paladin=armored knight cat; rock=rock/mineral cat; sorcerer=witch cat with staff; sushi=sushi cat; moneko= idol singer cat; neneko=small white cat. For EACH unit: are the walk frames a coherent multi-pose walk cycle of the CORRECT character? Flag: garbled fragments, effects (stars/dust/flashes), wrong character, single static pose.",
- "image": "images/qa-v3walk.png"
-}
