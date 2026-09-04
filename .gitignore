@@ -5,3 +5,4 @@ dev.log
 tool-results/
 upload/battle-cats-replica.zip
 public/game/assets/sprites/raw/
+.secrets.json

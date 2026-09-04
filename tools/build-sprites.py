@@ -135,7 +135,9 @@ def sheet_frames(im):
     return out
 
 def cluster_rows(figs, sheet_h):
-    """cluster figures into rows by y-center; returns [[figs...]] top→bottom"""
+    """cluster figures into rows by y-center; returns [[figs...]] top→bottom.
+    ANCHOR-based (no drift): each row keeps its first figure's y-center as the
+    reference — prevents chain-linking of stacked effect rows into one giant row."""
     fs = sorted(figs, key=lambda f: (f['y0'] + f['y1']) / 2)
     tol = max(18, 0.12 * sheet_h)
     rows = []
@@ -143,7 +145,6 @@ def cluster_rows(figs, sheet_h):
         yc = (f['y0'] + f['y1']) / 2
         if rows and abs(yc - rows[-1][0]) <= tol:
             rows[-1][1].append(f)
-            rows[-1][0] = rows[-1][0] * 0.6 + yc * 0.4
         else:
             rows.append([yc, [f]])
     for r in rows:
@@ -180,23 +181,33 @@ def sheet_entries(im):
         return None, None
     rows = cluster_rows(figs, im.height)
     max_area = max(f['area'] for f in figs)
-    # walk row: topmost row whose median area is a real figure (not lone effects)
+    max_h = max(f['y1'] - f['y0'] for f in figs)
+    # walk row: topmost row whose median area AND median height are real-figure scale
+    # (guards against lone wide-thin banner strips / tiny effect rows)
     walk_row = None; walk_ri = -1
     for ri, row in enumerate(rows):
-        if med_area(row) >= 0.20 * max_area and len(row) >= 1:
+        med_h_row = float(np.median([f['y1'] - f['y0'] for f in row]))
+        if med_area(row) >= 0.12 * max_area and med_h_row >= 0.25 * max_h and len(row) >= 1:
             walk_row = split_mega(row); walk_ri = ri; break
     if walk_row is None:
         walk_row = rows[0]; walk_ri = 0
+    # effect filter: keep only walk frames within a sane height band of the row median
+    # (drops lone effect sprites / partial poses that would pulse the unit's size)
+    if len(walk_row) >= 2:
+        med_h = float(np.median([f['y1'] - f['y0'] for f in walk_row]))
+        band = [f for f in walk_row if 0.60 * med_h <= (f['y1'] - f['y0']) <= 1.70 * med_h]
+        if band:
+            walk_row = band
     walk_med_area = med_area(walk_row) or max_area
     walk_med_w = float(np.median([f['x1'] - f['x0'] for f in walk_row]))
     walk_med_h = float(np.median([f['y1'] - f['y0'] for f in walk_row]))
-    # attack rows: all others in reading order, drop tiny effect figs
+    # attack rows: all others in reading order, drop tiny effect figs + thin strips
     atk_figs = []
     for ri, row in enumerate(rows):
         if ri == walk_ri:
             continue
         for f in row:
-            if f['area'] >= 0.15 * walk_med_area:
+            if f['area'] >= 0.15 * walk_med_area and (f['y1'] - f['y0']) >= 0.30 * walk_med_h:
                 atk_figs.append(f)
     def make_entry(fig_list, default_dur):
         if not fig_list:
@@ -378,6 +389,7 @@ for uid, info in manifest.items():
                                     fr[0] = int(fr[0] * sc); fr[1] = int(fr[1] * sc)
                                     fr[2] = max(1, int(fr[2] * sc)); fr[3] = max(1, int(fr[3] * sc))
                                     fr[4] = int(fr[4] * sc); fr[5] = int(fr[5] * sc)
+                                E['refH'] = max(8.0, E['refH'] * sc)  # keep refH in scaled coords
                         im = im2
                     walk_img = im
                     walkE = wE; atkE = aE

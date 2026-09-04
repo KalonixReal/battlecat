@@ -1,0 +1,99 @@
+name: VLM Worker
+on:
+  workflow_dispatch:
+    inputs:
+      dummy:
+        description: 'run'
+        required: false
+        default: '1'
+
+permissions:
+  contents: write
+
+jobs:
+  vlm:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Process VLM queue
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          python3 - << 'PYEOF'
+          import os, json, glob, base64, time, urllib.request, sys
+
+          KEY = os.environ["GEMINI_API_KEY"]
+          FALLBACK = ["gemini-3.5-flash-lite", "gemini-3.1-flash-lite", "gemini-3.6-flash", "gemini-3.7-flash", "gemini-3.8-flash", "gemini-2.5-flash", "gemini-2.5-flash-lite"]
+          queue = sorted(glob.glob("vlm/queue/*.json"))
+          if not queue:
+              print("no queue items"); sys.exit(0)
+
+          def call(model, prompt, img_path):
+              parts = [{"text": prompt}]
+              if img_path:
+                  mime = "image/png" if img_path.endswith(".png") else ("image/jpeg" if img_path.endswith((".jpg",".jpeg")) else "image/webp")
+                  with open(img_path, "rb") as f:
+                      parts.append({"inline_data": {"mime_type": mime, "data": base64.b64encode(f.read()).decode()}})
+              body = json.dumps({
+                  "contents": [{"parts": parts}],
+                  "generationConfig": {"temperature": 0.25, "maxOutputTokens": 2048}
+              }).encode()
+              req = urllib.request.Request(
+                  f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",
+                  data=body, headers={"Content-Type": "application/json", "x-goog-api-key": KEY}, method="POST")
+              try:
+                  with urllib.request.urlopen(req, timeout=120) as r:
+                      d = json.loads(r.read())
+                      txt = "".join(p.get("text","") for p in d["candidates"][0]["content"]["parts"])
+                      return True, model, txt
+              except urllib.error.HTTPError as e:
+                  return False, model, f"HTTP {e.code}: {e.read().decode()[:300]}"
+              except Exception as e:
+                  return False, model, str(e)[:300]
+
+          os.makedirs("vlm/results", exist_ok=True)
+          processed = 0
+          for qf in queue:
+              try:
+                  item = json.load(open(qf))
+              except Exception as e:
+                  item = {"id": os.path.basename(qf)[:-5], "prompt": "describe", "image": None}
+              iid = item.get("id") or os.path.basename(qf)[:-5]
+              prompt = item.get("prompt", "Describe this image.")
+              img = item.get("image")
+              img_path = os.path.join("vlm/queue", img) if img and not os.path.isabs(img) else img
+              models = ([item["model"]] if item.get("model") else []) + [m for m in FALLBACK if m != item.get("model")]
+              ok, used, out = False, None, None
+              for m in models:
+                  if img_path and not os.path.exists(img_path):
+                      ok, used, out = True, "none", "ERROR: image missing: " + str(img_path)
+                      break
+                  ok, used, out = call(m, prompt, img_path)
+                  if ok: break
+                  print(f"[{iid}] {m} -> {out[:150]}")
+                  if "429" in out or "RESOURCE" in out:
+                      time.sleep(20)
+                  time.sleep(2)
+              json.dump({"id": iid, "ok": bool(ok and not out.startswith("ERROR")), "model": used, "text": out, "ts": time.time()},
+                        open(f"vlm/results/{iid}.json", "w"), indent=1)
+              print(f"[{iid}] done ok={ok} model={used}")
+              os.remove(qf)
+              if img_path and os.path.exists(img_path) and img_path.startswith("vlm/queue/"):
+                  os.remove(img_path)
+              processed += 1
+              time.sleep(4.5)  # respect 15 RPM lite limits
+          print(f"processed {processed} items")
+          PYEOF
+
+      - name: Commit results
+        run: |
+          git config user.name "vlm-worker"
+          git config user.email "vlm-worker@users.noreply.github.com"
+          git add vlm/
+          git diff --cached --quiet && echo "nothing to commit" && exit 0
+          git commit -m "vlm: results batch [skip ci]"
+          git push
