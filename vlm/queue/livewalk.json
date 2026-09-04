@@ -1,5 +1,0 @@
-{
- "id": "livewalk",
- "prompt": "This is a zoomed crop from a Battle Cats browser clone, mid-battle. Multiple cat units are deployed and WALKING toward the enemy base (they have not reached enemies yet). Answer: (1) Is each cat a clean, correctly-cut single sprite? (2) Are they playing a WALKING animation (bouncing/moving cycle) or ATTACK animations (lunging/striking/impact poses) while walking? (3) Which direction do the cats face - LEFT (correct, toward enemy base) or RIGHT (wrong)? (4) Do sprites look stretched, doubled, garbled or misaligned with the ground? Describe each distinct cat you see.",
- "image": "images/livewalk.png"
-}
