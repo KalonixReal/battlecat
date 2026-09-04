@@ -304,7 +304,7 @@ function drawHome(dt){bgSky();drawTopBar('');
   /* ---- LEFT: rank card ---- */
   {const t1=800*Math.pow(SV.rank,1/0.55),t0=800*Math.pow(SV.rank-1,1/0.55);
     const fr=clamp((SV.xpTotal-t0)/Math.max(1,t1-t0),0,1);
-    creamPanel(LX,62,LW,44);
+    creamPanel(LX,62,LW,48); // +4px so the XP caption's descenders clear the bottom border
     cx.fillStyle='#8a3ab8';cx.beginPath();cx.arc(LX+24,84,15,0,TAU);cx.fill();
     cx.lineWidth=2.5;cx.strokeStyle='#4a1a6a';cx.stroke();
     txt(cx,String(SV.rank),LX+24,85,13,'#fff','center',2.5,'#4a1a6a',700);
@@ -313,7 +313,7 @@ function drawHome(dt){bgSky();drawTopBar('');
     const pg2=cx.createLinearGradient(LX+44,0,LX+44+LW-62,0);pg2.addColorStop(0,'#c9a8f8');pg2.addColorStop(1,'#8a3ab8');
     cx.fillStyle=pg2;rr(cx,LX+44,84,Math.max(8,(LW-62)*fr),10,5);cx.fill();
     cx.lineWidth=1.2;cx.strokeStyle='rgba(90,59,22,.4)';rr(cx,LX+44,84,LW-62,10,5);cx.stroke();
-    txt(cx,fmt(SV.xpTotal)+' XP',LX+46,104,9.5,'#8a6a4a','left',2,'#fff',400)}
+    txt(cx,fmt(SV.xpTotal)+' XP',LX+46,103,9.5,'#8a6a4a','left',2,'#fff',400)}
 
   /* ---- LEFT: the three gold buttons (original START!! / UPGRADE / EQUIP) ---- */
   const goldBtn=(id,y,label,sub,cb,badge)=>{
@@ -766,7 +766,10 @@ function drawMap(dt){const c=CHMAP[G.chapter];
     cx.fillStyle='#e84030';cx.strokeStyle='#fff';cx.lineWidth=4;
     cx.beginPath();cx.arc(px,py,11,0,TAU);cx.fill();cx.stroke();
     cx.strokeStyle='rgba(40,16,10,.8)';cx.lineWidth=1.4;cx.beginPath();cx.arc(px,py,13.4,0,TAU);cx.stroke();
-    if(nd.unl&&nd.tap)BTN('nd'+c.kind+i,bx-6,by-8,bW+12,bH+34,()=>{if(!G.pdown||!G.pdown.moved)nd.tap()},{flat:true,nohov:true});
+    if(nd.unl&&nd.tap)BTN('nd'+c.kind+i,bx-6-G.mapCam.x+16,by-8-G.mapCam.y+70,bW+12,bH+34,()=>{if(!G.pdown||!G.pdown.moved)nd.tap()},{flat:true,nohov:true});
+    /* hit rect registered in SCREEN space: BTN hit tests run in design coords (toDesign),
+       but this code draws under the mapCam translate — without the offset the banner's
+       hitbox sat thousands of px off-screen and map taps never landed (r23 E2E finding) */
     /* Original map rule: only the CURRENT stage carries a name banner; cleared stages keep
        their small Clear! ribbon; every other stage is just a red dot — no plate, no energy
        label, no padlock clutter (the user's video showed this noise). */
@@ -1185,9 +1188,9 @@ function drawEquip(dt){
         else if(own){cx.fillStyle='#e8f4e0';rr(cx,mx+mw-108,y+14,86,26,13);cx.fill();cx.lineWidth=1.5;cx.strokeStyle='#5a8a4a';rr(cx,mx+mw-108,y+14,86,26,13);cx.stroke();txt(cx,'READY',mx+mw-65,y+27.5,11.5,'#3a7a2a','center',2,'#fff',700)}
         else{const miss=cb.ids.filter(i2=>!catOwned(i2)).length;txt(cx,miss+' cat'+(miss>1?'s':'')+' missing',mx+mw-65,y+27.5,10.5,'#b0a488','center',2,'#fff',400)}}})});
     cx.restore()})},{col:'#ffd23f',outline:'#8a5a20',label:'ALL COMBOS \u25b8',fs:12,r:10,tcol:'#4a2f10'});
-  // slots mini-row
-  txt(cx,'Slots '+teamIds2.length+'/10',1150,14,13,'#2a5a74','center',3,'#fff',700);
-  txt(cx,SV.teamSel===0?'Team I':SV.teamSel===1?'Team II':'Team III',1150,40,10.5,'#3a6a84','center',2.5,'#fff',700);
+  // slots mini-row (kept clear of the ALL COMBOS button which ends at x=1136)
+  txt(cx,'Slots '+teamIds2.length+'/10',1206,14,12.5,'#2a5a74','center',3,'#fff',700);
+  txt(cx,SV.teamSel===0?'Team I':SV.teamSel===1?'Team II':'Team III',1206,40,10.5,'#3a6a84','center',2.5,'#fff',700);
   for(let i2=0;i2<10;i2++){const x=20+i2*38,y=56;const id=team[i2];
     cx.fillStyle=id?'#fff8e8':'rgba(255,255,255,.5)';rr(cx,x,y,34,34,8);cx.fill();
     cx.lineWidth=2;cx.strokeStyle=id?'#d8913a':'rgba(90,59,22,.35)';rr(cx,x,y,34,34,8);cx.stroke();
@@ -1261,9 +1264,9 @@ function drawUpgrade(dt){
   cx.font=FONT(26,700);const xpw=cx.measureText(fmt(SV.xp)).width;
   const xNumR=1264,xLabR=xNumR-xpw-10; // right edge of the cyan 'XP' label
   txt(cx,fmt(SV.xp),xNumR,24,26,'#ffd23f','right',5,'rgba(60,30,0,.9)',700);
-  txt(cx,'XP',xLabR,24,15,'#37b6ff','right',4,'rgba(10,20,30,.85)',700);
+  txt(cx,'XP',xLabR,24,15,'#37b6ff','right',3,'rgba(10,20,30,.85)',700);
   cx.font=FONT(12.5,700);const cfw=cx.measureText(fmt(SV.cf)).width+42;
-  const pillR=xLabR-22-8; // CF pill ends 8px left of the XP label start (≥4px required gap)
+  const pillR=xLabR-22-16; // CF pill ends 16px left of the XP label start (clear of the label's outline too)
   cx.fillStyle='rgba(255,248,232,.92)';rr(cx,pillR-cfw,10,cfw,28,14);cx.fill();cx.lineWidth=2;cx.strokeStyle='rgba(90,59,22,.5)';rr(cx,pillR-cfw,10,cfw,28,14);cx.stroke();
   drawCFCan(cx,pillR-cfw+15,24,8);
   txt(cx,fmt(SV.cf),pillR-15,24,13.5,'#8a5a10','right',3,'#fff',700);
@@ -1562,7 +1565,7 @@ function drawGacha(dt){drawTopBar('GACHA CAPSULES',true);
     cx.fillStyle='rgba(20,12,30,.45)';cx.beginPath();cx.moveTo(dir*22,0);cx.lineTo(-dir*14,-26);cx.lineTo(-dir*14,26);cx.closePath();cx.fill();
     cx.lineWidth=2.5;cx.strokeStyle='rgba(255,248,232,.75)';cx.beginPath();cx.moveTo(dir*22,0);cx.lineTo(-dir*14,-26);cx.lineTo(-dir*14,26);cx.closePath();cx.stroke();
     cx.restore();BTN(id,ax-30,ay-34,60,68,()=>{const n=bs.length;G.gachaSel=(G.gachaSel+dir+n)%n;SFX.click()},{flat:true,nohov:true})};
-  drawArrow(190,330,-1,'garrL');drawArrow(1090,330,1,'garrR');
+  drawArrow(190,330,-1,'garrL');drawArrow(916,330,1,'garrR'); // right arrow sits clear of the featured strip (panel starts at x=950)
   // ---- storage box bottom-left (drawn cabinet, no emoji) ----
   cx.save();cx.translate(120,600);
   cx.fillStyle='#e8e4da';rr(cx,-38,-34,76,62,6);cx.fill();
@@ -2118,7 +2121,7 @@ function drawExpedition(dt){bgSky();drawTopBar('SCOUT EXPEDITIONS',true);
     cx.lineWidth=2;cx.strokeStyle=unlocked?'#8a5a20':'#c8b892';cx.stroke();
     if(!unlocked){drawPadlock(cx,sx,sy,6,'#8a7a5a')}
     txt(cx,'SLOT '+(s+1),sx-14,sy+0.5,9,unlocked?'#5a3b16':'#a89878','right',2,'#fff',700)}
-  txt(cx,'Slot 2: Rank 30 (now '+SV.rank+')',rx+rw2-12,148,9.5,slots>=2?'#1e7a3a':'#a89878','right',2,'#fff',700);
+  txt(cx,'Slot 2: Rank 30 (now '+SV.rank+')',rx+rw2-12,145,9.5,slots>=2?'#1e7a3a':'#a89878','right',2,'#fff',700);
   // ---- right: tracker cards (one per slot) ----
   for(let s=0;s<2;s++){
     const y=162+s*196,x2=rx,w2=rw2,h=188;
@@ -2351,7 +2354,7 @@ function drawTrophies(dt){bgSky();drawTopBar('TROPHY STAND',true);
         drawPadlock(cx,mx,my+1,6.5,'#a89878')}
       // name + progress bar
       txt(cx,t.n,x+46,ry+11,12,cl?'#8a7a5a':'#5a3b16','left',2.5,'#fff',cl?400:700);
-      const bw=colW-260;
+      const bw=colW-322; // progress text needs ~70px clear before the reward chip (was 260 → text ran under the chip)
       cx.fillStyle='rgba(90,59,22,.14)';rr(cx,x+46,ry+20,bw,7,3.5);cx.fill();
       const fr=clamp(prog/t.goal,0,1);
       const pcol=done?(cl?'#7fc86a':'#ffd23f'):'#4a9ae8';
@@ -2627,8 +2630,8 @@ function drawShrine(dt){bgSky();drawTopBar('CAT SHRINE',true);
   // KEEPER'S DRESS: 5 costume milestones unlocked by lifetime MEGA count (dresses the scene cat)
   {const cs=shrineCostumes(si.megaN);const gotN=cs.filter(c=>c.got).length;
     const next=cs.find(c=>!c.got);
-    txt(cx,'KEEPER\'S DRESS',rx+24,326,10.5,'#a89878','left',2,'#fff',700);
-    cs.forEach((c,i)=>{const px=rx+126+i*26,py=326;
+    txt(cx,'KEEPER\'S DRESS',rx+24,326,10,'#a89878','left',2,'#fff',700);
+    cs.forEach((c,i)=>{const px=rx+142+i*26,py=326;
       const on=c.got;
       const pu=on&&next&&i===gotN-1?1+Math.sin(G.t*5)*0.14:1; // newest unlock pulses
       cx.save();cx.translate(px,py);cx.scale(pu,pu);

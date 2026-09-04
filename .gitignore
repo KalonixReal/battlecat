@@ -6,3 +6,6 @@ tool-results/
 upload/battle-cats-replica.zip
 public/game/assets/sprites/raw/
 .secrets.json
+.website-deploy/
+tests/videos/fr*/
+tests/videos/*.png

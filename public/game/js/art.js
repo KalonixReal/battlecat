@@ -782,6 +782,7 @@ const ART={
      FACE_BLINK=bl;try{CP[d.p](c2,t,d,{walk:pose.walk&&!pose.idle,atk:pose.atk,pk:pose.pk,ph:pose.ph,e})}finally{FACE_BLINK=false};
      volumeShade(c2,BW,BH)});
    const c=cx;c.save();if(e&&e.weak)c.globalAlpha*=0.9;
+   if(e&&e.flash&&typeof c.filter==='string')c.filter='brightness(30)'; // ORIGINAL hit-blink: white silhouette (per-pixel — never a box)
    c.drawImage(b.cv,o.x-BW/(2*dp),o.y-(BH-PAD)/dp,BW/dp,BH/dp);c.restore();
    if(d.legend){c.save();c.globalAlpha=0.3+0.15*Math.sin(G.t*4);const g=c.createRadialGradient(o.x,o.y-40*s,0,o.x,o.y-40*s,90*s);
      g.addColorStop(0,'rgba(196,106,223,.8)');g.addColorStop(1,'rgba(196,106,223,0)');c.fillStyle=g;
@@ -826,6 +827,7 @@ const ART={
        c2.setTransform(1,0,0,1,0,0);c2.globalCompositeOperation='source-atop';
        c2.fillStyle=tint;c2.fillRect(0,0,BW,BH);c2.globalCompositeOperation='source-over'}});
    const c=cx;c.save();if(e&&e.weak)c.globalAlpha*=0.9;if(d.ghost)c.globalAlpha*=0.85;
+   if(e&&e.flash&&typeof c.filter==='string')c.filter='brightness(30)'; // ORIGINAL hit-blink: white silhouette (per-pixel — never a box)
    c.drawImage(b.cv,o.x-BW/(2*dp),o.y-(BH-PAD)/dp,BW/dp,BH/dp);c.restore();
    if(e&&e.curse){c.fillStyle='#c46adf';const sa=t*3;
      [[-16,-52],[15,-44]].forEach((p,i)=>{c.save();c.translate(o.x+p[0]*s*bsc+Math.sin(sa+i*2)*3,o.y+p[1]*s*bsc+Math.cos(sa+i)*2.5);c.rotate(0.785);c.fillRect(-2.4,-2.4,4.8,4.8);c.restore()})}}

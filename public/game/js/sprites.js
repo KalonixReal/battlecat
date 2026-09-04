@@ -118,6 +118,11 @@ const SPRIT=(()=>{
     c.save();
     c.translate(o.x||0,o.y||0); // drawUnit pre-translates to the unit; absolute call sites pass real coords
     if(e.weak)c.globalAlpha*=0.92;
+    /* ORIGINAL HIT-BLINK: the whole silhouette flashes solid white for a few frames.
+       Applied via canvas filter so ONLY the unit's own pixels whiten (a main-canvas
+       fillRect would paint a white box over the background). */
+    const canFilter=typeof c.filter==='string';
+    if(e.flash&&canFilter)c.filter='brightness(30)';
     let ok=false;
     const anim=e.anim||'walk';
     if(anim==='windup'||anim==='attack'){
@@ -142,6 +147,7 @@ const SPRIT=(()=>{
         ok=drawFrame(en,fi2,k*(en.dscale||1),flip);
       }
     }
+    if(e.flash&&canFilter)c.filter='none';
     c.restore();
     return ok;
   }

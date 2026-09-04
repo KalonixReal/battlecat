@@ -641,7 +641,9 @@ function drawUnit(u){
   if(u.state==='wall'){cx.fillStyle='#8a94a8';rr(cx,-26,-70,52,70,8);cx.fill();cx.strokeStyle='#5a6478';cx.lineWidth=3;rr(cx,-26,-70,52,70,8);cx.stroke();cx.fillStyle='#6a7488';for(let i=0;i<3;i++)cx.fillRect(-20+i*16,-62,10,54)}
   else if(u.side==='cat')ART.cat({id:u.id,x:0,y:0,s:1,t:u.animT,dir:u.dir,e});
   else ART.enemy({id:u.id,x:0,y:0,s:1,t:u.animT,dir:u.dir,e,u,tint:B.tint});
-  if(e.flash){cx.globalCompositeOperation='source-atop';cx.fillStyle='rgba(255,255,255,.6)';cx.fillRect(-60,-120,120,130);cx.globalCompositeOperation='source-over'}
+  /* hit-blink is applied INSIDE the sprite/painter renderers (per-pixel white of the
+     unit's own pixels, like the original) — a main-canvas fillRect here would paint a
+     white BOX over the background (source-atop composites against everything). */
   cx.restore();
   if(u.state==='die'&&dieFade>0){ // death poof ring + rising motes
     cx.globalAlpha=dieFade*0.8;cx.strokeStyle='#fff';cx.lineWidth=2.5;
@@ -784,7 +786,10 @@ function drawBattleHUD(b,dt){
     if(can){const pu=1+Math.sin(G.t*5)*0.05;cx.scale(pu,pu)}
     cx.fillStyle=can?'#5ad84a':'#5a6472';rr(cx,-cw/2,-13,cw,26,13);cx.fill();
     cx.lineWidth=2.5;cx.strokeStyle=can?'#1e5a14':'#2c3242';rr(cx,-cw/2,-13,cw,26,13);cx.stroke();
-    txt(cx,'$'+wkCost,2,0.5,13,'#fff','center',2.5,'rgba(10,30,8,.8)',700);
+    // cost sits centered in the space RIGHT of the arrow; auto-shrinks for 4-digit costs (never touches the arrow)
+    cx.font=FONT(13,700);const ws2='$'+wkCost;let ww2=cx.measureText(ws2).width,wfs2=13;
+    while(ww2>44&&wfs2>9.5){wfs2-=0.5;cx.font=FONT(wfs2,700);ww2=cx.measureText(ws2).width}
+    txt(cx,ws2,13,0.5,wfs2,'#fff','center',2.5,'rgba(10,30,8,.8)',700);
     // up-arrow affordance left of the cost
     cx.fillStyle='#fff';cx.beginPath();cx.moveTo(-cw/2+12,5);cx.lineTo(-cw/2+19,-5);cx.lineTo(-cw/2+26,5);cx.closePath();cx.fill();
     cx.restore();
@@ -840,12 +845,13 @@ function drawBattleHUD(b,dt){
       cc2.save();cc2.beginPath();rr(cc2,1.5,1.5,dw-3,dh-3,10);cc2.clip();
       const gg=cc2.createLinearGradient(0,0,dw,dh);gg.addColorStop(0,'rgba(255,255,255,.14)');gg.addColorStop(0.45,'rgba(255,255,255,.02)');gg.addColorStop(1,'rgba(255,255,255,0)');
       cc2.fillStyle=gg;cc2.fillRect(0,0,dw,dh);cc2.restore();
-      // cost badge at the card's bottom edge (original: dark plate + green number)
-      const cs=String(st.cost);const csw=cc2.measureText(cs).width;
-      cc2.fillStyle='rgba(10,14,22,.82)';rr(cc2,dw/2-(csw+22)/2,dh-16,csw+22,18,9);cc2.fill();
+      // cost badge at the card's bottom edge (original: dark plate + green number + ¢ symbol AFTER the digits)
+      const cs=String(st.cost);cc2.font=FONT(13,700);const csw=cc2.measureText(cs).width;
+      const bw2=csw+21,bx2=dw/2-bw2/2; // plate sized for [digits + gap + symbol], group centered
+      cc2.fillStyle='rgba(10,14,22,.82)';rr(cc2,bx2,dh-16,bw2,18,9);cc2.fill();
       const cCol=afford?'#9ae89a':'#ff9a8a';
-      txt(cc2,cs,dw/2-(csw+22)/2+16,dh-7,13,cCol,'left',2.5,'rgba(8,10,16,.9)',700);
-      drawCent(cc2,dw/2+(csw-22)/2+8,dh-7.5,5.5,cCol,'rgba(8,10,16,.9)',3)}});
+      txt(cc2,cs,bx2+7,dh-7,13,cCol,'left',2.5,'rgba(8,10,16,.9)',700);
+      drawCent(cc2,bx2+7+csw+6.5,dh-7.5,5.5,cCol,'rgba(8,10,16,.9)',3)}});
   });
 }
 function popTxtUI(s){toast(s,'#ffd94a')}
