@@ -74,7 +74,8 @@ def parse_mamodel(txt):
         confs = []
         for k in range(m):
             ss = ls[idx + 4 + n + k].strip().split(',')
-            confs.append([int(float(p)) for p in ss if p.strip() != ''][:6])
+            # slice to 6 BEFORE converting: 7th field may be a label (e.g. 'ダミー')
+            confs.append([int(float(p)) for p in ss[:6] if p.strip() != ''][:6])
     except (IndexError, ValueError):
         ints3, confs = [100, 360, 255], []
     return {'ver': ver, 'parts': parts, 'ints': ints3, 'confs': confs}
@@ -111,7 +112,7 @@ def parse_maanim(txt):
 # ---------------- EPart state machine ----------------
 
 class EPart:
-    __slots__ = ('ind', 'args', 'fa', 'img', 'z', 'pos', 'piv', 'sca', 'angle', 'opacity',
+    __slots__ = ('ind', 'args', 'fa', 'id', 'img', 'z', 'pos', 'piv', 'sca', 'angle', 'opacity',
                  'hf', 'vf', 'glow', 'extendX', 'gsca', 'model')
 
     def __init__(self, ind, args, model):
@@ -124,6 +125,7 @@ class EPart:
         a = self.args
         n = len(self.model['parts'])
         self.fa = None if a[0] <= -1 or a[0] >= n else a[0]
+        self.id = a[1]
         self.img = a[2]
         self.z = a[3] * n + self.ind
         self.pos = [float(a[4]), float(a[5])]
@@ -141,7 +143,7 @@ class EPart:
             n = len(self.model['parts'])
             self.fa = int(v) if 0 <= v < n else 0
             if self.fa == self.ind: self.fa = 0
-        elif m == 1: pass  # id (attachment) — not needed for full-part rendering
+        elif m == 1: self.id = int(v)  # id (BCU drawPart skips parts with id < 0)
         elif m == 2: self.img = int(v)
         elif m == 3: self.z = v * len(self.model['parts']) + self.ind
         elif m == 4: self.pos[0] = self.args[4] + v
@@ -346,7 +348,7 @@ class M:
     def apply(self, x, y):
         return (self.a * x + self.c * y + self.e, self.b * x + self.d * y + self.f)
 
-def render_frame_flat(ents, mm, tex, cuts, base_scale, canvas_h, canvas_w, origin_x, origin_y):
+def render_frame_flat(ents, mm, tex, cuts, base_scale, canvas_h, canvas_w, origin_x, origin_y, part_scale=False):
     out = Image.new('RGBA', (canvas_w, canvas_h), (0, 0, 0, 0))
     n = len(ents)
     mats = [None] * n
@@ -387,16 +389,25 @@ def render_frame_flat(ents, mm, tex, cuts, base_scale, canvas_h, canvas_w, origi
 
     for i in sorted(range(n), key=lambda k: ents[k].z):
         ep = ents[i]
-        if ep.img < 0 or ep.img >= len(cuts): continue
+        if ep.id < 0 or ep.img < 0 or ep.img >= len(cuts): continue  # BCU: dormant parts (id<0) never draw
         opa = ep.opa(ents)
         if opa <= 0.005: continue
         cut = cuts[ep.img]
         w, h = cut[2], cut[3]
         if w <= 0 or h <= 0: continue
         size = sizes[i]
+        # BCU drawPart: sc = (w,h) * getSize() * base — 1000-scale models have NON-uniform
+        # per-part p0 (1.0/1.79/...), so the sprite must draw scaled by its own size.
+        # Legacy 255-scale models are uniform-per-model, so 1:1 + global dscale is
+        # pixel-identical — keep those untouched (part_scale=False).
+        pw = size[0] * base_scale if part_scale else 1.0
+        ph = size[1] * base_scale if part_scale else 1.0
         tpivx = ep.piv[0] * size[0] * base_scale
         tpivy = ep.piv[1] * size[1] * base_scale
         m = mats[i].translate(-tpivx, -tpivy)
+        # scale goes INTO the matrix (M · T(-tpiv) · S) so the dest→src inverse samples correctly
+        if part_scale and (abs(pw - 1) > 1e-9 or abs(ph - 1) > 1e-9):
+            m = m.scale(pw, ph)
         # source->dest matrix; compute dest bbox from transformed corners
         a, b, c, d, e, f = m.a, m.b, m.c, m.d, m.e + origin_x, m.f + origin_y
         corners = [(0, 0), (w, 0), (0, h), (w, h)]
