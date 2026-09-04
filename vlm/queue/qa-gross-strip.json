@@ -1,5 +1,0 @@
-{
- "id": "qa-gross-strip",
- "prompt": "This is the EXTRACTED walking animation strip for Gross Cat from a Battle Cats clone. Original Gross Cat walking: long legs WITH a cat face/head on top. Does each frame here show legs+face, or ONLY legs (missing face)?",
- "image": "images/qa-gross-strip.png"
-}
