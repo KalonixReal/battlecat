@@ -1,5 +1,0 @@
-{
- "id": "qa-walk2",
- "prompt": "Battle Cats clone battle screen with cats marching left toward enemy base, NO enemies present so all cats are in pure WALKING state. In the original game, walking cats bounce/hop in a cute march cycle. Look at each cat unit type visible (basic cat, tank cat, axe cat, gross/legs cat, cow cat, bird cat, fish cat, lizard cat, titan cat). For EACH: does it show a proper walking pose (upright, mid-march) or an attack pose (lunging, striking, with slash effects)? Also flag: garbled/fragmented sprites, missing body parts, oversized/distorted frames. Be specific per unit.",
- "image": "images/qa-walk2.png"
-}
