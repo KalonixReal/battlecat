@@ -1,0 +1,1187 @@
+     1→# The Battle Cats — Replica Worklog
+     2→
+     3→## Project Overview
+     4→A full browser-playable Battle Cats replica served at `/` (Next.js 16 wrapper + full-screen iframe
+     5→mounting the standalone canvas game at `/game/index.html`). The game engine is pure-canvas JS
+     6→(modules: core/save, data, art, audio, battle, ui, savesys, boot) with pre-baked BGM/SFX WAV bank
+     7→in `/public/game/assets/audio/`.
+     8→
+     9→## Current Project Status (assessment)
+    10→- Game boots cleanly, all 14+ screens render (title, home, chapters, map, submap, equip, upgrade,
+    11→  gacha + capsule animation, treasure, guide/bestiary, base, settings, store, battle).
+    12→- Full gameplay loop verified E2E: title → home → chapters → map → stage modal → battle (deploy,
+    13→  cannon, speed, pause, quit) → win → rewards (XP/rank/clears/treasure) → return to map.
+    14→- Gacha, upgrades, team equip, store purchases, daily bonus, settings toggles all verified.
+    15→- Content: 41 cats, 60 enemies, 14 chapters (EoC/ItF/CotC ×3, SoL 240, UL 80, Aku 13, Dojo 15,
+    16→  Events), 4 gacha banners, 7 cannon types, treasures, catfruit, talents, combos, missions.
+    17→
+    18→## Completed Modifications (this session — Task 1: deploy + hard fixes)
+    19→1. **Deployed** the uploaded replica into the Next.js project: `public/game/*` + wrapper page
+    20→   `src/app/page.tsx` (full-viewport iframe + loading splash with postMessage handshake
+    21→   `{bc:'booted'}`; game posts from boot.js — audio streaming never blocks reveal).
+    22→2. **FIXED: splash overlay stuck** — iframe `load` is delayed by the 28MB audio fetch; old code
+    23→   used a 30s stale-closure timeout that flagged false failure. Now: postMessage + `__BC` polling.
+    24→3. **FIXED: Next.js dev-tools badge** (`<nextjs-portal>`) swallowed all clicks in the bottom-left
+    25→   88px corner (where the game's back buttons live). Disabled via `devIndicators:false` in
+    26→   next.config.ts.
+    27→4. **FIXED: scroll regions unusable by drag** — buttons inside a scroll region captured
+    28→   pointerdown first, so drag-to-scroll was impossible (only 10px gaps worked). pointerdown now
+    29→   captures the enclosing scroll region AND remembers the pressed button (`pendBtn`); tap fires
+    30→   the button, drag scrolls.
+    31→5. **ADDED: mouse-wheel scrolling** — `wheel` listener rolls the scroll region under the cursor
+    32→   (natural scrolling, horizontal regions supported).
+    33→6. **FIXED: home menu scroll inverted** — items drew at `y+scrollHome` while all other screens use
+    34→   `y-offset`. Fixed sign.
+    35→7. **FIXED: gacha reveal let stray clicks through** — during phase-2 reveal only the OK button is
+    36→   clickable now (prevents discarding unconfirmed pulls).
+    37→8. **FIXED: misleading stage-lock toast** — now says which chapter/saga to clear first.
+    38→9. Syntax error in the toast edit was caught via `node --check` + a broken-boot smoke check
+    39→   (`typeof SCREENS!=='undefined'`); all 8 game JS files now pass `node --check`.
+    40→
+    41→## Content Expansion (Task: canon roster)
+    42→- **+17 enemies**: Gory, Wanwan, Owlbrow, Camelle, Master A., Bore, Kurosawah (EoC/SoL);
+    43→  General Gregor, LeSolar, Spacefish Jones, Project A, I.M. Phace, Dober, Imperator Sael,
+    44→  Elizabeth the 1st (ItF); Sunfish Jones, Celeboodle (CotC).
+    45→- **+5 cats**: Valkyrie Cat (clear ItF1 final), Li'l Cat, Li'l Tank Cat (tiny sprites),
+    46→  Moneko (rank 4, ¥-coin sprite), Neneko (rank 12). Rank unlocks fire automatically in addXP.
+    47→- New boss tables: EoC finals now Master A./Nyandam/The Face; ItF boss chain Gregor→Dark Otius→
+    48→  I.M. Phace→Project A→Dober→Imperator Sael; CotC adds Sunfish Jones; SoL bosses Kurosawah/Bore.
+    49→- Art entries for all new units (data-driven poses; new `tiny` and `coin` kitten/wall flags).
+    50→
+    51→## Verification Results
+    52→- All screens pixel-verified non-blank (tests/verify-shots.ts) + zero console errors.
+    53→- Interaction-verified via agent-browser real pointer events (tests/click.ts drives G.hits).
+    54→- Aspect ratios verified: 390×844 (rotate prompt), 800×400 and 1920×800 (letterboxed scaling).
+    55→- ITF final stage spawns Imperator Sael + Celeboodle correctly; event battles include new units.
+    56→- `bun run lint`: 0 errors (11 benign warnings in game JS expression style).
+    57→- dev.log: no errors.
+    58→
+    59→## Unresolved / Next-phase priorities
+    60→- VLM visual review blocked by API 429 rate-limits this session — retry when quota clears.
+    61→- Consider adding more gacha rares/specials (Island/Archer/etc.) and talents polish.
+    62→- Consider a "3-crown" EoC star system and Gauntlet-style score screens if time permits.
+    63→- The audio bank is 28MB — consider re-encoding BGM to smaller loop files if load time matters.
+    64→
+    65→---
+    66→
+    67→## Session Update — Verification Round Complete
+    68→- Golden-path E2E re-verified post-input-fix: play → chapters (scroll ✓) → map → stage modal →
+    69→  battle (deploy/cannon/speed/pause/quit/pan ✓) → win → OK → map. Defeat flow also verified.
+    70→- Evolution verified: Cat → Macho Cat → Mohawk Cat (catfruit consumed, ev1/ev2 flags set).
+    71→- Talents verified: talm click invests NP (SV.np2.cat = {0:1}, NP debited).
+    72→- 10+1 gacha pull verified: 11 results, multi-card reveal, OK applies all.
+    73→- Advanced battle systems: UL stage 24 (shields ✓, defeat correct — endgame scaling), Aku Gate 6
+    74→  (Aku shields ✓), event battles include new enemies (Gory/Owlbrow).
+    75→- Audio: AudioContext running, baked BGM 'menu' loaded, SFX object live.
+    76→- Fresh-save boot verified earlier (cats: cat+tank, 90 energy, title screen).
+    77→- All 8 game JS files pass `node --check`; dev.log clean; lint 0 errors.
+    78→- VLM visual review remains blocked by API 429 — cron reviewer (job 355934, every 15 min) will
+    79→  retry with fresh quota and can use tests/probe.ts / screenshots in tests/shots/.
+    80→
+    81→## Current Goals / Status
+    82→Game is fully playable end-to-end with 41 cats, 60 enemies, 14 chapters, complete meta systems.
+    83→Next-phase priorities (for the 15-min reviewer):
+    84→1. Retry VLM visual review (tests/shots/*.png) and fix anything it flags.
+    85→2. Add more gacha rares/specials or 3-crown star system if stable.
+    86→3. Consider smaller BGM encodings (28MB bank) if load time matters.
+    87→
+    88→---
+    89→
+    90→## Session Round — QA + Crowns + Gacha Expansion + Polish (Task: autonomous round)
+    91→
+    92→### Current project status (assessment at round start)
+    93→- Game stable: fresh browser session boots clean (title, t advancing), zero console/page errors.
+    94→- Golden-path E2E re-verified with REAL pointer events at 1280x720 viewport (title → home →
+    95→  chapters → map → stage modal → battle: deploy/pause/retreat → map). Note: clicks must be done
+    96→  at a 1280x720 viewport — at other sizes the design-space (1280x720) is letterboxed and raw
+    97→  mouse coords no longer map to hit rects (SC≠1).
+    98→- Stale-error trap identified: `agent-browser errors` in a long-lived session shows errors from
+    99→  OLD file versions (?v=6); a fresh session (or reload after cache-bump) shows zero. Not a bug.
+   100→- VLM visual review STILL blocked by API 429 (retried this round) — pixel probes used instead.
+   101→
+   102→### Completed modifications this round
+   103→1. **CROWN SYSTEM (3-crown clears for story chapters)**
+   104→   - core.js: `SV.crowns = {ch: {stageIdx: 1..3}}` in DEF_SAVE; `_svNormalize` hard-clamps every
+   105→     pip to 0-3 and drops invalid entries; old saves auto-backfill via defaults-merge (verified:
+   106→     deleted `crowns` from a stored save → reloaded → boots clean, field restored).
+   107→   - battle.js `applyBattleResult`: on story-chapter wins, crowns = 3 if base HP ≥80%, 2 if ≥40%,
+   108→     else 1; best-per-stage kept (`Math.max`); crown sparkle FX on a 3-crown earn; ALL-CROWN
+   109→     chapter bonus (all 48 stages × 3) grants one-time 750 CF + 25,000 XP (flag:
+   110→     `SV.eventsDone['crown:'+ch]`).
+   111→   - battle.js `drawResult`: new navy CROWN band under the XP band — 3 slots pop in sequentially
+   112→     with overshoot ease (gold earned / dim unearned), "CROWN UP!" tag on improvement, and
+   113→     Gauntlet-style battle stats right-aligned: ⏱ time · ☠ kills · DMG dealt. All-crown bonus
+   114→     line appended to the drop panel (panel resizes correctly — push happens before ph2 calc).
+   115→   - ui.js `openStageModal`: "Crowns: N/3" info line + BEST CROWNS strip in the drawExtra area
+   116→     (3 pips + PERFECT! tag at 3); enemy tiles shifted down 42px via yOff to make room.
+   117→   - ui.js `drawMap`: 3 mini crown pips (gold/dim) under the "Energy -N" label of every cleared
+   118→     story-stage banner — replays can top them up.
+   119→   - ui.js `drawChapters`: story-chapter cards now show crown glyph + total "N/144" beside the
+   120→     cleared count.
+   121→   - New shared helper `crownDraw(c,x,y,s,fill,rim,dim)` in ui.js (3-point crown w/ gems).
+   122→   - New FX kind 'crown' (FXDUR 1.6): 3 gold crowns spiral outward + 10 sparkles.
+   123→2. **GACHA EXPANSION — 5 new cats (41 → 46 total)**
+   124→   - data.js: island (Rare, area anti-Red resist tank, 3 forms), archer (Rare, 420-range
+   125→     anti-Floating sniper), fortune (Rare, dodge), jurassic (Rare, area crit), kotatsu (Super
+   126→     Rare, area Freeze vs Red). Talents included; 4 new combos (Island Resort, Arrow Storm,
+   127→     Cozy Winter, Ancient Lizards).
+   128→   - art.js: ART_CATS entries (island: spotted dancing kitten; archer: scoped ranger biped;
+   129→     fortune: princess-hat staff biped; jurassic: angry dragon; kotatsu: green blob blanket).
+   130→3. **STYLING / POLISH**
+   131→   - Screen-change transition: push()/pop() set G.transT=0.30; boot.js draws a quick
+   132→     fade-from-black overlay (quadratic ease) — verified transT 0.30→0.22→0 live.
+   133→   - bgSky: soft sun glow (radial gradient upper-right) + 3 faster foreground cloud wisps for
+   134→     parallax depth (affects home + every sky-backed screen).
+   135→   - index.html script cache-bust v6 → v7.
+   136→
+   137→### Verification results
+   138→- Crown E2E (fresh save, real input): won eoc1 stage 1 with base HP 74.7% → earned 2 crowns →
+   139→  victory crown band rendered (navy band + 2 gold + 1 dim pip + stats line), SV.crowns.eoc1['0']=2
+   140→  persisted, map banner shows 2 gold + 1 dim pip under Energy label (pixel-mapped), stage modal
+   141→  shows "Crowns: 2/3" + pips, chapter card shows gold crown + "2/144".
+   142→- Crown FX verified (frozen mid-phase in paused battle): 3 dimmed-gold crowns at exact spiral
+   143→  positions; only fires on 3-crown earns.
+   144→- Gacha: pool probe lists all 5 new cats in correct rarity pools; 12 rollGacha samples include
+   145→  island/fortune; REAL pull flow via UI (Rare Ticket consumed → capsule anim → reveal → OK →
+   146→  grant applied, pendingPull cleared, zero errors).
+   147→- New-cat art: granted 5 cats → equip screen renders roster cleanly; battle deploy of island
+   148→  cat renders sprite on field, no errors.
+   149→- screen-qa.sh sweep (14 screens): all non-blank, zero console errors (NOTE: must open
+   150→  localhost:3000 in the default session before running the script, else it captures blanks).
+   151→- `node --check`: all 9 game JS files pass. `bun run lint`: 0 errors / 11 benign warnings.
+   152→  dev.log clean. Syntax error during dev (extra brace in crown edit) was caught immediately
+   153→  by node --check and fixed before browser testing.
+   154→
+   155→### Unresolved / next-phase priorities
+   156→1. VLM visual review still 429-blocked — retry with fresh quota (screenshots in tests/shots/,
+   157→   incl. new qa2-* captures).
+   158→2. Crowns currently award on story chapters only (EoC/ItF/CotC). Consider extending to Aku gates.
+   159→3. The 28MB WAV audio bank load time — consider re-encoding if it matters.
+   160→4. Consider a Crown-progress reward ladder (e.g. every 48 crowns → CF) instead of only the
+   161→   full-144 bonus.
+   162→
+   163→---
+   164→
+   165→## Session Round — CRITICAL BALANCE BUG + 3 NEW SYSTEMS (Task: autonomous round: QA → fix → features)
+   166→
+   167→### Current project status (assessment at round start)
+   168→- Game booted clean, all 14 screens rendered, zero console errors (fresh-session sweep).
+   169→- Golden-path E2E with real pointer clicks at 1280x720 worked (title → home → chapters → map →
+   170→  stage modal → battle → deploy/cannon/speed → result → map).
+   171→- HOWEVER: stage-1 battles with the starting team kept LOSING in ways that felt wrong, which led
+   172→  to discovering a critical enemy-data bug (below). Also found a stuck-state bug and a crash path.
+   173→
+   174→### Completed modifications this round
+   175→
+   176→**BUG FIXES (priority — all verified E2E with real pointer input):**
+   177→1. **FIXED (CRITICAL): enemy range/speed arg swap in EF signature.** All 60 enemies were defined
+   178→   with wiki order (rate, SPEED, RANGE) but EF declared (rate, RANGE, SPEED) — every enemy ran at
+   179→   2–5× intended speed (Doge 337px/s effective, faster than Giraffe Cats) with a ~9px attack
+   180→   reach, causing them to blitz the field then traffic-jam at the cat base forever (rateT draining
+   181→   to −30, never striking). One-line signature swap in data.js + explanatory comment. After fix:
+   182→   Doge range=45/speed=9 (→67px/s, crosses field in ~35s — authentic pacing), early stages
+   183→   properly winnable with the starting team. Battle trace before/after verified live.
+   184→2. **FIXED: Worker Cat modal blocked the battle result screen.** Opened mid-battle and left open,
+   185→   the generic modal kept drawing over the result panel and its mb*-only pointer filter swallowed
+   186→   the OK click (result screen stuck, verified live). endBattle() now drops any open modal
+   187→   (`if(G.modal)G.modal=null`) the moment a result is set. Regression-tested: modal left open
+   188→   through a full win → auto-closed → OK works.
+   189→3. **FIXED: invalid team ids crash the battle screen every frame.** A hand-edited/imported save
+   190→   with unknown cat ids (e.g. 'ninja', 'vale') made catStats() throw → boot.js catch painted the
+   191→   red "UI ERROR" overlay forever (battle.png was 99% #300 dark red). Now: boot.js sanitizes team
+   192→   slots against CATMAP after loadSave(); startBattle() filters team ids defensively. Verified:
+   193→   tampered team auto-cleaned to empty slots on reload, battle renders clean.
+   194→4. Synced wrapper iframe cache-bust (page.tsx ?v=6 → ?v=12, matching index.html).
+   195→
+   196→**NEW FEATURE 1 — SCOUT EXPEDITIONS (Gamatoto-style idle meta):**
+   197→- data.js: EXPD table (5 destinations: Sunny Meadow 3m → Storm Fortress 60m, danger 1–5, XP/CF/
+   198→  ticket/fruit chances); expdToday() 3-of-5 daily rotation (date-seeded); expdStart/Collect with
+   199→  rank + Accounting scaling; random ticket/fruit bonus rolls.
+   200→- core.js: DEF_SAVE `expedition:{active,runs}` + hard normalization (bad active trips dropped).
+   201→- ui.js: full drawExpedition screen — terrain swatch cards with hills/sun, claw-mark danger pips,
+   202→  reward preview, DEPLOY buttons; live tracker with bezier road scene, goal flag, animated scout
+   203→  cat walking along the path (progress-mapped), paw prints, progress bar, countdown, pulsing
+   204→  COLLECT button, results modal. Home menu gained an EXPEDITIONS item with a green READY! badge
+   205→  (like the missions badge). New glyph kinds: compass/flag/medal.
+   206→- Verified E2E: deploy → progress strip → forced timer completion → COLLECT → rewards modal
+   207→  (+2,616 XP +91 CF) → runs counter → state cleared.
+   208→
+   209→**NEW FEATURE 2 — CROWN LADDER (milestone rewards):**
+   210→- battle.js applyBattleResult: total crowns counted across all chapters; every 24 crowns → +30 CF
+   211→  +3,000 XP milestone (eventsDone['crownladder:N'], repeating forever). Fires with toast + crown
+   212→  FX; result drop panel appends "CROWN LADDER Mn: …" lines.
+   213→- Verified E2E: set 26 crowns → won story stage with 3-crown → M1 fired (xp 3816→7394, cf
+   214→  391→421, flag set), result panel line shown, screenshot qa3-crown-ladder.png.
+   215→
+   216→**NEW FEATURE 3 — WORLD DOJO RANKING (first true fullstack feature):**
+   217→- prisma/schema.prisma: new LeaderboardEntry model (name/score/stage/createdAt); db:push run.
+   218→- src/app/api/leaderboard/route.ts: GET (top-N, ordered) + POST (hard-validated: name ≤18 chars,
+   219→  score 0–1M, stage ≤32; keeps only each commander's best per stage — upsert-style).
+   220→- battle.js dojoRecordRun(): on endless-run end (win OR defeat) updates local top-5, then
+   221→  fire-and-forget POST of record-breaking runs using SV.cmdName.
+   222→- ui.js drawLeaderboard screen: navy starfield bg, top-3 podium (gold/silver/bronze + medal
+   223→  glyph), rows 4–20 with own-row highlight + YOU tag, own-best panel, REFRESH button, offline
+   224→  fallback text. Reached via new WORLD RANKING button on the Dojo map record board.
+   225→- Settings: COMMANDER NAME row (EDIT → modal with real DOM input overlay; Enter saves; sanitized
+   226→  to 18 chars). New helpers nameFocus/nameBlur (hidden <input> over canvas, keyboard-driven).
+   227→- Verified E2E: curl POST/GET; in-game leaderboard fetch renders seeded entries; endless-run end
+   228→  auto-posted CAT COMMANDER:77 (best-per-commander replaced old 3); name editor typed "SCOUT ACE"
+   229→  via real keystrokes + Enter → saved + modal closed.
+   230→
+   231→**STYLING / POLISH (mandatory):**
+   232→- Toasts: slide-in with cubic ease + spring overshoot, drop shadow, colored icon dot with glossy
+   233→  highlight, left-aligned text (was: static centered plain chip).
+   234→- Modals: pop-in scale animation (0.18s cubic-out + overshoot) + backdrop fade + title ribbon
+   235→  shadow. Hit rects stay in final design space (visual-only transform) — verified clicks still
+   236→  land during/after animation.
+   237→- Title screen: attract-mode pulsing glow + breathing scale on the PLAY button.
+   238→- Home: EXPEDITIONS menu item + animated READY! badge dot.
+   239→- Dojo map: record board restyled taller with WORLD RANKING button + "global board" caption.
+   240→
+   241→### Verification results
+   242→- Fresh browser session: 14-screen sweep (tests/screen-qa.sh) → zero console errors, all screens
+   243→  non-blank (tests/verify-shots.ts); battle screen no longer dark-red error wash.
+   244→- Golden path re-verified post-fixes: title → home → chapters → map → stage modal → battle
+   245→  (deploy ×N, cannon, speed toggle) → legit WIN at t=112s with 94% base HP → 3 crowns → OK → map.
+   246→  (Defeat flow also verified earlier in the round.)
+   247→- Expedition / leaderboard / name editor / crown ladder / auto-POST all E2E verified (above).
+   248→- Aspect ratios: 1920x800 letterboxed ✓, 390x844 portrait dark rotate-prompt ✓, 1280x720 primary.
+   249→- `node --check`: all 9 game JS files pass. `bun run lint`: 0 errors / 12 benign warnings
+   250→  (expression-style warnings in game JS incl. upload/ copies — not served).
+   251→- dev.log: clean; API routes 200; Prisma queries logged without error.
+   252→- New QA screenshots: tests/shots/qa3-*.png (title-pulse, expedition, exp-active, exp-collect,
+   253→  leaderboard, leaderboard2, crown-ladder, victory-crowns, battle-check, 1920x800, portrait).
+   254→
+   255→### Unresolved / next-phase priorities
+   256→1. **Crown ladder M2+ needs save testing at scale** — M1 verified; deeper milestones only reachable
+   257→   via long play (or another seeded-crown QA run).
+   258→2. Leaderboard has no auth/rate-limit (canvas game, trusted-ish) — consider a lightweight per-session
+   259→   POST cap server-side if abuse matters.
+   260→3. VLM visual review still blocked by API 429 in this environment — pixel probes used instead
+   261→   (tests/probe.ts coordinates documented in worklog history).
+   262→4. Consider expedition "scout level" progression (trips increase a scout rank → small reward
+   263→   multipliers) and a second concurrent slot unlocked at Rank 30.
+   264→5. The 28MB WAV bank load time — re-encode if it matters.
+   265→
+   266→---
+   267→
+   268→## Session Round — SCOUT RANK SYSTEM + DUAL EXPEDITIONS + API HARDENING (Task: autonomous QA → features)
+   269→
+   270→### Current project status (assessment at round start)
+   271→- Game booted clean on the existing save (rank 2); zero console/page errors; dev.log clean.
+   272→- Full golden-path E2E re-verified with REAL pointer input at 1280x720: title → home → chapters →
+   273→  map → stage modal → battle (deploy x2, speed x2, cannon UI present) → WIN result → OK → map.
+   274→- 14-screen sweep + expedition + leaderboard: all non-blank (tests/verify-shots.ts).
+   275→- `node --check` all 9 game JS files pass; lint 0 errors / 12 benign warnings.
+   276→- VLM visual review STILL 429-blocked (retried twice this round) — pixel probes used instead.
+   277→
+   278→### Completed modifications this round
+   279→
+   280→**1. EXPEDITION SCOUT RANK SYSTEM (new meta-progression):**
+   281→- data.js: SCOUT_T cumulative XP ladder (10 levels: ROOKIE→MYTHIC, 900 XP cap) + SCOUT_NAMES;
+   282→  `scoutInfo()` (lv/name/cur/need/bonus/maxed), `scoutBonus()` (+6%/level rewards),
+   283→  `expdSlots()` (2nd slot at User Rank 30), `expdAnyDone()`, `expdStart` now slot-aware
+   284→  (max slots, no duplicate destination), `expdCollect(idx)` per-trip (splice, danger×12
+   285→  scout XP, RANK UP line when level crossed).
+   286→- core.js: DEF_SAVE expedition → `{actives:[], scoutXP, runs}`; `_svNormalize` migrates v1
+   287→  single `active` object into `actives[0]`, validates entries (dest/dur 1-86400s/start in
+   288→  past), hard caps at 2; scoutXP clamped. Verified: old save auto-migrated (actives=0,
+   289→  old key gone), fresh boots clean.
+   290→- ui.js drawExpedition REWORK: right column = SCOUT RANK panel (pulsing cat badge + LV ribbon,
+   291→  rank name, +N% rewards, trips count, XP progress bar w/ next-rank label, 2 slot pips with
+   292→  padlock) + one tracker card per slot (compact bezier-road scene, walking cat, paw prints,
+   293→  progress bar, countdown, per-slot COLLECT/IN-PROGRESS button); locked slot-2 card shows
+   294→  padlock + rank progress bar; destination cards fold scout bonus into reward preview;
+   295→  per-card EN ROUTE/RETURNED states + guards with slot-aware toasts.
+   296→- Home EXPEDITIONS badge now uses expdAnyDone() (fires when either slot returns).
+   297→
+   298→**2. FIXED (real bug found by QA): collect-button hit rect off-canvas.**
+   299→  The pulsing COLLECT BTN was wrapped in cx.translate/scale, so its hit rect registered at
+   300→  (-78,-20) — the visual button was NEVER actually clickable, and with 2 slots both rects
+   301→  overlapped at canvas (0,0) (dispatch picked the topmost → collected the WRONG trip).
+   302→  Inherited pattern from last session's excollect. Fix: BTN at ABSOLUTE coords, pulse only
+   303→  the shadow glow (title PLAY button already used the correct pattern — audited all other
+   304→  BTN sites, none affected). Verified E2E: excollect1 rect at real position (1086,476),
+   305→  click collects the correct slot-1 trip (+3,436 XP peaks values, actives correctly spliced).
+   306→  NOTE for future devs: NEVER wrap BTN() in canvas transforms — hit rects are design-space.
+   307→
+   308→**3. LEADERBOARD API HARDENING (server-side):**
+   309→- route.ts POST: in-memory rate limit — 10 posts / 10 min per name+IP (429 past that),
+   310→  bounded map (5000 keys, opportunistic sweep). Verified: 12 rapid curl POSTs → 1-10 ok,
+   311→  11-12 `{"ok":false,"error":"rate-limited"}`. Test rows cleaned; GET unaffected.
+   312→
+   313→**4. CROWN LADDER M2 verified at scale** (was on the unresolved list): seeded 47 crowns →
+   314→  real-pointer stage-1 win (2 crowns earned) → total 49 → crownladder:1 AND :2 flags set,
+   315→  +30 CF/+3,000 XP each applied (cf 640, xp 14,247), screenshot qa5-crownladder-m2.png.
+   316→
+   317→**5. STYLING POLISH (battle, mandatory):**
+   318→- Deploy dock cards: breathing cyan glow when ready+affordable, diagonal glass gloss
+   319→  gradient, radial cooldown ring around the countdown number, cost text color state
+   320→  (green-affordable / red-short). Pixel-verified: card bg (53,68,93) = navy+gloss.
+   321→- Field units: soft elliptical ground shadow (depth cue; fades during knockback,
+   322→  skipped for dying/wall/burrow states).
+   323→
+   324→### Verification results
+   325→- Expedition E2E (fresh migrated save, real input): deploy peaks → tracker card animates →
+   326→  second deploy correctly rejected ("scout already on road") → force-complete → COLLECT at
+   327→  REAL button position → results modal (+XP/+CF/+Green Catfruit/+36 Scout XP) → NICE! →
+   328→  state applied (scoutXP 36, runs 1). Rank-30 test: 2 slots unlocked, 2 concurrent trips
+   329→  (fort+peaks), per-slot collect verified, RANK UP line fired at threshold
+   330→  (160+36=196 → lv4 PATHFINDER +18%). Slot-2 lock screen shows rank progress bar.
+   331→- Full battle E2E post-dock-rework: deploy/speed/win/OK→map, zero console errors.
+   332→- Save reset to pristine defaults via live SV mutation + game persist (rank 1, cf 300,
+   333→  0 crowns, 0 scoutXP) — fresh boot + title→home verified clean.
+   334→- 15-screen sweep all non-blank (qa5-*); node --check 9/9; lint 0 errors; dev.log clean;
+   335→  leaderboard GET 200 with 8 entries after cleanup.
+   336→- QA screenshots: tests/shots/qa5-*.png (expedition-new/active/2slots/collect/rankup,
+   337→  crownladder-m2, battle-dock, result2, final-home, all screens).
+   338→
+   339→### Unresolved / next-phase priorities
+   340→1. VLM visual review still 429-blocked — retry next session with fresh quota (qa5 shots ready).
+   341→2. Scout rank currently maxes at MYTHIC (900 XP) — consider prestige/paragon ranks or
+   342→   expedition GACHA-ticket-only destinations if more depth is wanted.
+   343→3. Consider surfacing scout rank bonus inside the collect modal reward preview (currently
+   344→   folded silently into reward numbers — a tooltip line could make it more legible).
+   345→4. Battle B state is a top-level `let` (not reachable via window.__BC) — fine for players,
+   346→   but QA probes can't inspect it; consider adding B to the __BC hook for future testing.
+   347→5. 28MB WAV audio bank — re-encode if load time becomes a complaint.
+   348→
+   349→---
+   350→
+   351→## Session Round — TROPHY STAND SYSTEM + VICTORY CONFETTI + QA HOOK (Task: autonomous QA → features)
+   352→
+   353→### Current project status (assessment at round start)
+   354→- Pristine save booted clean (rank 1); zero console/page errors; dev.log clean.
+   355→- Golden-path E2E with REAL pointer input re-verified at 1280x720: title → home → chapters →
+   356→  map → stage modal → battle (deploy, speed x2) → WIN with perfect 3-crown clear → OK → map.
+   357→- 15-screen sweep all non-blank; node --check 9/9; lint 0 errors / 12 benign warnings.
+   358→- VLM visual review STILL 429-blocked (3 attempts this round) — pixel probes used instead.
+   359→
+   360→### Completed modifications this round
+   361→
+   362→**1. NEW META SYSTEM — TROPHY STAND (achievements, 34 trophies in 10 themed groups):**
+   363→- data.js: TROPHY_GROUPS (Cat Collector / Story Veteran / Crown Chaser / Grand Summoner /
+   364→  Scout Captain / Monster Hunter / Treasure Seeker / Dojo Master / Rising Star / Loyal
+   365→  Commander) — 3-4 tiers each, rewards CF/XP/Rare+Gold tickets. Progress is COMPUTED LIVE
+   366→  from save state via helpers (stageClearsTotal, crownsTotal, treasuresTotal) — zero drift;
+   367→  only claim/notify flags persist. trophyProg/trophyDone/trophyClaimable/claimTrophy/
+   368→  trophyCheckAll (toast per newly-claimable, deduped via notified flags).
+   369→- core.js: DEF_SAVE + _svNormalize for `trophies:{claimed,notified}` (flag values forced to 1)
+   370→  and `stats:{pulls,wins}` (lifetime counters clamped 0-1e7).
+   371→- ui.js: full drawTrophies screen — sky bg, giant animated trophy-cup summary header
+   372→  (claimed count + rewards earned + pulsing READY badge), 2-column scrollable group grid
+   373→  (colored header bands + group icons), rows with status medallion (✓ green / pulsing gold
+   374→  star when claimable / padlock), progress bars, reward chips, CLAIM/DONE/% buttons.
+   375→  New glyph kinds: 'trophy' + 'crown'. Home menu gained TROPHIES item (purple) with a
+   376→  purple COUNT badge when claimable. Registered in boot.js SCREENS.
+   377→- Hooks (each calls trophyCheckAll): boot (post-loadSave), applyBattleResult (win path,
+   378→  also counts SV.stats.wins), doPull + doGoldPull (stats.pulls += n), consumeGachaGrant
+   379→  (cats-collected after grant), expdCollect, daily CF claim (streak).
+   380→- Verified E2E (real input): seeded 5 cats + 12 pulls → 2 claimable + toasts + notified
+   381→  flags set → home badge shows count → CLAIM cats1 (cf 300→350) + CLAIM sm1 (→400) →
+   382→  DONE medallions render → info % button toast "Recruit 15 different cats — 4/15 · reward
+   383→  100 CF" → wheel scroll (0→320) AND drag scroll (0→200) both work → post-battle
+   384→  stats.wins=1 → gacha pull E2E: pulls 12→13, rare ticket consumed, pendingPull cleared.
+   385→
+   386→**2. NEW QA INFRA — window.__BC.getB()**: live battle state B exposed in the boot hook
+   387→  (was a top-level let, unreachable before). Verified: getB() returns full state mid-battle
+   388→  (st/t/units/bases), null outside battle. Future rounds can probe battle internals directly.
+   389→
+   390→**3. SCOUT BONUS LEGIBILITY** (from last round's unresolved list): expedition collect modal
+   391→  now appends "Scout Rank bonus +N% applied" after the reward lines.
+   392→
+   393→**4. STYLING — VICTORY CONFETTI**: endBattle(win) spawns 42 streamers (5-color palette:
+   394→  gold/pink/white/cyan/purple, deterministic rnd() seed, per-particle rot/vr/sway phase);
+   395→  drawResult updates+draws them under the UI bands (text stays readable), gentle gravity,
+   396→  recycle at bottom. Verified: 42 particles alive on result screen, 103 pixel-probe hits
+   397→  with correct palette colors, victory screenshot qa6-victory-confetti.png.
+   398→  Defeat shows none (correct).
+   399→
+   400→**5. Cache-bust v15 → v16** (index.html + page.tsx wrapper in sync).
+   401→
+   402→### Verification results
+   403→- Fresh-save boot → title → home clean; save reset via live SV mutation + persist works.
+   404→- 16-screen sweep (incl. new trophies screen) all non-blank (qa6b-*); zero console errors.
+   405→- Battle E2E: full win with confetti + stats.wins counter + trophy hook (no errors).
+   406→- Gacha pull E2E with new counter; expedition collect modal shows bonus line (code path).
+   407→- A brace-balance syntax slip in the home-menu edit was caught by `node --check` and fixed
+   408→  before browser testing; all 9 files pass after.
+   409→- bun run lint: 0 errors / 12 benign warnings. dev.log clean.
+   410→- QA screenshots: qa6-* and qa6b-* (home-trophy-item, trophies, trophies-claimed,
+   411→  home-badge, victory-confetti, gacha-reveal, equip-check, trophies-scrolled, all screens).
+   412→
+   413→### Unresolved / next-phase priorities
+   414→1. VLM visual review still 429-blocked (5+ sessions now) — screenshots ready in tests/shots/
+   415→   (qa6b-* are freshest); retry when quota clears.
+   416→2. Trophy progression display could add a "next reward hint" on the home CATALOG panel.
+   417→3. Scout rank MYTHIC cap (900 XP) — prestige ranks or ticket-only expeditions if wanted.
+   418→4. Consider a trophy SOUND distinct from SFX.up (minor).
+   419→5. 28MB WAV bank — re-encode if load time becomes a complaint.
+   420→
+   421→---
+   422→
+   423→## Session Round — MISSION BOARD EXPANSION + BATTLE HUD RICHES + HOME CATALOG POLISH (Task: autonomous QA → features)
+   424→
+   425→### Current project status (assessment at round start)
+   426→- Pristine save booted clean (rank 1); zero console/page errors; dev.log clean.
+   427→- Full golden-path E2E re-verified with REAL pointer input at 1280x720 BEFORE any edits:
+   428→  title → home → chapters → EoC map → stage modal (attack → Attack!) → battle (deploy ×N at
+   429→  real dock positions, kills/dmg tracked via getB()) → legit WIN (enemy base 900→0) → resOk →
+   430→  map, with XP/rank/clears/wins all applied (stats.wins=1, cleared.eoc1['0'] set).
+   431→- 14-screen sweep + verify-shots: all non-blank, zero console errors.
+   432→- node --check 9/9 game JS files; lint 0 errors / 12 benign warnings.
+   433→- QA harness quirks re-learned this round (IMPORTANT for future rounds):
+   434→  1. `G.hits.push({id:'play'...})` does NOT fire buttons — hits are rebuilt every frame; the
+   435→     injected entry is wiped before the next pointerup scan. Real pointer events (mouse move/
+   436→     down/up at the rect center from `tests/click.ts`) are the only reliable way.
+   437→  2. Home menu rows below scrollHome=0 (hm6..hm10, y>720) are OFF-CANVAS — must dispatch a
+   438→     WheelEvent on the canvas (or drag) BEFORE clicking them: `cv.dispatchEvent(new
+   439→     w.WheelEvent('wheel',{clientX,clientY,deltaY:240}))`.
+   440→  3. Stage modal buttons (mb0/mb1) only exist while the modal is open — click.ts must chain
+   441→     `attack` (600ms) → `mb1` (300ms) within the same frame window.
+   442→
+   443→### Completed modifications this round
+   444→
+   445→**1. DAILY MISSION BOARD: 3 → 6 MISSIONS + REAL PROGRESS BARS (core.js / ui.js / battle.js / data.js):**
+   446→- core.js MISSIONS: added 3 new dailies — 'win' (Win 2 battles, 60 CF, medal icon),
+   447→  'dep' (Deploy 8 cats in battle, 60 CF, cat icon), 'exp' (Complete 1 expedition, 70 CF,
+   448→  compass icon). DEF_SAVE + ensureMissions reset line extended with win/dep/exp counters.
+   449→- Hooks: battle.js applyBattleResult win-path increments missions.win; spawnCat increments
+   450→  missions.dep (fires on every real deploy); data.js expdCollect increments missions.exp.
+   451→- openMissionsModal COMPLETELY REDESIGNED for 6 rows: modal height 612 (title-keyed override
+   452→  in modalDraw), compact rows (rowH 55, step 62) in the drawExtra coordinate space (NOTE:
+   453→  drawExtra receives y+90+lines*28 — NOT the modal top; row layout tuned to that), per-row
+   454→  REAL progress bars (blue/green/gold fill + numeric 'n / goal' label + top gloss), pulsing
+   455→  gold icon medallions when claimable, IN PROGRESS buttons (tap → toast with exact progress),
+   456→  CLAIM buttons, ✔ CLAIMED tags, rank-tier footer badge, reset-info line, header count line.
+   457→- Layout verified collision-free: rows 187..529, footer 558..584, reset 586, CLOSE 602..648.
+   458→
+   459→**2. BATTLE HUD: SESSION LOOT CHIP (battle.js):**
+   460→- Top-center chip under the stage name: gold coin dot + 'N kills · M treasure' (session
+   461→  treasure count from G.sessionTreasure), dark navy pill with gold rim. Fades with the HUD
+   462→  on result screens (correct — verified on defeat/victory shots).
+   463→
+   464→**3. BATTLE: BASE ALARM AURAS (battle.js drawBases):**
+   465→- Cat base: warm pulsing rim-light ellipse while alarm>0 (complements the existing shake).
+   466→- Enemy base: red pulsing aura ellipse — clear "under attack" feedback for the push phase.
+   467→
+   468→**4. VICTORY RANK MEDAL (battle.js drawResult):**
+   469→- Victory-only laurel-wreath medal at (930,262): two arcs of dark-green leaves, gold disc,
+   470→  up-glyph, 'RANK N' + 'Commander' caption, gentle breathing scale. Fades in at resultT 0.15.
+   471→  Defeat shows none (correct). Pixel-verified: gold disc + green leaf (75,137,65) present.
+   472→
+   473→**5. HOME SCREEN POLISH (ui.js drawHome):**
+   474→- Scroll-position indicator rail on the menu column (gold gradient thumb tracks scrollHome).
+   475→- Catdex completion bar under the cat strip: green gradient fill + 'N% of the Catdex
+   476→  collected' label.
+   477→- NEXT TROPHY hint chip on the catalog panel (from last round's unresolved list): sorts
+   478→  unclaimed trophies by %-complete, shows group icon + truncated name + % — purple theme.
+   479→
+   480→**6. Cache-bust v16 → v18** (index.html + page.tsx wrapper in sync).
+   481→
+   482→### Verification results
+   483→- Mission hooks E2E (real input, 2 battles: one loss + one win + retreat test): after win —
+   484→  clear=2, win=1, dep=12, stats.wins=2 all correct; CLAIM flow verified: mclaimclear click →
+   485→  +80 CF (300→380), claimed flag set, green bar + ✔ CLAIMED tag render; IN PROGRESS toast
+   486→  shows 'Clear 2 stages — 1/2 · reward 80 Cat Food'.
+   487→- 6-row modal E2E: opens via MISSIONS (after wheel-scroll), 6 mprog/mclaim buttons at
+   488→  correct non-overlapping positions, close via mb0 works.
+   489→- Pixel probes: progress bar blue #4a9ae8 fill at exact row coordinates; claimed-state
+   490→  green #7fc86a; loot chip dark pill + gold text at (640,72..90); rank medal gold+green;
+   491→  home rail gold thumb at (612,500); Catdex green fill 660..700; hint chip purple at 940..980.
+   492→- Full regression post-edits: 14-screen sweep (tests/screen-qa.sh) zero console errors;
+   493→  verify-shots all non-blank; battle deploy/pause/retreat flows OK; 1920x800 letterbox ✓;
+   494→  390x844 portrait rotate-prompt ✓ (nonBg 1.3% = expected dark overlay).
+   495→- node --check 9/9 pass; bun run lint 0 errors / 12 benign warnings; dev.log clean.
+   496→- QA screenshots: tests/shots/qa7-*.png (01 home, 02 battle, 03 victory, 04/05 missions
+   497→  modal, 06 defeat, 07 victory-medal, 08 missions-claimed, 09 home-new, 10 1920x800,
+   498→  11 portrait, 12/13 battle-chip).
+   499→
+   500→### Unresolved / next-phase priorities
+   501→1. VLM visual review still 429-blocked (6+ sessions) — pixel probes used instead; retry
+   502→   when quota clears (qa7-* shots are freshest).
+   503→2. Missions 'up' (Improve a Cat) hook only counts upgrade-screen purchases — treasure-
+   504→   based improvements don't count; consider widening if it matters.
+   505→3. Battle loot chip currently counts session-wide treasure, not per-battle — could scope
+   506→   it to the active battle if clearer feedback is wanted.
+   507→4. Scout rank MYTHIC cap (900 XP) — prestige ranks or ticket-only expeditions if wanted.
+   508→5. 28MB WAV bank load time — re-encode if it becomes a complaint.
+   509→6. Mission modal drawExtra coordinate quirk (my-94 vs modal-top) is now documented above —
+   510→   future modal layouts should always compute against the drawExtra-passed (mx,my,mw,mh),
+   511→   never the modal's own geometry.
+   512→
+   513→---
+   514→
+   515→## Session Round — CAT SHRINE + SCOUT PRESTIGE + FIRST VLM REVIEW (Task: autonomous QA → features)
+   516→
+   517→### Current project status (assessment at round start)
+   518→- Fresh browser session at v18: clean boot (title, t advancing), zero console errors, dev.log clean.
+   519→- Golden-path E2E re-verified with REAL pointer input at 1280x720: title → home → chapters → map →
+   520→  stage modal → battle (deploy ×N, speed, kills/dmg tracked via getB()) → WIN → result → OK → map.
+   521→- **VLM VISUAL REVIEW WORKED FOR THE FIRST TIME in 7+ sessions** (z-ai vision CLI, glm-5v-turbo,
+   522→  previously always 429). Ran 8 reviews across the round on home/battle/victory/shrine/trophies.
+   523→- QA harness notes re-learned: agent-browser `set viewport 1280 720` is REQUIRED before click.ts
+   524→  (design-space letterboxing); `agent-browser reload` can blank the page — use `open` instead.
+   525→
+   526→### VLM findings at round start (all fixed this round)
+   527→1. Home "YOUR CATS" strip: cat icons overlapped each other (icons are r*3.6 wide but spaced 42px).
+   528→2. Home catalog Catfruit row: bare em-dash looked clipped/misaligned.
+   529→3. Battle stage name floated with no background (readability).
+   530→4. Battle worker "+" pip had no container ("floating icon").
+   531→5. Victory medal caption overlapped the score band; CROWNS label misaligned with pips.
+   532→
+   533→### Completed modifications this round
+   534→
+   535→**1. NEW FEATURE — CAT SHRINE (daily blessing meta, 17th screen):**
+   536→- data.js: SHRINE_BLESSINGS table (8 weighted blessings: XP/CF/energy-refill/rare-ticket/
+   537→  catfruit/NP/gold-ticket/MEGA jackpot; rank-scaled, free toss doubles jackpot weight);
+   538→  shrineRoll/shrineApply/shrineInfo/shrinePray; free toss daily + 3 extra tosses at 50 CF.
+   539→- core.js: DEF_SAVE `shrine:{day,freeUsed,todayN,total,megaN,lastId,lastBless}` + hard
+   540→  normalization (day-rollover resets freeUsed/todayN; counters clamped).
+   541→- ui.js drawShrine: fully drawn dusk scene (torii gate w/ kasagi+plaque, shrine hut w/ glowing
+   542→  slit, saisen-bako offering box, pulsing lanterns, radial-gradient incense smoke, sitting keeper
+   543→  cat, moon+stars) + coin-toss parabola animation w/ spinning coin → landing flash + star burst →
+   544→  auto-apply + BLESSING! modal (icon medallion, jackpot rays, reward line, free/paid tag).
+   545→  Right column: NYANKO SHRINE header w/ torii glyph, status line, lifetime stats + LAST BLESSING
+   546→  chip, big pulsing PRAY button (free→paid states), POSSIBLE BLESSINGS pool preview w/ JACKPOT tag.
+   547→- Home menu: CAT SHRINE item (torii icon, pink) with FREE! badge when the daily toss is up
+   548→  (menu now 12 items — scroll rail auto-adapts).
+   549→- New glyph kinds: 'torii' + 'bolt'.
+   550→- boot.js: shrine registered in SCREENS. SFX.up on reveal; toast on blessing.
+   551→
+   552→**2. NEW FEATURE — SCOUT PRESTIGE (post-MYTHIC star ranks):**
+   553→- data.js: SCOUT_PRESTIGE_MAX=3; scoutPrestige() (MYTHIC → reset scoutXP, +1 star, +10%
+   554→  permanent bonus); scoutInfo() now returns prestige/stars and bonus = 0.06*(lv-1)+0.10*prest
+   555→  (name gains ★ suffix).
+   556→- core.js: expedition.prestige field + normalize clamp 0..3.
+   557→- ui.js expedition: purple pulsing PRESTIGE button (maxed only, stars remaining) → confirm modal
+   558→  (before/after bonus math) → toast; ★N stars + "+10% each · permanent" label otherwise;
+   559→  XP-bar label switches to "MAX RANK — prestige for a star".
+   560→
+   561→**3. NEW FEATURE — SHRINE DEVOTEE trophy group (11th group, 34→37 trophies):**
+   562→- data.js TROPHY_GROUPS: 3 tiers (pray 3/15 times, receive a MEGA blessing; gold-ticket top
+   563→  reward); trophyProg case 'sh' reads SV.shrine.total / megaN; shrineApply calls trophyCheckAll.
+   564→
+   565→**4. FIX (from unresolved list) — per-battle loot chip scoping:**
+   566→- battle.js startBattle snapshots `treasureBase` (session treasure total); HUD chip now shows
+   567→  THIS battle's drops (total − base) instead of session-wide count.
+   568→
+   569→**5. STYLING (VLM-driven fixes + polish):**
+   570→- Battle stage name → dark rounded chip w/ gold rim (VLM: readability).
+   571→- Worker affordable pip → contained 'LV UP' pill badge w/ pulse + gloss (VLM).
+   572→- Victory medal raised to (952,234) — caption clears the score band, wreath clears the title
+   573→  tail (VLM). Victory title y 262→250 (bottom clears the XP band).
+   574→- CROWNS band label/stat line baselines optically centered against pips (VLM).
+   575→- Home cat strip: 11 icons at 51px spacing, r=14 (no overlap — VLM re-verified "cleanly spaced").
+   576→- Home Catfruit row: `||'none yet'` (readable, right-aligned like siblings).
+   577→- Shrine scene: moon repositioned clear of the right lantern; smoke puffs → radial gradients.
+   578→
+   579→**6. Cache-bust v18 → v19** (index.html ×9 scripts + page.tsx wrapper in sync).
+   580→
+   581→### Verification results (all REAL pointer input, 1280x720)
+   582→- Shrine E2E: home → CAT SHRINE (hm5, new index) → PRAY — FREE → coin flight (t:2.92 anim) →
+   583→  auto-apply (+1,093 XP, freeUsed, total=1, lastId=xp) → BLESSING! modal → NICE! closes (anim
+   584→  cleared) → button switches to paid → PRAY (50 CF: 300→250) → 2nd blessing (+1 Rare Ticket,
+   585→  tickets.rare 1→2) → modal OK. Day-rollover: set day to yesterday + reload → freeUsed=false,
+   586→  todayN=0, total preserved; shrineInfo() rolls the key forward.
+   587→- Scout prestige E2E: seeded scoutXP=900 (MYTHIC) → PRESTIGE button present → modal (before/after
+   588→  bonus) → PRESTIGE! → scoutXP=0, prestige=1, toast + ★1 label rendered.
+   589→- Shrine trophies: SHRINE DEVOTEE group renders w/ 2/3 progress (VLM-verified).
+   590→- Battles: 3 full E2E wins this round (incl. one w/ 3-crown on stage 2). Final victory layout
+   591→  VLM-verified: medal clears title AND band, title clears band, CROWNS band aligned. Stage chip
+   592→  renders (VLM), LV UP pill "cleanly contained" (VLM + 1,918 green px), loot chip baseline=3 with
+   593→  3 seeded session treasures → shows this-battle count only.
+   594→- 16-screen sweep (incl. new shrine): ALL non-blank, ZERO console errors.
+   595→- VLM ratings: shrine 8/10; home re-review post-fix: "no obvious visual bugs".
+   596→- node --check 9/9 game JS files pass; `bun run lint` 0 errors / 12 benign warnings; dev.log clean.
+   597→- QA screenshots: tests/shots/qa8-*.png (shrine, shrine-coin, shrine-modal, shrine-paid,
+   598→  home-after, home-fix, expd-prestige, expd-starred, battle-chip, battle-lvup, victory,
+   599→  victory-final, trophies-shrine, sweep-<16 screens>).
+   600→
+   601→### Unresolved / next-phase priorities
+   602→1. VLM review now WORKS — make it a standard step for every new screen (z-ai vision CLI with
+   603→   -i screenshot; see /tmp/vlm-*.json patterns used this round).
+   604→2. Shrine could add: blessing "pity" tracking (guaranteed MEGA within N tosses), shrine cat
+   605→   costume unlocks per MEGA count, or a prayer-chain daily streak bonus.
+   606→3. Missions 'up' hook still only counts upgrade-screen purchases (unchanged, low priority).
+   607→4. Scout prestige maxes at ★3 — consider ★∞ or prestige-only ticket expeditions if more depth.
+   608→5. 28MB WAV bank load time — re-encode if it becomes a complaint.
+   609→6. Consider second save slot / cloud-save export of the shrine + prestige state (savesys has
+   610→   export/import already — new fields ride along automatically).
+   611→
+   612→---
+   613→
+   614→## Session Round — VLM-DRIVEN QA SWEEP + SHRINE PITY/STREAK + TREASURE RADAR (Task: autonomous QA → fix → features)
+   615→
+   616→### Current project status (assessment at round start)
+   617→- Fresh session at v19: clean boot (title, t advancing), zero console/page errors, dev.log clean.
+   618→- Golden-path E2E re-verified with REAL pointer input at 1280x720: title → home → chapters →
+   619→  story list → map → stage modal (ndstory0, mb1=Attack) → battle (sustained deploy, speed)
+   620→  → WIN → rewards → map. NOTE: Korea stage-1 CAN be lost if you under-deploy (cats that spawn
+   621→  into an enemy pile at the base die in <0.4s) — balance is authentic, spam cats to win.
+   622→- 17-screen sweep (tests/screen-qa.sh, now updated to cover all 18 screens incl. shrine):
+   623→  all non-blank, zero console errors.
+   624→- VLM visual review WORKED all round (z-ai vision CLI, glm-5v-turbo) — 20+ reviews performed.
+   625→  IMPORTANT LESSONS: VLM misreads small text at full-screen scale (hallucinated treasure tab
+   626→  duplicates "EoC Ch.3×2", guide "BEHEMOTH" clipping, base "Research ed" truncation — all
+   627→  disproven with PIL crop-zooms). ALWAYS zoom-verify with tight crops before acting on VLM
+   628→  findings at <12px font sizes.
+   629→- REAL bugs found by VLM (zoom-confirmed): trophies grid buried the summary header (below),
+   630→  chapters "N/144" text touched the card border, title cat-crowd rows 60–85% cut at the
+   631→  bottom edge, map radar legend (this round's own new UI) overflowed the right edge.
+   632→
+   633→### Completed modifications this round
+   634→
+   635→**1. FIXED (VLM-confirmed real bug) — trophies grid buried the summary header:**
+   636→- ui.js drawTrophies: the scrollable group grid started at y=96, overlapping the summary
+   637→  header panel (64..148) — the "N/37 trophies claimed" text (center-y 96) had its bottom half
+   638→  buried under the first row of group panels, "Rewards earned" line and the READY badge were
+   639→  fully covered, and the cup base was hidden. Grid now starts at y=156 (SCROLL viewport
+   640→  0,156,1280,514; panels placed at 156+colH; cull bound 140; max scroll contentH-514).
+   641→  VLM re-review: "entire header fully visible… distinct clean gap" — FIXED.
+   642→
+   643→**2. FIXED — chapters crown count touched the card border:** "N/144" right-aligned at local
+   644→  x=1240 = the card's exact border. Now x=1228. VLM re-review: chapters CLEAN.
+   645→
+   646→**3. FIXED — title cat-crowd grounding:** headRows were [[710,…],[668,…],[696,…]] → the big
+   647→  row was 82% cut at the canvas bottom (heads barely peeked). Now [[678,…],[640,…],[674,…]]
+   648→  + a warm dark grounding gradient band (694..720). VLM no longer flags the crowd.
+   649→
+   650→**4. NEW FEATURE — SHRINE PITY (gacha-style MEGA guarantee):**
+   651→- data.js: SHRINE_PITY_MAX=10; shrineRoll weights MEGA ×(1+0.85×pity) and FORCES MEGA when
+   652→  pity≥9; shrineApply sets pity=0 on jackpot else +1 (clamped).
+   653→- ui.js drawShrine: MEGA PITY meter — 10 purple diamond pips in the stats strip (filled =
+   654→  current pity; last pip pulses when the next toss is guaranteed) + "MEGA in ≤N tosses" /
+   655→  "NEXT TOSS: GUARANTEED MEGA!" label.
+   656→- E2E: seeded pity=9 → paid toss → forced MEGA (lastId=mega, megaN 0→1, pity→0); reward math
+   657→  exact: CF 411−50+270=631 and XP 1305+2949=4254 (220/2400 × rankMul 1.024 × streakMul 1.2).
+   658→
+   659→**5. NEW FEATURE — PRAYER STREAK (consecutive-day blessing bonus):**
+   660→- data.js: shrineStreakBonus() = +4%/day, cap +40% (10 days); shrineRoll multiplies XP/CF/NP/
+   661→  MEGA numbers by streakMul; day-8+ streaks give a 50% chance of double catfruit.
+   662→- shrinePray: the daily FREE toss advances the streak (yesterday → +1, gap → reset to 1,
+   663→  same-day → no double count); milestone toasts at 3/7/10 days.
+   664→- core.js: DEF_SAVE shrine gains {pity,streak,lastPrayDay} + hard normalization (clamps 0..10,
+   665→  string check); old saves auto-backfill (verified: v19 save booted with new fields intact).
+   666→- ui.js: streak chip inside the status panel (pulsing flame glyph + "N-DAY PRAYER STREAK" +
+   667→  live "+N%" line, dim idle state when streak=0); blessing modal appends "prayer streak bonus
+   668→  +N% applied" line; shrineInfo exposes pity/pityLeft/streak/streakBonus.
+   669→- E2E: seeded streak=4 anchored to yesterday → free toss → streak 5, bonus 0.16→0.20, CF
+   670→  blessing 111 = 90×1.024×1.2 (streak applied) → modal streak line pixel-verified (67 px) →
+   671→  paid toss did NOT advance streak (stays 5). Streak reset logic: lastPrayDay neither today
+   672→  nor yesterday → streak=0 (lazy eval in shrineInfo).
+   673→
+   674→**6. NEW FEATURE — MAP TREASURE RADAR (farming visibility):**
+   675→- ui.js drawMap (story nodes): gold pulsing diamond + "2/3" label pinned beside nodes whose
+   676→  treasure set (i%9) is at 2/3 pieces; dim gold diamond on completed (3/3) sets. Anchored to
+   677→  the node dot (px+24,py-24) — NOT the banner, so dense banner stacks never collide.
+   678→- Chapter header: "TREASURE n/9" gold pill under the "N/48 CLEARED" chip + legend caption
+   679→  "gold ◇ = set at 2/3 pieces" (recentered to 1183 after VLM caught the first, wider caption
+   680→  clipping at the screen edge).
+   681→- E2E: seeded treasures.eoc1={0:3,1:3,2:2} → chip shows TREASURE 2/9; camera panned to origin
+   682→  → gold ping pixel-verified at (693,236) beside the stage-2 node.
+   683→
+   684→**7. STYLING (expedition scout-rank panel, VLM-driven):**
+   685→- XP-bar label moved from by−3 to y=118 with the bar at 126..136 (clear 5px gap; VLM had
+   686→  flagged descender clipping); LV ribbon raised to by−27 and the cat nudged to by+6 (no more
+   687→  ribbon-over-ears); panel 76→92 tall so the 'Slot 2: Rank 30' line sits inside; tracker
+   688→  cards shifted to y=162/s+196.
+   689→
+   690→**8. Cache-bust v19 → v20 → v21** (index.html ×9 scripts + page.tsx). GOTCHA HIT THIS ROUND:
+   691→  bumping v20 BEFORE the follow-up edits left the browser serving stale cached js — always
+   692→  re-bump AFTER the final edit of a round (v21 is the true final).
+   693→
+   694→### Verification results (all REAL pointer input, 1280x720, v21)
+   695→- Shrine E2E: streak advance 4→5 (+4%), streak-multiplied rewards (exact math above), forced
+   696→  MEGA at pity 10 with pity reset, paid toss does not advance streak, modal streak line,
+   697→  7/7 pixel-verified pity pips at pity=7, flame chip renders (255,210,63 at probe).
+   698→- VLM re-reviews post-fix: trophies CLEAN (header unburied, clean gap), shrine CLEAN twice
+   699→  (incl. pity pips "evenly spaced, no clipping"), chapters CLEAN, map legend readable in
+   700→  tight crop, title crowd no longer flagged.
+   701→- Battle smoke + full win at v21: sustained deploy → t=89 WIN, catHp 1200 (perfect), 10 kills,
+   702→  zero console errors — battle.js untouched this round, regression-free.
+   703→- 17-screen sweep at v20/v21: all non-blank, zero console errors.
+   704→- node --check 9/9 game JS files; bun run lint 0 errors / 12 benign warnings; dev.log clean.
+   705→- QA screenshots: tests/shots/qa9-* (battle-end, victory), sweep-* (17 screens @v20),
+   706→  qa10-* (shrine-new, shrine-modal-streak, map-radar, map-radar2, expd-fixed, map-fixed),
+   707→  qa11-* (expd, map, shrine-pity — the v21 finals).
+   708→
+   709→### Unresolved / next-phase priorities
+   710→1. Missions 'up' hook still only counts upgrade-screen purchases (unchanged, low priority).
+   711→2. Shrine could add cat-costume unlocks per MEGA count (pity/streak now cover the luck side).
+   712→3. Scout prestige maxes at ★3 — consider ★∞ or prestige-only ticket expeditions if wanted.
+   713→4. 28MB WAV bank load time — re-encode if it becomes a complaint.
+   714→5. Treasure radar only pings at 2/3 (one piece left) — could add a "which set does this stage
+   715→   belong to" tooltip on the stage modal (treasureChance already shown there).
+   716→6. VLM false-positive pattern is now well-characterized (small-text hallucinations) — future
+   717→   rounds should zoom-crop first, fix second (see lessons above).
+   718→
+   719→---
+   720→
+   721→## Session Round — STAGE-MODAL TREASURE CARD + GACHA DAILY FEATURED ROTATION (Task: autonomous QA → features)
+   722→
+   723→### Current project status (assessment at round start)
+   724→- Fresh browser session at v21 (localStorage resets per agent-browser session → fresh default save):
+   725→  clean boot (title, t advancing), zero console/page errors, dev.log clean.
+   726→- Golden-path E2E re-verified with REAL pointer input at 1280x720: title → home → chapters → EoC1
+   727→  map → stage modal → battle (sustained deploy ×75, t=90) → WIN with perfect 1200/1200 HP,
+   728→  10 kills → rewards (xp 1305, crowns 3, wins 1) → map. Zero console errors.
+   729→- 17-screen sweep: all non-blank, zero console errors. VLM review of previously-unchecked
+   730→  screens: submap CLEAN (grid aligned, ellipsis intentional), victory CLEAN (medal/crowns/base
+   731→  all fine — confetti renders correctly). No bugs found this round → feature work.
+   732→
+   733→### Completed modifications this round
+   734→
+   735→**1. NEW FEATURE — STAGE-MODAL TREASURE SET CARD (closes old unresolved #5):**
+   736→- ui.js openStageModal: computes treasureCard {set: CHSETS[ch][idx%9], own: tCount(ch,idx%9)}
+   737→  for story chapters; the plain "Treasure chance: ~N%" modal LINE is replaced by a full card in
+   738→  the drawExtra area (below enemy tiles, above Attack/Cancel): chest glyph medallion,
+   739→  "TREASURE SET · <name>" + "Set bonus: <stat> — pieces stack its multiplier", 3 tier pips
+   740→  (bronze #cd7f32 / silver #c0c0c0 / gold #ffd700, filled = owned, glossy highlight) each
+   741→  labeled with its per-tier drop %, pulsing gold-rim + red "1 PIECE LEFT!" badge when own===2
+   742→  (ties into the map treasure radar pings), green "SET COMPLETE ✓" when own===3.
+   743→- Modal math: story modal = 6 lines → h=650, drawExtra 322px; card at yOff+126..184 fits with
+   744→  no overlap of enemy tiles (+N more at yOff+112) or buttons (y+h-64).
+   745→- E2E: seeded eoc1 set0=2/3 → hot card w/ red badge (187 red px) + VLM CLEAN ("cleanly
+   746→  positioned between Appearing Enemies and the action buttons… fully visible"); set0=3/3 →
+   747→  green SET COMPLETE (70 px); Attack button still starts the battle with the card present.
+   748→
+   749→**2. NEW FEATURE — GACHA DAILY FEATURED ROTATION:**
+   750→- data.js bannerFeats(b): date-seeded (deterministic) daily rotation of up to 3 featured cats
+   751→  from each banner's full featured-tier gacha pool (rare banner rotates within rare gacha cats;
+   752→  uber/epic within uber; legend falls back to its static 2 when pool ≤ feat size). b.feat stays
+   753→  as the home lineup. featRotateIn(): honest countdown to local midnight.
+   754→- rollGacha + doGoldPull now use bannerFeats() — the 25% featured boost applies to TODAY's
+   755→  picks (banner odds untouched: 89/9/2 · 3/27/70 · 9/23/68).
+   756→- ui.js drawGacha: NEW "TODAY'S FEATURED" strip (right column x950 y262, dark glass panel w/
+   757→  banner-colored rim): header ribbon w/ clock glyph, 3 rows (rarity-ringed cat medallion w/
+   758→  breathing pulse on row 1, name, "RARITY · 25% BOOST" tag, pulsing red NEW! / green OWNED ✓
+   759→  status), footer "new featured cats every midnight". Static fake "Ends in 3 days" chip →
+   760→  honest "rotate in Xh Ym" gold chip. openGachaInfo lists today's featured + rotation note.
+   761→- Probe: rare→[cutter,island,jurassic], uber-pool→[noble,dioramos,paladin], legend→[luza,gatr]
+   762→  (correct fallback). E2E: gtry (rare ticket consumed → cutter granted, exactly-once OK),
+   763→  g10 10+1 (CF 2000→500, 11 results, pending cleared, 11 cats owned) — all on the rotation
+   764→  path, zero console errors. VLM CLEAN (rows cleanly laid out, no overlap w/ machine/chips).
+   765→- NOTE for QA: top-level const (BANNERS) is NOT on window — probe via activeBanners() instead.
+   766→
+   767→**3. STYLING POLISH:**
+   768→- Gacha step-pity pill: taller labeled chip — "N / 10" + "step pity" (or gold "guaranteed!" at
+   769→  10) so the counter reads as what it is.
+   770→- Clock glyph stroke-order bug fixed (strokeStyle now set before the arc).
+   771→
+   772→**4. Cache-bust v21 → v22** (index.html ×9 scripts + page.tsx in sync — bumped AFTER all edits,
+   773→  avoiding last round's stale-cache gotcha).
+   774→
+   775→### Verification results (all REAL pointer input, 1280x720, v22)
+   776→- Gacha E2E: single pull (ticket path) + 10+1 (CF path) + multi-card reveal + OK grant; stats
+   777→  pulls 12; zero errors. Featured strip + countdown chip pixel- and VLM-verified.
+   778→- Stage-modal E2E: hot (1 PIECE LEFT) + complete (SET COMPLETE) card states; Attack flow intact.
+   779→- 17-screen sweep at v22: all non-blank, zero console errors.
+   780→- node --check 9/9 game JS files; bun run lint 0 errors / 12 benign warnings; dev.log clean.
+   781→- QA screenshots: tests/shots/qa12-* (victory, submap, gacha-featured, gacha-reveal,
+   782→  stagemodal-treasure, stagemodal-complete), sweep-* (17 screens @v22).
+   783→- Two syntax slips during editing (extra brace in stage modal, doubled closing brace in
+   784→  rollGacha, plus a double-backslash escape) were ALL caught immediately by node --check and
+   785→  fixed before browser testing — keep using node --check after every edit batch.
+   786→
+   787→### Unresolved / next-phase priorities
+   788→1. Missions 'up' hook still only counts upgrade-screen purchases (unchanged, low priority).
+   789→2. Shrine cat-costume unlocks per MEGA count (pity/streak now cover the luck side) — next
+   790→   natural shrine depth if wanted.
+   791→3. Scout prestige maxes at ★3 — consider ★∞ or prestige-only ticket expeditions.
+   792→4. 28MB WAV bank load time — re-encode if it becomes a complaint.
+   793→5. Treasure radar + stage-modal card are now a complete loop; possible next: a TREASURE screen
+   794→   "farm this set" jump that opens the map focused on a 2/3 set's stages.
+   795→6. Gacha rotation is date-seeded client-side (deterministic per day) — fine for a replica; a
+   796→   server-side rotation table would only matter for cross-device fairness.
+   797→
+   798→---
+   799→
+   800→## Session Round — PODIUM/POOL OVERFLOW FIXES + TREASURE FARM JUMP + SHRINE KEEPER COSTUMES (Task: autonomous QA → fix → features)
+   801→
+   802→### Current project status (assessment at round start)
+   803→- Fresh session at v22: clean boot (title, t advancing), zero console/page errors, dev.log clean.
+   804→- Golden-path E2E re-verified with REAL pointer input at 1280x720: title → home → chapters → EoC1
+   805→  map → stage modal (mb1) → battle (correct dock0 click position = (464,569)) → sustained deploy
+   806→  + speed → WIN with PERFECT 1200/1200 base HP (3 crowns) → rewards (xp 1305, rank 2, cleared,
+   807→  crowns 3) → map. One LOST battle first (deploy clicks at a wrong position — test error, not a
+   808→  game bug; see QA gotchas below).
+   809→- 18-screen sweep: all non-blank, zero console errors.
+   810→- VLM review (zoom-crop-first protocol) found 2 REAL bugs this round: leaderboard podium text
+   811→  collisions + shrine blessing-pool row overflow.
+   812→
+   813→### Completed modifications this round
+   814→
+   815→**1. FIXED (VLM + code-math confirmed) — leaderboard podium text collisions:**
+   816→- Old layout: '#N' rank baseline at -h/2+44 CROSSED the name baseline (y=6) on the 68px silver/
+   817→  bronze cards (44-34=10 > 6!); score (y=28) also overlapped stage (h/2-10 = 24).
+   818→- New layout (ui.js drawLeaderboard): big rank number (20px #1 / 15px #2-3) flanked by two medal
+   819→  glyphs at ±30/±21, then name (big?5:2) / score (big?25:16) / stage (big?38:28) — every pair of
+   820→  adjacent baselines now has a safe gap. VLM zoom re-review: "no overlap… distinct separation".
+   821→
+   822→**2. FIXED — shrine blessing-pool MEGA row cut off at the panel bottom:**
+   823→- Old: 8 rows at 26px spacing starting y=478 in a 438..660 panel → row 7 (MEGA) spanned 660..684,
+   824→  fully below the edge (VLM saw "a tiny purple sliver"). Right column re-laid out: stats strip
+   825→  226..334 (h 94→108), PRAY button 328→342, pool 438..660→432..660 with rows at 462+i*24.5 —
+   826→  every row now inside. VLM zoom re-review: MEGA row "fully visible… not cut off".
+   827→
+   828→**3. NEW FEATURE — TREASURE 'FARM SET' JUMP (closes old unresolved #5, completes the radar loop):**
+   829→- ui.js drawTreasure: each of the 9 set panels gains a FARM button (x+286,y+36,100x26) — gold
+   830→  pulsing '1 LEFT · FARM!' when own===2, tan 'FARM SET' otherwise, grey 'LOCKED' when no stage of
+   831→  that set is unlocked.
+   832→- farmJump(ch,setI): picks the HIGHEST unlocked stage with idx%9===setI (best treasure odds),
+   833→  sets G.chapter + G.mapFocusIdx + mapFor=null, push('map') + toast.
+   834→- drawMap camera init now prefers nodes[G.mapFocusIdx] (when unlocked) over the current node;
+   835→  chapter buttons + chapter-cycle arrows clear mapFocusIdx.
+   836→- Dismissible gold 'FARM: <set>' banner on the map (diamond icon + 'gold ◇ nodes drop its
+   837→  pieces' + red × close, id 'farmx'); shows '1 PIECE LEFT — ' prefix when own===2.
+   838→- E2E REAL-pointer verified: tfarm0 click → map (chapter eoc1, focusIdx 0, cam 0,0, stage visible,
+   839→  banner present) → banner text VLM-verified → farmx dismisses → with seeded 2/3 set the banner
+   840→  shows '1 PIECE LEFT — FARM: Idol of Empire' and the treasure button shows the hot gold state
+   841→  (VLM: "fully visible, no overlap") → stage modal opens from the focused node → battle starts +
+   842→  deploy + retreat all regression-free.
+   843→
+   844→**4. NEW FEATURE — SHRINE KEEPER COSTUME TRACK (5 MEGA milestones, pure-cosmetic):**
+   845→- data.js: SHRINE_COSTUMES=[Bell Collar@1, Vermilion Cape@2, Fox Mask@3, Golden Crown@5, Divine
+   846→  Halo@10] + shrineCostumes(megaN); derived from megaN → NO save migration needed.
+   847→- shrineApply: on a MEGA blessing, compares costume count before/after and stamps
+   848→  res.newCostume; the blessing modal renders a pulsing purple 'NEW KEEPER COSTUME: <name>!'
+   849→  ribbon (with crown glyph) between the streak line and the toss-type line.
+   850→- ui.js drawShrine scene: the keeper cat now dresses up — cape + divine aura drawn BEHIND the
+   851→  cat, bell collar (red band + gold bell) / tilted fox mask on the head / gold crown / glowing
+   852→  halo with 3 orbiting sparks ON TOP; all bob-synced with the cat.
+   853→- Right column: 'KEEPER'S DRESS' row (5 diamond pips with milestone numbers, newest unlock
+   854→  pulses, right-aligned 'next: <name> at N MEGA' or 'FULLY DRESSED — the keeper is divine!').
+   855→- E2E: seeded megaN 0/3/10 → VLM confirmed collar+cape+mask at 3 and +crown+halo at 10, "cleanly
+   856→  drawn… not floating". Pixel probes: pips empty at megaN=0, gold-filled at 10. Seeded pity=9 →
+   857→  free toss → forced MEGA (megaN 0→1, pity→0, +CF/XP/rare) → costume ribbon in modal VLM-verified
+   858→  → after close the collar is on the scene cat (VLM: yes). Stage modal treasure-card + battle
+   859→  regressions: none.
+   860→
+   861→**5. STYLING (leaderboard layout balance — VLM's 'empty right void'):**
+   862→- NEW 'WORLD DOJO FEED' panel at (866,232,372x106): title + pulsing green LIVE chip + subtitle
+   863→  + the moved refresh button (lbrefresh) + synced/offline note. VLM: "no clipping… no overlap…
+   864→  balanced".
+   865→- Left void: trainee cat on a lit pedestal + 'TRAINING FOR NO.4' caption beside the podium
+   866→  (zoom-verified: reads as decoration, not a 4th card — full-screen VLM misread it once).
+   867→
+   868→**6. Cache-bust v22 → v23** (index.html ×9 scripts + page.tsx, bumped AFTER all edits).
+   869→
+   870→### Verification results (all REAL pointer input, 1280x720, v23)
+   871→- Boot: clean (title, t advancing, zero console/page errors).
+   872→- Golden path: full WIN with perfect 1200/1200 HP + 3 crowns at v22 pre-edit; post-edit battle
+   873→  (start, deploy, retreat) regression-free; retreat flow (pause → quit → mb0=RETREAT) verified.
+   874→- 18-screen sweep at v23: all non-blank, ZERO console errors.
+   875→- VLM zoom re-reviews: podium CLEAN (no overlap), feed panel CLEAN, farm banner CLEAN, hot FARM
+   876→  button CLEAN, pool MEGA row inside, dress row + note inside, keeper costumes CLEAN ×3 states,
+   877→  MEGA modal ribbon CLEAN. Full-screen shrine 8/10 (nits disproven by zoom), leaderboard 7/10
+   878→  (the 'missing 1st card' was the trainee-cat misread, disproven by zoom).
+   879→- node --check 9/9 game JS files; bun run lint 0 errors / 12 benign warnings; dev.log clean.
+   880→- QA screenshots: tests/shots/r13-* (title, battle-start, defeat [test error], victory,
+   881→  lb-new, treasure-farm, treasure-hot, map-farmbanner, map-hotbanner, stagemodal-farm,
+   882→  shrine-c0/c3/c10/after, mega-costume-modal) + sweep-* (18 screens @v23).
+   883→
+   884→### QA GOTCHAS learned this round (important for next rounds)
+   885→1. agent-browser viewport: use `agent-browser set viewport 1280 720` (NOT `resize`/`viewport` —
+   886→   unknown commands). If the browser resets to about:blank, re-open. ALWAYS verify innerHeight
+   887→   before clicking: with a 1280x577 viewport the game scales SC=0.8 and game-coord clicks MISS
+   888→   (this caused the fake 'deploys not working' defeat this round).
+   889→2. Battle dock0 (first cat) center is (464,569) at SC=1 — do NOT guess; probe
+   890→   G.hits.find(h=>h.id==='dock0') first.
+   891→3. Stage-modal buttons are mb0/mb1 (NOT 'attack' — that id belongs to the map screen behind the
+   892→   modal). RETREAT confirm is mb0 (mb1 = CANCEL).
+   893→4. MultiEdit is NOT atomic (earlier edits in a failed batch still apply) and one earlier failure
+   894→   was caused by my own old_str having an extra ')' — when an edit 'mysteriously' fails, dump the
+   895→   exact bytes with od/cat -A before retrying.
+   896→
+   897→### Unresolved / next-phase priorities
+   898→1. Missions 'up' hook still only counts upgrade-screen purchases (unchanged, low priority).
+   899→2. Scout prestige maxes at ★3 — consider ★∞ or prestige-only ticket expeditions if wanted.
+   900→3. 28MB WAV bank load time — re-encode if it becomes a complaint.
+   901→4. Farm jump currently targets the highest unlocked stage of the set; could add a mini stage-
+   902→   picker (all 5 stages of the set with odds listed) — the stage-modal treasure card already
+   903→   shows the odds, so this is polish-level.
+   904→5. Shrine costume could go further: name the keeper (customizable in settings) or add a
+   905→   "keeper's blessing" small bonus per costume piece (e.g. +1% MEGA weight each) — currently
+   906→   purely cosmetic by design.
+   907→6. Consider a TREASURE screen summary of which sets are at 2/3 across ALL chapters (a 'radar
+   908→   digest' row) now that farm jumps exist.
+   909→
+   910→---
+   911→
+   912→## Session Round — TREASURE RADAR DIGEST + KEEPER'S BLESSING + ★∞ PRESTIGE + MISSION HOOKS (Task: autonomous QA → features + styling)
+   913→
+   914→### Current project status (assessment at round start)
+   915→- Fresh session at v23: clean boot (title, t advancing), zero console/page errors, dev.log clean.
+   916→- 18-screen sweep: all non-blank, zero console errors.
+   917→- Golden-path E2E re-verified with REAL pointer input at 1280x720 (viewport verified 720 first):
+   918→  home → BATTLE (hm0) → chapters → EoC1 (ch0) → attack → stage modal → **Attack is mb1** (mb0 =
+   919→  Cancel — mirror of the RETREAT confirm, which is also mb0-first) → battle → sustained dock0
+   920→  deploys + wallet/worker boosts (seeded B.walletLv/workerLv=3 when lv0 income was too slow for
+   921→  the lv1 2-cat team) + cannon → **WIN** at t=264 → resOk → map → rewards applied (xp 4034,
+   922→  eoc1 stage 0/1 cleared).
+   923→- Project judged STABLE → this round = new features (per priorities list) + mandatory styling.
+   924→
+   925→### Completed modifications this round
+   926→
+   927→**1. NEW FEATURE — TREASURE RADAR DIGEST (closes old unresolved #6, the "radar digest" row):**
+   928→- `radarSets()` (ui.js): scans ALL 9 treasure chapters × 9 sets = 81 sets; collects `hot` (own=2,
+   929→  ≥1 unlocked farm stage), `near` (own=1), `doneN/totalSets/tiers` for the digest footer; rows
+   930→  sorted by best odds (chance grows with stage idx).
+   931→- `openRadarModal()`: tall board (modalDraw special-case `startsWith('TREASURE RADAR')` → h=612,
+   932→  same pattern as DAILY MISSIONS). 7 rows max: hot first then near. Each row = chapter chip
+   933→  (EoC/ItF/CotC via chShort) + set name + stat-bonus line + 3 tier pips (hot row's empty gold
+   934→  pip pulses) + best-odds % with 'stage N — best odds' subline + FARM button (BTN modal:true,
+   935→  cb closes modal → farmJump). Hot rows breathe gold glow. Digest footer: 'Sets complete X/81 ·
+   936→  tiers owned Y/243 · +N more in progress' + farm-jump hint line. Empty-state fallback text for
+   937→  ultra-early saves.
+   938→- RADAR pill in the treasure top bar (700,9,160x36, between title and stats pill): gold
+   939→  gradient, orbiting-blip radar glyph, red pulsing badge with hot count (MISSIONS-badge style).
+   940→- E2E: radarHotCount=1 → modal (1 hot + 1 near, 2 rdfarm buttons) → rdfarm0 click → modal null,
+   941→  map/eoc1/focusIdx, 'Farming Idol of Empire…' toast. VLM CLEAN (rows, pips, odds, FARM, footer).
+   942→
+   943→**2. NEW FEATURE — KEEPER'S BLESSING (closes old unresolved #5's gameplay half):**
+   944→- data.js: `SHRINE_BLESS_PER=0.03` + `shrineBlessPct()` (3% per owned costume piece, +15% max);
+   945→  shrineRoll mega weight now ×(1+shrineBlessPct()) — costume track is no longer purely cosmetic.
+   946→- ui.js drawShrine: gold pulsing 'MEGA +N%' chip with crown glyph right of 'POSSIBLE BLESSINGS'
+   947→  title (grey hint 'dress the keeper to raise MEGA odds' at 0); MEGA pool row gains a gold
+   948→  '+N%' badge left of the JACKPOT chip; KEEPER'S DRESS right-label at max → 'FULLY DRESSED —
+   949→  MEGA +15%!'. Blessing modal reveal path unchanged (ribbon logic intact).
+   950→- Math verified live: megaN=3 → bp=0.09, pity-4 mega weight 13.20→14.39 (chance 12.2%→13.2%);
+   951→  megaN=10 → chip 'MEGA +15%' (pixel-probed) + FULLY DRESSED label (VLM CLEAN ×3 states).
+   952→- Paid toss E2E at megaN=3: praypaid → coin flight → 'Wisdom of the Ancients' modal (CF 534→484),
+   953→  zero errors.
+   954→
+   955→**3. NEW FEATURE — SCOUT PRESTIGE ★∞ (closes old unresolved #2):**
+   956→- data.js: `SCOUT_PRESTIGE_MAX=999999` (uncapped); scoutInfo stars string capped at 5 glyphs +
+   957→  '+' when beyond (display-only; bonus math 0.10*prest was already unbounded).
+   958→- ui.js drawExpedition: PRESTIGE button now shows whenever MYTHIC (was `prest<3`); modal text
+   959→  notes 'No cap!'; star-count note consolidated to ONE compact right-aligned line
+   960→  (`N★ · +N% forever · no cap`) — the rank-NAME line already carries the capped glyph string.
+   961→- VLM found 2 REAL overlaps on first render (my longer labels ran under the PRESTIGE button /
+   962→  collided with the XP label) → fixed: compact stats line when maxed ('+N% rewards · N trips'),
+   963→  short XP label 'MAX RANK — prestige for a ★', button tightened to 88x46 at y=78. VLM re-check
+   964→  CLEAN. E2E: prestige 4→5 via button + confirm (xp reset 0, name 'ROOKIE ★★★★★', +50%);
+   965→  seeded 8 → name 'ELITE ★★★★★+' (cap works).
+   966→
+   967→**4. FIX — Missions 'up' hook (closes old unresolved #1):** 'Improve a Cat' now counts ALL
+   968→  improvement paths, not just LEVEL UP: EVOLVE success (`SV.cats[id].ev…=true`) and TALENT NP
+   969→  purchases each bump `SV.missions.up`. E2E: seeded basic cat lv10 → EVOLVE → 'EVOLVED → Macho
+   970→  Cat!' + missions.up=1. (Deploy/expedition/gacha/shrine hooks unchanged — already covered.)
+   971→
+   972→**5. STYLING POLISH:**
+   973→- Expedition FREE-slot card: walking cat → **idle** anim + 3 floating 'z z z' glyphs (size/
+   974→  opacity ramp, sine bob) above the napper — matches the 'napping by the base' flavor text
+   975→  (content mismatch was the real defect; the full-screen VLM nits about XP-label descenders and
+   976→  cat-text overlap were disproven by zoom-crop).
+   977→- RADAR pill/badge + hot-row gold breathing + pulsing empty-gold pip (see #1) are new styling
+   978→  detail in themselves.
+   979→- Full-screen VLM nits disproven by zoom this round: 2 (expedition XP label 'clipping', napping
+   980→  cat-text 'overlap'). Confirmed REAL and fixed: 2 (prestige panel label/button overlaps).
+   981→
+   982→**6. Cache-bust v23 → v24** (index.html ×9 scripts + page.tsx, bumped AFTER all edits).
+   983→
+   984→### Verification results (all REAL pointer input, 1280x720, v24)
+   985→- Boot clean; 18-screen sweep: all non-blank, ZERO console errors; dev.log clean.
+   986→- Golden path E2E (win), retreat flow, stage-modal treasure card VLM CLEAN.
+   987→- Radar: open → farm jump E2E; modal + top-bar pill + badge VLM CLEAN (pixel-probed badge/pill).
+   988→- Shrine: blessing chip/badge/labels VLM CLEAN ×3 costume states; blessing math verified; paid
+   989→  toss E2E OK. node --check 9/9 game JS; bun run lint 0 errors / 12 benign warnings.
+   990→- QA shots: tests/shots/r15-* (radar-modal, radar-farmjump, stagemodal, treasure, shrine-bless,
+   991→  shrine-full, shrine-toss, expedition×3) + sweep-* (18 screens @v24).
+   992→
+   993→### QA GOTCHAS learned this round (add to the running list)
+   994→1. Stage-modal Attack is **mb1** (btns array order: [Cancel, Attack!]); RETREAT confirm is mb0.
+   995→   Both modals use `mb{i}` indices — always dump `G.modal.btns.map(b=>b.n)` before clicking.
+   996→2. Full-screen VLM reviews mis-flagged 2 non-issues (XP-label descenders, cat-text overlap) —
+   997→   zoom-crop-first protocol again separated real from phantom. But it DID catch 2 real label/
+   998→   button overlaps I introduced — keep VLM-reviewing every new panel.
+   999→3. When seeding battle wallet for E2E speed: `B.walletLv=3;B.workerLv=3;B.wallet=2000` via
+  1000→   `__BC.getB()` (B is the module-level battle state; NOT G.bt/G.battle).
+  1001→4. Radar helpers (radarSets etc.) ARE on window (top-level function declarations) — probe
+  1002→   `w.radarSets()` directly; only top-level **const** (like BANNERS) hides off window.
+  1003→5. One apostrophe-in-single-quoted-string syntax slip ('keeper's blessing…') was caught
+  1004→   immediately by node --check — run it after EVERY edit batch (2 rounds in a row now).
+  1005→
+  1006→### Unresolved / next-phase priorities
+  1007→1. Farm-jump still targets only the best stage — a stage-picker per set (all 5 stages with odds
+  1008→   listed, maybe from the radar row's FARM long-press or an expand arrow) remains polish-level.
+  1009→2. Shrine keeper could be NAMEABLE in settings (cmdName exists for the Dojo — reuse pattern).
+  1010→3. Radar digest could gain a "COMPLETE" filter tab (show finished sets for completionists).
+  1011→4. 28MB WAV bank load time — re-encode if it becomes a complaint (unchanged).
+  1012→5. Consider persisting a tiny "radar seen" flag so the treasure tab itself can badge hot sets
+  1013→   from the home screen (currently the badge only exists once on the treasure screen).
+  1014→
+  1015→---
+  1016→Task ID: r16
+  1017→Agent: main (Z.ai Code)
+  1018→Task: Close all 5 unresolved worklog items (radar COMPLETE tab, farm stage-picker, keeper naming, home hot badge) + blind-critic gauntlet round + critic fixes
+  1019→
+  1020→Work Log:
+  1021→- Baseline QA at v24: 18-screen sweep all non-blank, zero console errors (stable → new features).
+  1022→- NEW FEATURE — RADAR TABS (closes unresolved #3): radarSets() now also collects `done` rows;
+  1023→  radar modal got 3 tab pills (HOT ·n / CLOSE ·n / DONE ·n, colored when active, pulse on
+  1024→  active+nonzero). HOT/CLOSE tabs show 6 farm rows each with PICK + FARM; empty-tab text points
+  1025→  at the other tab. DONE tab = compact chip grid (4/row, chapter-tinted spine, 3 gold pips,
+  1026→  ellipsized names) + 28/page pager (PREV/page n/m/NEXT) + 'tap a set to view it in TREASURES'
+  1027→  footer; chip click → G.tChap=ch, push('treasure'). Default tab: hot if hot>0 else near.
+  1028→- NEW FEATURE — STAGE PICKER (closes unresolved #1): farmJump(ch,setI,stageIdx) gained an exact
+  1029→  stage target (falls back to best when locked); openStagePicker() modal 'FARM: <SET>' (h=560)
+  1030→  lists all 5 stages of a set: numbered medallion, STAGE N, 'one clear = one tier roll' desc,
+  1031→  NEXT: BRONZE/SILVER/GOLD tier chip (sway anim), odds % or padlock, purple ★ BEST chip, FARM!/
+  1032→  LOCKED per row. Locked rows self-guard with a toast (engine disabled flag is VISUAL-ONLY).
+  1033→  Opened from new PICK button on each HOT/CLOSE radar row. CANCEL re-opens the radar (tab kept).
+  1034→- NEW FEATURE — HOME HOT BADGE (closes unresolved #5, live not persisted): TREASURES home row
+  1035→  shows the missions-style red pulsing badge + 'HOT!' label with radarHotCount() computed live
+  1036→  per frame (81-set scan is cheap — no persistence needed, always accurate).
+  1037→- NEW FEATURE — KEEPER NAME (closes unresolved #2): SV.shrine.keeperName (12 chars, sanitized
+  1038→  + normalized in core.js; empty = default 'KEEPER'). Settings name row split into two
+  1039→  side-by-side 350px panels: COMMANDER NAME + SHRINE KEEPER (both reuse the hidden-DOM-input
+  1040→  modal pattern; Enter-key handler generalized to both titles). Shrine scene: wooden name sign
+  1041→  (post + board, gentle sway) stands left of the keeper cat; dark-gold uppercase name chip at
+  1042→  the top-right of the NYANKO SHRINE status panel. Both hidden when name is empty.
+  1043→- BLIND CRITIC (gauntlet step): dispatched a fresh-eyes general-purpose subagent that played
+  1044→  the game with real pointer input. Verdict: all new features spec-correct, golden path clean,
+  1045→  zero console errors — but 9 findings (1 MED, 5 LOW, rest info).
+  1046→- CRITIC FIXES APPLIED (all verified): (1) boot.js draw order swapped → modalDraw();
+  1047→  toastDraw(dt) — toasts now render ABOVE modals (locked-stage toast was invisible under the
+  1048→  picker). (2) farmJump toast removed — it duplicated + covered the map's FARM TARGET banner
+  1049→  and its × dismiss. (3) Treasure chapter tabs self-guard when locked (CH_PREV chain map +
+  1050→  'Clear <chapter> first to unlock!' toast). (4) Keeper name length unified at 12 everywhere
+  1051→  (modal text, save slice, core normalize, sign slice, chip slice). (5) Battle pause now blocks
+  1052→  player actions: fireCannon + dock deploy early-return when B.paused. (6) Stage-picker CANCEL
+  1053→  re-opens the radar modal (no dead-end).
+  1054→- Styling polish: NEXT tier chip, tab pills with pulse, chip spines/pager, sign sway, keeper
+  1055→  chip (all VLM-reviewed CLEAN).
+  1056→- Cache-bust v24 → v25 → v26 (index.html ×9 scripts + page.tsx).
+  1057→
+  1058→Verification results (all REAL pointer input, 1280x720, v26)
+  1059→- 18-screen sweep: all non-blank, ZERO console errors; node --check 9/9; bun run lint 0 errors
+  1060→  / 12 benign warnings (same as r15).
+  1061→- E2E: home badge count live (1 seeded); radar tabs all 3; DONE chip → treasure jump (tChap
+  1062→  verified); PICK → picker → FARM stage idx 0 with stages [0,9] unlocked → mapFocusIdx=0 (NOT
+  1063→  best=9 — spec-critical); locked row → toast stays visible over modal, modal stays open;
+  1064→  locked chapter tab → no switch + toast; picker CANCEL → radar re-opened tab kept; keeper
+  1065→  name typed via real keyboard → saved → sign + chip VLM-verified ('Mochi'/'TestName');
+  1066→  farmJump → map focus + banner, no toast; battle: pause blocks deploy (wallet/units frozen)
+  1067→  + cannon (charge/fired frozen).
+  1068→- 9 VLM reviews this round, all CLEAN (home badge, radar hot/done/close, stagepicker ×2,
+  1069→  settings names, shrine sign, toast-over-modal).
+  1070→
+  1071→QA GOTCHAS learned this round (add to the running list)
+  1072→1. **Browser viewport drifted to 1280x577** (agent-browser default after relaunch?) — design-
+  1073→   coordinate clicks were offset by 720/577 scale, causing mystery navigations. ALWAYS run
+  1074→   `agent-browser set viewport 1280 720` after any browser relaunch and confirm the screenshot
+  1075→   header reports size 1280x720 before trusting click tests.
+  1076→2. BTN `disabled` is VISUAL-ONLY (dims fill; cb still fires) — every disabled button must
+  1077→   self-guard in its cb. Found 3 unguarded spots this round (picker rows, treasure tabs, pause
+  1078→   gating). Audit remaining `disabled:` usages when touching battle.js/ui.js.
+  1079→3. To are drawn under modals by default (boot.js order toastDraw→modalDraw) — swapped for good;
+  1080→   if a future modal needs toast-free space, position them below y≈120.
+  1081→4. The picker's 'NEXT: BRONZE' branch is currently unreachable (own=0 sets never reach the
+  1082→   radar) — harmless, becomes live if the picker is ever reachable from the treasure grid.
+  1083→
+  1084→Unresolved / next-phase priorities
+  1085→1. Credits panel next to RESET SAVE could match heights exactly (critic LOW, cosmetic only).
+  1086→2. The unreproducible single BACK-click flake (critic NOTE) — watch for recurrence; likely
+  1087→   automation-layer, not the game.
+  1088→3. Stage picker could also be offered from the treasure screen's FARM SET button (currently
+  1089→   only radar rows) — trivial follow-up if wanted.
+  1090→4. Radar DONE-tab pager could show page dots instead of text (pure polish).
+  1091→
+  1092→---
+  1093→Task ID: r17-critic
+  1094→Agent: blind-critic (general-purpose, sonnet)
+  1095→Task: Time-boxed blind QA of r17 changes (battlefield mirror, camera system, attack animation, music loop, money counter)
+  1096→
+  1097→Work Log:
+  1098→- Set viewport 1280x720; probed via w.__BC.G / getB() / getSV(); saved shots to tests/shots/qc-*.png
+  1099→- Golden path: title→PLAY→home row→EoC ch1→ATTACK→stage modal→Attack(mb1)→battle; waited for wallet, deployed 4 cats from dock (rects from G.hits)
+  1100→- Orientation: verified catBase.x=2480/enemyBase.x=120, cats 2361→2036 (march LEFT), enemies 120→1979 (march RIGHT), cam starts 1320 (max-right, cat base on screen right); VLM on crops: white cat base right, dark fortress with red eyes left, enemy HP 6,914/6,914 top-LEFT, pause/quit top-RIGHT
+  1101→- Camera: field drag mouse +200/+300 → cam 1320→1120→820 (exact 1:1 grab-the-world); drag 400→1280 → cam 1320→440 (-880 = -mouse delta); camHold 2.6 during drag; after release auto-follow eased cam 820→1320 (front-line target = leftmost cat − 280, clamped); camL button pans −500/click (1320→820→0)
+  1102→- Money: crop (0,540)-(260,720) → VLM read "528¢", symbol clear of digits, fully legible
+  1103→- Animations: sampled unit states over time — cats [walk,pre,walk,post], enemies [die,pre,post,walk]; pops peaked at 6 (VLM read red "12" damage number); fx kinds slash/poof/moneypop/kbstar/dust; fight-region pixel diff 13.9%/150ms vs 3-5% background; paused-frame VLM showed varied cat poses + hit flash at impact
+  1104→- Music: bgm loop=true, loopEnd 34.29 == bufDur 34.29; settings BGM off→on: same AudioBufferSourceNode (sameSrc=true), gain 0→1, mode stayed 'baked', no console error
+  1105→- Console: zero errors (only Fast Refresh/React DevTools noise; ~15 full HMR reloads during session — env noise)
+  1106→
+  1107→Findings:
+  1108→- All 6 checks PASS (golden path, orientation/mirror, camera drag+follow, money counter, attack animations, music loop+toggle)
+  1109→- LOW (UX): insufficient-energy Attack click closes the stage modal with only a transient toast ('Not enough energy! (8/9)') — original uses a blocking out-of-energy dialog; repro: lose a battle, re-open modal, click Attack with energy < cost
+  1110→- LOW (QA-workflow): localStorage.clear() does NOT reset the save (savesys v2 persists elsewhere) — testers can't get a fresh state the obvious way; also map default node follows lastClearedIdx+1, so "fresh" first battle was stage 13, not stage 1
+  1111→- NIT: energy economy (no refund on loss/retreat + 1/min regen) can lock a losing player out of battles for ~10min — matches original design per savesys comment, but felt during QA
+  1112→- NIT: camera auto-follow ease rate (dt*2.2) recovers ~500px in ~0.5s after manual scroll — snappier than the original's gentle drift
+  1113→- HMR full-reloads mid-flow close modals/reset screens; pendingBattle recovery toast fired correctly each time (robustness worked as designed)
+  1114→
+  1115→Verdict: SHIP
+  1116→
+  1117→---
+  1118→Task ID: r17
+  1119→Agent: main (Z.ai Code)
+  1120→Task: User-reported bug sweep — reversed scroll / drags off the window, music not looping, money counter blocked by the cent symbol, plus a major animation & art-quality upgrade ("not up to the mobile game quality yet: animations and cats and enemies")
+  1121→
+  1122→Work Log:
+  1123→- RESEARCH (web): Battle Cats wiki ×2 sources confirm "All battles are won by destroying the enemy base on the LEFT side of the battlefield. Your Cat Base is on the RIGHT" — OUR FIELD WAS MIRRORED vs the original. That was the true root cause of the user's "scroll is reversed" muscle-memory complaint. Also confirmed original attack timing: FORESWING (windup) → hit lands at the strike frame → BACKSWING (recovery), unit cannot move during the animation, knockback resets the attack.
+  1124→- BATTLEFIELD MIRROR (battle.js): ENEMY_BASE_X=120 / CAT_BASE_X=2480; cats dir=-1 spawn at catBase-60; enemies dir=+1 spawn at enemyBase+70; camera STARTS at cam=1320 (home base, right); burrow digs rightward (dir-aware); all base clamps swapped (walk/warp/burrow/ironwall/thunder/holy/breaker); shockwave kb direction flipped; ground tufts 40→42 (full field coverage).
+  1125→- CAMERA SYSTEM: (1) pointer capture on pointerdown (ui.js) + release/lostpointercapture in endPointer — drags can no longer get stuck or jump when the cursor leaves the window (user bug "gets off the windows"); (2) drag stays grab-the-world (drag right → view pans LEFT toward the enemy base — exactly the original gesture on the now-correctly-mirrored field); (3) mouse wheel flipped to off-dx to match drag semantics; (4) NEW front-line AUTO-FOLLOW: eased tracking of the leftmost cat (soft dt*1.6), home-defense override when enemies break through near the base, 2.6s camHold after manual scroll; camL/camR arrows set camHold too.
+  1126→- MUSIC LOOP FIX: (1) offline WAV surgery — for all 16 bgm_*.wav the ~1.2s ring-out tail past the musical loop point is now wrap-mixed into the head (seamless loop; files exactly loop-length; verified ALL EXACT vs bank.json); (2) audio.js bgmPlaying tracker — AudioSetBgm(same theme) no longer restarts the baked loop from 0 (screen hops / BGM toggle RESUME mid-track like the original).
+  1127→- MONEY COUNTER FIX (battle.js): number drawn left-aligned with the ¢ glyph AFTER it as one centered cluster under the wallet circle (was: symbol at the number's left edge overlapping the first digit). Font 19→21.
+  1128→- ATTACK ANIMATION RESTRUCTURE (battle.js updateUnit): rateT<=0 + target in reach → enter 'pre' WINDUP (preT0 = 0.16–0.42s scaled by rate, rateT locked at 99) → damage lands via strike() EXACTLY when windup expires (the lunge apex) → 'post' BACKSWING recovery (postT0 0.14–0.4s) → walk. Whiffs still play the full swing. startKb now resets rateT=0.3 (original rule: knockback resets the attack).
+  1129→- ANIMATION JUICE (battle.js drawUnit + art.js): live-transform pipeline around the baked sprite — spawn pop-in with overshoot bounce, fresh-hit micro-squash, KB parabolic tumble arc (42px, 2.4rad tumble, landing squash + dust), death spin+shrink then fade+rise with poof ring, ground shadow shrinks while airborne; burrow dirt-crumb trail; NEW 'moneypop' fx (3 gold coins arc + sparkles on enemy death); art.js legs() now lifts the forward-pass foot (real stepping); per-body-class GAIT table (heavies lumber at 6rad/s, kittens trot at 9); forward lean 0.045rad while marching; idle breathe (1.8% scaleY sine) when halted; volumeShade() bakes a soft top-light/bottom-shade gradient into every unit sprite (instant volumetric roundness on all 41 cats + 60 enemies).
+  1130→- WINDUP/STRIKE POSE MATH (art.js poseOf + bakes): windup pk 0→-1 smoothstep (painters' weapons raise back); strike pk=(1-atkT)² decays 1→0; bake transforms boosted after VLM-verified too-subtle first pass: windup = translate(-19c, +4.5c) + rotate(-0.07c) + squash(1-7.5%c, 1-10.5%c); strike = translate(+23pk, -6pk) + rotate(0.09pk) + stretch(1+7.5%pk). Direct in-page centroid test: rest(298) → windup(309, 11px back) → strike(273, 25px forward) — poses proven.
+  1131→- HUD MIRROR: enemy base HP + boss name → TOP-LEFT (enemy side); pause/quit → TOP-RIGHT (home side); cat base HP stays right edge under the SPEED button; cat-base cannon barrel now points LEFT; cannon/slowbeam/waterwave FX sweep LEFTWARD from the right-side base.
+  1132→- CRITIC LOWs FIXED: out-of-energy Attack now opens a blocking OUT OF ENERGY modal (energy count, regen ETA, STORE shortcut, OK); RESET SAVE now also removes SAVE_KEY_LEGACY (save could resurrect from the legacy key). NIT fixed: auto-follow ease 2.2→1.6 (gentler drift).
+  1133→- Page title "Z.ai Code Scaffold" → "The Battle Cats" (layout.tsx).
+  1134→- Cache-bust v26 → v29 (index.html ×9 scripts + page.tsx) after each edit batch.
+  1135→
+  1136→Stage Summary:
+  1137→- USER BUGS FIXED: scroll reversed (root cause = mirrored field, now matches the original exactly), drags getting off the window (pointer capture), music not looping (tail-wrap surgery + no same-theme restarts), money counter blocked by the ¢ symbol (number-then-symbol cluster).
+  1138→- QUALITY UPGRADES: original attack timing (foreswing→strike→backswing with damage synced to the lunge), front-line auto-follow camera, walk/idle/windup/strike/death/kb/spawn animation overhaul, per-class gaits, leg stepping, volumetric shading on every unit.
+  1139→- VERIFIED (real pointer input, 1280x720, v29): golden path E2E win; VLM: cat base RIGHT / enemy base LEFT / cats marching LEFT; enemy HP top-left, pause/quit top-right; money counter zoom-crop CLEAN; cannon beam sweeps left; drag ±500 exact 1:1 with camHold, drag at x=1800/-200 (outside window) tracks smoothly and releases cleanly; wheel matches drag; auto-follow eased 1320→2 across the whole field during the push; music: loop=true, loopEnd==bufDur (34.29s), itf2 30s theme still playing past 33s (analyser peak>0), BGM toggle resumes same source (no restart); windup mid-pause VLM: "shorter, compressed, shifted back, backward lean" ✓; bake analysis: 14 stride buckets + windup/attack/idle frames; 18-screen sweep all non-blank, ZERO console errors; node --check 9/9; bun run lint 0 errors / 12 benign warnings.
+  1140→- BLIND CRITIC (fresh-eyes subagent): all 6 checks PASS, verdict SHIP; its 2 LOW + 1 NIT findings fixed above.
+  1141→- Screenshots: tests/shots/r17-*.png + qc-*.png (boot, battle×4, attack burst, windup/rest/strike zooms, cannon, endgame, money/ehp/pause zooms, sweeps).
+  1142→
+  1143→Unresolved / next-phase priorities
+  1144→1. Per-unit attack variety: painters currently share the generic windup/lunge; giving each body class a distinct signature attack (e.g. dragon head-snap, brute overhead smash follow-through) is the next fidelity jump.
+  1145→2. Enemy sprites: 60 enemies share ~20 body painters with palette swaps — the classic starters (Doge/Snache/Those Guys/Hippoe) deserve bespoke proportions.
+  1146→3. Battle-intro camera sweep (original pans base-to-base at battle start) + boss-arrival camera pan to the enemy base.
+  1147→4. Kill/feed VLM aliasing gotcha: two screenshots ~0.35s apart alias the 0.7s stride cycle and look identical — always verify animation with in-page pixel diffs (≤150ms windows) or pause-locked states, never burst screenshots.
+  1148→5. 28MB WAV bank load time remains (unchanged; now 16 files × ~1.2s shorter each).
+  1149→
+  1150→---
+  1151→Task ID: r18
+  1152→Agent: main (Z.ai Code)
+  1153→Task: User-reported bug triage + animation/graphics quality overhaul ("animations are just zoom in/out — SO BAD", "graphics look simple"; scroll reversed / scroll off-window / music loop / money counter blocked by symbol)
+  1154→
+  1155→Work Log:
+  1156→- REPRODUCED all 4 user bugs live via agent-browser + VLM on /game (battle screenshots, drag probes, counter crops):
+  1157→  - scroll reversed: drag was grab-the-world (drag RIGHT panned view LEFT) — user expects pan-the-camera
+  1158→  - money counter: ¢ coin overlapped the last digit on the top-left enemy-HP counter (measured: text ink to 1228.5, coin from 1223.5) and 7-digit wallets ran off-screen left
+  1159→  - music loop: loopEnd=bank len (== duration) can stall on some browsers when loopEnd >= duration
+  1160→  - scroll off-window: no fling + camHold interplay felt like fighting the camera (clamp itself was correct — verified [0,1320] at extremes)
+  1161→- ANIMATION OVERHAUL (art.js):
+  1162→  - poseOf v2: 3-phase strike curve — SNAP (-1→+1 easeOut in first 10%, damage tick lands at snap), HOLD impact frame (10-50%), RETURN easeIn (50-100%) — the original's 2-frame attack feel
+  1163→  - Walk v2: REAL vertical hop translate (-bob*0.9), waddle roll (sin*0.05), oscillating forward lean, stride counter-phase — was pure subtle squash (read as "zoom")
+  1164→  - GAIT amplitudes ~1.7x (kitten 2.6→4.6 etc), legs() stride 2.6→4.4 + knee lift 3.4→5.4 (visible leg scissoring)
+  1165→  - windup crouch deepened (translate -26, rotate -0.11, scale 1-0.10/1-0.15); strike lunge amplified (translate l*34, rotate 0.15)
+  1166→  - bake resolution: 14→18 walk frames, 12→16 attack frames
+  1167→- BATTLE JUICE (battle.js):
+  1168→  - NEW 'impact' FX: white 4-point star + gold ring + radial speed sparks at every hit point (replaces flat kbstar), big variant on crits/≥25% hits
+  1169→  - KB tumble: arc 42→46px, spin 2.4→3.4 rad (head-over-heels)
+  1170→  - death: now flies back (-dir*14) + drops (dieP*10) while spinning
+  1171→- SCROLL FIXES (ui.js + battle.js):
+  1172→  - drag direction REVERSED to pan-the-camera: drag LEFT looks LEFT, drag RIGHT looks RIGHT (verified: 660→460 on 200px left drag, 660→860 on right)
+  1173→  - wheel: same direction as drag + hard clamp; fling momentum: smoothed velocity tracking during drag (first-segment measures from drag start), on release camera glides with 0.002^dt friction, clamped + camHold guard — verified: 300px drag glides 522px total and settles
+  1174→  - extreme drags clamp to [0,1320] (verified)
+  1175→- MUSIC LOOP (audio.js): loopEnd only set when bank len < decoded duration*0.999 (else default full-buffer loop), onended watchdog restarts a dead loop, visibilitychange resumes suspended AC + restarts baked loop if it died while hidden
+  1176→- MONEY COUNTERS (battle.js): top-left coin moved +20px clear gap; top-right counter shifted left (coin at sx-6, 5px clear); wallet re-anchored right (number right-aligned at 160, coin pinned at 175, auto-shrink >150px) — VLM-verified 7-digit wallet fully visible, zero overlap on all three counters
+  1177→- GRAPHICS PASS (battle.js drawBattleBG): 3-stop sky + horizon haze, sun with 10 rotating rays + glow ring, volumetric clouds (shaded undersides), two-tone mountains with rim highlights, real trees (trunk + double canopy + sway) for grass/snow, tower windows + blinking beacons for future/cosmos, butterflies/leaves ambient, ground flowers/tufts/pebbles with parallax
+  1178→- boot.js: __BC QA hook extended (ENEMAP, CATMAP, genStage, startBattle, spawnCat, spawnEnemy) — all verified live
+  1179→- QA: node --check all files OK, bun run lint 0 errors (12 pre-existing warnings), full loop battle→victory→map verified, dev.log clean, cache-bust v31/v32
+  1180→- VLM blind-critic pass on home/gacha/equip/battle: equip-grid "misalignment" claim disproven by second VLM pass (aligned); remaining findings are stylistic opinions (font is already Fredoka One)
+  1181→
+  1182→Stage Summary:
+  1183→- ALL 4 user-reported bugs fixed and machine-verified (direction, bounds+fling, loop watchdog, counters)
+  1184→- Animations now frame-based original-style: snap-hold-return strikes, hopping waddling march, deep anticipation crouches, full-extent lunges, impact starbursts, tumbled KB, flying deaths — no more "zoom in/out"
+  1185→- Backgrounds/hud substantially richer (sun rays, trees, flowers, volumetric clouds)
+  1186→- NOT DONE / next-phase candidates: per-unit painter pass (only shared pose math + helpers amplified — individual unit painters could get unit-specific attack flourishes), gacha capsule animation juice, warm-mustard palette shift per critic, UI button 3D bevel styling, re-baking BGMs with true musical loop points (crossfade)
+  1187→

@@ -1184,3 +1184,22 @@ Stage Summary:
 - Animations now frame-based original-style: snap-hold-return strikes, hopping waddling march, deep anticipation crouches, full-extent lunges, impact starbursts, tumbled KB, flying deaths — no more "zoom in/out"
 - Backgrounds/hud substantially richer (sun rays, trees, flowers, volumetric clouds)
 - NOT DONE / next-phase candidates: per-unit painter pass (only shared pose math + helpers amplified — individual unit painters could get unit-specific attack flourishes), gacha capsule animation juice, warm-mustard palette shift per critic, UI button 3D bevel styling, re-baking BGMs with true musical loop points (crossfade)
+
+---
+Task ID: r19 (in progress)
+Agent: main (Z.ai Code)
+Task: "Check EVERYTHING until perfect" + "search online deeply for ALL animations" + fix map drag direction + home screen overlaps at 856x503 + real original-game sprites
+
+Work Log:
+- RESEARCH (user demanded search-first): wiki confirmed enemy base LEFT / cat base RIGHT (current layout correct); Cat Base Menu structure documented (3 gold buttons START/UPGRADE/EQUIP + book menu + Gamatoto + scene center + right rail); Money.png HUD format "16500/16500¢" verified.
+- FOUND THE REAL ASSET SOURCE: Fandom CDN serves original game spritesheets via MediaWiki MD5 hash-path convention (verified 5/5 files) — cat sheets {num}_{f,c,s}.png (form1/2/3), enemy sheets {num}_e.png, icons Uni{num}_{f,c,s}00.png / Enemy_icon_{num}.png, attack GIFs by caption. Fandom gallery pages parse via z-ai page_reader (rate-limited: 429 quota window).
+- ASSET PIPELINE BUILT: tools/fetch-galleries.mjs (gallery scraper w/ resume+retries), tools/build-sprites.py (downloads + slices sheets into walk/attack frames via transparent-column runs + decodes animated webp GIFs w/ real durations + anchors + downsizing), tools/master-to-manifest.py (master-list → full manifest via MD5 CDN URLs, zero page fetches).
+- REAL SPRITES LIVE: public/game/js/sprites.js (SPRIT module: manifest loader, staged image preload, walk/attack dual-entry renderer with per-form fallback chain, grab-the-world flip logic) + art.js delegation (ART.cat/enemy/catIcon/enemyIcon → real sprites w/ painter fallback). 8 units live now (cat, tank, axe, gross, cow, bird, fish + doge): 750/750 draw hits, pixel-verified animation (593 px changed in 170ms window).
+- DRAG FIX: battle camera flipped to GRAB-THE-WORLD (battlefield follows the finger like the original; drag LEFT looks RIGHT toward enemy base) — ui.js horiz handler + wheel + fling all consistent; machine-verified (+327 on 200px left drag w/ fling, -325 right).
+- HOME SCREEN REBUILT as the original Cat Base Menu: left column (rank card + START!!/UPGRADE/EQUIP gold buttons + MENU book overlay + GAMATOTO + MISSIONS), center base scene (Cat Base building, green normal-capsule cat → store, pink rare-capsule cat → gacha, team parade with REAL sprites, event banner chips), right compact catalog (zero-clip: trophy chip auto-shrinks, full-width), back arrow bottom-left, NO bottom bar (matches original). VLM: CLEAN at 856x503 (user's viewport) — all reported overlaps/clipping gone.
+- QA: 14-screen sweep all non-blank; E2E battle (deploy 8x7 cats, wheel, speed, pause, cannon) → WIN → result → map: zero console errors; lint 0 errors/12 warnings.
+
+Stage Summary:
+- Real original sprites render in battle for 8 units (all 10 normal cats' sheets located; 2 pending master list)
+- Grab-the-world drag + original Cat Base home live and verified
+- REMAINING: z-ai quota (429) blocks the 2 master-list pages needed to number-map the other ~95 units (script ready: master-to-manifest.py); then build-sprites.py picks up everything in one run. Cat form icons for evolved forms partially present (cat/tank only).

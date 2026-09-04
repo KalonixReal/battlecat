@@ -38,7 +38,7 @@ cv.addEventListener('pointerdown',e=>{const p=toDesign(e);AudioUnlock();G.pdown=
 });
 cv.addEventListener('pointermove',e=>{const p=toDesign(e);G.mouse=p;
   if(G.dragScroll){const h=G.dragScroll.h;
-    if(h.horiz){const d=p.x-G.dragScroll.sx;if(Math.abs(d)>6||G.dragScroll.moved){G.dragScroll.moved=true;h.setOff(G.dragScroll.off+d); /* PAN-CAMERA: view follows the finger — drag LEFT looks LEFT */
+    if(h.horiz){const d=p.x-G.dragScroll.sx;if(Math.abs(d)>6||G.dragScroll.moved){G.dragScroll.moved=true;h.setOff(G.dragScroll.off-d); /* GRAB-THE-WORLD: the battlefield follows the finger — drag LEFT looks RIGHT (toward the enemy base), exactly like the original */
       if(G.flingCam)G.flingCam=null;
       const nt=now(),olt=G.dragScroll.lt||nt,olx=(G.dragScroll.lx!==undefined?G.dragScroll.lx:G.dragScroll.sx); // first segment measures from the drag START
       const iv=(p.x-olx)/Math.max(0.008,(nt-olt)/1000); // instantaneous px/s of this segment
@@ -56,8 +56,8 @@ cv.addEventListener('wheel',e=>{const p=toDesign(e);
   let sreg=null;for(let i=G.hits.length-1;i>=0;i--){const s=G.hits[i];if(!s||!s.scroll||s.hidden)continue;
     if(p.x>=s.x&&p.x<=s.x+s.w&&p.y>=s.y&&p.y<=s.y+s.h){sreg=s;break}}
   if(sreg){const dy=e.deltaY;
-    if(sreg.horiz){const dx=Math.abs(e.deltaX)>Math.abs(dy)?e.deltaX:dy; // PAN-CAMERA wheel: roll right = look right (matches the drag), hard-clamped to bounds
-      sreg.setOff(clamp(sreg.off()+dx,0,(sreg.max&&sreg.max()>0)?sreg.max():1e9))}
+    if(sreg.horiz){const dx=Math.abs(e.deltaX)>Math.abs(dy)?e.deltaX:dy; // GRAB-THE-WORLD wheel: roll right = world right = look LEFT (matches the drag), hard-clamped to bounds
+      sreg.setOff(clamp(sreg.off()-dx,0,(sreg.max&&sreg.max()>0)?sreg.max():1e9))}
     else sreg.setOff(clamp(sreg.off()+dy,0,sreg.max()));
     e.preventDefault();e.stopPropagation()}
 },{passive:false});
@@ -65,8 +65,8 @@ function endPointer(e){if(G.dragScroll){const ds=G.dragScroll;
     if(!ds.moved){ // a tap (not a drag): fire the region's own onTap AND any button it swallowed
       if(ds.h.tap)ds.h.tap();
       if(ds.pendBtn&&ds.pendBtn.cb)ds.pendBtn.cb()}
-    else if(ds.h.horiz&&ds.v){ // FLING: horizontal momentum on release — camera glides with friction (original feel)
-      if(now()-(ds.lt||0)<140&&Math.abs(ds.v)>380)G.flingCam={v:clamp(ds.v,-2600,2600)}}
+    else if(ds.h.horiz&&ds.v){ // FLING: horizontal momentum on release — world keeps moving with the finger's velocity (camera glides opposite)
+      if(now()-(ds.lt||0)<140&&Math.abs(ds.v)>380)G.flingCam={v:clamp(-ds.v,-2600,2600)}}
     if(ds.pendBtn)ds.pendBtn.active=false;
     G.dragScroll=null}
   if(e&&e.pointerId!==undefined){try{cv.releasePointerCapture(e.pointerId)}catch(e2){}}
@@ -294,95 +294,247 @@ function drawTitle(dt){
 function drawHome(dt){bgSky();drawTopBar('');
   ensureMissions();
   const mDone=MISSIONS.filter(m=>missionDone(m.id)&&!missionClaimed(m.id)).length;
-  const items=[['BATTLE','#ffd94a','swords',()=>{G.mapSub=0;push('chapters')}],['EQUIP / TEAMS','#7fd0ff','cat',()=>push('equip')],['IMPROVE CATS','#7fe8a0','up',()=>{G.selCat=null;push('upgrade')}],['GACHA','#ff9ad5','capsule',()=>push('gacha')],['TREASURES','#e8c37f','chest',()=>push('treasure')],['CAT SHRINE','#ff9ad5','torii',()=>push('shrine')],['EXPEDITIONS','#8fe0b8','compass',()=>push('expedition')],['TROPHIES','#c9a8e8','trophy',()=>push('trophies')],['ENEMY GUIDE','#c9c9d6','doge',()=>push('guide')],['CAT BASE','#a0e8d0','cannon',()=>push('base')],['MISSIONS','#ffb060','scroll',()=>openMissionsModal()],['SETTINGS','#b8b8c8','gear',()=>push('settings')]];
-  G.hits.push({id:'homescroll',x:20,y:200,w:600,h:466,scroll:true,off:()=>G.scrollHome,setOff:v=>G.scrollHome=v,max:()=>Math.max(0,items.length*74-466),cb:null});
-  creamPanel(20,70,1240,120,'#c8913a');
-  txt(cx,'THE BATTLE CATS',40,112,34,'#e8951f','left',6,'#fff',700);
-  ART.cat({x:1170,y:130,s:1.15,id:'cat',t:G.t,e:{anim:'walk'}});
-  // event + gacha banner chips (wiggle like original event tiles)
+  /* ================= CAT BASE MENU (original layout) =================
+     LEFT: rank card + the three gold buttons (START!! / UPGRADE / EQUIP) + book menu
+           + GAMATOTO (expeditions) + missions checklist.
+     CENTER: the base scene — Cat Base, capsule cats, store, team parade (real sprites).
+     RIGHT: collection catalog.  NO bottom bar on this screen (matches the original). */
+  const LX=18,LW=312;
+
+  /* ---- LEFT: rank card ---- */
+  {const t1=800*Math.pow(SV.rank,1/0.55),t0=800*Math.pow(SV.rank-1,1/0.55);
+    const fr=clamp((SV.xpTotal-t0)/Math.max(1,t1-t0),0,1);
+    creamPanel(LX,62,LW,44);
+    cx.fillStyle='#8a3ab8';cx.beginPath();cx.arc(LX+24,84,15,0,TAU);cx.fill();
+    cx.lineWidth=2.5;cx.strokeStyle='#4a1a6a';cx.stroke();
+    txt(cx,String(SV.rank),LX+24,85,13,'#fff','center',2.5,'#4a1a6a',700);
+    txt(cx,'USER RANK',LX+46,76,11,'#8a5a2a','left',2,'#fff',700);
+    cx.fillStyle='rgba(90,59,22,.16)';rr(cx,LX+44,84,LW-62,10,5);cx.fill();
+    const pg2=cx.createLinearGradient(LX+44,0,LX+44+LW-62,0);pg2.addColorStop(0,'#c9a8f8');pg2.addColorStop(1,'#8a3ab8');
+    cx.fillStyle=pg2;rr(cx,LX+44,84,Math.max(8,(LW-62)*fr),10,5);cx.fill();
+    cx.lineWidth=1.2;cx.strokeStyle='rgba(90,59,22,.4)';rr(cx,LX+44,84,LW-62,10,5);cx.stroke();
+    txt(cx,fmt(SV.xpTotal)+' XP',LX+46,104,9.5,'#8a6a4a','left',2,'#fff',400)}
+
+  /* ---- LEFT: the three gold buttons (original START!! / UPGRADE / EQUIP) ---- */
+  const goldBtn=(id,y,label,sub,cb,badge)=>{
+    const bw=LW,bh=y<260?58:48,x=LX;
+    const pu=1+Math.sin(G.t*3+(badge?4:0))*0.008;
+    cx.save();cx.translate(x+bw/2,y+bh/2);
+    const gg=cx.createLinearGradient(0,-bh/2,0,bh/2);gg.addColorStop(0,'#ffe27a');gg.addColorStop(.55,'#ffd23f');gg.addColorStop(1,'#e8a020');
+    cx.shadowColor='rgba(90,50,10,.45)';cx.shadowBlur=7;cx.shadowOffsetY=4;
+    cx.fillStyle=gg;rr(cx,-bw/2,-bh/2,bw,bh,14);cx.fill();cx.shadowColor='transparent';
+    cx.lineWidth=3.5;cx.strokeStyle='#8a5a20';rr(cx,-bw/2,-bh/2,bw,bh,14);cx.stroke();
+    cx.lineWidth=1.4;cx.strokeStyle='rgba(255,255,255,.8)';rr(cx,-bw/2+4,-bh/2+4,bw-8,bh-14,10);cx.stroke();
+    txt(cx,label,0,(sub?-8:1),(y<260?26:21),'#5a3b16','center',4.5,'#fff',700);
+    if(sub)txt(cx,sub,0,13,10.5,'#7a5220','center',2.5,'#fff8e8',700);
+    if(badge){cx.save();cx.translate(bw/2-16,-bh/2+2);cx.rotate(Math.sin(G.t*5)*0.12);
+      cx.fillStyle='#e84030';cx.beginPath();cx.arc(0,0,11,0,TAU);cx.fill();
+      cx.lineWidth=2;cx.strokeStyle='#7a1a10';cx.stroke();
+      txt(cx,String(badge),0,0.5,10.5,'#fff','center',2,'#7a1a10',700);cx.restore()}
+    cx.restore();
+    BTN(id,x,y,bw,bh,cb,{flat:true,nohov:true})};
+  goldBtn('hstart',116,'START!!',null,()=>{G.mapSub=0;push('chapters')});
+  goldBtn('hupg',182,'UPGRADE',catOwnedCount()+' cats owned',()=>{G.selCat=null;push('upgrade')});
+  goldBtn('hequip',238,'EQUIP','team '+(SV.teamSel+1)+' / 3',()=>push('equip'));
+
+  /* ---- LEFT: menu book / GAMATOTO / missions ---- */
+  const bookDot=mDone>0||shrineInfo().freeLeft||expdAnyDone()||trophyClaimCount()||radarHotCount();
+  const rowBtn=(id,y,icon,label,cb,dot,dotCol)=>{
+    const bh=44,x=LX;
+    cx.save();cx.translate(x,y);
+    cx.fillStyle='#fffdf5';rr(cx,0,0,LW,bh,12);cx.fill();
+    cx.lineWidth=2.5;cx.strokeStyle='#a8845a';rr(cx,1,1,LW-2,bh-2,11);cx.stroke();
+    cx.fillStyle='#c8913a';cx.beginPath();cx.arc(30,22,17,0,TAU);cx.fill();
+    cx.lineWidth=2.2;cx.strokeStyle='#8a5a20';cx.stroke();
+    glyph(cx,icon,30,22,10.5,'#fff','#8a5a20');
+    txt(cx,label,58,23,17,'#5a3b16','left',3,'#fff',700);
+    if(dot){cx.save();cx.translate(LW-20,10);cx.rotate(Math.sin(G.t*5)*0.14);
+      cx.fillStyle=dotCol||'#e84030';cx.beginPath();cx.arc(0,0,9.5,0,TAU);cx.fill();
+      cx.lineWidth=2;cx.strokeStyle='rgba(60,20,10,.6)';cx.stroke();cx.restore()}
+    cx.restore();
+    BTN(id,x,y,LW,bh,cb,{flat:true,nohov:true})};
+  rowBtn('hbook',294,'scroll','MENU',()=>{openBookMenu()},bookDot?mDone||'!':null);
+  rowBtn('hgamatoto',346,'compass','GAMATOTO',()=>push('expedition'),expdAnyDone()?'!':null,'#3abc6a');
+  rowBtn('hmissions',398,'medal','MISSIONS',()=>openMissionsModal(),mDone||null);
+
+  /* ---- CENTER: the Cat Base scene ---- */
+  const SX=340,SW=508; // scene rect x/width
+  cx.save();
+  cx.beginPath();cx.rect(SX,58,SW,602);cx.clip();
+  // sky
+  const sg=cx.createLinearGradient(0,58,0,470);sg.addColorStop(0,'#8ecff0');sg.addColorStop(.7,'#cdeafc');sg.addColorStop(1,'#e8f6d8');
+  cx.fillStyle=sg;cx.fillRect(SX,58,SW,412);
+  // sun
+  cx.save();cx.translate(SX+SW-70,120);cx.shadowColor='rgba(255,236,120,.9)';cx.shadowBlur=26;
+  cx.fillStyle='#ffe27a';cx.beginPath();cx.arc(0,0,26,0,TAU);cx.fill();cx.restore();
+  // drifting clouds
+  for(let ci=0;ci<4;ci++){const cxp=SX+((G.t*(6+ci*2.2)+ci*211)%(SW+180))-90,cyp=100+((ci*83)%130);
+    cx.fillStyle='rgba(255,255,255,'+(0.5+((ci*17)%25)/100)+')';
+    cx.beginPath();cx.arc(cxp,cyp,20,0,TAU);cx.arc(cxp+26,cyp-8,15,0,TAU);cx.arc(cxp+46,cyp+3,12,0,TAU);cx.fill()}
+  // distant hills
+  cx.fillStyle='#a8d8b8';cx.beginPath();cx.moveTo(SX,470);
+  for(let i=0;i<=6;i++){const hx=SX+i*SW/6;cx.quadraticCurveTo(hx-SW/24,412,hx,470)}
+  cx.lineTo(SX+SW,470);cx.closePath();cx.fill();
+  cx.fillStyle='#bce4c8';cx.beginPath();cx.moveTo(SX,470);
+  for(let i=0;i<=9;i++){const hx=SX+i*SW/9;cx.quadraticCurveTo(hx-SW/28,438,hx,470)}
+  cx.lineTo(SX+SW,470);cx.closePath();cx.fill();
+  // ground
+  const gg2=cx.createLinearGradient(0,470,0,660);gg2.addColorStop(0,'#8ac86a');gg2.addColorStop(1,'#5a9a44');
+  cx.fillStyle=gg2;cx.fillRect(SX,470,SW,190);
+  cx.fillStyle='rgba(255,255,255,.14)';cx.fillRect(SX,470,SW,3);
+  for(let i=0;i<34;i++){const px=SX+((i*97+31)%SW),py=486+((i*53)%160);
+    cx.fillStyle=i%3?'rgba(40,90,30,.25)':'rgba(255,255,255,.2)';
+    cx.beginPath();cx.ellipse(px,py,2.6,1.4,0,0,TAU);cx.fill()}
+  for(let i=0;i<9;i++){const px=SX+26+((i*131)%470),py=500+((i*77)%140);
+    cx.strokeStyle='rgba(46,110,36,.5)';cx.lineWidth=2;
+    cx.beginPath();cx.moveTo(px,py);cx.lineTo(px-2,py-6);cx.moveTo(px,py);cx.lineTo(px+3,py-7);cx.stroke()}
+  // Cat Base building (clickable → CAT BASE screen)
+  {const bxx=SX+SW/2,byy=560;
+    cx.save();cx.translate(bxx,byy);
+    cx.fillStyle='rgba(30,60,20,.25)';cx.beginPath();cx.ellipse(0,6,120,16,0,0,TAU);cx.fill();
+    cx.fillStyle='#e8e2d0';rr(cx,-84,-130,168,132,10);cx.fill();
+    cx.lineWidth=4;cx.strokeStyle='#8a7a5a';rr(cx,-84,-130,168,132,10);cx.stroke();
+    const roofG=cx.createLinearGradient(0,-190,0,-120);roofG.addColorStop(0,'#ff9a6a');roofG.addColorStop(1,'#e8683a');
+    cx.fillStyle=roofG;cx.beginPath();cx.moveTo(-98,-120);cx.lineTo(0,-196);cx.lineTo(98,-120);cx.closePath();cx.fill();
+    cx.lineWidth=4;cx.strokeStyle='#8a3a1a';cx.stroke();
+    cx.fillStyle='#ff9a6a';rr(cx,-16,-214,32,26,6);cx.fill();cx.lineWidth=3;cx.strokeStyle='#8a3a1a';rr(cx,-16,-214,32,26,6);cx.stroke();
+    cx.fillStyle='#8a5a20';rr(cx,-22,-44,44,46,8);cx.fill();
+    cx.lineWidth=3;cx.strokeStyle='#5a3b16';rr(cx,-22,-44,44,46,8);cx.stroke();
+    cx.fillStyle='#ffd23f';cx.beginPath();cx.arc(4,-22,4.5,0,TAU);cx.fill();
+    cx.fillStyle='#c8dcf8';rr(cx,-66,-104,44,40,6);cx.fill();cx.lineWidth=3;cx.strokeStyle='#7a8aa0';rr(cx,-66,-104,44,40,6);cx.stroke();
+    cx.fillStyle='rgba(255,255,255,.5)';cx.beginPath();cx.moveTo(-62,-64);cx.lineTo(-46,-84);cx.lineTo(-46,-64);cx.closePath();cx.fill();
+    cx.fillStyle='#c8dcf8';rr(cx,22,-104,44,40,6);cx.fill();cx.lineWidth=3;cx.strokeStyle='#7a8aa0';rr(cx,22,-104,44,40,6);cx.stroke();
+    cx.fillStyle='rgba(255,255,255,.5)';cx.beginPath();cx.moveTo(26,-64);cx.lineTo(42,-84);cx.lineTo(42,-64);cx.closePath();cx.fill();
+    const wob=Math.sin(G.t*1.6)*0.02;cx.rotate(wob);
+    ART.catIcon('cat',0,-58,13); // base guardian cat
+    cx.restore();
+    BTN('hbase',bxx-100,byy-200,200,206,()=>{SFX.click();push('base')},{flat:true,nohov:true})}
+  // capsule cats: green = daily/normal capsule (store), pink = rare capsule (gacha)
+  const caps=(x,fill,rim,id,cb)=>{
+    cx.save();cx.translate(x,608);
+    const bob=Math.sin(G.t*2.4+x)*3;cx.translate(0,bob);
+    cx.fillStyle='rgba(30,60,20,.25)';cx.beginPath();cx.ellipse(0,-bob+2,30,7,0,0,TAU);cx.fill();
+    const cg=cx.createRadialGradient(-8,-26,4,0,-20,40);cg.addColorStop(0,'#fff');cg.addColorStop(.3,fill);cg.addColorStop(1,rim);
+    cx.fillStyle=cg;cx.beginPath();cx.arc(0,-24,27,0,TAU);cx.fill();
+    cx.lineWidth=3;cx.strokeStyle=shade(rim,.7);cx.stroke();
+    cx.fillStyle='rgba(255,255,255,.55)';cx.beginPath();cx.ellipse(-9,-33,8,5,-0.6,0,TAU);cx.fill();
+    // cat face on capsule
+    cx.fillStyle='#3a2a1a';cx.beginPath();cx.arc(-8,-25,2.4,0,TAU);cx.arc(8,-25,2.4,0,TAU);cx.fill();
+    cx.strokeStyle='#3a2a1a';cx.lineWidth=1.8;cx.beginPath();cx.arc(0,-21,4,0.15,Math.PI-0.15);cx.stroke();
+    cx.fillStyle=shade(rim,.8);cx.beginPath();cx.moveTo(-14,-42);cx.lineTo(-17,-52);cx.lineTo(-7,-45);cx.closePath();cx.fill();
+    cx.beginPath();cx.moveTo(14,-42);cx.lineTo(17,-52);cx.lineTo(7,-45);cx.closePath();cx.fill();
+    cx.restore();
+    BTN(id,x-30,552,60,62,cb,{flat:true,nohov:true})};
+  caps(SX+72,'#7fe89a','#3a9a5a','hcapN',()=>{SFX.click();push('store')});
+  caps(SX+SW-72,'#ff9ad5','#e8489a','hcapR',()=>{SFX.click();push('gacha')});
+  // team parade: owned cats walking the field with REAL sprites
+  {const team=SV.teams[SV.teamSel].filter(id=>id&&catOwned(id));
+    const parade=team.length?team:['cat'];
+    parade.slice(0,6).forEach((id,i)=>{
+      const span=SW-160,ph=(G.t*0.045+i*0.16)%1;
+      let px=SX+80+ph*span;
+      let dir=(((G.t*0.045+i*0.16)%2)>1)?-1:1;
+      const py=486+((i*37)%40);
+      ART.cat({id,x:px,y:py,s:0.72,t:G.t*1.35+i*1.7,dir,e:{anim:'walk'}})})}
+
+  /* ---- bottom-left: back-to-title arrow (original position) ---- */
+  drawBackArrow(cx,52,646,24);BTN('hback',24,620,64,52,()=>{SFX.click();push('title')},{flat:true,nohov:true});
+  txt(cx,'Cat Base',52,684,11,'rgba(255,248,232,.85)','left',2.5,'rgba(90,50,10,.5)',700);
+
+  /* ---- event banner chip (top of scene) ---- */
   try{
     const evs=eventStages();const ban=activeBanners();
     const chips=[];
-    if(evs.length)chips.push(['EVENT',evs[0].s.name,'#e85840','#8a1a10']);
-    if(ban.length)chips.push(['GACHA',ban[0].n,'#c86adf','#5a1a7a']);
+    if(evs.length)chips.push(['EVENT',evs[0].s.name,'#e85840','#8a1a10',()=>{G.chapter='event';G.mapSub=0;push('chapters')}]);
+    if(ban.length)chips.push(['GACHA',ban[0].n,'#c86adf','#5a1a7a',()=>push('gacha')]);
     chips.forEach((ch,i)=>{
-      const cw=222,cxh=80,bx=790+i*234,by=110+Math.sin(G.t*2.4+i*1.7)*4;
-      cx.save();cx.translate(bx,by);cx.rotate(Math.sin(G.t*1.8+i*2.1)*0.035);
+      const cw=224,cxh=64,bx=SX+SW/2+(i-0.5)*(cw+12),by=96+Math.sin(G.t*2.4+i*1.7)*3;
+      cx.save();cx.translate(bx,by);cx.rotate(Math.sin(G.t*1.8+i*2.1)*0.03);
       cx.shadowColor='rgba(0,0,0,.3)';cx.shadowBlur=6;cx.shadowOffsetY=3;
       cx.fillStyle=ch[2];rr(cx,-cw/2,-cxh/2,cw,cxh,12);cx.fill();cx.shadowColor='transparent';
       cx.lineWidth=2.5;cx.strokeStyle=ch[3];rr(cx,-cw/2,-cxh/2,cw,cxh,12);cx.stroke();
-      cx.fillStyle='#fff8e8';rr(cx,-cw/2+8,-cxh/2+28,cw-16,cxh-38,8);cx.fill();
-      txt(cx,ch[0],0,-cxh/2+15,11,'#fff','center',3,ch[3],700);
-      txt(cx,ch[1],0,6,ch[1].length>16?12:14,ch[3],'center',3,'#fff',700);
-      txt(cx,i===0?'Limited time!':'Now summoning!',0,cxh/2-10,9.5,'rgba(255,255,255,.85)','center',2,ch[3],700);
-      cx.restore()});
+      cx.fillStyle='#fff8e8';rr(cx,-cw/2+8,-cxh/2+24,cw-16,cxh-32,8);cx.fill();
+      txt(cx,ch[0],0,-cxh/2+13,11,'#fff','center',3,ch[3],700);
+      txt(cx,ch[1],0,4,ch[1].length>16?11.5:13,ch[3],'center',3,'#fff',700);
+      cx.restore();
+      BTN('hbann'+i,bx-cw/2,by-cxh/2,cw,cxh,ch[4],{flat:true,nohov:true})});
   }catch(e){}
-  const ih=64,gap=10,x=40;let y=210;
-  items.forEach((it,i)=>{const w=560;BTN('hm'+i,x,y-G.scrollHome,w,ih,it[3],{col:'#fffdf5',outline:'#a8845a',r:16,draw:(c,hov)=>{
-    if(hov){c.fillStyle='rgba(255,200,90,.22)';rr(c,0,0,w,ih,16);c.fill()}
-    c.fillStyle=it[1];c.beginPath();c.arc(34,32,19,0,TAU);c.fill();c.lineWidth=2.5;c.strokeStyle='#5a3b16';c.stroke();
-    glyph(c,it[2],34,32,10.5,'#fff','#5a3b16');
-    txt(c,it[0],68,33,23,'#5a3b16','left',3,'#fff',700);
-    if(it[0]==='MISSIONS'&&mDone>0){const bw2=26;cx.save();c.translate(w-24,14);c.rotate(Math.sin(G.t*5)*0.12);
-      c.fillStyle='#e84030';c.beginPath();c.arc(0,0,bw2/2,0,TAU);c.fill();c.lineWidth=2;c.strokeStyle='#7a1a10';c.stroke();
-      txt(c,String(mDone),0,0.5,13,'#fff','center',2,'#7a1a10',700);c.restore()}
-    if(it[0]==='TREASURES'){const hotN=radarHotCount(); // live hot-set count (2/3 sets) — red ping like missions
-      if(hotN>0){c.save();c.translate(w-24,14);c.rotate(Math.sin(G.t*5)*0.12);
-        c.fillStyle='#e84030';c.beginPath();c.arc(0,0,12,0,TAU);c.fill();c.lineWidth=2;c.strokeStyle='#7a1a10';c.stroke();
-        txt(c,String(hotN),0,0.5,12,'#fff','center',2,'#7a1a10',700);c.restore();
-        txt(c,'HOT!',w-56,33,11,'#d05a28','left',2,'#fff',700)}}
-    if(it[0]==='CAT SHRINE'&&shrineInfo().freeLeft){c.save();c.translate(w-24,14);c.rotate(Math.sin(G.t*5)*0.12);
-      c.fillStyle='#ffd23f';c.beginPath();c.arc(0,0,12,0,TAU);c.fill();c.lineWidth=2;c.strokeStyle='#8a5a10';c.stroke();
-      glyph(c,'torii',0,0,11,'#5a3b16','#ffd23f');c.restore();
-      txt(c,'FREE!',w-56,33,11,'#b06a10','left',2,'#fff',700)}
-    if(it[0]==='EXPEDITIONS'&&expdAnyDone()){c.save();c.translate(w-24,14);c.rotate(Math.sin(G.t*5)*0.12);
-      c.fillStyle='#3abc6a';c.beginPath();c.arc(0,0,11,0,TAU);c.fill();c.lineWidth=2;c.strokeStyle='#1e5a2a';c.stroke();
-      glyph(c,'flag',0,0,10,'#fff','#3abc6a');c.restore();
-      txt(c,'READY!',w-56,33,11,'#1e7a3a','left',2,'#fff',700)}
-    if(it[0]==='TROPHIES'){const tc=trophyClaimCount();
-      if(tc>0){c.save();c.translate(w-24,14);c.rotate(Math.sin(G.t*5)*0.12);
-        c.fillStyle='#c46adf';c.beginPath();c.arc(0,0,13,0,TAU);c.fill();c.lineWidth=2;c.strokeStyle='#6a1a8a';c.stroke();
-        txt(c,String(tc),0,0.5,12.5,'#fff','center',2,'#6a1a8a',700);c.restore();
-        txt(c,'CLAIM!',w-56,33,11,'#9a3ac4','left',2,'#fff',700)}}}});y+=ih+gap});
-  // scroll-position indicator rail (right edge of the menu column)
-  {const contentMax=Math.max(1,items.length*74-466);
-    if(contentMax>1){const railX=612,railY=210,railH=440;
-      cx.fillStyle='rgba(90,59,22,.18)';rr(cx,railX-2.5,railY,5,railH,2.5);cx.fill();
-      const thumbH=Math.max(40,railH*466/(contentMax+466));
-      const thumbY=railY+(railH-thumbH)*(G.scrollHome/contentMax);
-      const tg2=cx.createLinearGradient(railX-2,thumbY,railX+2,thumbY+thumbH);
-      tg2.addColorStop(0,'#e8a020');tg2.addColorStop(0.5,'#ffd23f');tg2.addColorStop(1,'#e8a020');
-      cx.fillStyle=tg2;rr(cx,railX-2.5,thumbY,5,thumbH,2.5);cx.fill()}}
-  creamPanel(640,210,600,440);
-  txt(cx,'CATALOG',660,240,20,'#b06a10','left',4,'#fff',700);
+  cx.restore(); // scene clip
+
+  /* ---- RIGHT: collection catalog (compact, zero-clip) ---- */
+  const RX=858,RW=404;
+  creamPanel(RX,62,RW,598);
+  txt(cx,'CATALOG',RX+18,86,17,'#b06a10','left',3.5,'#fff',700);
   const owned=CATS.filter(c=>catOwned(c.id)).length;
-  const lines=[['Cats owned:',owned+' / '+CATS.length],['Forms maxed:',CATS.filter(c=>catOwned(c.id)&&catFormUnlockedCount(c.id)>=c.forms.length).length+' / '+CATS.reduce((a,c)=>a+c.forms.length,0)],['Chapters cleared:',Object.keys(SV.cleared).length+' / '+CHAPTERS.length],['User Rank:',SV.rank+'  (XP total '+fmt(SV.xpTotal)+')'],['NP:',fmt(SV.np)],['Cat Food:',fmt(SV.cf)],['Tickets:','R:'+SV.tickets.rare+' G:'+SV.tickets.gold+' P:'+SV.tickets.plat],['Catfruit:',Object.entries(SV.fruit).filter(([,v])=>v>0).map(([k,v])=>k[0].toUpperCase()+':'+v).join(' ')||'none yet']];
-  lines.forEach((l,i)=>{txt(cx,l[0],660,278+i*34,15,'#8a7a5a','left');txt(cx,String(l[1]),1220,278+i*34,16,'#4a3a24','right')});
-  const done=CATS.filter(c=>catOwned(c.id));
-  cx.strokeStyle='rgba(176,138,80,.5)';cx.lineWidth=1.5;cx.beginPath();cx.moveTo(660,540);cx.lineTo(1220,540);cx.stroke();
-  txt(cx,'YOUR CATS',660,556,11,'#a89878','left',2,'#fff',700);
-  // next-trophy hint chip (nearest unclaimed trophy by % complete)
+  const lines=[['Cats owned:',owned+' / '+CATS.length],['Forms maxed:',CATS.filter(c=>catOwned(c.id)&&catFormUnlockedCount(c.id)>=c.forms.length).length+' / '+CATS.reduce((a,c)=>a+c.forms.length,0)],['Chapters cleared:',Object.keys(SV.cleared).length+' / '+CHAPTERS.length],['User Rank:',SV.rank+' · XP '+fmt(SV.xpTotal)],['NP:',fmt(SV.np)],['Cat Food:',fmt(SV.cf)],['Tickets:','R:'+SV.tickets.rare+' G:'+SV.tickets.gold+' P:'+SV.tickets.plat],['Catfruit:',Object.entries(SV.fruit).filter(([,v])=>v>0).map(([k,v])=>k[0].toUpperCase()+':'+v).join(' ')||'none yet']];
+  lines.forEach((l,i)=>{txt(cx,l[0],RX+18,116+i*27,12.5,'#8a7a5a','left');txt(cx,String(l[1]),RX+RW-18,116+i*27,13,'#4a3a24','right',2.5,'#fff',700)});
+  // next trophy chip — full panel width, auto-shrink text (fixes the old clipping)
   {const nxt=trophyList().filter(t=>!SV.trophies.claimed[t.id]).sort((a,b2)=>(trophyProg(b2)/b2.goal)-(trophyProg(a)/a.goal))[0];
     if(nxt){const pr=Math.min(trophyProg(nxt),nxt.goal),fr=clamp(pr/nxt.goal,0,1);
-      const hy=556,hx=830;
-      cx.fillStyle='rgba(196,106,223,.12)';rr(cx,hx-8,hy-12,398,26,13);cx.fill();
-      cx.lineWidth=1.5;cx.strokeStyle='rgba(196,106,223,.45)';rr(cx,hx-8,hy-12,398,26,13);cx.stroke();
-      glyph(cx,nxt.group.icon,hx+8,hy+1,9,'#c46adf','#fff');
-      cx.font=FONT(10.5,700);
-      txt(cx,'NEXT TROPHY: '+nxt.n.slice(0,30)+(nxt.n.length>30?'…':''),hx+22,hy+1,10.5,'#8a4a9a','left',2,'#fff',700);
-      txt(cx,Math.round(fr*100)+'%',1224,hy+1,11,'#c46adf','right',2,'#fff',700)}}
-  let bx=660,by=600;
-  done.slice(0,11).forEach(c=>{ART.catIcon(c.id,bx,by,14);bx+=51});
-  if(owned>11)txt(cx,'+'+(owned-11)+' more',bx+4,by,12,'#a89878','left');
-  // completion progress bar under the cat strip: % of the full collection owned
-  {const pw2=560,px2=660,py2=632;
+      const hy=348;
+      cx.fillStyle='rgba(196,106,223,.12)';rr(cx,RX+14,hy,RW-28,30,15);cx.fill();
+      cx.lineWidth=1.5;cx.strokeStyle='rgba(196,106,223,.45)';rr(cx,RX+14,hy,RW-28,30,15);cx.stroke();
+      glyph(cx,nxt.group.icon,RX+34,hy+15,9,'#c46adf','#fff');
+      let tfs=11.5;cx.font=FONT(tfs,700);
+      const label='NEXT TROPHY: '+nxt.n;
+      while(cx.measureText(label).width>RW-118&&tfs>8.5){tfs-=0.5;cx.font=FONT(tfs,700)}
+      txt(cx,label,RX+48,hy+15,tfs,'#8a4a9a','left',2,'#fff',700);
+      txt(cx,Math.round(fr*100)+'%',RX+RW-30,hy+15,11,'#c46adf','right',2,'#fff',700)}}
+  cx.strokeStyle='rgba(176,138,80,.5)';cx.lineWidth=1.5;cx.beginPath();cx.moveTo(RX+18,392);cx.lineTo(RX+RW-18,392);cx.stroke();
+  txt(cx,'YOUR CATS',RX+18,410,11,'#a89878','left',2,'#fff',700);
+  const done=CATS.filter(c=>catOwned(c.id));
+  {let bx=RX+30,by=446;
+    let row=0;
+    done.forEach(c=>{ART.catIcon(c.id,bx,by,15);
+      bx+=46;if(bx>RX+RW-46){bx=RX+30;by+=46;row++}});
+    if(!done.length)txt(cx,'Recruit cats to fill your Catdex!',RX+RW/2,452,12,'#a89878','center',2,'#fff',400)}
+  {const pw2=RW-36,px2=RX+18;let py2=626;
+    if(done.length>18)py2=626;
     cx.fillStyle='rgba(90,59,22,.16)';rr(cx,px2,py2,pw2,10,5);cx.fill();
     const fr=owned/CATS.length;
     const pg=cx.createLinearGradient(px2,0,px2+pw2,0);pg.addColorStop(0,'#7fc86a');pg.addColorStop(1,'#3a9a5a');
     cx.fillStyle=pg;rr(cx,px2,py2,Math.max(12,pw2*fr),10,5);cx.fill();
     cx.lineWidth=1.5;cx.strokeStyle='rgba(90,59,22,.4)';rr(cx,px2,py2,pw2,10,5);cx.stroke();
-    txt(cx,Math.round(fr*100)+'% of the Catdex collected',px2+pw2/2,py2+6,10.5,'#5a3b16','center',2,'#fff',700)}
-  brownBottomBar()}
+    txt(cx,Math.round(fr*100)+'% of the Catdex collected',px2+pw2/2,py2-8,10.5,'#5a3b16','center',2,'#fff',700)}
+}
+
+/* ---- MENU BOOK overlay (the original's open-book menu) ---- */
+function openBookMenu(){SFX.click();
+  openModal('MENU — BASE GUIDE',['Everything in your Cat Base, one book.'],[{n:'CLOSE',cb:()=>{}}],(mx,my,mw,mh)=>{
+    const items=[
+      ['cat','CAT GUIDE','View your Cat units & forms',()=>push('guide')],
+      ['doge','ENEMY GUIDE','Enemy dictionary & stats',()=>push('guide')],
+      ['chest','TREASURES','Treasure sets & radar',()=>push('treasure')],
+      ['torii','CAT SHRINE','Pray for blessings',()=>push('shrine')],
+      ['compass','EXPEDITIONS','Gamatoto scouting runs',()=>push('expedition')],
+      ['trophy','TROPHIES','Catdex milestones',()=>push('trophies')],
+      ['cannon','CAT BASE','Ototo base upgrades',()=>push('base')],
+      ['scroll','MISSIONS','Daily missions',()=>openMissionsModal()],
+      ['gear','SETTINGS','Options & data',()=>push('settings')]];
+    const cols=3,rows=Math.ceil(items.length/cols);
+    const tw=(mw-40-(cols-1)*10)/cols,th=88;
+    items.forEach((it,i)=>{
+      const cxx=mx+20+(i%cols)*(tw+10),cyy=my+8+Math.floor(i/cols)*(th+10);
+      creamPanel(cxx,cyy,tw,th);
+      cx.fillStyle='#c8913a';cx.beginPath();cx.arc(cxx+30,cyy+44,20,0,TAU);cx.fill();
+      cx.lineWidth=2.5;cx.strokeStyle='#8a5a20';cx.stroke();
+      glyph(cx,it[0],cxx+30,cyy+44,12,'#fff','#8a5a20');
+      txt(cx,it[1],cxx+58,cyy+34,13,'#5a3b16','left',2.5,'#fff',700);
+      txt(cx,it[2],cxx+58,cyy+54,9.5,'#8a7a5a','left');
+      // hot dots
+      let hot=null,hotCol='#e84030';
+      if(it[0]==='chest')hot=radarHotCount()||null;
+      if(it[0]==='torii'&&shrineInfo().freeLeft)hot='!';
+      if(it[0]==='compass'&&expdAnyDone()){hot='!';hotCol='#3abc6a'}
+      if(it[0]==='trophy'){const tc2=trophyClaimCount();hot=tc2||null;hotCol='#c46adf'}
+      if(it[0]==='scroll')hot=MISSIONS.filter(m=>missionDone(m.id)&&!missionClaimed(m.id)).length||null;
+      if(hot){cx.save();cx.translate(cxx+tw-16,cyy+14);cx.rotate(Math.sin(G.t*5)*0.12);
+        cx.fillStyle=hotCol;cx.beginPath();cx.arc(0,0,10,0,TAU);cx.fill();
+        cx.lineWidth=2;cx.strokeStyle='rgba(60,20,10,.6)';cx.stroke();
+        txt(cx,String(hot),0,0.5,10,'#fff','center',2,'rgba(60,20,10,.6)',700);cx.restore()}
+      BTN('bk'+i,cxx,cyy,tw,th,()=>{G.modal=null;it[3]()},{flat:true,nohov:true,modal:true})});
+    txt(cx,'GACHA & STORE live on the base field — tap the capsule cats!',mx+mw/2,my+mh-14,11.5,'#8a6a4a','center',2.5,'#fff',400)})}
+function catOwnedCount(){return CATS.filter(c=>catOwned(c.id)).length}
 
 /* ============================== MODAL: DAILY MISSIONS ============================== */
 function openMissionsModal(){ensureMissions();SFX.click();

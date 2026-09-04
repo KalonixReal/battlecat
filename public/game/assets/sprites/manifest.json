@@ -1,0 +1,3385 @@
+{
+ "cat": {
+  "kind": "cat",
+  "wikiTitle": "Cat ",
+  "gallery": [
+   {
+    "file": "Cattwdesc.PNG",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/89/Cattwdesc.PNG/revision/latest",
+    "caption": "Normal Form description (TW)",
+    "sizeKB": 0
+   },
+   {
+    "file": "Machocattwdesc.PNG",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/a3/Machocattwdesc.PNG/revision/latest",
+    "caption": "Evolved Form description (TW)",
+    "sizeKB": 0
+   },
+   {
+    "file": "MohawkcatTWdesc.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/85/MohawkcatTWdesc.png/revision/latest",
+    "caption": "True Form description (TW)",
+    "sizeKB": 0
+   },
+   {
+    "file": "Basic_Cat(bcp).png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/b1/Basic_Cat%28bcp%29.png/revision/latest",
+    "caption": "Normal Form description in The Battle Cats POP!",
+    "sizeKB": 0
+   },
+   {
+    "file": "Basic_Cat_E(bcp).png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/f9/Basic_Cat_E%28bcp%29.png/revision/latest",
+    "caption": "Evolved Form description in The Battle Cats POP!",
+    "sizeKB": 0
+   },
+   {
+    "file": "Basic_Cat_TF(bcp).png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/9d/Basic_Cat_TF%28bcp%29.png/revision/latest",
+    "caption": "True Form description in The Battle Cats POP!",
+    "sizeKB": 0
+   },
+   {
+    "file": "Imageedit_3_7310343060.gif",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/b8/Imageedit_3_7310343060.gif/revision/latest?cb=20150315233510",
+    "caption": "Cat's attack animation",
+    "sizeKB": 0
+   },
+   {
+    "file": "Imageedit_2_6366572361.gif",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/29/Imageedit_2_6366572361.gif/revision/latest?cb=20150318012223",
+    "caption": "Macho Cat's attack animation",
+    "sizeKB": 0
+   },
+   {
+    "file": "Mohawk_Cat.gif",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/95/Mohawk_Cat.gif/revision/latest",
+    "caption": "Mohawk Cat's attack animation",
+    "sizeKB": 0
+   },
+   {
+    "file": "000_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/85/000_f.png/revision/latest",
+    "caption": "Cat's spritesheet",
+    "sizeKB": 0
+   },
+   {
+    "file": "000_c.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/f6/000_c.png/revision/latest",
+    "caption": "Macho Cat's spritesheet",
+    "sizeKB": 0
+   },
+   {
+    "file": "000_s.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/1d/000_s.png/revision/latest",
+    "caption": "Mohawk Cat's spritesheet",
+    "sizeKB": 0
+   },
+   {
+    "file": "Udi000_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/44/Udi000_f.png/revision/latest",
+    "caption": "Cat's Upgrade Menu icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Udi000_c.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/67/Udi000_c.png/revision/latest",
+    "caption": "Macho Cat's Upgrade Menu icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Udi000_s.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/bf/Udi000_s.png/revision/latest",
+    "caption": "Mohawk Cat's Upgrade Menu icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Uni000_f00.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/58/Uni000_f00.png/revision/latest?cb=20160725143253",
+    "caption": "Cat's icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Uni000_c00.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/0e/Uni000_c00.png/revision/latest?cb=20160725143308",
+    "caption": "Macho Cat's icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Uni000_s00.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/af/Uni000_s00.png/revision/latest?cb=20200928133907",
+    "caption": "Mohawk Cat's icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Gatyachara_000_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/cc/Gatyachara_000_f.png/revision/latest?cb=20160423200351",
+    "caption": "Cat's sprite in the Storage",
+    "sizeKB": 0
+   },
+   {
+    "file": "000_1_HD.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/2c/000_1_HD.png/revision/latest",
+    "caption": "High quality art of Cat",
+    "sizeKB": 0
+   },
+   {
+    "file": "000_2_HD.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/7e/000_2_HD.png/revision/latest",
+    "caption": "High quality art of Macho Cat",
+    "sizeKB": 0
+   },
+   {
+    "file": "000_3_HD.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/c0/000_3_HD.png/revision/latest",
+    "caption": "High quality art of Mohawk Cat",
+    "sizeKB": 0
+   },
+   {
+    "file": "Old_art.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/74/Old_art.jpg/revision/latest",
+    "caption": "Official art featuring Cat, Mr. Ninja, Bear and a bunch of old PONOS mascots",
+    "sizeKB": 0
+   },
+   {
+    "file": "Christmas_2015.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/07/Christmas_2015.png/revision/latest",
+    "caption": "Christmas illustration featuring characters from various PONOS Games",
+    "sizeKB": 0
+   },
+   {
+    "file": "SFP_2.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/d/d7/SFP_2.png/revision/latest",
+    "caption": "Sketch featuring Moneko, Neneko, Cat, Tank Cat, Axe Cat and Gross Cat",
+    "sizeKB": 0
+   },
+   {
+    "file": "Pokemon_Go_Illust.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/ab/Pokemon_Go_Illust.jpg/revision/latest",
+    "caption": "Pok\u00e9mon GO Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "104996173_3206493432740852_6393811133107715722_n.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/68/104996173_3206493432740852_6393811133107715722_n.png/revision/latest",
+    "caption": "",
+    "sizeKB": 0
+   },
+   {
+    "file": "96265803_3065874380136092_5331827170677358592_n.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/8f/96265803_3065874380136092_5331827170677358592_n.png/revision/latest",
+    "caption": "",
+    "sizeKB": 0
+   },
+   {
+    "file": "94386028_3027345170655680_9007760941974028288_n.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/3f/94386028_3027345170655680_9007760941974028288_n.png/revision/latest",
+    "caption": "",
+    "sizeKB": 0
+   },
+   {
+    "file": "New_Year_2016.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/1b/New_Year_2016.png/revision/latest",
+    "caption": "2016 New Year Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "St._Patricks_Day_2017.gif",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/82/St._Patricks_Day_2017.gif/revision/latest",
+    "caption": "2017 St. Patrick's Day Animation",
+    "sizeKB": 0
+   },
+   {
+    "file": "Summer_Illust_2.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/ca/Summer_Illust_2.jpg/revision/latest",
+    "caption": "2017 Summer Illustration #1",
+    "sizeKB": 0
+   },
+   {
+    "file": "Summer_Illust_3.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/3e/Summer_Illust_3.jpg/revision/latest",
+    "caption": "2017 Summer illustration #2",
+    "sizeKB": 0
+   },
+   {
+    "file": "Summer_Illust_4.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/f0/Summer_Illust_4.jpg/revision/latest",
+    "caption": "2017 Summer illustration #3",
+    "sizeKB": 0
+   },
+   {
+    "file": "Aphrodite_Valentines.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/b5/Aphrodite_Valentines.png/revision/latest",
+    "caption": "Cat as a Valentine's treat",
+    "sizeKB": 0
+   },
+   {
+    "file": "Autumn_illust.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/09/Autumn_illust.jpg/revision/latest",
+    "caption": "Autumn Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "Bun_Bun_Graduate.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/13/Bun_Bun_Graduate.png/revision/latest",
+    "caption": "Graduation Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "Cat%27s_Day_Illust.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/bc/Cat%27s_Day_Illust.png/revision/latest",
+    "caption": "Cat's Day Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "Christmas_illust.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/8b/Christmas_illust.jpg/revision/latest",
+    "caption": "2017 Christmas Illustration #1",
+    "sizeKB": 0
+   },
+   {
+    "file": "2017_Christmas_Illustration.jpeg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/b4/2017_Christmas_Illustration.jpeg/revision/latest",
+    "caption": "2017 Christmas Illustration #2",
+    "sizeKB": 0
+   },
+   {
+    "file": "New_Year_2018.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/6f/New_Year_2018.jpg/revision/latest",
+    "caption": "2018 New Year Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "Mochi_new_year_2018.gif",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/71/Mochi_new_year_2018.gif/revision/latest",
+    "caption": "2018 New Year animation #1",
+    "sizeKB": 0
+   },
+   {
+    "file": "New_year_2018.gif",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/94/New_year_2018.gif/revision/latest",
+    "caption": "2018 New Year animation #2",
+    "sizeKB": 0
+   },
+   {
+    "file": "Bean_Cats_art.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/ef/Bean_Cats_art.png/revision/latest",
+    "caption": "",
+    "sizeKB": 0
+   },
+   {
+    "file": "Ehoumaki_illust.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/15/Ehoumaki_illust.jpg/revision/latest",
+    "caption": "Ehoumaki Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "February_Cat_Day_2018.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/24/February_Cat_Day_2018.jpg/revision/latest",
+    "caption": "2018 Cat's Day Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "Sengoku_Wargods_Spring_2018.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/a5/Sengoku_Wargods_Spring_2018.jpg/revision/latest",
+    "caption": "2018 Spring Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "Father_day_illust.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/cd/Father_day_illust.jpg/revision/latest",
+    "caption": "Father's Day Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "Mother_Day_illust.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/d/df/Mother_Day_illust.jpg/revision/latest",
+    "caption": "Mother's Day Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "Golden_Week_illust.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/e9/Golden_Week_illust.jpg/revision/latest",
+    "caption": "Golden Week Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "Tanabata_illust.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/51/Tanabata_illust.jpg/revision/latest",
+    "caption": "Tanabata Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "Dj94kHmUcAACc8_.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/6a/Dj94kHmUcAACc8_.jpg/revision/latest",
+    "caption": "2018 Summer Illustration #1",
+    "sizeKB": 0
+   },
+   {
+    "file": "DkXog0eUYAAr5vW.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/b4/DkXog0eUYAAr5vW.jpg/revision/latest",
+    "caption": "2018 Summer Illustration #2",
+    "sizeKB": 0
+   },
+   {
+    "file": "DkILvYXXcAUMXOZ.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/b2/DkILvYXXcAUMXOZ.jpg/revision/latest",
+    "caption": "2018 Summer Illustration #3",
+    "sizeKB": 0
+   },
+   {
+    "file": "Autumn_Athletics_2018.jpeg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/48/Autumn_Athletics_2018.jpeg/revision/latest",
+    "caption": "2018 Sports Day Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "Catsmas_2018.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/a7/Catsmas_2018.jpg/revision/latest",
+    "caption": "2018 Christmas Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "Golden_Week_2019.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/32/Golden_Week_2019.png/revision/latest",
+    "caption": "2019 Golden Week Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "End_of_Summer_2019.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/6d/End_of_Summer_2019.png/revision/latest",
+    "caption": "2019 End of Summer Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "Sakura_Spring_2019.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/c2/Sakura_Spring_2019.png/revision/latest",
+    "caption": "2019 Spring Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "2019_Hallowindy.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/8c/2019_Hallowindy.jpg/revision/latest",
+    "caption": "2019 Halloween Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "Christmas_illust_2019.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/6a/Christmas_illust_2019.png/revision/latest",
+    "caption": "2019 Christmas Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "New_Year%27s_art.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/ba/New_Year%27s_art.jpg/revision/latest",
+    "caption": "2020 New Year Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "Childrens_day_2021.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/f5/Childrens_day_2021.png/revision/latest",
+    "caption": "2021 Children's Day Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "Mitama_illust.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/33/Mitama_illust.jpg/revision/latest",
+    "caption": "",
+    "sizeKB": 0
+   },
+   {
+    "file": "New_planet_illust.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/3a/New_planet_illust.jpg/revision/latest",
+    "caption": "",
+    "sizeKB": 0
+   },
+   {
+    "file": "Raining_season_illust.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/57/Raining_season_illust.jpg/revision/latest",
+    "caption": "Rainy Season Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "Gao_rain.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/0e/Gao_rain.png/revision/latest",
+    "caption": "",
+    "sizeKB": 0
+   },
+   {
+    "file": "Setsubun_illust.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/3b/Setsubun_illust.jpg/revision/latest",
+    "caption": "Setsubun Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "Winter_End_Illust.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/a8/Winter_End_Illust.png/revision/latest",
+    "caption": "Winter End Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "DvwO6LgWwAACjr-.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/fd/DvwO6LgWwAACjr-.png/revision/latest",
+    "caption": "",
+    "sizeKB": 0
+   },
+   {
+    "file": "Version_2.0.1_Lag_Issues.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/2b/Version_2.0.1_Lag_Issues.png/revision/latest",
+    "caption": "Banner included with an official statement on Version 2.0's lag issues when playing on Android devices",
+    "sizeKB": 0
+   },
+   {
+    "file": "Hug_your_cat_day_en.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/9e/Hug_your_cat_day_en.png/revision/latest",
+    "caption": "Celebratory campaign for Hug Your Cat Day held in 2015 featuring Cat, Tank Cat, Gross Cat and Maiko Cat",
+    "sizeKB": 0
+   },
+   {
+    "file": "Version_6.4_Announcement.gif",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/c2/Version_6.4_Announcement.gif/revision/latest",
+    "caption": "Animation included with an announcement of Ver. 6.4's release",
+    "sizeKB": 0
+   },
+   {
+    "file": "20140401.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/6c/20140401.png/revision/latest",
+    "caption": "Cat featured as the main subject in the 2014 April Fools' Jokes article",
+    "sizeKB": 0
+   },
+   {
+    "file": "Bnr.gif",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/af/Bnr.gif/revision/latest",
+    "caption": "The 2014 April Fools' Jokes article banner featuring Cat, Tank Cat, Axe Cat, Gross Cat and Titan Cat",
+    "sizeKB": 0
+   },
+   {
+    "file": "Bnr01.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/a1/Bnr01.png/revision/latest",
+    "caption": "Cat as an advertisement in the 2015 April Fools' Jokes article #1",
+    "sizeKB": 0
+   },
+   {
+    "file": "Bnr03.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/33/Bnr03.png/revision/latest",
+    "caption": "Cat as an advertisement in the 2015 April Fools' Jokes article #2",
+    "sizeKB": 0
+   },
+   {
+    "file": "Bn01_2016.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/06/Bn01_2016.png/revision/latest",
+    "caption": "Cat as an advertisement in the 2016 April Fools' Jokes article #1",
+    "sizeKB": 0
+   },
+   {
+    "file": "Sidebn02_2016.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/7d/Sidebn02_2016.png/revision/latest",
+    "caption": "Cat as an advertisement in the 2016 April Fools' Jokes article #2",
+    "sizeKB": 0
+   },
+   {
+    "file": "Head_bn01_en_2017.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/6c/Head_bn01_en_2017.jpg/revision/latest",
+    "caption": "Cat as an advertisement in the 2017 April Fools' Jokes article #1 (EN)",
+    "sizeKB": 0
+   },
+   {
+    "file": "Head_bn01_jp_2017.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/b0/Head_bn01_jp_2017.jpg/revision/latest",
+    "caption": "Cat as an advertisement in the 2017 April Fools' Jokes article (JP)",
+    "sizeKB": 0
+   },
+   {
+    "file": "Main_img03_2017.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/38/Main_img03_2017.jpg/revision/latest",
+    "caption": "Cat as an advertisement in the 2017 April Fools' Jokes article #2",
+    "sizeKB": 0
+   },
+   {
+    "file": "Head_bn01_en_2018.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/5c/Head_bn01_en_2018.jpg/revision/latest",
+    "caption": "The 2018 April Fools' Jokes article banner featuring Cat and Doge (EN)",
+    "sizeKB": 0
+   },
+   {
+    "file": "Head_bn01_jp_2018.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/24/Head_bn01_jp_2018.jpg/revision/latest",
+    "caption": "The 2018 April Fools' Jokes article banner featuring Cat and Doge (JP)",
+    "sizeKB": 0
+   },
+   {
+    "file": "Main_img01_en_2018.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/73/Main_img01_en_2018.jpg/revision/latest",
+    "caption": "Cat and The Cat God as the main article in the 2018 April Fools' Jokes article #1 (EN)",
+    "sizeKB": 0
+   },
+   {
+    "file": "Main_img01_jp_2018.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/89/Main_img01_jp_2018.jpg/revision/latest",
+    "caption": "Cat and The Cat God as the main article in the 2018 April Fools' Jokes article #1 (JP)",
+    "sizeKB": 0
+   },
+   {
+    "file": "Main_img02_en_2018.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/ad/Main_img02_en_2018.jpg/revision/latest",
+    "caption": "Cat as the main article in the 2018 April Fools' Jokes article #2 (EN)",
+    "sizeKB": 0
+   },
+   {
+    "file": "Main_img02_jp_2018.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/57/Main_img02_jp_2018.jpg/revision/latest",
+    "caption": "Cat as the main article in the 2018 April Fools' Jokes article #2 (JP)",
+    "sizeKB": 0
+   },
+   {
+    "file": "Main_img01_2019.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/7f/Main_img01_2019.jpg/revision/latest",
+    "caption": "Cat featured as the main subject in the 2019 April Fools' Jokes article #1",
+    "sizeKB": 0
+   },
+   {
+    "file": "Main_img02_2019.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/64/Main_img02_2019.jpg/revision/latest",
+    "caption": "Cat, Tank Cat, Axe Cat and Gross Cat featured as the main subject in the 2019 April Fools' Jokes article #2",
+    "sizeKB": 0
+   },
+   {
+    "file": "Main_img01_2020.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/8b/Main_img01_2020.jpg/revision/latest",
+    "caption": "Cat featured as the main subject in the 2020 April Fools' Jokes article",
+    "sizeKB": 0
+   },
+   {
+    "file": "Main_img01_2022.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/ec/Main_img01_2022.png/revision/latest",
+    "caption": "Cat, Tank Cat and Titan Cat featured on the main article in the 2022 April Fools' Jokes article #1",
+    "sizeKB": 0
+   },
+   {
+    "file": "Main_img02_2022.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/53/Main_img02_2022.png/revision/latest",
+    "caption": "The Normal Cats, Unknown Cat, Doge and Snache featured on the main article in the 2022 April Fools' Jokes article #2",
+    "sizeKB": 0
+   },
+   {
+    "file": "Bn01_2022.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/10/Bn01_2022.jpg/revision/latest",
+    "caption": "Cat as an advertisement in the 2022 April Fools' Jokes article #1",
+    "sizeKB": 0
+   },
+   {
+    "file": "Bn03_2022.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/a7/Bn03_2022.jpg/revision/latest",
+    "caption": "Cat as an advertisement in the 2022 April Fools' Jokes article #2",
+    "sizeKB": 0
+   },
+   {
+    "file": "Main_img01_2023.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/9e/Main_img01_2023.jpg/revision/latest",
+    "caption": "Cat featured on the 2023 April Fools' Jokes article",
+    "sizeKB": 0
+   },
+   {
+    "file": "Sns03_2023.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/e1/Sns03_2023.png/revision/latest",
+    "caption": "Cat and Tank Cat featured in an advertisement for PONOS' Instagram in the April Fools' Jokes 2023 article",
+    "sizeKB": 0
+   },
+   {
+    "file": "Bottom_bn_2024.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/53/Bottom_bn_2024.png/revision/latest",
+    "caption": "A detective Cat featured in the April Fools' Jokes 2024 article",
+    "sizeKB": 0
+   },
+   {
+    "file": "2024error4.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/42/2024error4.png/revision/latest",
+    "caption": "Cat when a advertisement is clicked in the April's Fools' Jokes 2024 article",
+    "sizeKB": 0
+   },
+   {
+    "file": "Easter_egg.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/61/Easter_egg.png/revision/latest",
+    "caption": "A Cat in Mr.NooO!!",
+    "sizeKB": 0
+   },
+   {
+    "file": "SanRum_Cat_1.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/27/SanRum_Cat_1.jpg/revision/latest",
+    "caption": "Cat in Sangokushi Rumble",
+    "sizeKB": 0
+   },
+   {
+    "file": "SanRum_Cat_2.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/25/SanRum_Cat_2.jpg/revision/latest?cb=20240903205504",
+    "caption": "Macho Cat in Sangokushi Rumble",
+    "sizeKB": 0
+   },
+   {
+    "file": "SanRum_Cat_3.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/45/SanRum_Cat_3.jpg/revision/latest",
+    "caption": "Cat's general card in Sangokushi Rumble",
+    "sizeKB": 0
+   },
+   {
+    "file": "SanRum_Cat_4.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/08/SanRum_Cat_4.jpg/revision/latest",
+    "caption": "Promotional image for Cat in Sangokushi Rumble",
+    "sizeKB": 0
+   },
+   {
+    "file": "MonHun_Collab_Notice.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/e8/MonHun_Collab_Notice.jpg/revision/latest",
+    "caption": "A Cat being held by Anna in the Monster Hunter Collaboration Event's notice",
+    "sizeKB": 0
+   },
+   {
+    "file": "MonHun_NP.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/ee/MonHun_NP.jpg/revision/latest",
+    "caption": "Card featuring various Normal and Special Cats in Monster Hunter",
+    "sizeKB": 0
+   },
+   {
+    "file": "MonHun_016_1.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/83/MonHun_016_1.jpg/revision/latest",
+    "caption": "Cats in the background of Moneko's card in Monster Hunter",
+    "sizeKB": 0
+   },
+   {
+    "file": "MonHun_016_2.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/4b/MonHun_016_2.jpg/revision/latest",
+    "caption": "Cats in the background of Miss MONEKO's card in Monster Hunter",
+    "sizeKB": 0
+   },
+   {
+    "file": "MonHun_025_1.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/49/MonHun_025_1.jpg/revision/latest",
+    "caption": "Cats in the background of Bahamut Cat's card in Monster Hunter",
+    "sizeKB": 0
+   },
+   {
+    "file": "NMGBCCollab.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/33/NMGBCCollab.jpg/revision/latest",
+    "caption": "A Cat heater, watering can and lamp in Neo Mushroom Garden",
+    "sizeKB": 0
+   },
+   {
+    "file": "MSD_cat_1.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/80/MSD_cat_1.png/revision/latest",
+    "caption": "Cat in Metal Slug Defense",
+    "sizeKB": 0
+   },
+   {
+    "file": "MSD_cat_2.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/30/MSD_cat_2.png/revision/latest",
+    "caption": "Cat in a UFO in Metal Slug Defense",
+    "sizeKB": 0
+   },
+   {
+    "file": "MSD_cat_3.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/35/MSD_cat_3.png/revision/latest",
+    "caption": "Cat rolling on a snowball in Metal Slug Defense",
+    "sizeKB": 0
+   },
+   {
+    "file": "CaD_cat_13.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/71/CaD_cat_13.png/revision/latest?cb=20220308212103",
+    "caption": "Cat's egg in Castle &amp; Dragon",
+    "sizeKB": 0
+   },
+   {
+    "file": "CaD_cat_1.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/17/CaD_cat_1.jpg/revision/latest?cb=20220308210535",
+    "caption": "Cat in Castle &amp; Dragon",
+    "sizeKB": 0
+   },
+   {
+    "file": "CaD_cat_2.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/e7/CaD_cat_2.jpg/revision/latest?cb=20220308210536",
+    "caption": "Ditto but as a Swordsman costume",
+    "sizeKB": 0
+   },
+   {
+    "file": "CaD_cat_3.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/3a/CaD_cat_3.jpg/revision/latest?cb=20220308210537",
+    "caption": "Viking costume",
+    "sizeKB": 0
+   },
+   {
+    "file": "CaD_cat_4.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/6e/CaD_cat_4.jpg/revision/latest?cb=20220308210538",
+    "caption": "Holding a lollipop",
+    "sizeKB": 0
+   },
+   {
+    "file": "CaD_cat_5.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/51/CaD_cat_5.jpg/revision/latest?cb=20220308210539",
+    "caption": "Afro costume",
+    "sizeKB": 0
+   },
+   {
+    "file": "CaD_cat_6.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/84/CaD_cat_6.jpg/revision/latest",
+    "caption": "Samurai helmet and flag costume",
+    "sizeKB": 0
+   },
+   {
+    "file": "CaD_cat_7.jpeg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/3d/CaD_cat_7.jpeg/revision/latest?cb=20220308210541",
+    "caption": "Holding a mace",
+    "sizeKB": 0
+   },
+   {
+    "file": "CaD_cat_8.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/d/dd/CaD_cat_8.jpg/revision/latest",
+    "caption": "Wizard costume",
+    "sizeKB": 0
+   },
+   {
+    "file": "CaD_cat_9.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/69/CaD_cat_9.jpg/revision/latest?cb=20220308210543",
+    "caption": "Cat tower costume",
+    "sizeKB": 0
+   },
+   {
+    "file": "CaD_cat_11.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/59/CaD_cat_11.jpg/revision/latest?cb=20220308210545",
+    "caption": "Black cat costume",
+    "sizeKB": 0
+   },
+   {
+    "file": "CaD_cat_12.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/ad/CaD_cat_12.jpg/revision/latest?cb=20220308210546",
+    "caption": "Buchi cat costume",
+    "sizeKB": 0
+   },
+   {
+    "file": "GGPC_002_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/12/GGPC_002_f.png/revision/latest",
+    "caption": "Macho Cat's spritesheet in Go! Go! Pogo Cat",
+    "sizeKB": 0
+   },
+   {
+    "file": "Kitarocat1.jpeg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/a7/Kitarocat1.jpeg/revision/latest?cb=20210806122656",
+    "caption": "Cat in Yuru-i GeGeGe no Kitarou: Youkai Dotabata Daisensou",
+    "sizeKB": 0
+   },
+   {
+    "file": "Kitarocat2.jpeg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/6d/Kitarocat2.jpeg/revision/latest?cb=20210806122657",
+    "caption": "Gegegecat in Yuru-i GeGeGe no Kitarou: Youkai Dotabata Daisensou",
+    "sizeKB": 0
+   },
+   {
+    "file": "Gourgouskitarocat.jpeg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/1d/Gourgouskitarocat.jpeg/revision/latest?cb=20210806123730",
+    "caption": "Cat \u2606 Gorgeous in Yuru-i GeGeGe no Kitarou: Youkai Dotabata Daisensou",
+    "sizeKB": 0
+   },
+   {
+    "file": "Herculeskitarocat.jpeg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/d/da/Herculeskitarocat.jpeg/revision/latest?cb=20210806123735",
+    "caption": "Horned Cat in Yuru-i GeGeGe no Kitarou: Youkai Dotabata Daisensou",
+    "sizeKB": 0
+   },
+   {
+    "file": "Kyotocat.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/fd/Kyotocat.png/revision/latest",
+    "caption": "Cat in Kyoutou Project",
+    "sizeKB": 0
+   },
+   {
+    "file": "NGmomo_Shopping_Cat_degrade_1.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/7d/NGmomo_Shopping_Cat_degrade_1.png/revision/latest",
+    "caption": "Shopping Cat in No Longer MOMOTARO",
+    "sizeKB": 0
+   },
+   {
+    "file": "NGmomo_Shopping_Cat_degrade_2.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/51/NGmomo_Shopping_Cat_degrade_2.png/revision/latest",
+    "caption": "Shopping Cat first degrade in No Longer MOMOTARO",
+    "sizeKB": 0
+   },
+   {
+    "file": "NGmomo_gacha_Mohawk_Tomato.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/39/NGmomo_gacha_Mohawk_Tomato.png/revision/latest",
+    "caption": "Mohawk Tomato obtained from the Gacha in No Longer MOMOTARO",
+    "sizeKB": 0
+   },
+   {
+    "file": "NGmomo_Mohawk_Tomato_degrade_1.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/f7/NGmomo_Mohawk_Tomato_degrade_1.png/revision/latest",
+    "caption": "Mohawk Tomato in No Longer MOMOTARO",
+    "sizeKB": 0
+   },
+   {
+    "file": "NGmomo_Mohawk_Tomato_degrade_2.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/45/NGmomo_Mohawk_Tomato_degrade_2.png/revision/latest",
+    "caption": "Mohawk Tomato first degrade in No Longer MOMOTARO",
+    "sizeKB": 0
+   },
+   {
+    "file": "NGmomo_Mohawk_Tomato_degrade_3.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/cc/NGmomo_Mohawk_Tomato_degrade_3.png/revision/latest",
+    "caption": "Mohawk Tomato second degrade in No Longer MOMOTARO",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/58/Uni000_f00.png/revision/latest",
+    "file": "Uni000_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/0e/Uni000_c00.png/revision/latest",
+    "file": "Uni000_c00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/af/Uni000_s00.png/revision/latest",
+    "file": "Uni000_s00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/28/Uni001_f00.png/revision/latest",
+    "file": "Uni001_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/53/Uni002_f00.png/revision/latest",
+    "file": "Uni002_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/8f/Uni003_f00.png/revision/latest",
+    "file": "Uni003_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/a8/Uni004_f00.png/revision/latest",
+    "file": "Uni004_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/fe/Uni098_c00.png/revision/latest",
+    "file": "Uni098_c00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/9a/Uni107_c00.png/revision/latest",
+    "file": "Uni107_c00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/cd/Uni129_f00.png/revision/latest",
+    "file": "Uni129_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/20/Uni319_f00.png/revision/latest",
+    "file": "Uni319_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/91/Uni005_f00.png/revision/latest",
+    "file": "Uni005_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/41/Uni006_f00.png/revision/latest",
+    "file": "Uni006_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/45/Uni007_f00.png/revision/latest",
+    "file": "Uni007_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/3c/Uni008_f00.png/revision/latest",
+    "file": "Uni008_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/ab/Uni643_f00.png/revision/latest",
+    "file": "Uni643_f00.png"
+   }
+  ]
+ },
+ "tank": {
+  "kind": "cat",
+  "wikiTitle": "Cat ",
+  "gallery": [
+   {
+    "file": "Tankcattwdesc.PNG",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/5d/Tankcattwdesc.PNG/revision/latest",
+    "caption": "Normal Form's description (TW)",
+    "sizeKB": 0
+   },
+   {
+    "file": "Wallcattwdesc.PNG",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/73/Wallcattwdesc.PNG/revision/latest",
+    "caption": "Evolved Form's description (TW)",
+    "sizeKB": 0
+   },
+   {
+    "file": "Erasertw.PNG",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/64/Erasertw.PNG/revision/latest",
+    "caption": "True Form's description (TW)",
+    "sizeKB": 0
+   },
+   {
+    "file": "Tank_Cat(bcp).png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/35/Tank_Cat%28bcp%29.png/revision/latest",
+    "caption": "Normal Form description in The Battle Cats POP!",
+    "sizeKB": 0
+   },
+   {
+    "file": "Tank_Cat_E(bcp).png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/88/Tank_Cat_E%28bcp%29.png/revision/latest",
+    "caption": "Evolved Form description in The Battle Cats POP!",
+    "sizeKB": 0
+   },
+   {
+    "file": "Tank_Cat_TF(bcp).png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/b6/Tank_Cat_TF%28bcp%29.png/revision/latest",
+    "caption": "True Form description in The Battle Cats POP!",
+    "sizeKB": 0
+   },
+   {
+    "file": "Imageedit_4_4518793094.gif",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/97/Imageedit_4_4518793094.gif/revision/latest?cb=20150316050519",
+    "caption": "Tank Cat's attack animation",
+    "sizeKB": 0
+   },
+   {
+    "file": "Imageedit_2_3383124660.gif",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/19/Imageedit_2_3383124660.gif/revision/latest?cb=20150316051624",
+    "caption": "Wall Cat's attack animation",
+    "sizeKB": 0
+   },
+   {
+    "file": "Imageedit_2_8351569812.gif",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/0f/Imageedit_2_8351569812.gif/revision/latest?cb=20150316052639",
+    "caption": "Eraser Cat's attack animation",
+    "sizeKB": 0
+   },
+   {
+    "file": "001_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/8d/001_f.png/revision/latest",
+    "caption": "Tank Cat's spritesheet",
+    "sizeKB": 0
+   },
+   {
+    "file": "001_c.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/26/001_c.png/revision/latest",
+    "caption": "Wall Cat's spritesheet",
+    "sizeKB": 0
+   },
+   {
+    "file": "001_s.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/75/001_s.png/revision/latest",
+    "caption": "Eraser Cat's spritesheet",
+    "sizeKB": 0
+   },
+   {
+    "file": "Udi001_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/a7/Udi001_f.png/revision/latest",
+    "caption": "Tank Cat's Upgrade Menu icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Udi001_c.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/22/Udi001_c.png/revision/latest",
+    "caption": "Wall Cat's Upgrade Menu icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Udi001_s.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/e4/Udi001_s.png/revision/latest",
+    "caption": "Eraser Cat's Upgrade Menu icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Uni001_f00.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/28/Uni001_f00.png/revision/latest?cb=20160725143433",
+    "caption": "Tank Cat's icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Uni001_c00.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/73/Uni001_c00.png/revision/latest?cb=20160725143528",
+    "caption": "Wall Cat's icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Uni001_s00.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/89/Uni001_s00.png/revision/latest?cb=20200928133911",
+    "caption": "Eraser Cat's icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Gatyachara_001_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/87/Gatyachara_001_f.png/revision/latest?cb=20220220194850",
+    "caption": "Tank Cat's sprite in the Storage",
+    "sizeKB": 0
+   },
+   {
+    "file": "001_1_HD.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/f1/001_1_HD.png/revision/latest",
+    "caption": "High quality art of Tank Cat",
+    "sizeKB": 0
+   },
+   {
+    "file": "001_2_HD.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/d/d5/001_2_HD.png/revision/latest",
+    "caption": "High quality art of Wall Cat",
+    "sizeKB": 0
+   },
+   {
+    "file": "001_3_HD.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/90/001_3_HD.png/revision/latest",
+    "caption": "High quality art of Eraser Cat",
+    "sizeKB": 0
+   },
+   {
+    "file": "SFP_2.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/d/d7/SFP_2.png/revision/latest",
+    "caption": "Sketch featuring Moneko, Neneko, Cat, Tank Cat, Axe Cat and Gross Cat",
+    "sizeKB": 0
+   },
+   {
+    "file": "Christmas_2015.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/07/Christmas_2015.png/revision/latest",
+    "caption": "Christmas illustration featuring characters from various PONOS Games",
+    "sizeKB": 0
+   },
+   {
+    "file": "Summer_Illust.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/53/Summer_Illust.jpg/revision/latest",
+    "caption": "Summer Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "Pokemon_Go_Illust.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/ab/Pokemon_Go_Illust.jpg/revision/latest",
+    "caption": "Pok\u00e9mon GO Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "104996173_3206493432740852_6393811133107715722_n.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/68/104996173_3206493432740852_6393811133107715722_n.png/revision/latest",
+    "caption": "",
+    "sizeKB": 0
+   },
+   {
+    "file": "5th_anniversary_illust.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/c5/5th_anniversary_illust.jpg/revision/latest",
+    "caption": "5th Anniversary Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "Aphrodite_Valentines.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/b5/Aphrodite_Valentines.png/revision/latest",
+    "caption": "Tank Cat as a Valentine's treat",
+    "sizeKB": 0
+   },
+   {
+    "file": "2017_Christmas_Illustration.jpeg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/b4/2017_Christmas_Illustration.jpeg/revision/latest",
+    "caption": "2017 Christmas Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "Mochi_new_year_2018.gif",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/71/Mochi_new_year_2018.gif/revision/latest",
+    "caption": "2018 New Year animation",
+    "sizeKB": 0
+   },
+   {
+    "file": "February_Cat_Day_2018.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/24/February_Cat_Day_2018.jpg/revision/latest",
+    "caption": "2018 Cat's Day Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "Bun_Bun_Graduate.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/13/Bun_Bun_Graduate.png/revision/latest",
+    "caption": "Graduation Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "Cat%27s_Day_Illust.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/bc/Cat%27s_Day_Illust.png/revision/latest",
+    "caption": "Cat's Day Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "Christmas_illust.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/8b/Christmas_illust.jpg/revision/latest",
+    "caption": "Christmas Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "Sh%C5%8Dwa_Day_Announcement_2019.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/11/Sh%C5%8Dwa_Day_Announcement_2019.png/revision/latest",
+    "caption": "2019 Sh\u014dwa Day Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "End_of_Summer_2019.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/6d/End_of_Summer_2019.png/revision/latest",
+    "caption": "2019 End of Summer Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "2019_Hallowindy.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/8c/2019_Hallowindy.jpg/revision/latest",
+    "caption": "2019 Halloween Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "Christmas_illust_2019.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/6a/Christmas_illust_2019.png/revision/latest",
+    "caption": "2019 Christmas Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "New_Year%27s_art.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/ba/New_Year%27s_art.jpg/revision/latest",
+    "caption": "2020 New Year Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "Bean_Cats_art.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/ef/Bean_Cats_art.png/revision/latest",
+    "caption": "",
+    "sizeKB": 0
+   },
+   {
+    "file": "DvwO6LgWwAACjr-.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/fd/DvwO6LgWwAACjr-.png/revision/latest",
+    "caption": "",
+    "sizeKB": 0
+   },
+   {
+    "file": "Hug_your_cat_day_en.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/9e/Hug_your_cat_day_en.png/revision/latest",
+    "caption": "Celebratory campaign for Hug Your Cat Day held in 2015 featuring Cat, Tank Cat, Gross Cat and Maiko Cat",
+    "sizeKB": 0
+   },
+   {
+    "file": "Version_6.4_Announcement.gif",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/c2/Version_6.4_Announcement.gif/revision/latest",
+    "caption": "Animation included with an announcement of Ver. 6.4's release",
+    "sizeKB": 0
+   },
+   {
+    "file": "Bnr.gif",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/af/Bnr.gif/revision/latest",
+    "caption": "The 2014 April Fools' Jokes article banner featuring Cat, Tank Cat, Axe Cat, Gross Cat and Titan Cat",
+    "sizeKB": 0
+   },
+   {
+    "file": "Bn01_2016.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/06/Bn01_2016.png/revision/latest",
+    "caption": "Tank Cat as an advertisement in the 2016 April Fools' Jokes article #1",
+    "sizeKB": 0
+   },
+   {
+    "file": "Sidebn02_2016.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/7d/Sidebn02_2016.png/revision/latest",
+    "caption": "Tank Cat as an advertisement in the 2016 April Fools' Jokes article #2",
+    "sizeKB": 0
+   },
+   {
+    "file": "Main_img02_2017.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/ce/Main_img02_2017.jpg/revision/latest",
+    "caption": "Wall Cat as an advertisement in the 2017 April Fools' Jokes article",
+    "sizeKB": 0
+   },
+   {
+    "file": "Main_img02_2019.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/64/Main_img02_2019.jpg/revision/latest",
+    "caption": "Cat, Tank Cat, Axe Cat and Gross Cat featured as the main subject in the 2019 April Fools' Jokes article",
+    "sizeKB": 0
+   },
+   {
+    "file": "Main_img01_2022.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/ec/Main_img01_2022.png/revision/latest",
+    "caption": "Cat, Tank Cat and Titan Cat featured on the main article in the 2022 April Fools' Jokes article #1",
+    "sizeKB": 0
+   },
+   {
+    "file": "Main_img02_2022.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/53/Main_img02_2022.png/revision/latest",
+    "caption": "The Normal Cats, Unknown Cat, Doge and Snache featured on the main article in the 2022 April Fools' Jokes article #2",
+    "sizeKB": 0
+   },
+   {
+    "file": "Main_img01_2023.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/9e/Main_img01_2023.jpg/revision/latest",
+    "caption": "Tank Cat featured on the 2023 April Fools' Jokes article",
+    "sizeKB": 0
+   },
+   {
+    "file": "Sns03_2023.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/e1/Sns03_2023.png/revision/latest",
+    "caption": "Cat and Tank Cat featured in an advertisement for PONOS' Instagram in the April Fools' Jokes 2023 article",
+    "sizeKB": 0
+   },
+   {
+    "file": "Ad03.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/a1/Ad03.png/revision/latest",
+    "caption": "Tank Cat when clicking on an ad in the 2020 April Fools' Jokes article",
+    "sizeKB": 0
+   },
+   {
+    "file": "Ad15.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/24/Ad15.png/revision/latest",
+    "caption": "Wall Cat when clicking on an ad in the 2021 April Fools' Jokes article",
+    "sizeKB": 0
+   },
+   {
+    "file": "Ad01_2023.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/31/Ad01_2023.png/revision/latest",
+    "caption": "Tank Cat when clicking on an ad in the 2023 April Fools' Jokes article",
+    "sizeKB": 0
+   },
+   {
+    "file": "2024error1.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/f3/2024error1.png/revision/latest",
+    "caption": "Tank Cat when clicking on an ad in the 2024 April Fools' Jokes article",
+    "sizeKB": 0
+   },
+   {
+    "file": "SanRum_Tank_1.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/2f/SanRum_Tank_1.jpg/revision/latest",
+    "caption": "Tank Cat's general card in Sangokushi Rumble",
+    "sizeKB": 0
+   },
+   {
+    "file": "SanRum_Tank_2.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/e2/SanRum_Tank_2.jpg/revision/latest",
+    "caption": "Promotional image for Tank Cat in Sangokushi Rumble",
+    "sizeKB": 0
+   },
+   {
+    "file": "MonHun_Collab_Notice.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/e8/MonHun_Collab_Notice.jpg/revision/latest",
+    "caption": "Tank Cats in the background of the Monster Hunter Collaboration Event's notice",
+    "sizeKB": 0
+   },
+   {
+    "file": "MonHun_NP.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/ee/MonHun_NP.jpg/revision/latest",
+    "caption": "Card featuring various Normal and Special Cats in Monster Hunter",
+    "sizeKB": 0
+   },
+   {
+    "file": "MonHun_016_1.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/83/MonHun_016_1.jpg/revision/latest",
+    "caption": "Tank Cats in the background of Moneko's card in Monster Hunter",
+    "sizeKB": 0
+   },
+   {
+    "file": "MonHun_016_2.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/4b/MonHun_016_2.jpg/revision/latest",
+    "caption": "Tank Cats in the background of Miss MONEKO's card in Monster Hunter",
+    "sizeKB": 0
+   },
+   {
+    "file": "MSD_wall_cat.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/25/MSD_wall_cat.png/revision/latest",
+    "caption": "Wall Cat in Metal Slug Defense",
+    "sizeKB": 0
+   },
+   {
+    "file": "MSD_killer_wall_cat.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/f7/MSD_killer_wall_cat.png/revision/latest",
+    "caption": "Killer Wall Cat in Metal Slug Defense",
+    "sizeKB": 0
+   },
+   {
+    "file": "CaD_tank_cat_1.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/38/CaD_tank_cat_1.jpg/revision/latest?cb=20220308211235",
+    "caption": "Tank Cat in Castle &amp; Dragon",
+    "sizeKB": 0
+   },
+   {
+    "file": "CaD_tank_cat_2.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/45/CaD_tank_cat_2.jpg/revision/latest",
+    "caption": "Black cat costume",
+    "sizeKB": 0
+   },
+   {
+    "file": "CaD_tank_cat_3.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/4a/CaD_tank_cat_3.jpg/revision/latest?cb=20220308211236",
+    "caption": "Buchi cat costume",
+    "sizeKB": 0
+   },
+   {
+    "file": "CaD_tank_cat_4.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/97/CaD_tank_cat_4.jpg/revision/latest?cb=20220308211237",
+    "caption": "Gold cat costume",
+    "sizeKB": 0
+   },
+   {
+    "file": "Kitarotank1.jpeg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/bd/Kitarotank1.jpeg/revision/latest",
+    "caption": "Tank Cat in Yuru-i GeGeGe no Kitarou: Youkai Dotabata Daisensou",
+    "sizeKB": 0
+   },
+   {
+    "file": "Kitarotank2.jpeg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/2b/Kitarotank2.jpeg/revision/latest",
+    "caption": "Colored Tank Cat in Yuru-i GeGeGe no Kitarou: Youkai Dotabata Daisensou",
+    "sizeKB": 0
+   },
+   {
+    "file": "Gourgouskitarotank.jpeg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/10/Gourgouskitarotank.jpeg/revision/latest",
+    "caption": "Bank \u2606 Cat in Yuru-i GeGeGe no Kitarou: Youkai Dotabata Daisensou",
+    "sizeKB": 0
+   },
+   {
+    "file": "Herculeskitarotank.jpeg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/12/Herculeskitarotank.jpeg/revision/latest",
+    "caption": "Horned Tank in Yuru-i GeGeGe no Kitarou: Youkai Dotabata Daisensou",
+    "sizeKB": 0
+   },
+   {
+    "file": "Kyototank.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/53/Kyototank.png/revision/latest",
+    "caption": "Tank Cat in Kyoutou Project",
+    "sizeKB": 0
+   },
+   {
+    "file": "NGmomo_gacha_Eraser_Raddish.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/6a/NGmomo_gacha_Eraser_Raddish.png/revision/latest",
+    "caption": "Eraser Radish obtained from the Gacha in No Longer MOMOTARO",
+    "sizeKB": 0
+   },
+   {
+    "file": "NGmomo_Eraser_Raddish_degrade_1.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/8d/NGmomo_Eraser_Raddish_degrade_1.png/revision/latest",
+    "caption": "Eraser Radish in No Longer MOMOTARO",
+    "sizeKB": 0
+   },
+   {
+    "file": "NGmomo_Eraser_Raddish_degrade_2.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/33/NGmomo_Eraser_Raddish_degrade_2.png/revision/latest",
+    "caption": "Eraser Radish first degrade in No Longer MOMOTARO",
+    "sizeKB": 0
+   },
+   {
+    "file": "NGmomo_Eraser_Raddish_degrade_3.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/8b/NGmomo_Eraser_Raddish_degrade_3.png/revision/latest",
+    "caption": "Eraser Radish second degrade in No Longer MOMOTARO",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/28/Uni001_f00.png/revision/latest",
+    "file": "Uni001_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/73/Uni001_c00.png/revision/latest",
+    "file": "Uni001_c00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/89/Uni001_s00.png/revision/latest",
+    "file": "Uni001_s00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/58/Uni000_f00.png/revision/latest",
+    "file": "Uni000_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/53/Uni002_f00.png/revision/latest",
+    "file": "Uni002_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/8f/Uni003_f00.png/revision/latest",
+    "file": "Uni003_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/a8/Uni004_f00.png/revision/latest",
+    "file": "Uni004_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/37/Uni169_c00.png/revision/latest",
+    "file": "Uni169_c00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/91/Uni005_f00.png/revision/latest",
+    "file": "Uni005_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/41/Uni006_f00.png/revision/latest",
+    "file": "Uni006_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/45/Uni007_f00.png/revision/latest",
+    "file": "Uni007_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/3c/Uni008_f00.png/revision/latest",
+    "file": "Uni008_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/ab/Uni643_f00.png/revision/latest",
+    "file": "Uni643_f00.png"
+   }
+  ]
+ },
+ "axe": {
+  "kind": "cat",
+  "wikiTitle": "Cat ",
+  "gallery": [
+   {
+    "file": "Axetw.PNG",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/89/Axetw.PNG/revision/latest",
+    "caption": "Normal Form description (TW)",
+    "sizeKB": 0
+   },
+   {
+    "file": "Bravetw.PNG",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/7a/Bravetw.PNG/revision/latest",
+    "caption": "Evolved Form description (TW)",
+    "sizeKB": 0
+   },
+   {
+    "file": "Darktw.PNG",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/77/Darktw.PNG/revision/latest",
+    "caption": "True Form description (TW)",
+    "sizeKB": 0
+   },
+   {
+    "file": "Axe_Cat(bcp).png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/ac/Axe_Cat%28bcp%29.png/revision/latest",
+    "caption": "Normal Form description in The Battle Cats POP!",
+    "sizeKB": 0
+   },
+   {
+    "file": "Axe_Cat_E(bcp).png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/49/Axe_Cat_E%28bcp%29.png/revision/latest",
+    "caption": "Evolved Form description in The Battle Cats POP!",
+    "sizeKB": 0
+   },
+   {
+    "file": "Axe_Cat_TF(bcp).png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/bd/Axe_Cat_TF%28bcp%29.png/revision/latest",
+    "caption": "True Form description in The Battle Cats POP!",
+    "sizeKB": 0
+   },
+   {
+    "file": "Imageedit_2_2352941125.gif",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/52/Imageedit_2_2352941125.gif/revision/latest?cb=20150317043730",
+    "caption": "Axe Cat's attack animation",
+    "sizeKB": 0
+   },
+   {
+    "file": "Imageedit_2_7609248030.gif",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/84/Imageedit_2_7609248030.gif/revision/latest?cb=20150318013121",
+    "caption": "Brave Cat's attack animation",
+    "sizeKB": 0
+   },
+   {
+    "file": "Dark_Cat_Attack_Animation.gif",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/ce/Dark_Cat_Attack_Animation.gif/revision/latest?cb=20150318135241",
+    "caption": "Dark Cat's attack animation",
+    "sizeKB": 0
+   },
+   {
+    "file": "002_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/2c/002_f.png/revision/latest",
+    "caption": "Axe Cat's spritesheet",
+    "sizeKB": 0
+   },
+   {
+    "file": "002_c.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/f3/002_c.png/revision/latest",
+    "caption": "Brave Cat's spritesheet",
+    "sizeKB": 0
+   },
+   {
+    "file": "002_s.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/9a/002_s.png/revision/latest",
+    "caption": "Dark Cat's spritesheet",
+    "sizeKB": 0
+   },
+   {
+    "file": "Udi002_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/90/Udi002_f.png/revision/latest",
+    "caption": "Axe Cat's Upgrade Menu icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Udi002_c.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/8d/Udi002_c.png/revision/latest",
+    "caption": "Brave Cat's Upgrade Menu icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Udi002_s.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/cf/Udi002_s.png/revision/latest",
+    "caption": "Dark Cat's Upgrade Menu icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Uni002_f00.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/53/Uni002_f00.png/revision/latest?cb=20160725143728",
+    "caption": "Axe Cat's icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Uni002_c00.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/d/dd/Uni002_c00.png/revision/latest?cb=20160725143739",
+    "caption": "Brave Cat's icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Uni002_s00.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/38/Uni002_s00.png/revision/latest?cb=20200928133915",
+    "caption": "Dark Cat's icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Gatyachara_002_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/63/Gatyachara_002_f.png/revision/latest?cb=20220220200207",
+    "caption": "Axe Cat's sprite in the Storage",
+    "sizeKB": 0
+   },
+   {
+    "file": "002_1_HD.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/9e/002_1_HD.png/revision/latest",
+    "caption": "High quality art of Axe Cat",
+    "sizeKB": 0
+   },
+   {
+    "file": "002_2_HD.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/7a/002_2_HD.png/revision/latest",
+    "caption": "High quality art of Brave Cat",
+    "sizeKB": 0
+   },
+   {
+    "file": "002_3_HD.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/21/002_3_HD.png/revision/latest",
+    "caption": "High quality art of Dark Cat",
+    "sizeKB": 0
+   },
+   {
+    "file": "SFP_2.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/d/d7/SFP_2.png/revision/latest",
+    "caption": "Sketch featuring Moneko, Neneko, Cat, Tank Cat, Axe Cat and Gross Cat",
+    "sizeKB": 0
+   },
+   {
+    "file": "5th_anniversary_illust.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/c5/5th_anniversary_illust.jpg/revision/latest",
+    "caption": "5th Anniversary Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "Bnr.gif",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/af/Bnr.gif/revision/latest",
+    "caption": "The 2014 April Fools' Jokes article banner featuring Cat, Tank Cat, Axe Cat, Gross Cat and Titan Cat",
+    "sizeKB": 0
+   },
+   {
+    "file": "Main_img02_2019.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/64/Main_img02_2019.jpg/revision/latest",
+    "caption": "Cat, Tank Cat, Axe Cat and Gross Cat featured as the main subject in the 2019 April Fools' Jokes article",
+    "sizeKB": 0
+   },
+   {
+    "file": "Main_img02_2022.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/53/Main_img02_2022.png/revision/latest",
+    "caption": "The Normal Cats, Unknown Cat, Doge and Snache featured on the main article in the 2022 April Fools' Joke article",
+    "sizeKB": 0
+   },
+   {
+    "file": "Bn02_2022.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/93/Bn02_2022.jpg/revision/latest",
+    "caption": "Brave Cat, Doge, Snache and Those Guys as an advertisement in the 2022 April Fools' Jokes article",
+    "sizeKB": 0
+   },
+   {
+    "file": "MonHun_NP.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/ee/MonHun_NP.jpg/revision/latest",
+    "caption": "Card featuring various Normal and Special Cats in Monster Hunter",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/53/Uni002_f00.png/revision/latest",
+    "file": "Uni002_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/d/dd/Uni002_c00.png/revision/latest",
+    "file": "Uni002_c00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/38/Uni002_s00.png/revision/latest",
+    "file": "Uni002_s00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/58/Uni000_f00.png/revision/latest",
+    "file": "Uni000_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/28/Uni001_f00.png/revision/latest",
+    "file": "Uni001_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/8f/Uni003_f00.png/revision/latest",
+    "file": "Uni003_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/a8/Uni004_f00.png/revision/latest",
+    "file": "Uni004_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/76/Uni013_c00.png/revision/latest",
+    "file": "Uni013_c00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/99/Uni072_c00.png/revision/latest",
+    "file": "Uni072_c00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/67/Uni013_s00.png/revision/latest",
+    "file": "Uni013_s00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/8d/Uni130_f00.png/revision/latest",
+    "file": "Uni130_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/cd/Uni044_f00.png/revision/latest",
+    "file": "Uni044_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/8d/Uni177_f00.png/revision/latest",
+    "file": "Uni177_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/a7/Uni525_c00.png/revision/latest",
+    "file": "Uni525_c00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/ae/Uni078_s00.png/revision/latest",
+    "file": "Uni078_s00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/91/Uni005_f00.png/revision/latest",
+    "file": "Uni005_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/41/Uni006_f00.png/revision/latest",
+    "file": "Uni006_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/45/Uni007_f00.png/revision/latest",
+    "file": "Uni007_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/3c/Uni008_f00.png/revision/latest",
+    "file": "Uni008_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/ab/Uni643_f00.png/revision/latest",
+    "file": "Uni643_f00.png"
+   }
+  ]
+ },
+ "gross": {
+  "kind": "cat",
+  "wikiTitle": "Cat ",
+  "gallery": [
+   {
+    "file": "Grosstw.PNG",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/5e/Grosstw.PNG/revision/latest",
+    "caption": "Normal Form's description (TW)",
+    "sizeKB": 0
+   },
+   {
+    "file": "Sexylegstw.PNG",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/27/Sexylegstw.PNG/revision/latest",
+    "caption": "Evolved Form's description (TW)",
+    "sizeKB": 0
+   },
+   {
+    "file": "Macholegstw.PNG",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/96/Macholegstw.PNG/revision/latest",
+    "caption": "True Form's description (TW)",
+    "sizeKB": 0
+   },
+   {
+    "file": "Beautiful-legs.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/1e/Beautiful-legs.png/revision/latest",
+    "caption": "Sexy Legs Cat's description (Old)",
+    "sizeKB": 0
+   },
+   {
+    "file": "Gross_Cat(bcp).png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/74/Gross_Cat%28bcp%29.png/revision/latest",
+    "caption": "Normal Form description in The Battle Cats POP!",
+    "sizeKB": 0
+   },
+   {
+    "file": "Gross_Cat_E(bcp).png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/38/Gross_Cat_E%28bcp%29.png/revision/latest",
+    "caption": "Evolved Form description in The Battle Cats POP!",
+    "sizeKB": 0
+   },
+   {
+    "file": "Gross_Cat_TF(bcp).png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/a7/Gross_Cat_TF%28bcp%29.png/revision/latest",
+    "caption": "True Form description in The Battle Cats POP!",
+    "sizeKB": 0
+   },
+   {
+    "file": "Macho_Leg_Cat_BCP!_JP.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/7c/Macho_Leg_Cat_BCP%21_JP.png/revision/latest",
+    "caption": "True Form description in Tobidasu\uff01 Nyanko Daisens\u014d",
+    "sizeKB": 0
+   },
+   {
+    "file": "Imageedit_2_7947253160.gif",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/52/Imageedit_2_7947253160.gif/revision/latest",
+    "caption": "Gross Cat's attack animation",
+    "sizeKB": 0
+   },
+   {
+    "file": "Imageedit_2_4433830332.gif",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/d/d8/Imageedit_2_4433830332.gif/revision/latest",
+    "caption": "Sexy Legs Cat's attack animation",
+    "sizeKB": 0
+   },
+   {
+    "file": "MachoLegsAtk.gif",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/c4/MachoLegsAtk.gif/revision/latest",
+    "caption": "Macho Leg Cat's attack animation",
+    "sizeKB": 0
+   },
+   {
+    "file": "003_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/48/003_f.png/revision/latest",
+    "caption": "Gross Cat's spritesheet",
+    "sizeKB": 0
+   },
+   {
+    "file": "003_c.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/fd/003_c.png/revision/latest",
+    "caption": "Sexy Legs Cat's spritesheet",
+    "sizeKB": 0
+   },
+   {
+    "file": "003_s.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/18/003_s.png/revision/latest",
+    "caption": "Macho Leg Cat's spritesheet",
+    "sizeKB": 0
+   },
+   {
+    "file": "Udi003_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/3f/Udi003_f.png/revision/latest",
+    "caption": "Gross Cat's Upgrade Menu icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Udi003_c.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/9b/Udi003_c.png/revision/latest",
+    "caption": "Sexy Legs Cat's Upgrade Menu icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Udi003_s.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/24/Udi003_s.png/revision/latest",
+    "caption": "Macho Leg  Cat's Upgrade Menu icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Uni003_f00.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/8f/Uni003_f00.png/revision/latest?cb=20160725150401",
+    "caption": "Gross Cat's icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Uni003_c00.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/5f/Uni003_c00.png/revision/latest?cb=20160725150412",
+    "caption": "Sexy Legs Cat's icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Uni003_s00.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/e3/Uni003_s00.png/revision/latest?cb=20200928133918",
+    "caption": "Macho Leg  Cat's icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Gatyachara_003_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/c0/Gatyachara_003_f.png/revision/latest?cb=20220220194619",
+    "caption": "Gross Cat's sprite in the Storage",
+    "sizeKB": 0
+   },
+   {
+    "file": "003_1_HD.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/0d/003_1_HD.png/revision/latest",
+    "caption": "High quality art of Gross Cat",
+    "sizeKB": 0
+   },
+   {
+    "file": "003_2_HD.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/6d/003_2_HD.png/revision/latest",
+    "caption": "High quality art of Sexy Legs Cat",
+    "sizeKB": 0
+   },
+   {
+    "file": "003_3_HD.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/ba/003_3_HD.png/revision/latest",
+    "caption": "High quality art of Macho Leg Cat",
+    "sizeKB": 0
+   },
+   {
+    "file": "BeefMacho_Cat.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/25/BeefMacho_Cat.png/revision/latest",
+    "caption": "Perfect combination of Macho Legs Cat and Beefcake Cat",
+    "sizeKB": 0
+   },
+   {
+    "file": "SFP_2.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/d/d7/SFP_2.png/revision/latest",
+    "caption": "Sketch featuring Moneko, Neneko, Cat, Tank Cat, Axe Cat and Gross Cat",
+    "sizeKB": 0
+   },
+   {
+    "file": "5th_anniversary_illust.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/c5/5th_anniversary_illust.jpg/revision/latest",
+    "caption": "5th Anniversary Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "2017_Christmas_Illustration.jpeg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/b4/2017_Christmas_Illustration.jpeg/revision/latest",
+    "caption": "2017 Christmas Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "Autumn_Athletics_2018.jpeg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/48/Autumn_Athletics_2018.jpeg/revision/latest",
+    "caption": "2018 Sports Day Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "Bnr.gif",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/af/Bnr.gif/revision/latest",
+    "caption": "The 2014 April Fools' Jokes article banner featuring Cat, Tank Cat, Axe Cat, Gross Cat and Titan Cat",
+    "sizeKB": 0
+   },
+   {
+    "file": "Mainimg.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/85/Mainimg.png/revision/latest",
+    "caption": "Sexy Legs Cat featured as the main subject in the 2014 April Fools' Jokes article",
+    "sizeKB": 0
+   },
+   {
+    "file": "Hug_your_cat_day_en.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/9e/Hug_your_cat_day_en.png/revision/latest",
+    "caption": "Celebratory campaign for Hug Your Cat Day held in 2015 featuring Cat, Tank Cat, Gross Cat and Maiko Cat",
+    "sizeKB": 0
+   },
+   {
+    "file": "Main_img02_2019.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/64/Main_img02_2019.jpg/revision/latest",
+    "caption": "Cat, Tank Cat, Axe Cat and Gross Cat featured as the main subject in the 2019 April Fools' Jokes article",
+    "sizeKB": 0
+   },
+   {
+    "file": "Side_bn01_2019.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/8c/Side_bn01_2019.png/revision/latest",
+    "caption": "Sexy Legs Cat as an advertisement in the 2019 April Fool's Jokes article",
+    "sizeKB": 0
+   },
+   {
+    "file": "129_f_200_f_halloween.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/47/129_f_200_f_halloween.png/revision/latest",
+    "caption": "",
+    "sizeKB": 0
+   },
+   {
+    "file": "Main_img02_2022.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/53/Main_img02_2022.png/revision/latest",
+    "caption": "The Normal Cats, Unknown Cat, Doge and Snache featured on the main article in the 2022 April Fools' Joke article",
+    "sizeKB": 0
+   },
+   {
+    "file": "Main_img01_2023.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/9e/Main_img01_2023.jpg/revision/latest",
+    "caption": "Gross Cat featured on the 2023 April Fools' Jokes article",
+    "sizeKB": 0
+   },
+   {
+    "file": "Ad02_2023.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/2b/Ad02_2023.png/revision/latest",
+    "caption": "Gross Cat and Sexy Legs Cat when clicking on an ad in the 2023 April Fools' Joke article",
+    "sizeKB": 0
+   },
+   {
+    "file": "SanRum_Gross_1.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/d/d0/SanRum_Gross_1.jpg/revision/latest",
+    "caption": "Gross Cat in Sangokushi Rumble",
+    "sizeKB": 0
+   },
+   {
+    "file": "SanRum_Gross_2.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/a7/SanRum_Gross_2.jpg/revision/latest",
+    "caption": "Sexy Legs Cat in Sangokushi Rumble",
+    "sizeKB": 0
+   },
+   {
+    "file": "SanRum_Gross_3.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/cb/SanRum_Gross_3.jpg/revision/latest",
+    "caption": "Gross Cat's general card in Sangokushi Rumble",
+    "sizeKB": 0
+   },
+   {
+    "file": "SanRum_Gross_4.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/2e/SanRum_Gross_4.jpg/revision/latest",
+    "caption": "Promotional image for Gross Cat in Sangokushi Rumble",
+    "sizeKB": 0
+   },
+   {
+    "file": "MonHun_Collab_Notice.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/e8/MonHun_Collab_Notice.jpg/revision/latest",
+    "caption": "Gross Cats in the background of the Monster Hunter Collaboration Event's notice",
+    "sizeKB": 0
+   },
+   {
+    "file": "MonHun_NP.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/ee/MonHun_NP.jpg/revision/latest",
+    "caption": "Card featuring various Normal and Special Cats in Monster Hunter",
+    "sizeKB": 0
+   },
+   {
+    "file": "MSD_gross_cat.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/72/MSD_gross_cat.png/revision/latest",
+    "caption": "Gross Cat in Metal Slug Defense",
+    "sizeKB": 0
+   },
+   {
+    "file": "MSD_killer_gross_cat.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/69/MSD_killer_gross_cat.png/revision/latest",
+    "caption": "Killer Gross Cat in Metal Slug Defense",
+    "sizeKB": 0
+   },
+   {
+    "file": "CaD_gross_cat_1.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/34/CaD_gross_cat_1.jpg/revision/latest",
+    "caption": "Gross Cat in Castle &amp; Dragon",
+    "sizeKB": 0
+   },
+   {
+    "file": "CaD_gross_cat_2.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/b9/CaD_gross_cat_2.jpg/revision/latest",
+    "caption": "Black cat costume",
+    "sizeKB": 0
+   },
+   {
+    "file": "CaD_gross_cat_3.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/b0/CaD_gross_cat_3.jpg/revision/latest",
+    "caption": "Buchi cat costume",
+    "sizeKB": 0
+   },
+   {
+    "file": "CaD_gross_cat_4.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/d/d4/CaD_gross_cat_4.jpg/revision/latest",
+    "caption": "Gold cat costume",
+    "sizeKB": 0
+   },
+   {
+    "file": "GGPC_003_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/45/GGPC_003_f.png/revision/latest",
+    "caption": "Gross Cat's spritesheet in Go! Go! Pogo Cat",
+    "sizeKB": 0
+   },
+   {
+    "file": "Kitarogross1.jpeg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/44/Kitarogross1.jpeg/revision/latest",
+    "caption": "Gross Cat in Yuru-i GeGeGe no Kitarou: Youkai Dotabata Daisensou",
+    "sizeKB": 0
+   },
+   {
+    "file": "Kitarogross2.jpeg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/07/Kitarogross2.jpeg/revision/latest",
+    "caption": "Kimoneko Musume in Yuru-i GeGeGe no Kitarou: Youkai Dotabata Daisensou",
+    "sizeKB": 0
+   },
+   {
+    "file": "Gourgouskitarogross.jpeg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/61/Gourgouskitarogross.jpeg/revision/latest",
+    "caption": "Gross \u2606 Geous in Yuru-i GeGeGe no Kitarou: Youkai Dotabata Daisensou",
+    "sizeKB": 0
+   },
+   {
+    "file": "Herculeskitarogross.jpeg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/10/Herculeskitarogross.jpeg/revision/latest",
+    "caption": "Horned Gross Cat in Yuru-i GeGeGe no Kitarou: Youkai Dotabata Daisensou",
+    "sizeKB": 0
+   },
+   {
+    "file": "Kitaromacholegs.jpeg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/59/Kitaromacholegs.jpeg/revision/latest",
+    "caption": "Macho Leg Cat in Yuru-i GeGeGe no Kitarou: Youkai Dotabata Daisensou",
+    "sizeKB": 0
+   },
+   {
+    "file": "Kyotogross.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/1f/Kyotogross.png/revision/latest",
+    "caption": "Gross Cat in Kyoutou Project",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/8f/Uni003_f00.png/revision/latest",
+    "file": "Uni003_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/5f/Uni003_c00.png/revision/latest",
+    "file": "Uni003_c00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/e3/Uni003_s00.png/revision/latest",
+    "file": "Uni003_s00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/58/Uni000_f00.png/revision/latest",
+    "file": "Uni000_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/28/Uni001_f00.png/revision/latest",
+    "file": "Uni001_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/53/Uni002_f00.png/revision/latest",
+    "file": "Uni002_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/a8/Uni004_f00.png/revision/latest",
+    "file": "Uni004_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/6e/Uni168_c00.png/revision/latest",
+    "file": "Uni168_c00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/c8/Uni094_c00.png/revision/latest",
+    "file": "Uni094_c00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/b2/Uni009_s00.png/revision/latest",
+    "file": "Uni009_s00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/65/Uni094_f00.png/revision/latest",
+    "file": "Uni094_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/f3/Uni176_c00.png/revision/latest",
+    "file": "Uni176_c00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/d/d6/Uni227_c00.png/revision/latest",
+    "file": "Uni227_c00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/91/Uni005_f00.png/revision/latest",
+    "file": "Uni005_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/41/Uni006_f00.png/revision/latest",
+    "file": "Uni006_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/45/Uni007_f00.png/revision/latest",
+    "file": "Uni007_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/3c/Uni008_f00.png/revision/latest",
+    "file": "Uni008_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/ab/Uni643_f00.png/revision/latest",
+    "file": "Uni643_f00.png"
+   }
+  ]
+ },
+ "cow": {
+  "kind": "cat",
+  "wikiTitle": "Cat ",
+  "gallery": [
+   {
+    "file": "Cowtw.PNG",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/3b/Cowtw.PNG/revision/latest",
+    "caption": "Normal Form description (TW)",
+    "sizeKB": 0
+   },
+   {
+    "file": "Girrafetw.PNG",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/8b/Girrafetw.PNG/revision/latest",
+    "caption": "Evolved Form description (TW)",
+    "sizeKB": 0
+   },
+   {
+    "file": "Liontw.PNG",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/2f/Liontw.PNG/revision/latest",
+    "caption": "True Form description (TW)",
+    "sizeKB": 0
+   },
+   {
+    "file": "Cow_Cat(bcp).png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/88/Cow_Cat%28bcp%29.png/revision/latest",
+    "caption": "Normal Form description in The Battle Cats POP!",
+    "sizeKB": 0
+   },
+   {
+    "file": "Cow_Cat_E(bcp).png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/f6/Cow_Cat_E%28bcp%29.png/revision/latest",
+    "caption": "Evolved Form description in The Battle Cats POP!",
+    "sizeKB": 0
+   },
+   {
+    "file": "Cow_Cat_TF(bcp).png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/10/Cow_Cat_TF%28bcp%29.png/revision/latest",
+    "caption": "True Form description in The Battle Cats POP!",
+    "sizeKB": 0
+   },
+   {
+    "file": "Cow_Cat_Attack_Animation.gif",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/85/Cow_Cat_Attack_Animation.gif/revision/latest?cb=20150318185153",
+    "caption": "Cow Cat's attack animation",
+    "sizeKB": 0
+   },
+   {
+    "file": "Giraffe_Cat_Attack_Animation.gif",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/6b/Giraffe_Cat_Attack_Animation.gif/revision/latest?cb=20150318185757",
+    "caption": "Giraffe Cat's attack animation",
+    "sizeKB": 0
+   },
+   {
+    "file": "Lion_Cat_Attack_Animation.gif",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/96/Lion_Cat_Attack_Animation.gif/revision/latest?cb=20150318190348",
+    "caption": "Lion Cat's attack animation",
+    "sizeKB": 0
+   },
+   {
+    "file": "004_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/3d/004_f.png/revision/latest",
+    "caption": "Cow Cat's spritesheet",
+    "sizeKB": 0
+   },
+   {
+    "file": "004_c.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/31/004_c.png/revision/latest",
+    "caption": "Giraffe Cat's spritesheet",
+    "sizeKB": 0
+   },
+   {
+    "file": "004_s.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/84/004_s.png/revision/latest",
+    "caption": "Lion Cat's spritesheet",
+    "sizeKB": 0
+   },
+   {
+    "file": "Udi004_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/b1/Udi004_f.png/revision/latest",
+    "caption": "Cow Cat's Upgrade Menu icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Udi004_c.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/59/Udi004_c.png/revision/latest",
+    "caption": "Giraffe Cat's Upgrade Menu icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Udi004_s.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/d/d2/Udi004_s.png/revision/latest",
+    "caption": "Lion Cat's Upgrade Menu icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Uni004_f00.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/a8/Uni004_f00.png/revision/latest?cb=20160725150455",
+    "caption": "Cow Cat's icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Uni004_c00.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/9b/Uni004_c00.png/revision/latest?cb=20160725150554",
+    "caption": "Giraffe Cat's icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Uni004_s00.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/2d/Uni004_s00.png/revision/latest?cb=20200928134425",
+    "caption": "Lion Cat's icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Gatyachara_004_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/29/Gatyachara_004_f.png/revision/latest?cb=20220220212232",
+    "caption": "Cow Cat's sprite in the Storage",
+    "sizeKB": 0
+   },
+   {
+    "file": "004_1_HD.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/b6/004_1_HD.png/revision/latest",
+    "caption": "High quality art of Cow Cat",
+    "sizeKB": 0
+   },
+   {
+    "file": "004_2_HD.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/a4/004_2_HD.png/revision/latest",
+    "caption": "High quality art of Giraffe Cat",
+    "sizeKB": 0
+   },
+   {
+    "file": "004_3_HD.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/8e/004_3_HD.png/revision/latest",
+    "caption": "High quality art of Lion Cat",
+    "sizeKB": 0
+   },
+   {
+    "file": "Tanabata_illust.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/51/Tanabata_illust.jpg/revision/latest",
+    "caption": "Tanabata Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "5th_anniversary_illust.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/c5/5th_anniversary_illust.jpg/revision/latest",
+    "caption": "5th Anniversary Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "2017_Christmas_Illustration.jpeg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/b4/2017_Christmas_Illustration.jpeg/revision/latest",
+    "caption": "2017 Christmas Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "DvwO6LgWwAACjr-.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/fd/DvwO6LgWwAACjr-.png/revision/latest",
+    "caption": "Cow Cat as a playing card",
+    "sizeKB": 0
+   },
+   {
+    "file": "Special_Swing_5.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/cf/Special_Swing_5.jpg/revision/latest",
+    "caption": "Giraffe Cat as a keychain",
+    "sizeKB": 0
+   },
+   {
+    "file": "Main_img02_2022.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/53/Main_img02_2022.png/revision/latest",
+    "caption": "The Normal Cats, Unknown Cat, Doge and Snache featured on the main article in the 2022 April Fools' Jokes article #2",
+    "sizeKB": 0
+   },
+   {
+    "file": "Main_img01_2024.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/2f/Main_img01_2024.png/revision/latest",
+    "caption": "Lion Cat among several other Cats in the 2024 April Fools' Jokes article",
+    "sizeKB": 0
+   },
+   {
+    "file": "T%C5%8Dkai_6.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/3b/T%C5%8Dkai_6.jpg/revision/latest?cb=20211203031748",
+    "caption": "A local cat that features Cow Cat",
+    "sizeKB": 0
+   },
+   {
+    "file": "Ad06.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/8e/Ad06.png/revision/latest",
+    "caption": "Cow Cats when clicking on the news of the 2020 and 2023 April Fools' Jokes article",
+    "sizeKB": 0
+   },
+   {
+    "file": "Ad04.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/fa/Ad04.png/revision/latest",
+    "caption": "Cow Cat when clicking on the news of the 2020, 2021 and 2022 April Fools' Jokes articles",
+    "sizeKB": 0
+   },
+   {
+    "file": "Kumanchu_enemy_9.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/7d/Kumanchu_enemy_9.png/revision/latest",
+    "caption": "Cow Cat's enemy variant in Kumanchu Royale: Tatakau Ushi (\u95d8\u3046\u30a6\u30b7, \"Fighting Cow\")",
+    "sizeKB": 0
+   },
+   {
+    "file": "MonHun_Collab_Notice.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/e8/MonHun_Collab_Notice.jpg/revision/latest",
+    "caption": "Giraffe Cat in the background of the Monster Hunter Collaboration Event's notice",
+    "sizeKB": 0
+   },
+   {
+    "file": "MonHun_NP.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/ee/MonHun_NP.jpg/revision/latest",
+    "caption": "Card featuring various Normal and Special Cats in Monster Hunter",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/a8/Uni004_f00.png/revision/latest",
+    "file": "Uni004_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/9b/Uni004_c00.png/revision/latest",
+    "file": "Uni004_c00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/2d/Uni004_s00.png/revision/latest",
+    "file": "Uni004_s00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/58/Uni000_f00.png/revision/latest",
+    "file": "Uni000_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/28/Uni001_f00.png/revision/latest",
+    "file": "Uni001_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/53/Uni002_f00.png/revision/latest",
+    "file": "Uni002_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/8f/Uni003_f00.png/revision/latest",
+    "file": "Uni003_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/98/Uni145_c00.png/revision/latest",
+    "file": "Uni145_c00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/07/Uni109_c00.png/revision/latest",
+    "file": "Uni109_c00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/37/Uni169_c00.png/revision/latest",
+    "file": "Uni169_c00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/98/Uni007_s00.png/revision/latest",
+    "file": "Uni007_s00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/e8/Uni095_f00.png/revision/latest",
+    "file": "Uni095_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/0b/Uni148_f00.png/revision/latest",
+    "file": "Uni148_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/8d/Uni130_f00.png/revision/latest",
+    "file": "Uni130_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/f7/Uni226_f00.png/revision/latest",
+    "file": "Uni226_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/91/Uni005_f00.png/revision/latest",
+    "file": "Uni005_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/41/Uni006_f00.png/revision/latest",
+    "file": "Uni006_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/45/Uni007_f00.png/revision/latest",
+    "file": "Uni007_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/3c/Uni008_f00.png/revision/latest",
+    "file": "Uni008_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/ab/Uni643_f00.png/revision/latest",
+    "file": "Uni643_f00.png"
+   }
+  ]
+ },
+ "bird": {
+  "kind": "cat",
+  "wikiTitle": "Cat ",
+  "gallery": [
+   {
+    "file": "Birdtw.PNG",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/9c/Birdtw.PNG/revision/latest",
+    "caption": "Normal Form description (TW)",
+    "sizeKB": 0
+   },
+   {
+    "file": "Ufotw.PNG",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/e6/Ufotw.PNG/revision/latest",
+    "caption": "Evolved Form description (TW)",
+    "sizeKB": 0
+   },
+   {
+    "file": "Flyingtw.PNG",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/75/Flyingtw.PNG/revision/latest",
+    "caption": "True Form description (TW)",
+    "sizeKB": 0
+   },
+   {
+    "file": "Bird_Cat(bcp).png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/87/Bird_Cat%28bcp%29.png/revision/latest",
+    "caption": "Normal Form description in The Battle Cats POP!",
+    "sizeKB": 0
+   },
+   {
+    "file": "Bird_Cat_E(bcp).png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/7f/Bird_Cat_E%28bcp%29.png/revision/latest",
+    "caption": "Evolved Form description in The Battle Cats POP!",
+    "sizeKB": 0
+   },
+   {
+    "file": "Bird_Cat_TF(bcp).png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/39/Bird_Cat_TF%28bcp%29.png/revision/latest",
+    "caption": "True Form description in The Battle Cats POP!",
+    "sizeKB": 0
+   },
+   {
+    "file": "The_Flying_Cat_BCP!_JP.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/a1/The_Flying_Cat_BCP%21_JP.png/revision/latest",
+    "caption": "True Form description in Tobidasu\uff01 Nyanko Daisens\u014d",
+    "sizeKB": 0
+   },
+   {
+    "file": "Imageedit_2_7231524892.gif",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/1a/Imageedit_2_7231524892.gif/revision/latest?cb=20150318010821",
+    "caption": "Bird Cat's attack animation",
+    "sizeKB": 0
+   },
+   {
+    "file": "Imageedit_3_7784882374.gif",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/36/Imageedit_3_7784882374.gif/revision/latest?cb=20150318011447",
+    "caption": "UFO Cat's attack animation",
+    "sizeKB": 0
+   },
+   {
+    "file": "Imageedit_2_7079508993.gif",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/5d/Imageedit_2_7079508993.gif/revision/latest?cb=20150318011730",
+    "caption": "The Flying Cat's attack animation",
+    "sizeKB": 0
+   },
+   {
+    "file": "005_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/cd/005_f.png/revision/latest",
+    "caption": "Bird Cat's spritesheet",
+    "sizeKB": 0
+   },
+   {
+    "file": "005_c.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/4c/005_c.png/revision/latest",
+    "caption": "UFO Cat's spritesheet",
+    "sizeKB": 0
+   },
+   {
+    "file": "005_s.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/08/005_s.png/revision/latest",
+    "caption": "The Flying Cat's spritesheet",
+    "sizeKB": 0
+   },
+   {
+    "file": "Udi005_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/91/Udi005_f.png/revision/latest",
+    "caption": "Bird Cat's Upgrade Menu icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Udi005_c.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/a5/Udi005_c.png/revision/latest",
+    "caption": "UFO Cat's Upgrade Menu icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Udi005_s.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/c5/Udi005_s.png/revision/latest",
+    "caption": "The Flying Cat's Upgrade Menu icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Uni005_f00.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/91/Uni005_f00.png/revision/latest?cb=20160725150627",
+    "caption": "Bird Cat's icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Uni005_c00.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/f2/Uni005_c00.png/revision/latest?cb=20160725150647",
+    "caption": "UFO Cat's icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Uni005_s00.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/77/Uni005_s00.png/revision/latest?cb=20200928133924",
+    "caption": "The Flying Cat's icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Gatyachara_005_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/ab/Gatyachara_005_f.png/revision/latest?cb=20220220212553",
+    "caption": "Bird Cat's sprite in the Storage",
+    "sizeKB": 0
+   },
+   {
+    "file": "005_1_HD.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/b2/005_1_HD.png/revision/latest",
+    "caption": "High quality art of Bird Cat",
+    "sizeKB": 0
+   },
+   {
+    "file": "005_2_HD.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/9b/005_2_HD.png/revision/latest",
+    "caption": "High quality art of UFO Cat",
+    "sizeKB": 0
+   },
+   {
+    "file": "005_3_HD.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/63/005_3_HD.png/revision/latest",
+    "caption": "High quality art of The Flying Cat",
+    "sizeKB": 0
+   },
+   {
+    "file": "5th_anniversary_illust.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/c5/5th_anniversary_illust.jpg/revision/latest",
+    "caption": "5th Anniversary Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "2017_Christmas_Illustration.jpeg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/b4/2017_Christmas_Illustration.jpeg/revision/latest",
+    "caption": "2017 Christmas Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "Golden_Week_2019.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/32/Golden_Week_2019.png/revision/latest",
+    "caption": "2019 Golden Week Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "Peach_Blossom_Festival_2021.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/b0/Peach_Blossom_Festival_2021.png/revision/latest",
+    "caption": "2021 Hinamatsuri Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "Main_img02_2022.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/53/Main_img02_2022.png/revision/latest",
+    "caption": "The Normal Cats, Unknown Cat, Doge and Snache featured on the main article in the 2022 April Fools' Joke article",
+    "sizeKB": 0
+   },
+   {
+    "file": "Main_img01_2023.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/9e/Main_img01_2023.jpg/revision/latest",
+    "caption": "Bird Cat and UFO Cat featured on the 2023 April Fools' Jokes article",
+    "sizeKB": 0
+   },
+   {
+    "file": "Ad04_2023.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/45/Ad04_2023.png/revision/latest",
+    "caption": "UFO Cat when clicking on an ad in the 2023 April Fools' Joke article",
+    "sizeKB": 0
+   },
+   {
+    "file": "MonHun_Collab_Notice.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/e8/MonHun_Collab_Notice.jpg/revision/latest",
+    "caption": "Bird Cat in the background of the Monster Hunter Collaboration Event's notice",
+    "sizeKB": 0
+   },
+   {
+    "file": "God_cat_in_monhunt.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/1a/God_cat_in_monhunt.jpg/revision/latest",
+    "caption": "Bird Cats in the background of The Cat God's card in Monster Hunter",
+    "sizeKB": 0
+   },
+   {
+    "file": "MonHun_NP.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/ee/MonHun_NP.jpg/revision/latest",
+    "caption": "Card featuring various Normal and Special Cats in Monster Hunter",
+    "sizeKB": 0
+   },
+   {
+    "file": "MonHun_024_1.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/6e/MonHun_024_1.jpg/revision/latest",
+    "caption": "Bird Cats in the background of Valkyrie Cat's card in Monster Hunter",
+    "sizeKB": 0
+   },
+   {
+    "file": "Valkyrie_cat_in_monhunt.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/4a/Valkyrie_cat_in_monhunt.jpg/revision/latest",
+    "caption": "Bird Cats in the background of True Valkyrie Cat's card in Monster Hunter",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": []
+ },
+ "fish": {
+  "kind": "cat",
+  "wikiTitle": "Cat ",
+  "gallery": [
+   {
+    "file": "Fishtw.PNG",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/f4/Fishtw.PNG/revision/latest",
+    "caption": "Normal Form description (TW)",
+    "sizeKB": 0
+   },
+   {
+    "file": "Whaletw.PNG",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/0b/Whaletw.PNG/revision/latest",
+    "caption": "Evolved Form description (TW)",
+    "sizeKB": 0
+   },
+   {
+    "file": "Islandtw.PNG",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/71/Islandtw.PNG/revision/latest",
+    "caption": "True Form description (TW)",
+    "sizeKB": 0
+   },
+   {
+    "file": "Fish_Cat(bcp).png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/d/d1/Fish_Cat%28bcp%29.png/revision/latest",
+    "caption": "Normal Form description in The Battle Cats POP!",
+    "sizeKB": 0
+   },
+   {
+    "file": "Fish_Cat_E(bcp).png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/d/d9/Fish_Cat_E%28bcp%29.png/revision/latest",
+    "caption": "Evolved Form description in The Battle Cats POP!",
+    "sizeKB": 0
+   },
+   {
+    "file": "Fish_Cat_TF(bcp).png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/f2/Fish_Cat_TF%28bcp%29.png/revision/latest",
+    "caption": "True Form description in The Battle Cats POP!",
+    "sizeKB": 0
+   },
+   {
+    "file": "Fish_Cat_Attack_Animation.gif",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/63/Fish_Cat_Attack_Animation.gif/revision/latest?cb=20150318193422",
+    "caption": "Fish Cat's Attack Animation",
+    "sizeKB": 0
+   },
+   {
+    "file": "Whale_Cat_Attack_Animation.gif",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/eb/Whale_Cat_Attack_Animation.gif/revision/latest?cb=20150318193926",
+    "caption": "Whale Cat's Attack Animation",
+    "sizeKB": 0
+   },
+   {
+    "file": "Island_Cat_Attack_Animation.gif",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/8d/Island_Cat_Attack_Animation.gif/revision/latest?cb=20150318194358",
+    "caption": "Island Cat's Attack Animation (Critical Hit)",
+    "sizeKB": 0
+   },
+   {
+    "file": "006_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/5d/006_f.png/revision/latest",
+    "caption": "Fish Cat's spritesheet",
+    "sizeKB": 0
+   },
+   {
+    "file": "006_c.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/51/006_c.png/revision/latest",
+    "caption": "Whale Cat's spritesheet",
+    "sizeKB": 0
+   },
+   {
+    "file": "006_s.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/39/006_s.png/revision/latest",
+    "caption": "Island Cat's spritesheet",
+    "sizeKB": 0
+   },
+   {
+    "file": "Udi006_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/1a/Udi006_f.png/revision/latest",
+    "caption": "Fish Cat's Upgrade Menu icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Udi006_c.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/4b/Udi006_c.png/revision/latest",
+    "caption": "Whale Cat's Upgrade Menu icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Udi006_s.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/fc/Udi006_s.png/revision/latest",
+    "caption": "Island Cat's Upgrade Menu icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Uni006_f00.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/41/Uni006_f00.png/revision/latest?cb=20160725150709",
+    "caption": "Fish Cat's icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Uni006_c00.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/91/Uni006_c00.png/revision/latest?cb=20160725150721",
+    "caption": "Whale Cat's icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Uni006_s00.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/23/Uni006_s00.png/revision/latest?cb=20200928133927",
+    "caption": "Island Cat's icon",
+    "sizeKB": 0
+   },
+   {
+    "file": "Gatyachara_006_f.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/8d/Gatyachara_006_f.png/revision/latest?cb=20220220213521",
+    "caption": "Fish Cat's sprite in the Storage",
+    "sizeKB": 0
+   },
+   {
+    "file": "006_1_HD.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/9f/006_1_HD.png/revision/latest",
+    "caption": "High quality art of Fish Cat",
+    "sizeKB": 0
+   },
+   {
+    "file": "006_2_HD.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/45/006_2_HD.png/revision/latest",
+    "caption": "High quality art of Whale Cat",
+    "sizeKB": 0
+   },
+   {
+    "file": "006_3_HD.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/27/006_3_HD.png/revision/latest",
+    "caption": "High quality art of Island Cat",
+    "sizeKB": 0
+   },
+   {
+    "file": "5th_anniversary_illust.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/c5/5th_anniversary_illust.jpg/revision/latest",
+    "caption": "5th Anniversary Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "Special_Swing_6.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/56/Special_Swing_6.jpg/revision/latest",
+    "caption": "Whale Cat as a keychain",
+    "sizeKB": 0
+   },
+   {
+    "file": "Main_img02_2022.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/53/Main_img02_2022.png/revision/latest",
+    "caption": "The Normal Cats, Unknown Cat, Doge and Snache featured on the main article in the 2022 April Fools' Joke article",
+    "sizeKB": 0
+   },
+   {
+    "file": "Sns02_2023.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/67/Sns02_2023.png/revision/latest",
+    "caption": "Fish Cat featured in an advertisement for PONOS' Facebook in the April Fools' Joke 2023 article",
+    "sizeKB": 0
+   },
+   {
+    "file": "Bn02_2024.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/47/Bn02_2024.jpg/revision/latest",
+    "caption": "Island Cat, Mer-Cat and Surfer Cat as an advertisement in the 2024 April Fools' Jokes article",
+    "sizeKB": 0
+   },
+   {
+    "file": "Kitarofish1.jpeg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/30/Kitarofish1.jpeg/revision/latest",
+    "caption": "Fish Cat in YuruGeGe",
+    "sizeKB": 0
+   },
+   {
+    "file": "Kitarofish2.jpeg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/86/Kitarofish2.jpeg/revision/latest",
+    "caption": "Fish Cat's evolution in YuruGeGe: Mintsuchi Fish Cat",
+    "sizeKB": 0
+   },
+   {
+    "file": "Gourgouskitarofish.jpeg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/f3/Gourgouskitarofish.jpeg/revision/latest",
+    "caption": "Fish Cat's Gorgeous enemy variant in YuruGeGe: Cash \u2606 Cat",
+    "sizeKB": 0
+   },
+   {
+    "file": "Herculeskitarofish.jpeg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/e2/Herculeskitarofish.jpeg/revision/latest",
+    "caption": "Fish Cat's Hercules enemy variant in YuruGeGe: Hercules Cat Kabuto",
+    "sizeKB": 0
+   },
+   {
+    "file": "Site_shokai_bike_01_11.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/8a/Site_shokai_bike_01_11.jpg/revision/latest",
+    "caption": "Takuya &amp; Yuki riding Fish Cat in Shoumetsu Toshi",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/41/Uni006_f00.png/revision/latest",
+    "file": "Uni006_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/91/Uni006_c00.png/revision/latest",
+    "file": "Uni006_c00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/23/Uni006_s00.png/revision/latest",
+    "file": "Uni006_s00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/68/Uni051_c00.png/revision/latest",
+    "file": "Uni051_c00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/ab/Uni199_c00.png/revision/latest",
+    "file": "Uni199_c00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/8b/Uni097_c00.png/revision/latest",
+    "file": "Uni097_c00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/11/Uni097_f00.png/revision/latest",
+    "file": "Uni097_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/f8/Uni074_f00.png/revision/latest",
+    "file": "Uni074_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/94/Uni134_c00.png/revision/latest",
+    "file": "Uni134_c00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/36/Uni305_c00.png/revision/latest",
+    "file": "Uni305_c00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/e4/Uni311_f00.png/revision/latest",
+    "file": "Uni311_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/55/Uni335_f00.png/revision/latest",
+    "file": "Uni335_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/e6/Uni074_c00.png/revision/latest",
+    "file": "Uni074_c00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/58/Uni000_f00.png/revision/latest",
+    "file": "Uni000_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/28/Uni001_f00.png/revision/latest",
+    "file": "Uni001_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/53/Uni002_f00.png/revision/latest",
+    "file": "Uni002_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/8f/Uni003_f00.png/revision/latest",
+    "file": "Uni003_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/a8/Uni004_f00.png/revision/latest",
+    "file": "Uni004_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/91/Uni005_f00.png/revision/latest",
+    "file": "Uni005_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/45/Uni007_f00.png/revision/latest",
+    "file": "Uni007_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/3c/Uni008_f00.png/revision/latest",
+    "file": "Uni008_f00.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/ab/Uni643_f00.png/revision/latest",
+    "file": "Uni643_f00.png"
+   }
+  ]
+ },
+ "doge": {
+  "kind": "enemy",
+  "wikiTitle": "Doge",
+  "gallery": [
+   {
+    "file": "Doge_attack.gif",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/75/Doge_attack.gif/revision/latest",
+    "caption": "Doge's attack animation",
+    "sizeKB": 0
+   },
+   {
+    "file": "Doge(bcp).png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/bb/Doge%28bcp%29.png/revision/latest",
+    "caption": "Doge's Enemy Guide entry in The Battle Cats POP!",
+    "sizeKB": 0
+   },
+   {
+    "file": "000_e.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/94/000_e.png/revision/latest",
+    "caption": "Doge's spritesheet",
+    "sizeKB": 0
+   },
+   {
+    "file": "Gamatoto_doge_diggering.PNG",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/43/Gamatoto_doge_diggering.PNG/revision/latest",
+    "caption": "A Doge stealing a can of Cat Food from GAMATOTO after the player declines to obtain it via ads",
+    "sizeKB": 0
+   },
+   {
+    "file": "New_planet_illust.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/3a/New_planet_illust.jpg/revision/latest",
+    "caption": "",
+    "sizeKB": 0
+   },
+   {
+    "file": "5th_anniversary_illust.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/c5/5th_anniversary_illust.jpg/revision/latest",
+    "caption": "5th Anniversary Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "New_Year_2018.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/6f/New_Year_2018.jpg/revision/latest",
+    "caption": "2018 New Year Illustration",
+    "sizeKB": 0
+   },
+   {
+    "file": "Mochi_new_year_2018.gif",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/71/Mochi_new_year_2018.gif/revision/latest",
+    "caption": "2018 New Year animation #1",
+    "sizeKB": 0
+   },
+   {
+    "file": "New_year_2018.gif",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/94/New_year_2018.gif/revision/latest",
+    "caption": "2018 New Year animation #2",
+    "sizeKB": 0
+   },
+   {
+    "file": "DvwO6LgWwAACjr-.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/fd/DvwO6LgWwAACjr-.png/revision/latest",
+    "caption": "Doge as a playing card",
+    "sizeKB": 0
+   },
+   {
+    "file": "Head_bn01_en_2018.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/5c/Head_bn01_en_2018.jpg/revision/latest",
+    "caption": "The 2018 April Fools' Jokes article banner featuring Cat and Doge (EN)",
+    "sizeKB": 0
+   },
+   {
+    "file": "Head_bn01_jp_2018.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/24/Head_bn01_jp_2018.jpg/revision/latest",
+    "caption": "The 2018 April Fools' Jokes article banner featuring Cat and Doge (JP)",
+    "sizeKB": 0
+   },
+   {
+    "file": "Main_img02_2019.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/64/Main_img02_2019.jpg/revision/latest",
+    "caption": "The 2019 April Fools' Jokes article featuring Doge, Cat, Tank Cat, Axe Cat and Gross Cat",
+    "sizeKB": 0
+   },
+   {
+    "file": "Main_img02_2022.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/53/Main_img02_2022.png/revision/latest",
+    "caption": "The Normal Cats, Unknown Cat, Doge and Snache featured on the main article in the 2022 April Fools' Joke article",
+    "sizeKB": 0
+   },
+   {
+    "file": "Bn02_2022.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/93/Bn02_2022.jpg/revision/latest",
+    "caption": "Brave Cat, Doge, Snache and Those Guys as an advertisement in the 2022 April Fools' Jokes article",
+    "sizeKB": 0
+   },
+   {
+    "file": "Cat_Doge_BitSummit_2022.jpeg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/4c/Cat_Doge_BitSummit_2022.jpeg/revision/latest",
+    "caption": "Doge, Cat, the Cat Base and Nagasaki Prefecture's base at BitSummit 2022",
+    "sizeKB": 0
+   },
+   {
+    "file": "Dogeship.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/86/Dogeship.png/revision/latest",
+    "caption": "Doge in Nyanko Defence Force",
+    "sizeKB": 0
+   },
+   {
+    "file": "Shinydogeship.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/b6/Shinydogeship.png/revision/latest",
+    "caption": "Shiny UFO Doge in Nyanko Defence Force",
+    "sizeKB": 0
+   },
+   {
+    "file": "Reddogeship.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/c1/Reddogeship.png/revision/latest",
+    "caption": "Red UFO Doge in Nyanko Defence Force",
+    "sizeKB": 0
+   },
+   {
+    "file": "Shinydogeship.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/b6/Shinydogeship.png/revision/latest",
+    "caption": "Shiny UFO Doge in Nyanko Defence Force",
+    "sizeKB": 0
+   },
+   {
+    "file": "Darkdogeship.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/3e/Darkdogeship.png/revision/latest",
+    "caption": "UFO Doge Dark in Nyanko Defence Force",
+    "sizeKB": 0
+   },
+   {
+    "file": "Glowingdark.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/d/dd/Glowingdark.png/revision/latest",
+    "caption": "Shiny UFO Doge Dark in Nyanko Defence Force",
+    "sizeKB": 0
+   },
+   {
+    "file": "Shibalienship.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/05/Shibalienship.png/revision/latest",
+    "caption": "UFO Shibalien in Nyanko Defence Force",
+    "sizeKB": 0
+   },
+   {
+    "file": "Zogeship.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/39/Zogeship.png/revision/latest",
+    "caption": "UFO Zoge in Nyanko Defence Force",
+    "sizeKB": 0
+   },
+   {
+    "file": "Shinyzoneship.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/06/Shinyzoneship.png/revision/latest",
+    "caption": "Shiny UFO Zoge in Nyanko Defence Force",
+    "sizeKB": 0
+   },
+   {
+    "file": "Metaldogespaceship.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/04/Metaldogespaceship.png/revision/latest?cb=20210721012406",
+    "caption": "Metal UFO Doge in Nyanko Defence Force",
+    "sizeKB": 0
+   },
+   {
+    "file": "Skill_2.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/5e/Skill_2.jpg/revision/latest?cb=20220509033441",
+    "caption": "Monster Killer skill (\u30e2\u30f3\u30b9\u30bf\u30fc\u30ad\u30e9\u30fc) in Nyanko Defence Force",
+    "sizeKB": 0
+   },
+   {
+    "file": "Skill_13.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/25/Skill_13.jpg/revision/latest?cb=20220509034033",
+    "caption": "Slow at Any Time skill (\u3044\u3064\u3067\u3082\u9045\u304f) in Nyanko Defence Force",
+    "sizeKB": 0
+   },
+   {
+    "file": "Skill_14.jpg",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/aa/Skill_14.jpg/revision/latest?cb=20220509034057",
+    "caption": "Slow Peons skill (\u30b6\u30b3\u9045\u304f) in Nyanko Defence Force",
+    "sizeKB": 0
+   },
+   {
+    "file": "Continue.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/d/d8/Continue.png/revision/latest",
+    "caption": "A Nyanko Defence Force game over screen featuring UFO Doge, Red UFO Doge and UFO Doge Dark",
+    "sizeKB": 0
+   },
+   {
+    "file": "Kyotodoge.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/ae/Kyotodoge.png/revision/latest",
+    "caption": "Doge as an enemy in Kyoutou Project",
+    "sizeKB": 0
+   },
+   {
+    "file": "Img_trap_wanko.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/5d/Img_trap_wanko.png/revision/latest?cb=20201006043421",
+    "caption": "Guard Doge in The Burgle Cats",
+    "sizeKB": 0
+   },
+   {
+    "file": "Trap_nisehusuma.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/29/Trap_nisehusuma.png/revision/latest?cb=20201006043445",
+    "caption": "Fake Vault in The Burgle Cats",
+    "sizeKB": 0
+   },
+   {
+    "file": "Img_trap_fakecoin.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/c5/Img_trap_fakecoin.png/revision/latest?cb=20201006041224",
+    "caption": "Fake Coin in The Burgle Cats",
+    "sizeKB": 0
+   },
+   {
+    "file": "Img_trap_tatami.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/89/Img_trap_tatami.png/revision/latest?cb=20201006041532",
+    "caption": "Tatamigaeshi in The Burgle Cats",
+    "sizeKB": 0
+   },
+   {
+    "file": "Img_trap_balloon.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/b7/Img_trap_balloon.png/revision/latest?cb=20201006041627",
+    "caption": "Doge Balloon in The Burgle Cats",
+    "sizeKB": 0
+   },
+   {
+    "file": "Img_trap_cerberus.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/4d/Img_trap_cerberus.png/revision/latest?cb=20201006041808",
+    "caption": "Loudspeaker in The Burgle Cats",
+    "sizeKB": 0
+   },
+   {
+    "file": "Img_trap_debuffcurse.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/40/Img_trap_debuffcurse.png/revision/latest?cb=20201006042158",
+    "caption": "Haunter in The Burgle Cats",
+    "sizeKB": 0
+   },
+   {
+    "file": "Img_trap_bombwanko.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/d/d0/Img_trap_bombwanko.png/revision/latest?cb=20201006042256",
+    "caption": "Bomberdoge in The Burgle Cats",
+    "sizeKB": 0
+   },
+   {
+    "file": "Img_trap_debuffskill.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/c3/Img_trap_debuffskill.png/revision/latest?cb=20201006042355",
+    "caption": "Curser in The Burgle Cats",
+    "sizeKB": 0
+   },
+   {
+    "file": "Img_trap_patrol_mechawanko.png",
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/e/e5/Img_trap_patrol_mechawanko.png/revision/latest?cb=20201006042739",
+    "caption": "MechaDoge in The Burgle Cats",
+    "sizeKB": 0
+   }
+  ],
+  "mainImages": [
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/57/E_000.png/revision/latest",
+    "file": "E_000.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/cc/Enemy_icon_000.png/revision/latest",
+    "file": "Enemy_icon_000.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/22/Enemy_icon_046.png/revision/latest",
+    "file": "Enemy_icon_046.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/fc/Enemy_icon_055.png/revision/latest",
+    "file": "Enemy_icon_055.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/5/57/Enemy_icon_085.png/revision/latest",
+    "file": "Enemy_icon_085.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/86/Enemy_icon_103.png/revision/latest",
+    "file": "Enemy_icon_103.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/c2/Enemy_icon_101.png/revision/latest",
+    "file": "Enemy_icon_101.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/93/Enemy_icon_111.png/revision/latest",
+    "file": "Enemy_icon_111.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/be/Enemy_icon_114.png/revision/latest",
+    "file": "Enemy_icon_114.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/3b/Enemy_icon_147.png/revision/latest",
+    "file": "Enemy_icon_147.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/d/d2/Enemy_icon_126.png/revision/latest",
+    "file": "Enemy_icon_126.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/34/Enemy_icon_117.png/revision/latest",
+    "file": "Enemy_icon_117.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/3c/Enemy_icon_120.png/revision/latest",
+    "file": "Enemy_icon_120.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/19/Enemy_icon_167.png/revision/latest",
+    "file": "Enemy_icon_167.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/ba/Enemy_icon_197.png/revision/latest",
+    "file": "Enemy_icon_197.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/cb/Enemy_icon_262.png/revision/latest",
+    "file": "Enemy_icon_262.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/2b/Enemy_icon_268.png/revision/latest",
+    "file": "Enemy_icon_268.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/10/Enemy_icon_284.png/revision/latest",
+    "file": "Enemy_icon_284.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/7f/Enemy_icon_307.png/revision/latest",
+    "file": "Enemy_icon_307.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/b/b0/Enemy_icon_309.png/revision/latest",
+    "file": "Enemy_icon_309.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/12/Enemy_icon_336.png/revision/latest",
+    "file": "Enemy_icon_336.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/6d/Enemy_icon_351.png/revision/latest",
+    "file": "Enemy_icon_351.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/7/74/Enemy_icon_352.png/revision/latest",
+    "file": "Enemy_icon_352.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/93/Enemy_icon_353.png/revision/latest",
+    "file": "Enemy_icon_353.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/f3/Enemy_icon_360.png/revision/latest",
+    "file": "Enemy_icon_360.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/83/Enemy_icon_389.png/revision/latest",
+    "file": "Enemy_icon_389.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/c9/Enemy_icon_402.png/revision/latest",
+    "file": "Enemy_icon_402.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/8f/Enemy_icon_403.png/revision/latest",
+    "file": "Enemy_icon_403.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/38/Enemy_icon_404.png/revision/latest",
+    "file": "Enemy_icon_404.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/d/d8/Enemy_icon_405.png/revision/latest",
+    "file": "Enemy_icon_405.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/01/Enemy_icon_407.png/revision/latest",
+    "file": "Enemy_icon_407.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/09/Enemy_icon_409.png/revision/latest",
+    "file": "Enemy_icon_409.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/9a/Enemy_icon_421.png/revision/latest",
+    "file": "Enemy_icon_421.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/6/6b/Enemy_icon_470.png/revision/latest",
+    "file": "Enemy_icon_470.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/08/Enemy_icon_478.png/revision/latest",
+    "file": "Enemy_icon_478.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/22/Enemy_icon_494.png/revision/latest",
+    "file": "Enemy_icon_494.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/1f/Enemy_icon_503.png/revision/latest",
+    "file": "Enemy_icon_503.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/c0/Enemy_icon_537.png/revision/latest",
+    "file": "Enemy_icon_537.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/91/Enemy_icon_539.png/revision/latest",
+    "file": "Enemy_icon_539.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/1d/Enemy_icon_552.png/revision/latest",
+    "file": "Enemy_icon_552.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/8/8d/Enemy_icon_595.png/revision/latest",
+    "file": "Enemy_icon_595.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/9/9c/Enemy_icon_596.png/revision/latest",
+    "file": "Enemy_icon_596.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/3d/Enemy_icon_597.png/revision/latest",
+    "file": "Enemy_icon_597.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/ab/Enemy_icon_603.png/revision/latest",
+    "file": "Enemy_icon_603.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/c/c7/Enemy_icon_608.png/revision/latest",
+    "file": "Enemy_icon_608.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/d/d3/Enemy_icon_612.png/revision/latest",
+    "file": "Enemy_icon_612.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/4/4f/Enemy_icon_617.png/revision/latest",
+    "file": "Enemy_icon_617.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/15/Enemy_icon_618.png/revision/latest",
+    "file": "Enemy_icon_618.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/3/35/Enemy_icon_631.png/revision/latest",
+    "file": "Enemy_icon_631.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/f/f7/Enemy_icon_670.png/revision/latest",
+    "file": "Enemy_icon_670.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/a/a6/Enemy_icon_671.png/revision/latest",
+    "file": "Enemy_icon_671.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/28/Enemy_icon_676.png/revision/latest",
+    "file": "Enemy_icon_676.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/0/0c/Enemy_icon_679.png/revision/latest",
+    "file": "Enemy_icon_679.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/2/2e/Enemy_icon_683.png/revision/latest",
+    "file": "Enemy_icon_683.png"
+   },
+   {
+    "url": "https://static.wikia.nocookie.net/battle-cats/images/1/11/Enemy_icon_685.png/revision/latest",
+    "file": "Enemy_icon_685.png"
+   }
+  ]
+ }
+}

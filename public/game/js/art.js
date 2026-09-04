@@ -756,7 +756,7 @@ function poseOf(e,t,gait){
 const ART={
  /* per-unit blink seed — desyncs idle blinking between units */
  _seed(id){let h=0;const s=String(id);for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return h%1000},
- cat(o){const d=ART_CATS[o.id]||ART_CATS.cat;const s=o.s||1,dir=o.dir||1;
+ cat(o){ if(typeof SPRIT!=='undefined'&&SPRIT.draw('cat',o))return; const d=ART_CATS[o.id]||ART_CATS.cat;const s=o.s||1,dir=o.dir||1;
    const t=o.t||0,e=o.e||null;
    const gait=GAIT[d.p]||GAIT.kitten;
    const pose=poseOf(e,t,gait);
@@ -788,8 +788,14 @@ const ART={
      c.beginPath();c.arc(o.x,o.y-40*s,90*s,0,TAU);c.fill();c.restore()}
    if(e&&e.curse){c.fillStyle='#c46adf';const sa=t*3;
      [[-16,-56],[15,-48]].forEach((p,i)=>{c.save();c.translate(o.x+p[0]*s+Math.sin(sa+i*2)*3,o.y+p[1]*s+Math.cos(sa+i)*2.5);c.rotate(0.785);c.fillRect(-2.4,-2.4,4.8,4.8);c.restore()})}}
- ,enemy(o){const d=ENEMY_ART[o.id]||ENEMY_ART.doge;const s=o.s||1,dir=o.dir||-1;
+ ,enemy(o){ const d=ENEMY_ART[o.id]||ENEMY_ART.doge;const s=o.s||1,dir=o.dir||-1;
    const bz=o.e&&o.e.boss;const bsc=bz?(d.bsc!==undefined?d.bsc:0.55):1;
+   /* REAL SPRITE path — same bsc boss correction + trait aura as the painter below */
+   if(typeof SPRIT!=='undefined'){
+     if(bz){const c=cx;c.save();c.translate(o.x||0,o.y||0);c.scale(s*bsc,s*bsc);traitAura(c,22,o.e);c.restore()}
+     const o2=Object.assign({},o,{s:s*bsc});
+     if(SPRIT.draw('enemy',o2))return;
+     if(bz){/* aura drawn but sprite missing → repaint aura under painter body (painter path redraws it) */}}
    const t=o.t||0,e=o.e||null;
    const gait=GAIT[d.p]||GAIT.kitten;
    const pose=poseOf(e,t,gait);
@@ -824,9 +830,11 @@ const ART={
    if(e&&e.curse){c.fillStyle='#c46adf';const sa=t*3;
      [[-16,-52],[15,-44]].forEach((p,i)=>{c.save();c.translate(o.x+p[0]*s*bsc+Math.sin(sa+i*2)*3,o.y+p[1]*s*bsc+Math.cos(sa+i)*2.5);c.rotate(0.785);c.fillRect(-2.4,-2.4,4.8,4.8);c.restore()})}}
  ,catIcon(id,x,y,r,dim){const c=cx;c.save();c.globalAlpha=dim!==undefined?dim:1;c.translate(x,y);
-   const d=ART_CATS[id]||ART_CATS.cat;const rar=(typeof CATMAP!=='undefined'?(CATMAP[id]||{}).rarity:null);
+   const rar=(typeof CATMAP!=='undefined'?(CATMAP[id]||{}).rarity:null);
    if(rar==='uber'||rar==='legend'){c.save();c.globalAlpha*=0.3+0.08*Math.sin(G.t*4);
      c.fillStyle=rar==='legend'?'#c46adf':'#ffd94a';c.beginPath();c.arc(0,0,r*1.42,0,TAU);c.fill();c.restore()}
+   if(typeof SPRIT!=='undefined'&&SPRIT.icon('cat',id,0,0,r,dim)){c.restore();return}
+   const d=ART_CATS[id]||ART_CATS.cat;
    const R=Math.max(4,Math.round(r));const dp=Math.min(cv._dpr||1,2);
    const BW=Math.ceil(R*3.6*dp),BH=Math.ceil(R*3.6*dp);
    const b=bakeGet('ci|'+id+'|'+R+'|'+dp,BW,BH,c2=>{c2.setTransform(dp,0,0,dp,BW/2,BH/2);c2.rotate(-0.05);
@@ -844,6 +852,7 @@ const ART={
    catOver(c,d,r);
    c.restore()}
  ,enemyIcon(id,x,y,r){const c=cx;c.save();c.translate(x,y);
+   if(typeof SPRIT!=='undefined'&&SPRIT.icon('enemy',id,0,0,r)){c.restore();return}
    if(r>=8){ // pre-baked offscreen icon (guide grid hot path)
      const R=Math.max(10,Math.min(56,Math.round(r)));const dp=Math.min(cv._dpr||1,2);
      const BW=Math.ceil(R*3.4*dp),BH=Math.ceil(R*3.4*dp);
