@@ -1,0 +1,5 @@
+{
+ "id": "qa-map-eoc1",
+ "prompt": "This is the chapter/stage-select world map of a Battle Cats clone. In the ORIGINAL Battle Cats game, Empire of Cats chapter 1 shows a WORLD MAP of Earth (real continents: Asia, and stages are placed on real geographic locations like Korea, China, Mongolia, etc.). Does this screenshot show a real Earth world map with stages placed on real locations, or is it an abstract/fictional map? Describe exactly what the map looks like and where stage buttons are placed. Note any visual defects.",
+ "image": "images/qa-map-eoc1.png"
+}
