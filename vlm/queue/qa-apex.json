@@ -1,0 +1,5 @@
+{
+ "id": "qa-apex",
+ "prompt": "LEFTMOST frame (labeled GIF-APEX) is the STRIKE frame from Basic Cat's official ATTACK animation (mouth wide open, mid-bite). The other frames are from the cat sprite sheet's two rows (ROW1 = top row of sheet, ROW2 = bottom row). Which ROW contains frames that look like the attack strike (mouth wide open)? Which row has closed/neutral mouths (walking)? ONE-WORD answers: ATTACK=ROW?, WALK=ROW?",
+ "image": "images/qa-apex.png"
+}
