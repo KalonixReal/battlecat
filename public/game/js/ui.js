@@ -640,9 +640,9 @@ function drawChapters(dt){
   let y=80;let i=0;
   cx.save();cx.beginPath();cx.rect(0,54,1280,612);cx.clip(); // clip: cards scroll UNDER the top bar/bottom bar
   groups.forEach(([kind,label])=>{
-    txt(cx,label,24,y+G.scrollChap,14,'#7a5a2a','left');y+=26;
+    txt(cx,label,24,y-G.scrollChap,14,'#7a5a2a','left');y+=26;
     CHAPTERS.filter(c=>c.kind===kind).forEach(c=>{
-      const unl=chapterUnlocked(c.id);const yy=y+G.scrollChap;
+      const unl=chapterUnlocked(c.id);const yy=y-G.scrollChap; // scroll subtracts (rows move up) — '+' trapped all rows below the fold off-screen
       const clearedN=c.kind==='story'?Object.keys(SV.cleared[c.id]||{}).length:0;
       // white panel with border
       cx.save();cx.translate(20,yy);

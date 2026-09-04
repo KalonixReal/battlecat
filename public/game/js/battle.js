@@ -938,7 +938,7 @@ function drawResult(b){
       if(b.crowns.improved)txt(cx,'CROWN UP!',540,by+2,14,'#7fe86a','left',3,'#061806',700);
       // battle stats right side
       const tsec=Math.max(0,Math.round(b.t));const mm=Math.floor(tsec/60),ss=String(tsec%60).padStart(2,'0');
-      txt(cx,'⏱ '+mm+':'+ss+'  ·  ☠ '+b.kills+'  ·  DMG '+fmt(Math.round(b.dmgDealt/1000))+'k',1150,by+6,18,'#9fd8ff','right',4,'rgba(10,10,20,.9)',700);
+      txt(cx,'⏱ '+mm+':'+ss+'  ·  ☠ '+b.kills+'  ·  DMG '+fmt(Math.round(b.dmgDealt/1000))+'k',1080,by+6,18,'#9fd8ff','right',4,'rgba(10,10,20,.9)',700); // right edge 1080 — clears the enemy-base art (drawn from ~x1100 at result cam)
       by+=66}
     cx.globalAlpha=1}
   // drop-reward panel (dark olive + white border, verbatim official lines)
