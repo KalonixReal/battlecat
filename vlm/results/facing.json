@@ -1,0 +1,7 @@
+{
+ "id": "facing",
+ "ok": true,
+ "model": "gemini-3.5-flash-lite",
+ "text": "Based on the visual orientation of the characters in each sprite sheet and strip (looking at where their faces/eyes point and their movement direction), here are the directions for each unit:\n\n1. **CAT (player unit)**\n   * **RAW walk row:** Faces **RIGHT** (In the raw asset sheet, player characters are originally drawn facing right before being flipped/processed for game logic).\n   * **Extracted WALK strip:** Faces **LEFT** (Processed to march left toward the enemy base).\n   * **Extracted ATTACK strip:** Faces **LEFT**.\n\n2. **TANK CAT (player unit)**\n   * **RAW walk row:** Faces **RIGHT**\n   * **Extracted WALK strip:** Faces **LEFT**\n   * **Extracted ATTACK strip:** Faces **LEFT**\n\n3. **DOGE (enemy unit)**\n   * **RAW walk row:** Faces **RIGHT**\n   * **Extracted WALK strip:** Faces **RIGHT** (Enemies march right toward the player base).\n   * **Extracted ATTACK strip:** Faces **RIGHT**\n\n4. **GORY (enemy unit)**\n   * **RAW walk row:** Faces **RIGHT**\n   * **Extracted WALK strip:** Faces **RIGHT**\n   * **Extracted ATTACK strip:** Faces **RIGHT**\n\n---\n\n### Final Summary Table\n\n| Unit | Raw Faces | Walk Strip Faces | Attack Strip Faces |\n| :--- | :--- | :--- | :--- |\n| **CAT** | RIGHT | LEFT | LEFT |\n| **TANK CAT** | RIGHT | LEFT | LEFT |\n| **DOGE (enemy)** | RIGHT | RIGHT | RIGHT |\n| **GORY (enemy)** | RIGHT | RIGHT | RIGHT |",
+ "ts": 1788499038.229378
+}
