@@ -1010,6 +1010,8 @@ function openStageModal(ch,idx){const c=CHMAP[ch];const st=genStage(ch,idx);SFX.
   const crownsN=(c.kind==='story'&&SV.crowns[ch])?(SV.crowns[ch][String(idx)]||0):0;
   // treasure-set card data (story chapters with treasure): set i%9, current owned tiers
   const treasureCard=(c.kind==='story'&&CHSETS[ch])?{set:CHSETS[ch][idx%9],own:tCount(ch,idx%9)}:null;
+  G.battleItems=G.battleItems||{}; // selection persists across stages (like the original's item memory)
+  const ITEMS=[{k:'sniper',n:'SNIPER',d:'+50% cat ATK'},{k:'jobs',n:'CAT JOBS',d:'worker starts max'},{k:'cpu',n:'CAT CPU',d:'auto-deploys cats'}];
   openModal(st.name,[
     'Energy cost: '+st.energy+'   (you have '+SV.energy+')',
     'Enemy base HP: '+fmt(st.baseHp),
@@ -1019,6 +1021,22 @@ function openStageModal(ch,idx){const c=CHMAP[ch];const st=genStage(ch,idx);SFX.
     ...(c.kind==='story'?['Crowns: '+crownsN+'/3 \u2014 win with base HP \u226580% for a PERFECT 3-crown clear!']:[]),
     ...(!treasureCard?['Treasure chance: ~'+Math.round(treasureChance(ch,idx%9,tCount(ch,idx%9))*100)+'% \u2014 farmable on repeat clears!']:[])],
     [{n:'Cancel',cb:()=>{}},{n:'Attack!',col:'#ffd23f',cb:()=>tryStartBattle(ch,idx)}],(x,y,w,h)=>{
+      /* ===== BATTLE ITEMS row (classic original items) — defined here, drawn LAST so it never hides under the treasure card ===== */
+      const drawItems=()=>{
+      const iy=y+h-46,iw=170,gap2=14,x2=x+(w-(iw*3+gap2*2))/2;
+      txt(cx,'BATTLE ITEMS',x+w/2,iy-12,11.5,'#8a6a3a','center',3,'#fff',700);
+      ITEMS.forEach((it,i3)=>{
+        const on=!!G.battleItems[it.k];const ix2=x2+i3*(iw+gap2);
+        const opts={flat:true,nohov:true,draw:(cc)=>{
+          cc.save();if(on){cc.shadowColor='rgba(255,210,63,.5)';cc.shadowBlur=8}
+          cc.fillStyle=on?'#ffd23f':'rgba(90,70,40,.25)';rr(cc,0,0,iw,36,10);cc.fill();cc.restore();
+          cc.lineWidth=2.5;cc.strokeStyle=on?'#8a5a20':'rgba(90,70,40,.45)';rr(cc,0,0,iw,36,10);cc.stroke();
+          txt(cc,it.n,iw/2,12.5,12,on?'#4a2f10':'#8a7a5a','center',2.5,'#fff',700);
+          txt(cc,on?it.d:'tap to use',iw/2,26.5,9.5,on?'#6a4a12':'#a89878','center',2,'#fff',400);
+        }};
+        BTN('itm'+it.k,ix2,iy-8,iw,36,()=>{G.battleItems[it.k]=!G.battleItems[it.k];SFX.click()},opts);
+      });
+      };
       let yOff=0;
       // crown strip (story chapters): earned pips + dim slots + PERFECT tag
       if(c.kind==='story'){yOff=42;
@@ -1067,8 +1085,7 @@ function openStageModal(ch,idx){const c=CHMAP[ch];const st=genStage(ch,idx);SFX.
           cx.save();cx.translate(cx2+ch2-92,cy2+29);cx.scale(pu,pu);
           cx.fillStyle='#e84030';rr(cx,-58,-13,116,26,13);cx.fill();
           txt(cx,'1 PIECE LEFT!',0,0.5,12,'#fff','center',2.5,'#7a1a10',700);cx.restore()}
-        else if(tcd.own===3)txt(cx,'SET COMPLETE \u2713',cx2+ch2-14,cy2+29,11,'#3a9a5a','right',2.5,'#fff',700)}})}
-
+        else if(tcd.own===3)txt(cx,'SET COMPLETE \u2713',cx2+ch2-14,cy2+29,11,'#3a9a5a','right',2.5,'#fff',700)}drawItems();})}
 function openEventModal(ev){const s=ev.s;const uni=[...new Set(s.pool)];
   const wasCl=SV.eventsDone&&SV.eventsDone['clr:'+s.evtId];
   openModal(s.name,['Energy '+s.energy+'   ·   XP '+fmt(s.reward.xp),ev.desc,...(wasCl?['Already cleared today — replays pay 30% XP (fresh rewards tomorrow!)']:[])],

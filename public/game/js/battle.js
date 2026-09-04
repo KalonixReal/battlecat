@@ -13,15 +13,19 @@ const WALLET_COST=[30,90,180,360,720,1440,2880],WALLET_MAX=[1,2,3,4,5,6,8,10];
 function startBattle(st){
   const teamIds=SV.teams[SV.teamSel].filter(id=>id&&CATMAP[id]); // tolerate invalid ids (imported/hand-edited saves)
   const combo=comboBonuses(teamIds);
+  const items=G.battleItems||{}; // classic battle items (original): Sniper the Cat / Cat Jobs / Cat CPU
   B={st,t:0,speed:1,paused:false,result:null,resultT:0,applied:false,
     wallet:Math.round(battleWalletMax()*0.4+combo.walletStart),walletLv:0,workerLv:0,
     units:[],pops:[],fx:[],waves:[],surges:[],queue:[],
+    items,cpuT:0,continued:false,
     catBase:{hp:Math.round(st.catBaseHp*(1+0.3*(SV.base.bhp-1))),maxHp:Math.round(st.catBaseHp*(1+0.3*(SV.base.bhp-1))),x:CAT_BASE_X,alarm:0},
     enemyBase:{hp:st.baseHp,maxHp:st.baseHp,x:ENEMY_BASE_X,alarm:0},
     cam:FIELD_W-1280,camHold:0,camV:0,shake:0,warn:null,warnT:0,triggerDone:false,endlessK:0,endlessT:8,score:0,
     cannon:{t:0,charge:cannonChargeBase(),type:SV.cannonSel,fired:0},
     cds:{},teamIds,combo,dmgDealt:0,kills:0,
     treasureBase:((G.sessionTreasure&&Object.values(G.sessionTreasure).reduce((a,v)=>a+v,0))||0)}; // loot chip counts THIS battle's drops
+  if(items.jobs){B.walletLv=7;B.workerLv=7;B.wallet=Math.round(battleWalletMax()*WALLET_MAX[7])} // CAT JOBS: worker cat starts at max (official item effect)
+  if(items.cpu)B.cpuT=2; // CAT CPU arms its deploy ticker
   const tier=(typeof CHMAP!=='undefined'&&CHMAP[st.ch]&&CHMAP[st.ch].tier)||1;B.costMul=tier<=1?1:(tier===2?1.5:2); // official cost scaling: Ch2 x1.5, Ch3+ x2
   const wm=battleWalletMax()*WALLET_MAX[0];B.walletMax=battleWalletMax();
   teamIds.forEach(id=>B.cds[id]=0);
@@ -52,6 +56,7 @@ function spawnCat(cid){
     speed:s.speed*(1+cb.spd),kb:d.kb,rateT:0.2,state:'walk',animT:Math.random()*9,flash:0,kbT:0,dieT:0,kbTaken:0,
     r:d.boss?40:20,st:{frozen:0,slow:0,weakenT:0,weakenP:1,curse:0},shieldHp:0,reviveLeft:0,dir:-1,
     abil:d.abil,area:d.area,traits:['cat'],hitSet:null,spawnT:0.35,landT:0};
+  if(B.items&&B.items.sniper)u.atk=Math.round(u.atk*1.5),u.maxHp=u.hp=Math.round(u.hp*1.5); // SNIPER THE CAT: cats fight stronger (official item)
   B.units.push(u);SFX.deploy();B.fx.push({k:'deploy',x:u.x,t:0.4,y:0});
   if(SV.missions)SV.missions.dep=(SV.missions.dep||0)+1; // daily mission hook (deploys)
   return u}
@@ -276,6 +281,11 @@ function updateBattle(dt){
   Bn.cannon.t=Math.max(0,Bn.cannon.t-d);
   // spawns
   Bn.queue=Bn.queue.filter(q=>{if(Bn.t>=q.t){spawnEnemy(q.e);return false}return true});
+  // CAT CPU: auto-deploys the next ready team cat on a steady ticker (official item behavior)
+  if(Bn.items&&Bn.items.cpu&&!Bn.result){Bn.cpuT-=d;
+    if(Bn.cpuT<=0){const pick2=Bn.teamIds.find(id=>id&&(Bn.cds[id]||0)<=0&&(Bn.wallet>=catStats(id,undefined,Bn.costMul).cost));
+      if(pick2){const cs=catStats(pick2,undefined,Bn.costMul);Bn.wallet-=cs.cost;Bn.cds[pick2]=cs.cd;spawnCat(pick2);Bn.cpuT=1.4}
+      else Bn.cpuT=0.5}}
   // endless dojo
   if(Bn.st.endless&&Bn.t>=Bn.endlessT){Bn.endlessK++;Bn.score=Math.max(Bn.score,Bn.endlessK);Bn.endlessT=Bn.t+7;
     const pool=Bn.st.pool;const mag=1+Bn.endlessK*0.18;
@@ -712,49 +722,39 @@ function drawFx(f){const p=clamp(1-f.t/(FXDUR[f.k]||0.5),0,1);
   }
   cx.restore();cx.globalAlpha=1}
 function drawBattleHUD(b,dt){
-  // camera drag region registered FIRST so HUD buttons (registered later) win the hit scan;
-  // manual scrolling pauses the front-line auto-follow for 2.6s (original feel)
-  SCROLL('field',0,110,1280,470,()=>b.cam,v=>{b.cam=clamp(v,0,FIELD_W-1280);b.camHold=2.6},FIELD_W-1280,null).horiz=true;
-  /* ===== TOP-LEFT: enemy base HP (enemy base stands LEFT — gold numerals + cent glyph) ===== */
-  const eb=b.enemyBase;
-  const eTxt=fmt(Math.max(0,Math.ceil(eb.hp)))+'/'+fmt(eb.maxHp);
-  cx.font=FONT(26,700);
-  const enW=cx.measureText(eTxt).width;
-  txt(cx,eTxt,20,30,26,'#ffd23f','left',5,'rgba(20,16,4,.9)',700);
-  drawCent(cx,20+enW+20,29,9,'#ffd23f','rgba(20,16,4,.9)',4); // 20px clear gap: coin ink starts at +9 — NEVER touches the digits (5px stroke ink)
-  /* ===== TOP-RIGHT: pause (yellow circle w/ two dark bars) + retreat — home-base side ===== */
+  // camera drag region registered FIRST so HUD buttons (registered later) win the hit scan.
+  // Layout mirrors the ORIGINAL battle screen exactly:
+  //   top-left $ wallet sign · top-right pause+speed · bottom-left Worker Cat lv-up button ·
+  //   ONE bottom row of up to 10 unit cards · bottom-right Fire!! cannon · nothing else.
+  SCROLL('field',0,110,1280,470,()=>b.cam,v=>{b.cam=clamp(v,0,FIELD_W-1280)},FIELD_W-1280,null).horiz=true;
+  /* ===== TOP-LEFT: wallet sign — yellow rounded plate, brown $ amount + cent coin (original) ===== */
+  {
+    const mfs=27;cx.font=FONT(mfs,700);
+    const s='$'+fmt(Math.floor(b.wallet));
+    const sw=cx.measureText(s).width;
+    const pw=sw+56,px=16,py=12,ph=42;
+    cx.save();cx.shadowColor='rgba(0,0,0,.35)';cx.shadowBlur=6;cx.shadowOffsetY=3;
+    cx.fillStyle='#ffd23f';rr(cx,px,py,pw,ph,12);cx.fill();cx.restore();
+    cx.lineWidth=3;cx.strokeStyle='#8a5a20';rr(cx,px,py,pw,ph,12);cx.stroke();
+    cx.fillStyle='rgba(255,255,255,.35)';rr(cx,px+4,py+3,pw-8,10,6);cx.fill(); // top gloss
+    txt(cx,s,px+18,py+28,mfs,'#7a4a10','left',4.5,'rgba(255,244,200,.85)',700);
+    drawCent(cx,px+pw-20,py+21,10,'#ffb020','rgba(90,50,8,.9)',3.5);
+  }
+  /* ===== TOP-RIGHT: pause (yellow circle w/ two dark bars) — retreat lives in the pause menu ===== */
   cx.fillStyle=b.paused?'#e85840':'#ffd23f';cx.beginPath();cx.arc(1243,33,23,0,TAU);cx.fill();
   cx.lineWidth=4;cx.strokeStyle=b.paused?'#7a1a10':'#8a5a20';cx.stroke();
   if(b.paused)txt(cx,'\u25b6',1243,34,17,'#5a3b16','center',3,'#fff',700);
   else{cx.fillStyle='#5a3b16';cx.fillRect(1235,23,6,20);cx.fillRect(1245,23,6,20)}
-  BTN('pause',1218,10,46,46,()=>{if(B.result)return;b.paused=!b.paused;SFX.click()},{flat:true,nohov:true});
-  BTN('quit',1170,10,42,42,()=>{if(B.result)return;openModal('RETREAT?',['Give up this battle? Energy is already spent.'],[{n:'Yes',col:'#e85840',cb:()=>{if(B.result)return;endBattle(false);applyBattleResult();G.screen='map';G.screenPrev=[];B=null;AudioSetBgm('menu')}},{n:'No',cb:()=>{}}])},{col:'rgba(40,46,60,.85)',outline:'#22262f',label:'\u2715',fs:15,r:21,tcol:'#fff'}); // retreat order: endBattle(false) FIRST (defeat SFX/flag), THEN applyBattleResult — no reward on retreat
-  // boss name (yellow w/ outline) under the enemy base HP while a boss is on the field
+  BTN('pause',1218,10,46,46,()=>{if(B.result)return;b.paused=!b.paused;SFX.click();
+    if(b.paused&&!b.result)openModal('PAUSED',['Battle paused.'],[
+      {n:'Resume',col:'#ffd23f',cb:()=>{if(B)B.paused=false}},
+      {n:'Retry',col:'#7fd0ff',cb:()=>{if(!B)return;const st=B.st;B=null;G.modal=null;startBattle(st)}},
+      {n:'Retreat',col:'#e85840',cb:()=>{if(!B)return;B.paused=false;endBattle(false);applyBattleResult();G.screen='map';G.screenPrev=[];B=null;AudioSetBgm('menu')}},
+      {n:'Close',cb:()=>{if(B)B.paused=false}}])},{flat:true,nohov:true});
+  // boss name (yellow w/ outline) under the pause button while a boss is on the field
   const bossU=b.units.find(u=>u.side==='enemy'&&u.def.boss&&u.state!=='die'&&u.state!=='burrow');
-  if(bossU&&!b.result)txt(cx,ENEMAP[bossU.id].n,22,58,18,'#ffd23f','left',4.5,'rgba(60,20,4,.95)',700);
-  // stage name center-top — dark chip so it reads against any sky (VLM QA fix: no more floating text)
-  {const sname=b.st.name+(b.st.endless?'  \u2014 SCORE '+b.score:'');
-    cx.font=FONT(15,700);const snw=cx.measureText(sname).width+36;
-    const snx=640-snw/2,sny=42;
-    cx.fillStyle='rgba(15,18,30,.62)';rr(cx,snx,sny,snw,26,13);cx.fill();
-    cx.lineWidth=1.5;cx.strokeStyle='rgba(255,215,120,.4)';rr(cx,snx,sny,snw,26,13);cx.stroke();
-    txt(cx,sname,640,sny+13.5,15,'#fff','center',4,'rgba(30,30,44,.9)',700)}
-  /* ===== session loot chip (top-center, under stage name): kills + treasure drops THIS battle ===== */
-  {
-    const sessT=Math.max(0,((G.sessionTreasure&&Object.values(G.sessionTreasure).reduce((a,v)=>a+v,0))||0)-(b.treasureBase||0));
-    const label=b.kills+' kills'+(sessT>0?' · '+sessT+' treasure':'');
-    cx.font=FONT(12,700);const lw2=cx.measureText(label).width+58;
-    const lx=640-lw2/2,ly=70;
-    cx.fillStyle='rgba(15,18,30,.72)';rr(cx,lx,ly,lw2,24,12);cx.fill();
-    cx.lineWidth=1.5;cx.strokeStyle='rgba(255,215,120,.5)';rr(cx,lx,ly,lw2,24,12);cx.stroke();
-    // mini gold coin dot
-    cx.fillStyle='#ffd23f';cx.beginPath();cx.arc(lx+14,ly+12,6.5,0,TAU);cx.fill();
-    cx.lineWidth=1.4;cx.strokeStyle='#8a5a10';cx.stroke();
-    cx.fillStyle='rgba(255,255,255,.6)';cx.beginPath();cx.arc(lx+12.4,ly+10.4,2,0,TAU);cx.fill();
-    txt(cx,label,lx+26,ly+12.5,12,'#ffe8b0','left',2.5,'rgba(20,16,4,.9)',700);
-  }
-  /* ===== RIGHT EDGE: dark circular SPEED UP button + cat base HP beneath (R8) =====
-     Official caption style: 'SPEED UP' stacked in two lines + the ×N count beneath (Builder P). */
+  if(bossU&&!b.result)txt(cx,ENEMAP[bossU.id].n,1258,58,18,'#ffd23f','right',4.5,'rgba(60,20,4,.95)',700);
+  /* ===== RIGHT EDGE: dark circular SPEED UP button (official caption style) ===== */
   const sx=1234,sy=124,srad=36;
   cx.fillStyle='#2c3242';cx.beginPath();cx.arc(sx,sy,srad,0,TAU);cx.fill();
   cx.lineWidth=3.5;cx.strokeStyle='#171b26';cx.stroke();
@@ -767,37 +767,38 @@ function drawBattleHUD(b,dt){
     if(b.speed===1){b.speed=2;SFX.click()}
     else if(b.speed===2){if(SV.rank>=20){b.speed=3;SFX.click()}else{SFX.error();toast('Speed x3 unlocks at User Rank 20! (now '+SV.rank+')','#ffb060')}}
     else{b.speed=1;SFX.click()}},{flat:true,nohov:true});
-  const cb2=b.catBase;
-  const cTxt=fmt(Math.max(0,Math.ceil(cb2.hp)))+'/'+fmt(cb2.maxHp);
-  cx.font=FONT(13.5,700);const ctw=cx.measureText(cTxt).width;
-  txt(cx,cTxt,sx-22,168,13.5,'#fff','right',3.5,'rgba(20,16,4,.9)',700);
-  drawCent(cx,sx-6,167,5.5,'#fff','rgba(20,16,4,.9)',3); // number ends at sx-22; coin spans sx-13.5..+1.5 — 5px clear (was overlapping the last digit)
-  /* ===== BOTTOM-LEFT: wallet circle — worker-cat face + Level N + gold ¢ (R8/R9) ===== */
-  const bx=64,by=646;
-  txt(cx,'Level '+(b.workerLv+1),bx,by-56,14,'#ffd23f','center',3.5,'rgba(20,16,4,.95)',700);
+  /* ===== BOTTOM-LEFT: Worker Cat level-up button (original: direct upgrade, no menu) =====
+     Wallet Lv drives BOTH max (WALLET_MAX) and regen (WORKER_MUL) — one combined level like the original. */
+  const wLv=Math.max(b.walletLv,b.workerLv);b.walletLv=b.workerLv=wLv; // keep the two engine fields unified
+  const wbx=20,wby=586,wbw=100,wbh=96;
   cx.save();cx.shadowColor='rgba(0,0,0,.4)';cx.shadowBlur=8;cx.shadowOffsetY=3;
-  cx.fillStyle='#ffd23f';cx.beginPath();cx.arc(bx,by,38,0,TAU);cx.fill();cx.restore();
-  cx.lineWidth=4;cx.strokeStyle='#8a5a20';cx.beginPath();cx.arc(bx,by,38,0,TAU);cx.stroke();
-  ART.catIcon('cat',bx,by-4,19);
-  // money cluster beside/under the wallet: NUMBER right-anchored (grows leftward, never
-  // off-screen), coin pinned 15px right of the number END — can never touch the digits;
-  // font auto-shrinks for extreme wallets
-  let mfs=21;cx.font=FONT(mfs,700);
-  const wNum=String(Math.floor(b.wallet));
-  while(cx.measureText(wNum).width>150&&mfs>12){mfs--;cx.font=FONT(mfs,700)}
-  txt(cx,wNum,160,by+56,mfs,'#ffd23f','right',4,'rgba(20,16,4,.95)',700);
-  drawCent(cx,175,by+55,6.5,'#ffd23f','rgba(20,16,4,.95)',3.2);
-  const wkCost=WORKER_COST[b.workerLv];
-  if(b.workerLv<7&&b.wallet>=wkCost){ // affordable worker upgrade — contained pill badge (VLM QA fix)
-    cx.save();cx.translate(bx+34,by-34);
-    const pu=1+Math.sin(G.t*5)*0.07;cx.scale(pu,pu);
-    cx.shadowColor='rgba(0,0,0,.35)';cx.shadowBlur=5;cx.shadowOffsetY=2;
-    cx.fillStyle='#5ad84a';rr(cx,-21,-11,42,22,11);cx.fill();cx.shadowColor='transparent';
-    cx.lineWidth=2;cx.strokeStyle='#1e5a14';rr(cx,-21,-11,42,22,11);cx.stroke();
-    cx.fillStyle='rgba(255,255,255,.4)';rr(cx,-17,-8.5,14,6,3);cx.fill();
-    txt(cx,'LV UP',0,0.5,10.5,'#fff','center',2,'#1e5a14',700);cx.restore()}
-  BTN('workerbadge',bx-40,by-64,80,124,()=>{if(B.result)return;openWorkerMenu(b)},{flat:true,nohov:true});
-  /* ===== BOTTOM-RIGHT: Fire!! cannon button — magenta glow when ready (R8/R9) ===== */
+  cx.fillStyle='#ffd23f';rr(cx,wbx,wby,wbw,wbh,14);cx.fill();cx.restore();
+  cx.lineWidth=4;cx.strokeStyle='#8a5a20';rr(cx,wbx,wby,wbw,wbh,14);cx.stroke();
+  ART.catIcon('cat',wbx+wbw/2,wby+44,26);
+  // level plate across the top of the button (original 'Lv.N' badge)
+  cx.fillStyle='#8a5a20';rr(cx,wbx+14,wby+6,wbw-28,22,11);cx.fill();
+  txt(cx,'Lv.'+(wLv+1),wbx+wbw/2,wby+17.5,14,'#ffe8a0','center',3,'rgba(40,20,4,.9)',700);
+  const wkCost=WALLET_COST[wLv];
+  if(wLv<7){ // upgrade cost pill (green when affordable, grey otherwise) — tap = direct upgrade
+    const can=b.wallet>=wkCost;
+    const cw=74;
+    cx.save();cx.translate(wbx+wbw/2,wby+wbh+16);
+    if(can){const pu=1+Math.sin(G.t*5)*0.05;cx.scale(pu,pu)}
+    cx.fillStyle=can?'#5ad84a':'#5a6472';rr(cx,-cw/2,-13,cw,26,13);cx.fill();
+    cx.lineWidth=2.5;cx.strokeStyle=can?'#1e5a14':'#2c3242';rr(cx,-cw/2,-13,cw,26,13);cx.stroke();
+    txt(cx,'$'+wkCost,2,0.5,13,'#fff','center',2.5,'rgba(10,30,8,.8)',700);
+    // up-arrow affordance left of the cost
+    cx.fillStyle='#fff';cx.beginPath();cx.moveTo(-cw/2+12,5);cx.lineTo(-cw/2+19,-5);cx.lineTo(-cw/2+26,5);cx.closePath();cx.fill();
+    cx.restore();
+    BTN('worker',wbx,wby,wbw,wbh+30,()=>{if(B.result||B.paused)return;
+      if(b.wallet>=wkCost&&wLv<7){b.wallet-=wkCost;b.walletLv=wLv+1;b.workerLv=wLv+1;SFX.up();
+        popTxtUI('Wallet Lv.'+(wLv+2)+'!')}else SFX.error()},{flat:true,nohov:true});
+  }else{ // MAX: no arrow, golden plate
+    cx.fillStyle='#8a5a20';rr(cx,wbx+wbw/2-40,wby+wbh+6,80,26,13);cx.fill();
+    txt(cx,'MAX',wbx+wbw/2,wby+wbh+19.5,13,'#ffe8a0','center',2.5,'rgba(40,20,4,.9)',700);
+    BTN('worker',wbx,wby,wbw,wbh,()=>{SFX.error()},{flat:true,nohov:true});
+  }
+  /* ===== BOTTOM-RIGHT: Fire!! cannon button — magenta glow when ready ===== */
   const c=b.cannon;const ready=c.t<=0;const fx=1190,fy=636;
   const cmeta=CANNON_TYPES.find(t=>t.id===c.type)||CANNON_TYPES[0];
   const frac=ready?1:1-c.t/c.charge;
@@ -812,18 +813,16 @@ function drawBattleHUD(b,dt){
   cx.fillStyle='#22262f';cx.beginPath();cx.arc(fx-5,fy-8,2.2,0,TAU);cx.arc(fx+5,fy-8,2.2,0,TAU);cx.fill();
   txt(cx,ready?'Fire!!':tstr(c.t),fx,fy+24,ready?16:13,ready?'#ffd23f':'#cfd3e0','center',3,'#22262f',700);
   BTN('cannon',fx-46,fy-46,92,92,()=>{if(B.result)return;fireCannon()},{flat:true,nohov:true});
-  /* ===== BOTTOM-CENTER: unit dock — 2 rows x 5 dark cards, cyan CD bar, cost under card (R8/R9) ===== */
-  const team=b.teamIds.concat(Array(10).fill('')).slice(0,10);
-  const dw=78,dh=76,gpx=10;
-  const x0=640-(5*dw+4*gpx)/2;
-  team.forEach((id,i)=>{const col=i%5,row=Math.floor(i/5);
-    const dx=x0+col*(dw+gpx),dy=row===0?524:616;
-    if(!id){ // empty slot plate (no button)
-      cx.fillStyle='rgba(22,28,40,.5)';rr(cx,dx,dy,dw,dh,10);cx.fill();
-      cx.lineWidth=2;cx.strokeStyle='rgba(255,255,255,.08)';rr(cx,dx+1,dy+1,dw-2,dh-2,10);cx.stroke();return}
+  /* ===== BOTTOM-CENTER: ONE row of up to 10 unit cards (original deck) ===== */
+  const team=b.teamIds.filter(id=>id).slice(0,10);
+  const dw=76,dh=84,gpx=7;
+  const x0=132; // right of the worker button
+  team.forEach((id,i)=>{
+    const dx=x0+i*(dw+gpx),dy=614;
+    if(dx+dw>1120)return; // never collide with the Fire button
     const st=catStats(id,undefined,B.costMul);const cd=b.cds[id]||0;const cdMax=st.cd;const can=b.wallet>=st.cost&&cd<=0;
     const afford=b.wallet>=st.cost;
-    BTN('dock'+i,dx,dy,dw,dh+14,()=>{if(B.result||B.paused)return;if(!can){SFX.error();if(cd>0)toast('Recharging\u2026 '+cd.toFixed(1)+'s','#ffb060');else toast('Not enough \u00a2!','#ff7a7a');return}
+    BTN('dock'+i,dx,dy,dw,dh+16,()=>{if(B.result||B.paused)return;if(!can){SFX.error();if(cd>0)toast(cd.toFixed(1)+'s','#ffb060');else toast('Not enough \u00a2!','#ff7a7a');return}
       b.wallet-=st.cost;b.cds[id]=cdMax;spawnCat(id)},{flat:true,nohov:true,draw:cc2=>{
       // ready + affordable: soft breathing glow behind the card
       if(can){const gl=0.5+0.5*Math.sin(G.t*3.2+i);
@@ -832,42 +831,27 @@ function drawBattleHUD(b,dt){
       else{cc2.save();cc2.shadowColor='rgba(0,0,0,.35)';cc2.shadowBlur=5;cc2.shadowOffsetY=3;
         cc2.fillStyle=can?'#31405a':'#232a38';rr(cc2,0,0,dw,dh,10);cc2.fill();cc2.restore()}
       cc2.lineWidth=3;cc2.strokeStyle=can?'#c8d2e4':'#3a4456';rr(cc2,1.5,1.5,dw-3,dh-3,10);cc2.stroke();
-      ART.catIcon(id,dw/2,33,24,can?undefined:0.45);
-      if(cd>0){cc2.fillStyle='rgba(16,20,30,.72)';rr(cc2,0,0,dw,dh,10);cc2.fill();
-        txt(cc2,cd.toFixed(1),dw/2,33,16,'#fff','center',3,'#22262f',700);
-        // radial timer ring around the countdown number
-        cc2.strokeStyle='#54e0f0';cc2.lineWidth=2.5;
-        cc2.beginPath();cc2.arc(dw/2,33,17,-Math.PI/2,-Math.PI/2+TAU*(1-cd/cdMax));cc2.stroke()}
-      else if(!afford){cc2.fillStyle='rgba(16,20,30,.35)';rr(cc2,0,0,dw,dh,10);cc2.fill()}
+      ART.catIcon(id,dw/2,36,25,can?undefined:0.45);
+      if(cd>0){ // recharge curtain falls from the top, revealing the card as it recharges (original sweep)
+        const hgt=dh*clamp(cd/cdMax,0,1);
+        cc2.save();rr(cc2,1.5,1.5,dw-3,dh-3,10);cc2.clip();
+        cc2.fillStyle='rgba(10,14,24,.78)';cc2.fillRect(1.5,1.5,dw-3,hgt);cc2.restore();
+        txt(cc2,cd.toFixed(1),dw/2,dh/2+1,15,'#fff','center',3,'#22262f',700)}
+      else if(!afford){cc2.fillStyle='rgba(16,20,30,.4)';rr(cc2,0,0,dw,dh,10);cc2.fill()}
       // diagonal gloss highlight (glassy card)
       cc2.save();cc2.beginPath();rr(cc2,1.5,1.5,dw-3,dh-3,10);cc2.clip();
       const gg=cc2.createLinearGradient(0,0,dw,dh);gg.addColorStop(0,'rgba(255,255,255,.14)');gg.addColorStop(0.45,'rgba(255,255,255,.02)');gg.addColorStop(1,'rgba(255,255,255,0)');
       cc2.fillStyle=gg;cc2.fillRect(0,0,dw,dh);cc2.restore();
-      // cyan cooldown bar at the card's bottom edge (drains to empty = ready)
-      const bw=dw-10;
-      cc2.fillStyle='rgba(10,14,22,.8)';rr(cc2,5,dh-9,bw,6,3);cc2.fill();
-      cc2.fillStyle=cd>0?'#54e0f0':'rgba(84,224,240,.4)';
-      rr(cc2,5,dh-9,cd>0?bw*(cd/cdMax):bw,6,3);cc2.fill();
-      // cost under the card: green-ish when affordable, warm red when short
+      // cost badge at the card's bottom edge (original: dark plate + green number)
       const cs=String(st.cost);const csw=cc2.measureText(cs).width;
-      const cCol=afford?(can?'#c8f0c8':'#a8d8b8'):'#ff9a8a';
-      txt(cc2,cs,dw/2-(csw+12)/2,dh+9,14,cCol,'left',3,'rgba(16,20,30,.9)',700);
-      drawCent(cc2,dw/2-(csw+12)/2+csw+6,dh+8,5.5,cCol,'rgba(16,20,30,.9)',3)}});
+      cc2.fillStyle='rgba(10,14,22,.82)';rr(cc2,dw/2-(csw+22)/2,dh-16,csw+22,18,9);cc2.fill();
+      const cCol=afford?'#9ae89a':'#ff9a8a';
+      txt(cc2,cs,dw/2-(csw+22)/2+16,dh-7,13,cCol,'left',2.5,'rgba(8,10,16,.9)',700);
+      drawCent(cc2,dw/2+(csw-22)/2+8,dh-7.5,5.5,cCol,'rgba(8,10,16,.9)',3)}});
   });
-  const showL=b.cam>10,showR=b.cam<FIELD_W-1280-10;
-  if(showL)BTN('camL',8,300,46,64,()=>{b.cam=clamp(b.cam-500,0,FIELD_W-1280);b.camHold=2.0;SFX.click()},{col:'rgba(30,34,48,.75)',label:'\u25c0',fs:20,r:10,tcol:'#fff'});
-  if(showR)BTN('camR',1226,300,46,64,()=>{b.cam=clamp(b.cam+500,0,FIELD_W-1280);b.camHold=2.0;SFX.click()},{col:'rgba(30,34,48,.75)',label:'\u25b6',fs:20,r:10,tcol:'#fff'});
 }
+function popTxtUI(s){toast(s,'#ffd94a')}
 
-function openWorkerMenu(b){
-  const wMax=Math.round(b.walletMax*WALLET_MAX[Math.min(7,b.walletLv+1)]);
-  const lines=[
-    'Worker Cat Lv.'+(b.workerLv+1)+'  \u2014  income +'+(battleRegen()*WORKER_MUL[b.workerLv]).toFixed(1)+'/s',
-    'Wallet max: '+Math.round(b.walletMax*WALLET_MAX[b.walletLv])+'\u00a2'];
-  openModal('Worker Cat',lines,[
-    {n:b.workerLv<7?('Worker Lv.'+(b.workerLv+2)+' \u2014 '+WORKER_COST[b.workerLv]+'\u00a2'):'Worker MAX',col:'#ffd23f',cb:()=>{if(b.workerLv<7&&b.wallet>=WORKER_COST[b.workerLv]){b.wallet-=WORKER_COST[b.workerLv];b.workerLv++;SFX.up()}else SFX.error()}},
-    {n:b.walletLv<7?('Wallet \u2192 '+fmt(wMax)+'\u00a2 \u2014 '+WALLET_COST[b.walletLv]+'\u00a2'):'Wallet MAX',col:'#7fd0ff',cb:()=>{if(b.walletLv<7&&b.wallet>=WALLET_COST[b.walletLv]){b.wallet-=WALLET_COST[b.walletLv];b.walletLv++;SFX.up()}else SFX.error()}},
-    {n:'Close',cb:()=>{}}])}
 const RARITY_LABEL={normal:'Basic Cat',special:'Special Cat',rare:'Rare Cat',srar:'Super Rare Cat',uber:'Uber Super Rare Cat',legend:'Legend Rare Cat'};
 function drawResult(b){
   applyBattleResult();
@@ -974,9 +958,23 @@ function drawResult(b){
     drops.forEach((s,i)=>{const hot=i===drops.length-1&&/Activate|Check|menu!/.test(s);
       txt(cx,s,640,py2+58+i*30,20,hot?'#ffd23f':'#fff','center',4,'rgba(10,10,6,.9)',700)});
     cx.globalAlpha=1}
-  // official buttons: big yellow Ok + Post to SNS (no NEXT/RETRY/TO MAP in the original)
+  // official buttons: big yellow Ok + Continue (defeat only, costs 3 CF — original mechanic) + Post to SNS
   const okA=clamp((b.resultT-0.45)/0.3,0,1);
   if(okA>0){cx.globalAlpha=okA;
+    if(!win&&!b.continued){ // CONTINUE: revive the base + heal every deployed cat, battle resumes (original defeat flow)
+      BTN('resCont',180,610,220,76,()=>{if(SV.cf<3){SFX.error();toast('Need 3 Cat Food to continue!','#ff7a7a');return}
+        addCF(-3);b.continued=true;B.applied=false;B.result=null;B.resultT=0;
+        B.catBase.hp=B.catBase.maxHp;B.catBase.alarm=0;
+        B.units.forEach(u=>{if(u.side==='cat'&&u.state!=='die'){u.hp=u.maxHp;u.kbTaken=0;u.rateT=Math.min(u.rateT,0.3)}});
+        B.units=B.units.filter(u=>!(u.side==='cat'&&u.state==='die')); // fallen cats are gone (they can be re-deployed)
+        for(const id in B.cds)B.cds[id]=0;
+        toast('CONTINUE! The base stands again!','#7fe86a');SFX.up()},{flat:true,nohov:true,draw:cc=>{
+        cc.save();cc.shadowColor='rgba(255,80,180,.45)';cc.shadowBlur=12;
+        cc.fillStyle='#e8489a';rr(cc,0,0,220,76,14);cc.fill();cc.restore();
+        cc.lineWidth=3.5;cc.strokeStyle='#8a1a5a';rr(cc,0,0,220,76,14);cc.stroke();
+        cc.lineWidth=1.5;cc.strokeStyle='rgba(255,255,255,.5)';rr(cc,5,5,210,66,11);cc.stroke();
+        txt(cc,'Continue',110,32,24,'#fff','center',0,null,700);
+        txt(cc,'3 \u00a2 CF \u2014 base revived',110,58,13,'#ffd9f2','center',2.5,'rgba(60,8,40,.9)',700)}});}
     BTN('resOk',430,610,420,76,()=>{SFX.click();const st=b.st;const kind=CHMAP[st.ch]&&CHMAP[st.ch].kind;B=null;
       if(kind==='sol'||kind==='ul'){G.screen='submap';G.screenPrev=[]}else{G.screen='map';G.screenPrev=[]}
       AudioSetBgm('menu')},{flat:true,nohov:true,draw:cc=>{
