@@ -1,0 +1,5 @@
+{
+ "id": "walkaudit1",
+ "prompt": "MASS SPRITE AUDIT sheet 1 of 4. Each row = one game unit's extracted WALK animation frames (label in red at left, e.g. 'cat:cat (5fr)'). A correct WALK cycle shows: repeated similar stances, alternating legs, gentle bounce, NO dust clouds, NO impact effects, NO lunging weapon strikes, NO wide-open attacking mouths mid-strike. Flag ANY row that instead shows: attack poses, garbled/merged sprites, empty rows, single static frames with an attack-like lunge, or wildly different frame contents. Answer with a list: 'unit_id: OK' or 'unit_id: SUSPECT - reason'. Be strict but do not false-positive on normal walk variations (jumping/bouncing walk cycles are OK).",
+ "image": "images/walkaudit1.png"
+}
