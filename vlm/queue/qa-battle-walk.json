@@ -1,5 +1,0 @@
-{
- "id": "qa-battle-walk",
- "prompt": "This is a Battle Cats clone battle screen. Cats are marching toward the enemy base. CRITICAL QUESTION: Look at the marching cat units. In the ORIGINAL Battle Cats game, walking cats have a distinctive bouncing/marching gait (they hop while moving, small squash motion). Attack animations are DIFFERENT (units lean back then strike forward with effects). Are the cats in this screenshot showing a proper WALKING/MARCHING animation, or do they look like they are stuck doing ATTACK poses while moving? Describe each distinct unit type you see and what animation it appears to be playing. Also note any visual defects.",
- "image": "images/qa-battle-walk.png"
-}
