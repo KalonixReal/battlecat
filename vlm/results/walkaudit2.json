@@ -1,7 +1,0 @@
-{
- "id": "walkaudit2",
- "ok": true,
- "model": "gemini-3.5-flash-lite",
- "text": "Here is the sprite audit for sheet 2 of 4:\n\n* enemy:akudoge (4fr): OK\n* enemy:angelgabriel (4fr): OK\n* enemy:angelseraph (3fr): SUSPECT - garbled/merged sprites, incomplete frames\n* enemy:bea (5fr): OK\n* enemy:behemothbear (3fr): SUSPECT - features projectile/water blast and attack-like poses\n* enemy:behemothcroc (4fr): SUSPECT - garbled/merged sprites\n* enemy:bore (4fr): SUSPECT - includes attack slashes and aggressive lunge poses\n* enemy:camelle (8fr): SUSPECT - garbled/merged or incomplete fragment sprites\n* enemy:celeboodle (3fr): SUSPECT - garbled/merged stroke fragments, not a coherent walk cycle\n* enemy:clionel (6fr): SUSPECT - attack effects and projectile beams\n* enemy:croco (5fr): OK\n* enemy:dober (4fr): SUSPECT - garbled/merged sprites and attack parts scattered\n* enemy:doge (5fr): OK\n* enemy:dogedark (4fr): SUSPECT - final frame features wide-open attacking mouth\n* enemy:elizabeth (4fr): SUSPECT - includes impact effects/magic aura mid-cycle\n* enemy:face (5fr): SUSPECT - aggressive roaring/wide-open attacking mouth poses\n* enemy:ghostdoge (2fr): OK\n* enemy:gory (6fr): OK\n* enemy:gregor (7fr): SUSPECT - garbled/fragmented sprites\n* enemy:hippoe (4fr): SUSPECT - final frame features wide-open attacking mouth\n* enemy:jackie (7fr): OK\n* enemy:kurosawah (4fr): SUSPECT - garbled/merged silhouette shapes\n* enemy:leboin (4fr): OK",
- "ts": 1788499229.9385147
-}

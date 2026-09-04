@@ -1,7 +1,0 @@
-{
- "id": "walkaudit3",
- "ok": true,
- "model": "gemini-3.5-flash-lite",
- "text": "enemy.lesolar (4fr): OK\nenemy.mastera (6fr): OK\nenemy.metallic (4fr): SUSPECT - wide-open attacking mouth / attack pose\nenemy.metallicdoge (2fr): OK\nenemy.nyandam (4fr): SUSPECT - garbled/merged sprites or unrelated components\nenemy.nyanehorn (4fr): OK\nenemy.nyaowlbrow (3fr): SUSPECT - garbled/incomplete sprites\nenemy.nyaphace (4fr): SUSPECT - wide-open attacking mouth mid-strike / attack pose\nenemy.projecta (6fr): OK\nenemy.relicdoge (2fr): OK\nenemy.relichippo (4fr): SUSPECT - wide-open attacking mouth / attack pose\nenemy.sael (4fr): SUSPECT - dust clouds / impact effects present\nenemy.shibalien (2fr): OK\nenemy.sinseal (4fr): SUSPECT - wide-open attacking mouth / attack pose\nenemy.snache (3fr): OK\nenemy.spacefish (3fr): SUSPECT - dust clouds / impact effects present\nenemy.sunfish (9fr): SUSPECT - garbled/merged sprites, dust clouds\nenemy.teacher (2fr): SUSPECT - attack pose / lunging animation frame\nenemy.those (7fr): SUSPECT - garbled or overlapping multiple sprites\nenemy.warwan (5fr): SUSPECT - garbled/merged sprites, projectile/impact effects\nenemy.witchen (2fr): SUSPECT - garbled/merged sprites\nenemy.zombiebear (1fr): SUSPECT - single static frame, incomplete\nenemy.zombieelephant (2fr): SUSPECT - garbled/incomplete sprites",
- "ts": 1788499237.7087686
-}

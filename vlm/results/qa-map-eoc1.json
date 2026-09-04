@@ -1,7 +1,0 @@
-{
- "id": "qa-map-eoc1",
- "ok": true,
- "model": "gemini-3.5-flash-lite",
- "text": "This image does **not** show a chapter/stage-select world map. \n\nInstead, this is the **title screen** of *The Battle Cats*. \n\n### Description of the Screen:\n* **Background:** A bright orange/yellow background featuring a subtle radial sunburst pattern emanating from the center, along with a row of simple white clouds and various small brown landmarks or icons scattered horizontally (such as a ziggurat/pyramid shape, a cone, and a torii gate).\n* **Logo:** Centered near the top is the game\u2019s official logo: \"THE Battle Cats\" in stylized pink, blue, and white lettering, accompanied by a small black cat silhouette paw print.\n* **Button:** A prominent yellow-orange \"PLAY\" button is centered below the logo.\n* **Bottom Border:** A dense, tiled crowd of standard white \"Basic Cat\" faces lines the entire bottom edge of the screen.\n* **UI Text:** In the top corners, copyright information (\"\u00a9 PONOS Corp.\") appears on the left, and version text (\"Version 12.6.0\") appears on the right.",
- "ts": 1788501750.672662
-}

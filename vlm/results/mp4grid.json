@@ -1,7 +1,0 @@
-{
- "id": "mp4grid",
- "ok": true,
- "model": "gemini-3.5-flash-lite",
- "text": "Based on the provided video frames, here are the specific visual bugs observed:\n\n1. **Sprite Sheet / Uncut Sprites:** The unit sprites are not being properly clipped or isolated from their sprite sheets. Instead of a single clean character per unit, large white rectangular blocks containing multiple sprite frames or adjacent sheet textures are rendered behind and around the units.\n2. **Walking vs. Attack Animations:** While moving across the field, the units are displaying their static attack poses or incorrect frames rather than a fluid walking cycle. \n3. **Sprite Flipping & Orientation:** The cats and enemy units do not appear correctly mirrored/flipped based on their direction of travel; the sprites appear to be rendering straight from the raw sheet without horizontal reflection facing their respective opposing bases.\n4. **UI and Graphical Artifacts:** \n   * Large white sprite sheet bounding boxes overlap the battle field and units.\n   * Long red debug/raycast lines stretch horizontally across the screen from units.\n   * Floating health bars or text indicators sometimes appear misplaced or overlapping.",
- "ts": 1788498685.6936734
-}

@@ -1,7 +1,0 @@
-{
- "id": "walkaudit0",
- "ok": true,
- "model": "gemini-3.5-flash-lite",
- "text": "catarcher: SUSPECT - shows attack projectiles (arrows) instead of a walk cycle\ncataxe: SUSPECT - shows attack animation with axe swing at the end\ncatbahamut: SUSPECT - garbled/merged or incorrect animation frames\ncatbird: OK\ncatboogie: OK\ncatcan: SUSPECT - erratic/garbled jump and scratch poses\ncatcat: OK\ncatcatman: SUSPECT - garbled/merged sprites or incomplete fragments\ncatcow: OK\ncatcutter: SUSPECT - garbled/fragmented shapes instead of walk cycle\ncatcyborg: SUSPECT - garbled/fragmented body parts\ncatdioramos: SUSPECT - garbled/fragmented shapes\ncatfish: SUSPECT - wide-open attacking mouths mid-strike\ncatfortune: SUSPECT - garbled/fragmented sprites and impact effects\ncatgao: SUSPECT - incomplete/garbled frames\ncatgatr: SUSPECT - incorrect items (crystals) instead of a walk cycle\ncatgross: OK\ncatguitar: SUSPECT - garbled/fragmented head/guitar parts\ncatisland: SUSPECT - wide-open attacking mouths mid-strike\ncatjurassic: SUSPECT - single static frame\ncatkaguya: SUSPECT - single static frame\ncatkotatsu: SUSPECT - garbled/fragmented frames\ncatkungfu: SUSPECT - garbled/fragmented limbs and animation frames",
- "ts": 1788499214.9228344
-}

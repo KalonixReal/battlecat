@@ -1,7 +1,0 @@
-{
- "id": "rowlab18",
- "ok": true,
- "model": "gemini-3.5-flash-lite",
- "text": "enemy.nyandam: walk=none\nenemy.onehorn: walk=row 1\nenemy.owlbrow: walk=none\nenemy.phace: walk=row 1",
- "ts": 1788499569.7845564
-}

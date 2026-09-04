@@ -1,7 +1,0 @@
-{
- "id": "rowlab12",
- "ok": true,
- "model": "gemini-3.5-flash-lite",
- "text": "enemy:baa: walk=ROW 1\nenemy:behemothbear: walk=ROW 2\nenemy:behemothcroc: walk=none\nenemy:bore: walk=ROW 1",
- "ts": 1788499530.15664
-}

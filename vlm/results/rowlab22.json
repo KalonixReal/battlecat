@@ -1,7 +1,0 @@
-{
- "id": "rowlab22",
- "ok": true,
- "model": "gemini-3.5-flash-lite",
- "text": "enemy.withen: walk=none\nenemy.zombiebear: walk=none\nenemy.zombieelephant: walk=row 6",
- "ts": 1788499592.4453754
-}
