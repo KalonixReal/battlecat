@@ -86,14 +86,27 @@ const SPRIT=(()=>{
     return true;
   }
   /* ---- unit renderer: contract matches ART.cat/ART.enemy (x,y = feet origin,
-        s = engine scale, dir = facing, e = {anim,atkT,idle,...}) — returns true when drawn ---- */
+        s = engine scale, dir = facing, e = {anim,atkT,idle,...}) — returns true when drawn ----
+        SCALE (r22): ONE global K like the original engine — every unit renders at its
+        NATURAL cutout proportion (px per model px is identical across all units),
+        calibrated so the basic cat stands 74px tall on the 1280x720 field.
+        No per-side TARGET normalization, no invented boss multipliers: a hippoe is
+        1.5x a cat, a teacher bear towers, exactly like the official game. */
+  let K=null; // px per sheet-pixel, calibrated at first draw
+  function calib(){
+    if(K)return K;
+    const c=M.units['cat:cat'];
+    const rh=c&&c.forms['0']&&c.forms['0'].walk?c.forms['0'].walk.refH:51;
+    K=74/Math.max(20,rh);
+    return K;
+  }
   function draw(kind,o){
     const e=o.e||{};
     const fi=(kind==='cat'&&o.form!==undefined)?o.form:((kind==='cat'&&typeof catForm==='function'&&typeof SV!=='undefined'&&SV)?catForm(o.id):0);
     const fm=formEntry(kind,o.id,fi);
     if(!fm)return false;
     const s=(o.s||1);
-    const TARGET=kind==='enemy'?86:74;
+    const k=calib()*s;
     /* Native orientation (official cutout art): cats are drawn facing LEFT,
        enemies facing RIGHT — exactly how they march. NO flip in normal play
        (the original never mirrors sprites, even while knocked back).
@@ -116,8 +129,7 @@ const SPRIT=(()=>{
           const p=anim==='windup'?(e.atkT||0)*0.42:0.42+(e.atkT||0)*0.58;
           fi2=progIdx(list,p);
         }else fi2=list[0];
-        const H=(en.refH||100);
-        ok=drawFrame(en,fi2,s*TARGET/Math.max(20,H),flip);
+        ok=drawFrame(en,fi2,k*(en.dscale||1),flip);
       }
     }
     if(!ok){
@@ -127,8 +139,7 @@ const SPRIT=(()=>{
         let fi2;
         if(e.idle||e.anim==='idle')fi2=list[0];
         else fi2=cycIdx(list,en.dur,(o.t||0));
-        const H=(en.refH||100);
-        ok=drawFrame(en,fi2,s*TARGET/Math.max(20,H),flip);
+        ok=drawFrame(en,fi2,k*(en.dscale||1),flip);
       }
     }
     c.restore();

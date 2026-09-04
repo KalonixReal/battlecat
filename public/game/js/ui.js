@@ -767,6 +767,10 @@ function drawMap(dt){const c=CHMAP[G.chapter];
     cx.beginPath();cx.arc(px,py,11,0,TAU);cx.fill();cx.stroke();
     cx.strokeStyle='rgba(40,16,10,.8)';cx.lineWidth=1.4;cx.beginPath();cx.arc(px,py,13.4,0,TAU);cx.stroke();
     if(nd.unl&&nd.tap)BTN('nd'+c.kind+i,bx-6,by-8,bW+12,bH+34,()=>{if(!G.pdown||!G.pdown.moved)nd.tap()},{flat:true,nohov:true});
+    /* Original map rule: only the CURRENT stage carries a name banner; cleared stages keep
+       their small Clear! ribbon; every other stage is just a red dot — no plate, no energy
+       label, no padlock clutter (the user's video showed this noise). */
+    if(!(nd.cur||nd.done||nd.endless))continue;
     cx.save();cx.globalAlpha=nd.unl?1:0.5;
     // banner plate
     cx.save();cx.shadowColor='rgba(50,32,10,.35)';cx.shadowBlur=nd.cur?10:4;cx.shadowOffsetY=nd.cur?4:2;
@@ -791,12 +795,12 @@ function drawMap(dt){const c=CHMAP[G.chapter];
       ribbon(cx,0,0,72,18,'#ffd23f','#8a5a10');txt(cx,'ENDLESS',0,0.5,10,'#7a4a08','center',2.5,'#fff',700);cx.restore()}
     if(nd.ev&&nd.done){cx.save();cx.translate(bx+32,by-4);cx.rotate(-0.08);
       ribbon(cx,0,0,72,18,'#5aa84a','#2e6a22');txt(cx,'CLEARED',0,0.5,10,'#fff','center',2.5,'#2e6a22',700);cx.restore()}
-    // Energy -N (cyan number, white outline)
-    const eLbl='Energy -'+nd.energy;
-    cx.font=FONT(12.5,700);const ew=cx.measureText(eLbl).width;
-    const exs=bx+bW/2-ew/2;
-    txt(cx,eLbl,exs,by+bH+13,12.5,'#e8fdff','left',3,'rgba(30,40,50,.85)',700);
-    txt(cx,String(nd.energy),exs+cx.measureText('Energy -').width,by+bH+13,12.5,'#54e0f0','left',3,'rgba(30,40,50,.85)',700);
+    // Energy -N (cyan number, white outline) — ONLY on the current stage (original)
+    if(nd.cur){const eLbl='Energy -'+nd.energy;
+      cx.font=FONT(12.5,700);const ew=cx.measureText(eLbl).width;
+      const exs=bx+bW/2-ew/2;
+      txt(cx,eLbl,exs,by+bH+13,12.5,'#e8fdff','left',3,'rgba(30,40,50,.85)',700);
+      txt(cx,String(nd.energy),exs+cx.measureText('Energy -').width,by+bH+13,12.5,'#54e0f0','left',3,'rgba(30,40,50,.85)',700)}
     // crown pips row (story stages): earned gold / unearned dim — replays can top them up
     if(c.kind==='story'&&nd.done){const cn=(SV.crowns[c.id]&&SV.crowns[c.id][String(i)])||0;
       for(let k=0;k<3;k++)crownDraw(cx,bx+bW/2-17+k*17,by+bH+28,5.5,k<cn?'#ffd23f':'#c8bca0',k<cn?'#8a5a10':'#8a7a5a',k>=cn)}
@@ -812,7 +816,7 @@ function drawMap(dt){const c=CHMAP[G.chapter];
       else if(own===3){cx.save();cx.translate(px+24,py-24);
         cx.fillStyle='rgba(216,195,127,.9)';cx.beginPath();cx.moveTo(0,-6);cx.lineTo(5.5,0);cx.lineTo(0,6);cx.lineTo(-5.5,0);cx.closePath();cx.fill();
         cx.lineWidth=1.4;cx.strokeStyle='rgba(138,90,16,.5)';cx.stroke();cx.restore()}}
-    if(!nd.unl)drawPadlock(cx,bx+bW-14,by+bH/2,7,'#8f887a');
+    // (padlocks removed from the map — original shows dots only)
     cx.restore()}
   // white cat marker stands on the current node
   if(markerNode)catMarker(cx,markerNode.p.x,markerNode.p.y-16,30,G.t);

@@ -639,8 +639,8 @@ function drawUnit(u){
     animT:u.animT,idle:u.halted&&u.state==='walk',atkT:u.state==='pre'?1-u.preT/(u.preT0||0.3):(u.state==='post'?1-u.postT/(u.postT0||0.25):0),
     flash:u.flash>0,frozen:u.st.frozen>0,weak:u.st.weakenT>0,curse:u.st.curse>0,slow:u.st.slow>0,r:u.r,boss:u.side==='enemy'&&u.def.boss};
   if(u.state==='wall'){cx.fillStyle='#8a94a8';rr(cx,-26,-70,52,70,8);cx.fill();cx.strokeStyle='#5a6478';cx.lineWidth=3;rr(cx,-26,-70,52,70,8);cx.stroke();cx.fillStyle='#6a7488';for(let i=0;i<3;i++)cx.fillRect(-20+i*16,-62,10,54)}
-  else if(u.side==='cat')ART.cat({id:u.id,x:0,y:0,s:u.r/20,t:u.animT,dir:u.dir,e});
-  else ART.enemy({id:u.id,x:0,y:0,s:(u.def.boss?2.1:1)*(u.r/22),t:u.animT,dir:u.dir,e,u,tint:B.tint});
+  else if(u.side==='cat')ART.cat({id:u.id,x:0,y:0,s:1,t:u.animT,dir:u.dir,e});
+  else ART.enemy({id:u.id,x:0,y:0,s:1,t:u.animT,dir:u.dir,e,u,tint:B.tint});
   if(e.flash){cx.globalCompositeOperation='source-atop';cx.fillStyle='rgba(255,255,255,.6)';cx.fillRect(-60,-120,120,130);cx.globalCompositeOperation='source-over'}
   cx.restore();
   if(u.state==='die'&&dieFade>0){ // death poof ring + rising motes
@@ -751,9 +751,7 @@ function drawBattleHUD(b,dt){
       {n:'Retry',col:'#7fd0ff',cb:()=>{if(!B)return;const st=B.st;B=null;G.modal=null;startBattle(st)}},
       {n:'Retreat',col:'#e85840',cb:()=>{if(!B)return;B.paused=false;endBattle(false);applyBattleResult();G.screen='map';G.screenPrev=[];B=null;AudioSetBgm('menu')}},
       {n:'Close',cb:()=>{if(B)B.paused=false}}])},{flat:true,nohov:true});
-  // boss name (yellow w/ outline) under the pause button while a boss is on the field
-  const bossU=b.units.find(u=>u.side==='enemy'&&u.def.boss&&u.state!=='die'&&u.state!=='burrow');
-  if(bossU&&!b.result)txt(cx,ENEMAP[bossU.id].n,1258,58,18,'#ffd23f','right',4.5,'rgba(60,20,4,.95)',700);
+  // (no boss name label — the original announces bosses via the warning banner only)
   /* ===== RIGHT EDGE: dark circular SPEED UP button (official caption style) ===== */
   const sx=1234,sy=124,srad=36;
   cx.fillStyle='#2c3242';cx.beginPath();cx.arc(sx,sy,srad,0,TAU);cx.fill();

@@ -33,22 +33,26 @@ def extract_file(d, path, dst):
     ent = files.get(path)
     if not ent: return False
     n = ent['size']
-    nb = (n + 15) // 16 * 16  # stored region padded to 16-block boundary
-    off = dbase + ent['offset']
-    blob = data[off: off + nb]
-    if blob[:4] != b'\x89PNG':
-        # some entries (bcu-assets packing quirk) sit 16 bytes earlier
-        blob2 = data[off - 16: off - 16 + nb]
-        if len(blob2) == nb and blob2[:4] == b'\x89PNG':
-            open(dst, 'wb').write(blob2[:n])
-            return True
-        dec = AES.new(key, AES.MODE_CBC, iv).decrypt(blob)
-        blob = dec[:n]
-        if blob[:4] != b'\x89PNG':
-            dec2 = AES.new(key, AES.MODE_CBC, iv).decrypt(data[off-16: off-16+nb])
-            blob = dec2[:n]
+    nb = (n + 31) // 16 * 16  # padded to block boundary + one spare block
+    base_off = dbase + ent['offset']
+    best = None; best_score = -1
+    for delta in (0, -16, 16):  # some entries sit 16 bytes off in EITHER direction (pack quirk)
+        off = base_off + delta
+        blob = data[off: off + nb]
+        if len(blob) < nb: continue
+        if blob[:4] == b'\x89PNG':
+            best = blob[:n]; break
+        dec = AES.new(key, AES.MODE_CBC, iv).decrypt(blob)[:n]
+        s = 0
+        if dec[:4] == b'\x89PNG': s += 1000  # decrypted to a valid PNG (entry was 16-shifted)
+        head = dec[:40]
+        if b'[modelanim' in head or b'[imgcut' in head: s += 100
+        pr = sum(1 for c in dec[:256] if 32 <= c < 127 or c in (9, 10, 13))
+        s += pr
+        if s > best_score: best_score, best = s, dec
+    if best is None: return False
     os.makedirs(os.path.dirname(dst), exist_ok=True)
-    open(dst, 'wb').write(blob)
+    open(dst, 'wb').write(best)
     return True
 
 def main():

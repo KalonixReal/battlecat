@@ -44,15 +44,23 @@ def parse_imgcut(txt):
         cuts.append([int(float(p)) for p in parts[:4]])
     return {'name': name, 'cuts': cuts}
 
+def _first_two_int_lines(ls, limit=8):
+    """[ver_line_idx, n_line_idx]: first two consecutive pure-integer lines —
+    survives partially-encrypted headers ('...del]' garbage before the version)."""
+    def pure(s):
+        s = s.strip()
+        return s.isdigit()
+    for j in range(min(limit, len(ls) - 1)):
+        if pure(ls[j]) and pure(ls[j + 1]):
+            return j, j + 1
+    return None
+
 def parse_mamodel(txt):
     ls = [l for l in txt.split('\n')]
     # find n after the marker (line 1 = '3' version, line 2 = n)
-    idx = None
-    for j, l in enumerate(ls[:4]):
-        if 'modelanim:model' in l or 'amodel]' in l:
-            idx = j + 1
-            break
-    if idx is None: return None
+    hit = _first_two_int_lines(ls)
+    if hit is None: return None
+    idx = hit[0]
     ver = int(ls[idx].strip())
     n = int(ls[idx + 1].strip())
     parts = []
@@ -60,35 +68,43 @@ def parse_mamodel(txt):
         ss = ls[idx + 2 + k].strip().split(',')
         vals = [int(float(p)) for p in ss[:13]]
         parts.append(vals)
-    ints3 = [int(float(x)) for x in ls[idx + 2 + n].strip().split(',')[:3]]
-    m = int(ls[idx + 3 + n].strip())
-    confs = []
-    for k in range(m):
-        ss = ls[idx + 4 + n + k].strip().split(',')
-        confs.append([int(float(p)) for p in ss[:6]])
+    try:
+        ints3 = [int(float(x)) for x in ls[idx + 2 + n].strip().split(',') if x.strip() != ''][:3]
+        m = int(ls[idx + 3 + n].strip())
+        confs = []
+        for k in range(m):
+            ss = ls[idx + 4 + n + k].strip().split(',')
+            confs.append([int(float(p)) for p in ss if p.strip() != ''][:6])
+    except (IndexError, ValueError):
+        ints3, confs = [100, 360, 255], []
     return {'ver': ver, 'parts': parts, 'ints': ints3, 'confs': confs}
 
 def parse_maanim(txt):
     ls = txt.split('\n')
-    idx = None
-    for j, l in enumerate(ls[:4]):
-        if 'modelanim:animation' in l or 'aanim]' in l:
-            idx = j + 1
-            break
-    if idx is None: return None
+    hit = _first_two_int_lines(ls)
+    if hit is None: return None
+    idx = hit[0]
     ver = int(ls[idx].strip())
     n = int(ls[idx + 1].strip())
     parts = []
     cur = idx + 2
     for k in range(n):
+        if cur >= len(ls) - 1: break  # truncated file (partial decryption tail loss)
         ss = ls[cur].strip().split(',')
         ints5 = [int(float(p)) for p in ss[:5]]
         cnt = int(ls[cur + 1].strip())
         moves = []
         for q in range(cnt):
-            mv = [int(float(p)) for p in ls[cur + 2 + q].strip().split(',')[:4]]
+            if cur + 2 + q >= len(ls): break  # truncated tail: keep the moves we have
+            ln = ls[cur + 2 + q].strip()
+            if not ln: break  # trailing blank (truncated tail)
+            try:
+                mv = [int(float(p)) for p in ln.split(',') if p.strip() != ''][:4]
+            except ValueError:
+                break  # corrupted tail — keep the moves parsed so far
             moves.append(mv)
-        parts.append({'ints': ints5, 'moves': moves})
+        if moves:
+            parts.append({'ints': ints5, 'moves': moves})
         cur += 2 + cnt
     return {'ver': ver, 'parts': parts}
 
