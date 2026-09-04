@@ -1,0 +1,5 @@
+{
+ "id": "qa-eocmap",
+ "prompt": "This is the official Empire of Cats world map from The Battle Cats (scaled to 1470x720, original 2940x1440). Describe: 1) What continents/regions are visible? 2) What map projection is it (roughly)? 3) Are there stage markers/dots on it? If yes, list any locations you can identify (e.g. Korea, Japan, China). 4) What's the art style (colors, water/land colors)? 5) Does the map show the WHOLE world or just part?",
+ "image": "images/qa-eocmap.png"
+}
