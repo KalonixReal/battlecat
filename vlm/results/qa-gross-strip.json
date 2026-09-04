@@ -1,7 +1,0 @@
-{
- "id": "qa-gross-strip",
- "ok": true,
- "model": "gemini-3.1-flash-lite",
- "text": "Each frame in this image **shows both the legs and the cat face/head.**\n\nThe image is a composite strip where the full character (head + legs) is present in every frame. You can clearly see the round cat head with ears and facial features sitting atop the long, walking legs in all five of the visible figures.",
- "ts": 1788502799.7161052
-}
