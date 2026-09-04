@@ -1,0 +1,5 @@
+{
+ "id": "modelcheck",
+ "prompt": "This is a screenshot of an API rate-limits page. List every AI model name you can see along with its RPM/TPM/RPD limits, as a compact table. Which models have the most generous free-tier limits?",
+ "image": "images/modelcheck.png"
+}
