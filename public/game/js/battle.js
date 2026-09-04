@@ -450,8 +450,37 @@ function drawBattle(dt){updateBattle(dt);
     txt(cx,'tap \u25b6 to resume',640,368,16,'rgba(255,255,255,.8)','center',4,'#14141c',700)}
   if(b.warnT>0){cx.globalAlpha=clamp(b.warnT,0,1);txt(cx,b.warn,640,150,30,'#ff5a5a','center',6,'#201018',700);cx.globalAlpha=1}
   if(b.result)drawResult(b)}
+/* ORIGINAL stage backgrounds (game rips, 770x512, tile seamlessly) */
+const BG_PIC={eoc1:'Bg000',eoc2:'Bg001',eoc3:'Bg002',itf1:'Bg014',itf2:'Bg016',itf3:'Bg033',
+  cotc1:'Bg074',cotc2:'Bg017',cotc3:'Bg096',sol:null,ul:'Bg057',aku:'Bg019',dojo:'Bg043',event:'Bg023'};
+const SOL_ROT=['Bg005','Bg028','Bg030','Bg007','Bg012','Bg023','Bg025','Bg013','Bg098','Bg089','Bg061','Bg088'];
+const _bgImgs={};
+function bgImg(name,idx){
+  if(name===null||name===undefined)return null;
+  if(name==='sol')name=SOL_ROT[(idx||0)%SOL_ROT.length];
+  let im=_bgImgs[name];
+  if(im===undefined){im=new Image();im.onload=()=>{};im.src='assets/maps/'+name+'.png';_bgImgs[name]=im}
+  return im;
+}
 function drawBattleBG(b,shx,shy){
   const th=b.st.bg;const grad=BG_THEMES[th]||BG_THEMES.grass;
+  /* ---- ORIGINAL background image when available (tiled + camera parallax) ---- */
+  const bim=bgImg(BG_PIC[th],b.st.idx);
+  if(bim&&bim.complete&&bim.naturalWidth){
+    const S=1280/bim.naturalWidth, DH=Math.round(bim.naturalHeight*S), offY=720-DH;
+    const px=Math.round(((b.cam||0)*0.18)%1280);
+    cx.save();
+    cx.imageSmoothingEnabled=true;
+    cx.drawImage(bim,-px,offY,1280+1,DH);
+    cx.drawImage(bim,-px+1280,offY,1280+1,DH);
+    if(-px+2560<1280)cx.drawImage(bim,-px+2560,offY,1280+1,DH);
+    cx.restore();
+    // gentle horizon haze to seat the units (matches original's soft ground blend)
+    const hz=cx.createLinearGradient(0,GROUND_Y-140,0,GROUND_Y+30);
+    hz.addColorStop(0,'rgba(0,0,0,0)');hz.addColorStop(1,'rgba(0,0,20,.10)');
+    cx.fillStyle=hz;cx.fillRect(0,GROUND_Y-140,1280,170);
+    return;
+  }
   /* sky — 3-stop gradient + horizon haze band (depth) */
   const g=cx.createLinearGradient(0,0,0,720);
   g.addColorStop(0,grad.sky1);g.addColorStop(0.62,grad.sky2);g.addColorStop(1,grad.sky2);
@@ -547,6 +576,11 @@ const BG_THEMES={grass:{sky1:'#bfe8ff',sky2:'#e8ffd0',sun:'#ffe66a',far:'#8fbf6a
  aku:{sky1:'#2a0a2a',sky2:'#4a1038',sun:'#ff4a6a',far:'#3a1030',mid:'#551a40',ground:'#3a1430',ground2:'#501e42',ground3:'rgba(255,100,180,.2)'},
  dojo:{sky1:'#2a2418',sky2:'#4a4030',sun:'#ffd94a',far:'#3a3428',mid:'#554a38',ground:'#4a4030',ground2:'#5c503c',ground3:'rgba(0,0,0,.2)'},
  event:{sky1:'#ffd0e8',sky2:'#fff0c8',sun:'#ffd94a',far:'#e8a0c8',mid:'#d890b8',ground:'#c8a0d8',ground2:'#b088c8',ground3:'rgba(120,60,120,.2)'}};
+/* chapter-id aliases → procedural fallback palettes (only used if the original bg image is missing) */
+Object.assign(BG_THEMES,{eoc1:BG_THEMES.grass,eoc2:BG_THEMES.desert,eoc3:BG_THEMES.snow,
+ itf1:BG_THEMES.future,itf2:BG_THEMES.future,itf3:BG_THEMES.future,
+ cotc1:BG_THEMES.cosmos,cotc2:BG_THEMES.cosmos,cotc3:BG_THEMES.cosmos,
+ sol:BG_THEMES.grass,ul:BG_THEMES.snow});
 function cloudDraw(x,y,s){cx.beginPath();cx.arc(x,y,18*s,0,TAU);cx.arc(x+20*s,y-8*s,14*s,0,TAU);cx.arc(x+38*s,y,16*s,0,TAU);cx.fill()}
 function drawBases(b){
   // cat base (left)
