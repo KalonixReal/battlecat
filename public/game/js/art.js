@@ -1106,6 +1106,22 @@ function parchTileBase(c2,base,dark,light){
 /* Full aged-parchment MAP scene (baked at content size): base tile + lat/long grid +
    continent blobs + compass rose + galleon + sea-serpent doodles + deckled torn edge +
    edge vignette. key must encode size+tint. Returns {cv,w,h}. */
+/* ---- REAL EARTH MAP (official EoC parchment world map, equirectangular 2940x1440).
+   Used for Empire of Cats (natural parchment) and Into the Future (tech tint), like the original. ---- */
+const EARTH_MAP={img:null,loading:false,ready:false};
+function earthMap(){
+  if(EARTH_MAP.loading)return EARTH_MAP.img;
+  EARTH_MAP.loading=true;
+  const im=new Image();
+  im.onload=()=>{EARTH_MAP.img=im;EARTH_MAP.ready=true};
+  im.onerror=()=>{EARTH_MAP.loading=false};
+  im.src='assets/maps/eoc_map.png';
+  return null}
+/* lon/lat → map-pixel on the 2940x1440 equirect sheet */
+function geo2map(lon,lat,mw,mh){return[(lon+180)/360*mw,(90-lat)/180*mh]}
+/* Chapter tint table: which overlay each story chapter gets (original EoC2/3 are darker recolors) */
+const CH_TINT={eoc1:null,eoc2:'rgba(40,16,60,.22)',eoc3:'rgba(140,16,10,.18)',itf1:'rgba(16,60,120,.30)',itf2:'rgba(10,40,90,.42)',itf3:'rgba(60,10,80,.38)'};
+
 function parchScene(w,h,tint){
   const key='parch|'+w+'x'+h+'|'+(tint||'');
   return bakeGet(key,w,h,(c2)=>{

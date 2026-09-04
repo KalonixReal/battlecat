@@ -669,21 +669,34 @@ function drawChapters(dt){
 }
 
 function drawMap(dt){const c=CHMAP[G.chapter];
-  /* ================= STAGE-SELECT MAP — official parchment composition (R1/R2/sol_a) ================= */
+  /* ================= STAGE-SELECT MAP =================
+     Story chapters (EoC/ItF): REAL Earth map — the official parchment world map with
+     stage nodes placed on real geographic positions (lon/lat), panned/zoomed like the original.
+     Other modes keep the parchment serpentine layout. */
   drawTopBar(c.kind==='story'?'Stage Select':c.n,false);
   cx.fillStyle='#4a3319';cx.fillRect(0,54,1280,666); // dark wood backboard behind the map
-  // ---- node layout: precomputed serpentine with per-stage jitter (deterministic per chapter) ----
-  const kinds={story:{n:48,cols:6},sol:{n:SOL_SUBS.length,cols:6},ul:{n:UL_SUBS.length,cols:5},aku:{n:13,cols:5},dojo:{n:15,cols:5},event:{n:Math.max(1,G.lastEvents.length),cols:3}};
-  const K=kinds[c.kind]||kinds.story;
-  let seed=0;for(const ch of c.id)seed=(seed*31+ch.charCodeAt(0))>>>0;
-  const cols=K.cols,sx=228,sy=172,x0=210,y0=180;
-  const R=rnd(seed);
-  const pts=[];
-  for(let i=0;i<K.n;i++){const row=Math.floor(i/cols),k=i%cols;const col=(row%2===0)?k:(cols-1-k);
-    pts.push({x:x0+col*sx+(R()-0.5)*54,y:y0+row*sy+(R()-0.5)*44})}
-  const mapW=Math.max(1280,x0+(cols-1)*sx+230),mapH=Math.max(660,y0+Math.ceil(K.n/cols)*sy+130);
-  const tint=c.kind==='aku'?'rgba(84,24,100,.20)':c.kind==='event'?'rgba(255,168,64,.12)':c.kind==='dojo'?'rgba(120,72,26,.14)':'';
-  const scene=parchScene(Math.round(mapW),Math.round(mapH),tint);
+  const isRealMap=c.kind==='story'&&G.chapter!=='eoc999'; // story = real geography
+  const GEO=isRealMap?(GEO_EOC&&GEO_EOC.length===(c.names||[]).length&&c.names===COUNTRY?GEO_EOC:(GEO_ITF&&GEO_ITF.length===(c.names||[]).length&&c.names===FUT?GEO_ITF:null)):null;
+  let useReal=isRealMap&&!!GEO&&!!earthMap(); // map image decoded
+  let pts=[],mapW=1280,mapH=660;
+  if(useReal){
+    const im=earthMap();
+    mapW=im.naturalWidth||2940;mapH=im.naturalHeight||1440;
+    for(let i=0;i<c.names.length;i++){const g=GEO[i]||[0,0];const p=geo2map(g[0],g[1],mapW,mapH);pts.push({x:p[0],y:p[1]})}
+    // a couple of stage names are long — spacing handled by the banner collision logic below
+  }else{
+    // ---- fallback: precomputed serpentine with per-stage jitter (deterministic per chapter) ----
+    const kinds={story:{n:48,cols:6},sol:{n:SOL_SUBS.length,cols:6},ul:{n:UL_SUBS.length,cols:5},aku:{n:13,cols:5},dojo:{n:15,cols:5},event:{n:Math.max(1,G.lastEvents.length),cols:3}};
+    const K=kinds[c.kind]||kinds.story;
+    let seed=0;for(const ch of c.id)seed=(seed*31+ch.charCodeAt(0))>>>0;
+    const cols=K.cols,sx=228,sy=172,x0=210,y0=180;
+    const R=rnd(seed);
+    for(let i=0;i<K.n;i++){const row=Math.floor(i/cols),k=i%cols;const col=(row%2===0)?k:(cols-1-k);
+      pts.push({x:x0+col*sx+(R()-0.5)*54,y:y0+row*sy+(R()-0.5)*44})}
+    mapW=Math.max(1280,x0+(cols-1)*sx+230);mapH=Math.max(660,y0+Math.ceil(K.n/cols)*sy+130);
+  }
+  const tint=useReal?(CH_TINT[G.chapter]||null):(c.kind==='aku'?'rgba(84,24,100,.20)':c.kind==='event'?'rgba(255,168,64,.12)':c.kind==='dojo'?'rgba(120,72,26,.14)':'');
+  const scene=useReal?null:parchScene(Math.round(mapW),Math.round(mapH),tint);
   // ---- node state table ----
   const next=nextPlayableIdx(c);
   const clearedN=c.kind==='sol'||c.kind==='ul'?Object.keys(SV.cleared[c.id]||{}).length:0;
@@ -710,9 +723,15 @@ function drawMap(dt){const c=CHMAP[G.chapter];
   G.onDrag=(p,pd)=>{if(!G.mapDrag)return;const dx=p.x-G.mapDrag.sx,dy=p.y-G.mapDrag.sy;
     if(!pd.moved&&Math.abs(dx)+Math.abs(dy)>7)pd.moved=true;
     if(pd.moved){G.mapCam.x=clamp(G.mapDrag.cx+dx,0,Math.max(0,mapW-1248));G.mapCam.y=clamp(G.mapDrag.cy+dy,0,Math.max(0,mapH-634))}}; // PAN-THE-CAMERA: drag direction = look direction
-  // ---- parchment scene ----
+  // ---- map scene (real Earth for story chapters; parchment otherwise) ----
   cx.save();cx.beginPath();cx.rect(16,70,1248,634);cx.clip();
-  cx.drawImage(scene.cv,16-G.mapCam.x,70-G.mapCam.y);
+  if(useReal){
+    const im=earthMap();
+    cx.drawImage(im,16-G.mapCam.x,70-G.mapCam.y);
+    if(tint){cx.fillStyle=tint;cx.fillRect(16-G.mapCam.x,70-G.mapCam.y,mapW,mapH)}
+  }else{
+    cx.drawImage(scene.cv,16-G.mapCam.x,70-G.mapCam.y);
+  }
   cx.translate(-G.mapCam.x+16,-G.mapCam.y+70);
   // white dotted path winding through the nodes
   cx.strokeStyle='rgba(70,50,20,.35)';cx.lineWidth=7;cx.lineCap='round';cx.setLineDash([0.1,15]);

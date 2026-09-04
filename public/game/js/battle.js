@@ -118,7 +118,7 @@ function killUnit(u,src){
   if(u.side==='enemy'&&u.reviveLeft>0){u.reviveLeft--;u.state='revive';u.reviveT=1.1; // REVIVE: sinks unhittable, re-emerges at the SAME x with pct HP
     SFX.burrow();return}
   u.state='die';u.dieT=0;
-  if(u.side==='enemy'){B.wallet=Math.min(B.walletMax*WALLET_MAX[B.walletLv],B.wallet+u.def.money);B.kills++;
+  if(u.side==='enemy'){const _wm=WALLET_MAX[Math.max(0,Math.min(7,B.walletLv))];B.wallet=Math.min(B.walletMax*_wm,(isFinite(B.wallet)?B.wallet:0)+u.def.money);B.kills++;
     B.fx.push({k:'poof',x:u.x,t:0.5,y:0});B.fx.push({k:'moneypop',x:u.x,t:0.7,y:0});SFX.edie();
     if(u.def.boss){B.shake=Math.max(B.shake,10);B.fx.push({k:'bossdie',x:u.x,t:1.2,y:0})}}
   else{B.fx.push({k:'poof',x:u.x,t:0.5,y:0});SFX.cdie()}}
@@ -267,8 +267,9 @@ function updateBattle(dt){
   const d=B.paused?0:dt*B.speed;B.t+=d;
   const Bn=B;
   // wallet
-  const regen=battleRegen()*WORKER_MUL[B.workerLv];
-  Bn.wallet=Math.min(Bn.walletMax*WALLET_MAX[B.walletLv],Bn.wallet+regen*d);
+  const regen=battleRegen()*WORKER_MUL[Math.max(0,Math.min(WORKER_MUL.length-1,B.workerLv))];
+  const _wmx=WALLET_MAX[Math.max(0,Math.min(7,Bn.walletLv))];
+  Bn.wallet=Math.min(Bn.walletMax*_wmx,(isFinite(Bn.wallet)?Bn.wallet:0)+regen*d);
   // cooldowns
   for(const id in Bn.cds)Bn.cds[id]=Math.max(0,Bn.cds[id]-d);
   // cannon
