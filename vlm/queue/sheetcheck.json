@@ -1,5 +1,0 @@
-{
- "id": "sheetcheck",
- "prompt": "This image shows 6 rows, one per game unit (label in red at left). Each row shows: the RAW original spritesheet PNG from the Battle Cats wiki, then the currently-extracted WALK frames strip, then the ATTACK frames strip (labels in blue above each). For EACH of the 6 units answer: (1) How many horizontal ROWS of sprites does the raw sheet contain? (2) Describe what the character is doing in the TOP row vs LOWER rows (walking cycle? attacking/windup poses? idle?). (3) CRITICAL: does the extracted WALK strip actually show a WALKING cycle, or does it mistakenly show ATTACK poses? (4) does the ATTACK strip show attack poses? Be specific and technical.",
- "image": "images/sheetcheck.png"
-}
