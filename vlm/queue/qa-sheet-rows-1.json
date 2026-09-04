@@ -1,5 +1,0 @@
-{
- "id": "qa-sheet-rows-1",
- "prompt": "These are 10 RAW sprite sheets from the Battle Cats wiki (labeled cat_f, tank_f, axe_f, gross_f, cow_f, bird_f, fish_f, lizard_f, titan_f, boogie_f — these are the NORMAL forms). Each sheet contains multiple ROWS of frames. For EACH sheet, tell me: how many rows does it have, and what is each row showing (idle pose / walking cycle frames / attack animation frames / effects)? Format: SHEETNAME: row1=?, row2=?, row3=? ... Be precise about what content each row contains.",
- "image": "images/qa-sheet-rows-1.png"
-}
