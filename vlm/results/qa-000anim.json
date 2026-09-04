@@ -1,0 +1,7 @@
+{
+ "id": "qa-000anim",
+ "ok": true,
+ "model": "gemini-3.5-flash-lite",
+ "text": "Based on the provided frame sheet and character behavior:\n\n* **Walking Range:** Frames **f0 to ~f60** show the Cat marching forward with a neutral mouth expression, moving closer to the enemy base/object.\n* **Attacking Range:** Frames **~f65/f72 to ~f132** show the attack sequence, characterized by the open mouth, lunging/biting action, and the dust/impact effect on the rock.\n* **Is this a walk-then-attack loop?** Yes. It represents the standard Battle Cats unit cycle: walking until in range, executing a single attack animation, and then walking again (or returning to the idle/walk state from f144 to f168).\n* **Where does the attack start and end?** The attack begins around **frame 65\u201372** (where the mouth opens and it makes contact with the rock) and finishes by about **frame 132** (where the cat lands and recovers, before returning to its normal walking stance by f144).",
+ "ts": 1788503993.8665054
+}
