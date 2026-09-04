@@ -2546,3 +2546,22 @@ Stage Summary:
 - RECOVERED: 92-unit sprites.json v2, official OGG BGMs (21 tracks), real eoc_map.png, all game JS, QA tools, build-sprites v2
 - OPEN FROM TRANSCRIPT (lost uncommitted work): v3 slicer (idle-row detection) was written but never committed; final CRITICAL DISCOVERY at crash time: "For basic cat, ROW1=ATTACK, ROW2=WALK - the build has them INVERTED" (unverified/unfinished)
 - NEXT: verify row-order inversion empirically, Miraheze Cat-animations GIF source (754 GIFs via weserv proxy) as the superior animation source, boss calibration, full QA
+---
+Task ID: r22
+Agent: main (Z.ai Code)
+Task: User video analysis + "fix all errors, exact same animations/assets/UI as the original, record to see motion bugs, double-check everything, don't stop until perfect"
+
+Work Log:
+- ANALYZED the uploaded mp4 frame-by-frame at 30fps: measured ~1500 video-px/s strides with ±193px teleports = visual anchor drift (logical speed was clean 72px/s)
+- Fixed "rapidly moving": cutout manifest ax was frame-relative but renderer treated it sheet-space (+38px drift/frame). Manifest v4 anchors frame-relative; renderer dx=-ax*sc
+- Fixed "flipped animations": cutout art is natively cats-LEFT/enemies-RIGHT; legacy flip inverted cats. Cutout src now never flips
+- Fixed map flash: earthMap() boot-preloaded
+- Drag restored to GRAB-THE-WORLD everywhere (battle/wheel/fling/map) — verified live; removed non-original auto-follow camera
+- WALK pacing official: WALK_MUL 1.0, animT at authored 50ms/frame; verified -150px/s ±0.3 via rAF sampling + own recordings
+- Battle HUD rebuilt to original: $ wallet sign, pause-only (menu: Resume/Retry/Retreat), worker direct-upgrade button (combined wallet level), single-row 10-card deck with recharge curtain, Fire!! cannon; removed HP numerals/stage chip/kills chip/cam arrows/boss label
+- NEW: classic battle items (SNIPER +50% ATK / CAT JOBS worker-max / CAT CPU auto-deploy) on stage modal — verified live; CONTINUE on defeat (3 CF, base revived) — verified live
+- NATURAL PROPORTIONS: one global K (basic cat = 74px) like the original engine; removed invented boss 2.1x multipliers
+- BCU parser fixes (encrypted headers, truncated tails, ±16-byte extractor offset) → re-extracted all animdata clean; dedouble sweep rebuilt 9 misassembled units (bird/bahamut/kungfu/jackie/leboin/teacher/face/mr + titan static); neko/pogo/can/behemothbear → painter fallback (4/93)
+- MAP original rule: banners only on current + Clear! ribbons on cleared; other stages are dots
+- QA: 16 screens clean, 0 console errors, lint 0 errors, E2E real-input battle WIN with 3 crowns; 2 verification recordings in download/
+- PUSHED: a5e04e5, 7582fd5, b7f51d0, 6954c0d
