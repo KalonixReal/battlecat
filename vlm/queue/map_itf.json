@@ -1,5 +1,0 @@
-{
- "id": "map_itf",
- "prompt": "This is a map image from the original Battle Cats game (downloaded from the wiki). Describe: (1) What map is this (which chapter/saga)? (2) Does it show a WORLD MAP with regions/continents? (3) Are there stage dots/markers/numbered icons ON the map already, or is it clean without stage markers? (4) What's the art style (parchment, satellite, cartoon world map)? (5) Image orientation: wide or tall?",
- "image": "images/map_itf.png"
-}

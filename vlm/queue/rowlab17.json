@@ -1,5 +1,0 @@
-{
- "id": "rowlab17",
- "prompt": "These are raw Battle Cats spritesheets (multi-row grids). Each sheet has ROWS labeled with red brackets: ROW 1, ROW 2, etc (frame counts in blue). In Battle Cats sheets, one row = one animation. Identify which ROW is the WALK/MOVE cycle (repeated similar stances of the character moving - legs alternating, slight bounce, NO dust/impact/projectile effects, NO weapons mid-swing, NO wide-open striking mouths). Other rows are attack animations or effect frames. Answer ONLY in this format, one line per unit: 'unit_id: walk=row_number'. If no row looks like a walk cycle, use 'walk=none'.",
- "image": "images/rowlab17.png"
-}

@@ -1,0 +1,7 @@
+{
+ "id": "rowlab10",
+ "ok": true,
+ "model": "gemini-3.5-flash-lite",
+ "text": "cattank: walk=1\ncatthief: walk=1\ncattitan: walk=4\ncatvalkyrie: walk=none",
+ "ts": 1788499519.0616624
+}
