@@ -83,12 +83,16 @@ function findTargets(u){
   const under=v=>v.burrowing>0||v.state==='burrow'||v.state==='revive'; // underground/reviving zombies are untargetable
   const opp=B.units.filter(v=>v.side!==u.side&&v.state!=='die'&&!under(v)&&!(v.state==='kb'));
   let best=null,bestD=1e9;
-  for(const v of opp){const d=(v.x-u.x)*dir;if(d>-30&&d<=reach+v.r&&d<bestD){bestD=d;best=v}}
+  /* BEHIND-WINDOW (r30): d>-(30+target r) instead of a flat -30 — an enemy that
+     spawns at the tower MUST engage the cat attacking that tower (it stands just
+     behind the spawn point). In the original those cats get attacked instantly;
+     the old flat -30 let every spawned enemy march past them untouched. */
+  for(const v of opp){const d=(v.x-u.x)*dir;if(d>-(30+(v.r||22))&&d<=reach+v.r&&d<bestD){bestD=d;best=v}}
   const base=u.side==='cat'?B.enemyBase:B.catBase;
   const bd=(base.x-u.x)*dir;
   if(!best&&bd>-30&&bd<=reach+60)out.push({base:true,x:base.x,r:60,ref:base});
   if(best){out.push(best);
-    if(u.area){for(const v of opp){if(v!==best){const d=(v.x-u.x)*dir;if(d>-30&&d<=reach+v.r)out.push(v)}}}}
+    if(u.area){for(const v of opp){if(v!==best){const d=(v.x-u.x)*dir;if(d>-(30+(v.r||22))&&d<=reach+v.r)out.push(v)}}}}
   return out}
 function srcAbils(src){return src&&!src.base?((src.side==='cat'?(src.abil||[]):(src.def?src.def.abil||[]:[]))):[]}
 function applyDamage(src,tgt,dmg,o){o=o||{};
@@ -240,11 +244,16 @@ function updateUnit(u,dt){
       u.state='post';u.postT0=Math.max(0.14,Math.min(0.4,u.rate*0.26));u.postT=u.postT0;u.rateT=u.rate}
     return}
   if(u.state==='post'){u.postT-=dt;if(u.postT<=0)u.state='walk';return}
-  // walk (with slow) — official: hold position while a UNIT target is in attack range (base-only reach never stops movement)
+  // walk (with slow) — original: hold position while ANY target (unit OR base) is in attack range
   const spd=u.speed*(u.st.slow>0?0.5:1);
   const front=B.units.filter(v=>v.side===u.side&&v!==u&&v.state!=='die'&&v.burrowing<=0&&v.state!=='burrow'&&v.state!=='revive'&&(v.x-u.x)*u.dir>0&&(v.x-u.x)*u.dir<30).sort((a,b)=>(a.x-u.x)*u.dir-((b.x-u.x)*u.dir))[0];
   let halt=!!(wall||front);
-  if(!halt){const tg=findTargets(u);if(tg.some(t=>!t.base))halt=true}
+  if(!halt){const tg=findTargets(u);if(tg.length)halt=true}
+  /* r30: the BASE also halts movement (via findTargets above — original behavior:
+     a unit stops at its attack range from the base and attacks from there; ranged
+     units snipe the base from range, melee cats stand just outside the sprite
+     instead of sinking into it). "Base-only reach never stops movement" was OUR
+     old bug — the original has never worked that way. */
   u.halted=halt;
   if(halt)u.animT+=dt // halted units keep marching in place (original walk-in-place idle)
   else{u.x+=u.dir*spd*WALK_MUL*dt;u.animT+=dt} // walk frames play at their official authored timing (50ms/frame)
@@ -451,7 +460,7 @@ function drawBattleLoading(b){
   if(L.p>0.01){cx.fillStyle='#ffd94a';rr(cx,bx,by,Math.max(14,bw*L.p),16,8);cx.fill();
     cx.fillStyle='rgba(255,255,255,.25)';rr(cx,bx,by,Math.max(14,bw*L.p),6,4);cx.fill()}
   txt(cx,'Now Loading... '+Math.round(L.p*100)+'%',w/2,by+42,17,'#e8dfc8','center');
-  txt(cx,'The Battle Cats — web replica',w/2,694,12,'rgba(255,255,255,.35)','center');
+  txt(cx,'The Battle Cats — Browser Version',w/2,694,12,'rgba(255,255,255,.35)','center');
 }
 function drawBattle(dt){
   const b=B;

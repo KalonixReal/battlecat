@@ -2616,3 +2616,47 @@ Stage Summary:
 - Per-stage music = the game's own rotation data; boss appearances switch themes like the original.
 - Commits: r26 on main (02c3bde); gh-pages redeployed (328MB standalone, index.html at root), live assets verified 200.
 - Live: https://kalonixreal.github.io/battlecat/
+
+---
+Task ID: r30
+Agent: Super Z (main)
+Task: FINAL launch round — no fallback art, no blurry assets, upscale backgrounds+all cats, axe-cat walk overlap analysis, enemy tower engagement + cat standoff, export/import save, remove replica/debug branding, loading-bar READY fix, verify everything, push GitHub.
+
+Work Log:
+- Loading screen: READY + TAP TO START now gate on the bar VISUALLY reaching 100% (bar eases to full; the 40s safety valve can no longer show READY at 40%). Footer rebranded.
+- Branding: ALL "replica" text removed → "The Battle Cats — Browser Version" (boot loading, battle loading, home info modal "Version 12.6.0 · Browser Version"); stray aku_test.bin deleted.
+- axe cat walk: strips hash-verified EXACTLY match the APK maanim cycle (bg00 poses A,B,A,C ×4 frames @50ms, cuts 0,1,0,2 from 002_c.imgcut) — assets authentic. maanim/mamodel/imgcut format spec derived from nyanko/BCC open-source parsers (rig struct columns).
+- REAL overlap root causes found in battle.js targeting: (1) findTargets behind-window was flat -30px so enemies spawned at the tower (x=ENEMY_BASE_X+70) IGNORED cats attacking the tower (cat 40px behind spawn) and marched past → window now -(30+target.r); (2) "base-only reach never stops movement" made melee cats walk INSIDE the enemy castle sprite and enemies pile into the cat base → base now halts movement via findTargets like the original (ranged units snipe the base from range, melee stand just outside the sprite).
+- Asset coverage audit (scripts/r30_coverage.py): 46 cats × forms + 60 enemies — 100% real strips+icons. 3 missing evolved icons (cutter/kaguya/noble form2) extracted from ports.png atlas + registered.
+- art.js REWRITTEN (1327→388 lines): painter-fallback machinery DELETED (ART_CATS, ENEMY_ART, CP, EP palettes, head/fo/so/legs painters, catBig, enemyIconBody, catOver, poseOf/GAIT/volumeShade). ART = pure SPRIT delegation + curse motes + uber/legend glow. enemySil now tints the REAL enemy icon (source-in); enemyBig draws the REAL unit sprite.
+- SR pipeline upgrade (scripts/r30_batch_upscale.py): ESPCN x2 + iterative back-projection (4 it) + micro-unsharp; alpha-safe sprite path (transparent-ring inpaint + alpha SR + tighten). Real-ESRGAN onnx models from HF evaluated and REJECTED (broken conversions — neon garbage). EDSR benchmarked at 30-40h CPU — rejected.
+- CRITICAL ASSET BUG FIXED: APK bg sheets are ATLASes (1024x512) whose right column (x≥770) holds wave-effect/stopwatch sprites (bgNN.imgcut rect0 = 背景bg 768x510). Shipped BgNNN.jpg carried that white junk stripe into ~118 battle backgrounds. All battle bgs now cropped to imgcut rect (770x512) before x2.
+- Tiled ESPCN (uniform replicate-padded tiles) — full-image inference OOM'd 4GB boxes; cv2.setNumThreads(2).
+- Full-batch: 110 battle bgs, 288 castles, 8 cat bases, 694 sprite strips + icons — all x2 with coords doubling for sprites.json + catbase.json (frames+refH ×2, dest sizes unchanged).
+- Battle js changes verified live: units engage, axe in pre/tank post states, no console errors after art rewrite; 3 icon gaps closed.
+- index.html cache bump v15/40/41/44/44/46/47/34/34/44.
+
+Stage Summary:
+- Zero invented/fallback art remains in the render path; 100% original-asset coverage proven by audit.
+- Battle backgrounds are junk-free and noticeably crisper (IBP-reconstructed detail); sprites render sharp at 2x native.
+- Enemy tower engagement + base standoff now match the original's look and feel.
+
+---
+Task ID: r30b
+Agent: Super Z (main)
+Task: ship-size viability + manifest integrity recovery + final verification.
+
+Work Log:
+- x2 sprites ballooned to 2.3GB (unshippable boot preload + disk-full OOM cascade). Fixed:
+  * 109 giant sheets (r29's own 2x-scale renders, already >= draw size) reverted to HEAD + coords halved back.
+  * All remaining sprites converted to WebP LOSSLESS (5x-8x smaller, zero quality loss) with manifest img updates; >16383px sheets kept as optimize-level-9 PNG (WebP format limit).
+  * SPRITES TOTAL: 2.3GB -> 342MB.
+- Disk-full mid-batch had produced 6 zero-byte strips + '..webp' name corruption + a DOUBLE-DOUBLED manifest (racing writers on sprites.json). Full recovery:
+  * manifest REBUILT from authoritative git-HEAD entries scaled by each file's ACTUAL disk scale (386 entries, 0 problems);
+  * 7 pre-existing r24-era broken strips (dudorian/redfox/darkotius/zombierturtle — frames in render-canvas space, OOB of the sheet) rebuilt with uniform tiling + rescaled anchors;
+  * final sweep: 0 missing refs, 0 OOB frame rects across all 386 strips + 250 icons.
+- Verified live: boot bar full->READY, all screens, battle with fixed enemies (B.B.Bunny + Znache now render), axe cat crisp at 2x, base standoff + tower engagement, 4:3/21:10/portrait aspect math, settings EXPORT/IMPORT SAVE present, 56-60fps, console clean.
+- index.html cache bumped; footer/info = "Browser Version".
+
+Stage Summary:
+- Ship state: every asset original, crisp, manifest-consistent, 342MB sprites + 40MB maps + official audio. Ready to push.

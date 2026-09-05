@@ -10,7 +10,7 @@ const SCREENS={title:drawTitle,home:drawHome,chapters:drawChapters,map:drawMap,s
 let lastTs=0,persistT=0,energyT=0;
 
 /* ------------------------------ preload pipeline ------------------------------ */
-const PRELOAD={total:0,done:0,ready:false,tap:false,failed:[],phase:'',walking:0};
+const PRELOAD={total:0,done:0,ready:false,tap:false,failed:[],phase:'',walking:0,disp:0};
 function _pAdd(wt){PRELOAD.total+=wt}
 function _pDone(wt){PRELOAD.done+=wt}
 /* adoptRuntime: hands each preloaded Image to the EXACT cache its runtime consumer
@@ -167,17 +167,26 @@ function drawLoading(dt){
   // walking cat base (real animation)
   PRELOAD.walking+=dt;
   drawCatBaseWalk(w/2,470,110,PRELOAD.walking);
-  // progress bar
-  const p=PRELOAD.total?clamp(PRELOAD.done/PRELOAD.total,0,1):0;
+  // progress bar — the visual fill ALWAYS reaches 100% before READY/TAP shows.
+  // (the 40s safety valve can declare readiness while a few slow requests are still
+  // outstanding — the bar must never contradict the READY state, r30 report)
+  const pRaw=PRELOAD.total?clamp(PRELOAD.done/PRELOAD.total,0,1):0;
+  const pTgt=PRELOAD.ready?1:pRaw;
+  // ease the visible fill toward its target so the bar visibly FINISHES rather than jumps
+  PRELOAD.disp=PRELOAD.disp===undefined?pTgt:PRELOAD.disp+(pTgt-PRELOAD.disp)*Math.min(1,dt*4);
+  if(PRELOAD.ready&&PRELOAD.disp>0.995)PRELOAD.disp=1;
+  const p=PRELOAD.disp;
   const bw=460,bx=w/2-bw/2,by=520;
   cx.fillStyle='#242430';rr(cx,bx-3,by-3,bw+6,22,11);cx.fill();
   cx.fillStyle='#111118';rr(cx,bx,by,bw,16,8);cx.fill();
   if(p>0.01){cx.fillStyle='#ffd94a';rr(cx,bx,by,Math.max(14,bw*p),16,8);cx.fill();
     cx.fillStyle='rgba(255,255,255,.25)';rr(cx,bx,by,Math.max(14,bw*p),6,4);cx.fill()}
-  txt(cx,PRELOAD.ready?'READY':('Now Loading... '+Math.round(p*100)+'%'),w/2,by+42,17,'#e8dfc8','center');
-  txt(cx,'The Battle Cats — web replica',w/2,h-26,12,'rgba(255,255,255,.35)','center');
-  // TAP TO START gate (browser audio needs a gesture — also how ports do it)
-  if(PRELOAD.ready){
+  const barDone=p>=0.999;
+  txt(cx,PRELOAD.ready?(barDone?'READY':'Now Loading... '+Math.round(p*100)+'%'):('Now Loading... '+Math.round(p*100)+'%'),w/2,by+42,17,'#e8dfc8','center');
+  txt(cx,'The Battle Cats — Browser Version',w/2,h-26,12,'rgba(255,255,255,.35)','center');
+  // READY + TAP TO START only once the bar has VISUALLY reached the end
+  if(PRELOAD.ready&&barDone){
+    // TAP TO START gate (browser audio needs a gesture — also how ports do it)
     const pu=0.6+0.4*Math.sin(G.t*4);
     cx.fillStyle='rgba(255,217,74,'+pu.toFixed(3)+')';
     txt(cx,'TAP TO START',w/2,600,30,'#ffd94a','center',6,'#1a1408',900);

@@ -382,7 +382,7 @@ function drawHome(dt){
     cx.fillStyle='#e8d8b8';cx.beginPath();cx.arc(42,86,11.5,0,TAU);cx.fill();
     txt(cx,'i',42,87,15,'#5a3b16','center',3,'#fff',700);
     BTN('hinfo',25,69,34,34,()=>{SFX.click();openModal('THE BATTLE CATS',
-      ['Version 12.6.0 \u00b7 fan replica built on the original assets',
+      ['Version 12.6.0 \u00b7 Browser Version',
        'User Rank '+SV.rank+' \u00b7 total XP '+fmt(SV.xpTotal)+' \u00b7 NP '+fmt(SV.np)],
       [{n:'CLOSE',cb:()=>{}}])},{flat:true,nohov:true});
     // rank bar (dark leather pill + gold LED number + fill)
