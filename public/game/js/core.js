@@ -16,7 +16,20 @@ const fmt=n=>{n=Math.floor(n);return n>=1e9?(n/1e9).toFixed(2)+'B':n>=1e6?(n/1e6
 const tstr=s=>{s=Math.max(0,Math.ceil(s));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};
 const now=()=>Date.now();
 const FONT=(px,w)=>`${w||400} ${px}px "Fredoka One","Trebuchet MS","Arial Rounded MT Bold",sans-serif`;
-function txt(c,s,x,y,px,fill,align,strokeW,strokeC,w){c.font=FONT(px,w);c.textAlign=align||'left';c.textBaseline='middle';if(strokeW){c.lineWidth=strokeW;c.strokeStyle=strokeC||'#101018';c.lineJoin='round';c.strokeText(s,x,y)}c.fillStyle=fill||'#fff';c.fillText(s,x,y)}
+/* setFont: assigns a context font ONLY when the string actually changed — font parsing
+   is one of the hottest Canvas2D costs at 60fps (txt() + measureText loops run dozens
+   of times per frame). Every font assignment in the codebase goes through this. */
+function setFont(c,f){if(c._bcf!==f){c.font=f;c._bcf=f}return f}
+function txt(c,s,x,y,px,fill,align,strokeW,strokeC,w){setFont(c,FONT(px,w));c.textAlign=align||'left';c.textBaseline='middle';if(strokeW){c.lineWidth=strokeW;c.strokeStyle=strokeC||'#101018';c.lineJoin='round';c.strokeText(s,x,y)}c.fillStyle=fill||'#fff';c.fillText(s,x,y)}
+/* lazyImg: THE single lazy-image loader (battle bgs / castles / cat-base strips / boot
+   strips all used to hand-roll the same pattern — now every cache shares this one).
+   Cache values: undefined = never requested, Image = in-flight or decoded. */
+function lazyImg(cache,key,url){let im=cache[key];if(im===undefined){im=new Image();im.src=url;cache[key]=im}return im}
+/* imgReady: true once the image is fully decoded (safe to drawImage without pop-in) */
+function imgReady(im){return !!im&&im.complete&&im.naturalWidth>0}
+/* DPR_CAP: device-pixel-ratio ceiling — the PERF auto-tuner lowers it on weak systems
+   (the single biggest perf lever; every pixel saved is 4x cheaper at DPR 1 vs 2) */
+let DPR_CAP=2;
 function rr(c,x,y,w,h,r){r=Math.min(r,h/2,w/2);c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
 const shade=(hex,f)=>{const n=parseInt(hex.slice(1),16);let r=(n>>16)&255,g=(n>>8)&255,b=n&255;r=clamp(Math.round(r*f),0,255);g=clamp(Math.round(g*f),0,255);b=clamp(Math.round(b*f),0,255);return`rgb(${r},${g},${b})`};
 
@@ -26,7 +39,7 @@ const shade=(hex,f)=>{const n=parseInt(hex.slice(1),16);let r=(n>>16)&255,g=(n>>
    SAVE_UNRELIABLE + SV.saveStats, 1-shot retry), and the import/export codecs
    (base64 clipboard code + wrapped v2 file JSON). regenEnergy/spendEnergy/addCF/addXP/
    rankOf/energyMax belong to Builder A — untouched below. */
-const SAVE_KEY='battle-cats-save-v1', SAVE_KEY_LEGACY='bc_replica_full_v1';
+const SAVE_KEY='battle-cats-save-v1', SAVE_KEY_LEGACY='bc_replica_full_v1', SAVE_KEY_BAK='battle-cats-save-v1.bak';
 const SAVE_VER=2;
 const DEF_SAVE={ver:2,created:now(),xp:1200,cf:300,tickets:{rare:1,gold:0,plat:0},np:20,
   energy:90,energyTs:now(),rank:1,xpTotal:1200,
@@ -148,6 +161,10 @@ function _svNormalize(o){ // shape/number hardening AFTER defaults-merge (unknow
     ?{ch:String(o.pendingBattle.ch),idx:Math.floor(num(o.pendingBattle.idx,-1)),ts:num(o.pendingBattle.ts,0)}:null;
   if(Math.floor(num(o.ver,SAVE_VER))<SAVE_VER)o.ver=SAVE_VER; // never stamp a FUTURE ver backwards
   return o}
+function _svAdopt(o,corrupt){ // shared load path: defaults-merge + normalize (used for primary AND backup)
+  if(!corrupt&&o){SV=Object.assign(JSON.parse(JSON.stringify(DEF_SAVE)),o);_svNormalize(SV)}
+  else{SV=JSON.parse(JSON.stringify(DEF_SAVE));
+    if(corrupt&&typeof toast==='function')toast('Save data was corrupted — started a new save','#ff7a7a')}}
 function loadSave(){
   let o=null,corrupt=false;
   try{let s=localStorage.getItem(SAVE_KEY);
@@ -158,15 +175,21 @@ function loadSave(){
       else if(!validateSave(o))corrupt=true; // validate → migrate (spec order)
       else migrateSave(o)}}
   catch(e){corrupt=true}
-  if(!corrupt&&o){SV=Object.assign(JSON.parse(JSON.stringify(DEF_SAVE)),o);_svNormalize(SV)}
-  else{SV=JSON.parse(JSON.stringify(DEF_SAVE));
-    if(corrupt&&typeof toast==='function')toast('Save data was corrupted — started a new save','#ff7a7a')}
+  if(corrupt){ // LAST-LINE SAFETY (r27): a truncated primary (mid-write crash, storage glitch)
+    // must not vaporize a player's progress — fall back to the mirrored backup save.
+    try{const b=localStorage.getItem(SAVE_KEY_BAK);
+      if(b!=null){let bo=null;try{bo=JSON.parse(b)}catch(e){}
+        if(bo&&typeof bo==='object'&&!Array.isArray(bo)&&validateSave(bo)){migrateSave(bo);o=bo;corrupt=false;
+          if(typeof toast==='function')toast('Save restored from backup','#7fd0ff')}}
+    }catch(e){}}
+  _svAdopt(o,corrupt);
   regenEnergy()}
 let _persistStreak=0,_persistToastShown=false,_persistRetry=null;
 function persist(){
   try{
     if(!SV.saveStats||typeof SV.saveStats!=='object')SV.saveStats={writes:0,fails:0,lastWrite:0};
     localStorage.setItem(SAVE_KEY,JSON.stringify(SV));
+    try{localStorage.setItem(SAVE_KEY_BAK,JSON.stringify(SV))}catch(e2){} // mirrored backup: a future truncated primary write recovers from here
     SV.saveStats.writes++;SV.saveStats.lastWrite=now();
     if(_persistStreak>0){_persistStreak=0;_persistToastShown=false} // failure streak ended
     SAVE_UNRELIABLE=false;

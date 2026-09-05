@@ -13,12 +13,34 @@ let lastTs=0,persistT=0,energyT=0;
 const PRELOAD={total:0,done:0,ready:false,tap:false,failed:[],phase:'',walking:0};
 function _pAdd(wt){PRELOAD.total+=wt}
 function _pDone(wt){PRELOAD.done+=wt}
+/* adoptRuntime: hands each preloaded Image to the EXACT cache its runtime consumer
+   reads from (SPRIT strips, battle bg tiles, castle art, cat-base strips) — the old
+   flow preloaded into throwaway Images and let every renderer lazily re-fetch, which
+   is why maps/castles popped in the first time they were used (r27 user report). */
+function adoptRuntime(url,im){
+  try{
+    if(url.indexOf('assets/sprites/')===0){
+      if(typeof SPRIT!=='undefined')SPRIT.adopt(url,im);
+      const fn=url.slice(15);
+      if(typeof _cbStrips!=='undefined')_cbStrips[fn]=im; // battle's cat-base strip cache (keys are unique filenames)
+      return}
+    if(url.indexOf('assets/maps/')===0){
+      const n=url.slice(12).replace(/\.png$/,'');
+      if(typeof _bgImgs!=='undefined'&&n!=='eoc_map')_bgImgs[n]=im; // earth map has its own EARTH_MAP holder
+      return}
+    if(url.indexOf('assets/castles/')===0){
+      const n=url.split('/').pop().replace(/\.png$/,'');
+      if(typeof _castleImgs!=='undefined')_castleImgs[n]=im;
+      return}
+  }catch(e){/* cache objects missing (old build order) — browser cache still covers it */}
+}
 function preloadImg(url,wt){
   _pAdd(wt||1);
   const im=new Image();
-  im.onload=()=>_pDone(wt||1);
+  im.onload=()=>{_pDone(wt||1)};
   im.onerror=()=>{_pDone(wt||1);PRELOAD.failed.push(url)};
   im.src=url;
+  adoptRuntime(url,im);
   return im;
 }
 async function preloadRun(){
@@ -89,7 +111,7 @@ function AudioUnlockSilent(){
 
 /* ------------------------------ loading screen ------------------------------ */
 let cbMeta=null;
-fetch('assets/sprites/catbase.json',{cache:'no-cache'}).then(r=>r.json()).then(j=>{cbMeta=j}).catch(()=>{});
+fetch('assets/sprites/catbase.json',{cache:'no-cache'}).then(r=>r.json()).then(j=>{cbMeta=j;try{_cbMeta=j}catch(e){}}).catch(()=>{});
 function drawCatBaseWalk(x,y,h,t){
   // the real cat base idle strip (16 frames) — walks in place under the logo
   if(!cbMeta||!cbMeta.idle)return;
@@ -101,12 +123,38 @@ function drawCatBaseWalk(x,y,h,t){
   const w=fr[2]*sc;
   cx.drawImage(im,fr[0],fr[1],fr[2],fr[3],x-w/2,y-fr[3]*sc,w,fr[3]*sc);
 }
-const _stripImgs={};
+const _stripImgs={}; // (retired — SPRIT_STRIP_IMG now reads battle.js's shared cbStrip cache)
 function SPRIT_STRIP_IMG(fn){
-  let im=_stripImgs[fn];
-  if(im===undefined){im=new Image();im.src='assets/sprites/'+fn;_stripImgs[fn]=im}
-  return im.complete&&im.naturalWidth?im:null;
+  // shared with battle.js's cat-base cache so the loading screen + in-battle base use ONE decode
+  const im=(typeof cbStrip==='function')?cbStrip(fn):null;
+  return imgReady(im)?im:null;
 }
+
+/* ------------------------------ PERF auto-tuner (r27) ------------------------------
+   Goal: 60fps on ANY system. A rolling frame-time monitor watches the real rAF cadence;
+   if the machine can't keep up it steps the render tier DOWN (device-pixel-ratio cap
+   first, then cosmetic FX) until it holds 60 — and steps back UP when there's headroom.
+   Tier 0: full quality (DPR ≤2, all FX)   Tier 1: DPR ≤1.5   Tier 2: DPR ≤1.25, no
+   shadowBlur/glow   Tier 3: DPR 1, no FX. A cooldown between steps stops oscillation. */
+const PERF={ms:16.7,tier:0,acc:0,n:0,cool:0,good:0,fps:60,last:0};
+const PERF_DPR=[2,1.5,1.25,1];
+function PERF_FRAME(rawMs){
+  if(rawMs<=0||rawMs>250)return; // tab-switch resume spikes are not render cost
+  PERF.acc+=rawMs;PERF.n++;
+  const t=performance.now();
+  if(t-PERF.last>=1000){PERF.fps=Math.round(1000/Math.max(1,PERF.acc/Math.max(1,PERF.n)));PERF.last=t}
+  if(PERF.n<90)return; // ~1.5s window
+  if(!PRELOAD.tap)return; // boot-time asset decode spikes are NOT render cost — only tune once the game is actually playing
+  const avg=PERF.acc/PERF.n;PERF.acc=0;PERF.n=0;
+  PERF.ms=PERF.ms*0.4+avg*0.6;
+  if(PERF.cool>0){PERF.cool--;return}
+  if(PERF.ms>20.5&&PERF.tier<3){PERF.tier++;perfApply();PERF.cool=3;PERF.good=0}
+  else if(PERF.ms<15.2&&PERF.tier>0){if(++PERF.good>=4){PERF.good=0;PERF.tier--;perfApply();PERF.cool=4}}
+  else PERF.good=0;
+}
+function perfApply(){
+  try{DPR_CAP=PERF_DPR[PERF.tier];resize()}catch(e){}
+  console.log('%c[PERF] tier '+PERF.tier+' (dpr≤'+PERF_DPR[PERF.tier]+', fx='+(PERF.tier>=2?'off':'on')+')','color:#7fd0ff')}
 function drawLoading(dt){
   const w=1280,h=720;
   cx.fillStyle='#0d0d12';cx.fillRect(0,0,w,h);
@@ -136,7 +184,9 @@ function drawLoading(dt){
 
 /* ------------------------------ main loop ------------------------------ */
 function loop(ts){
-  const dt=Math.min(0.05,(ts-lastTs)/1000||0.016);lastTs=ts;G.t+=dt;
+  const rawMs=ts-lastTs;
+  const dt=Math.min(0.05,rawMs/1000||0.016);lastTs=ts;G.t+=dt;
+  PERF_FRAME(rawMs);
   energyT+=dt;if(energyT>1){energyT=0;regenEnergy()}
   persistT+=dt;if(persistT>8){persistT=0;persist()}
   cx.setTransform(1,0,0,1,0,0);cx.clearRect(0,0,cv.width,cv.height);cx.setTransform(cv._dpr||1,0,0,cv._dpr||1,0,0);
@@ -181,7 +231,7 @@ function bootFirstTap(){
 addEventListener('pointerdown',bootFirstTap,{capture:true});
 addEventListener('keydown',bootFirstTap,{capture:true});
 console.log('%cThe Battle Cats booted','color:#ffd94a;font-weight:bold');
-window.__BC={G:G,getSV:()=>SV,getB:()=>B,ENEMAP,CATMAP,genStage,startBattle,spawnCat,spawnEnemy,updateBattle:()=>B&&updateBattle(0.016),PRELOAD}; // QA/testing hook (getB: live battle state, null outside battle)
+window.__BC={G:G,getSV:()=>SV,getB:()=>B,ENEMAP,CATMAP,genStage,startBattle,spawnCat,spawnEnemy,updateBattle:()=>B&&updateBattle(0.016),PRELOAD,PERF:()=>({fps:PERF.fps,ms:+PERF.ms.toFixed(2),tier:PERF.tier})}; // QA/testing hook (getB: live battle state, null outside battle)
 // tell the Next.js wrapper (or any embedder) the engine is live & the first frame is drawn
 try{parent!==window&&parent.postMessage({bc:'booted',v:1},'*')}catch(e){}
 addEventListener('message',e=>{ // wrapper → game bridge (focus restore / forced resize)

@@ -2,7 +2,7 @@
 /* ============================== CORE / INPUT / UI KIT ============================== */
 const cv=document.getElementById('game'),cx=cv.getContext('2d');
 let VW=0,VH=0,SC=1,OX=0,OY=0;
-function resize(){VW=innerWidth;VH=innerHeight;const dpr=Math.min(devicePixelRatio||1,2);cv.width=VW*dpr;cv.height=VH*dpr;cv.style.width=VW+'px';cv.style.height=VH+'px';SC=Math.min(VW/1280,VH/720);OX=(VW-1280*SC)/2;OY=(VH-720*SC)/2;cx.setTransform(dpr,0,0,dpr,0,0);cv._dpr=dpr;document.getElementById('rotate').style.display=(VH>VW*1.05)?'flex':'none'}
+function resize(){VW=innerWidth;VH=innerHeight;const dpr=Math.min(devicePixelRatio||1,DPR_CAP||2);cv.width=VW*dpr;cv.height=VH*dpr;cv.style.width=VW+'px';cv.style.height=VH+'px';SC=Math.min(VW/1280,VH/720);OX=(VW-1280*SC)/2;OY=(VH-720*SC)/2;cx.setTransform(dpr,0,0,dpr,0,0);cx._bcf=null;cv._dpr=dpr;document.getElementById('rotate').style.display=(VH>VW*1.05)?'flex':'none'}
 addEventListener('resize',resize);resize();
 const G={screen:'title',screenPrev:[],hits:[],drags:[],toasts:[],modal:null,t:0,chapter:'eoc1',mapSub:0,selCat:null,selEnemy:null,gachaAnim:null,dragCam:false,pending:null,hoverId:null,scrollHome:0,scrollChap:0,scrollColl:0,scrollList:0,guideFilter:'all',equipSel:-1,lastEvents:null,eventKey:'',transT:0};
 function push(s){G.screenPrev.push(G.screen);G.screen=s;G.hits=[];G.transT=0.30}
@@ -84,7 +84,7 @@ function BTN(id,x,y,w,h,cb,o){o=o||{};G.hits.push({id,x,y,w,h,cb,scroll:o.scroll
     if(o.outline){cx.lineWidth=2.5;cx.strokeStyle=o.outline;rr(cx,1.5,1.5,w-3,h-3,R);cx.stroke()}
     if(o.disabled){cx.fillStyle='rgba(30,30,40,.55)';rr(cx,0,0,w,h,R);cx.fill()}
     if(o.label){let lf=o.fs||Math.min(22,h*0.42); // auto-shrink labels that would overflow the button (e.g. ADD TO TEAM in narrow modals)
-      cx.font=FONT(lf,700);while(cx.measureText(o.label).width>w-18&&lf>9)lf--;
+      setFont(cx,FONT(lf,700));while(cx.measureText(o.label).width>w-18&&lf>9)lf--;
       txt(cx,o.label,w/2,h/2+(o.ly||0),lf,o.tcol||'#26262e','center',4,'rgba(255,255,255,.75)',700)}
     o.draw&&o.draw(cx,hov,act)}
   cx.restore()}
@@ -140,8 +140,8 @@ function drawTopBar(title,back){
   // metrics: leading inset 9 + per item [dot 12 + value + (label|bolt)] + 9 pad + 1 divider + 9 pad; last item trailing 18.
   cx.textBaseline='middle';
   let tfs=14;
-  const pillW=s=>{let w=9;for(const[pre,lab]of stats){cx.font=FONT(s,700);let iw=12+cx.measureText(pre).width;
-    if(lab==='⚡')iw+=15;else if(lab){cx.font=FONT(s-3.5,700);iw+=5+cx.measureText(lab).width}
+  const pillW=s=>{let w=9;for(const[pre,lab]of stats){setFont(cx,FONT(s,700));let iw=12+cx.measureText(pre).width;
+    if(lab==='⚡')iw+=15;else if(lab){setFont(cx,FONT(s-3.5,700));iw+=5+cx.measureText(lab).width}
     w+=iw+19}
     return w-1};
   while(pillW(tfs)>392&&tfs>10.5)tfs-=0.5;
@@ -153,11 +153,11 @@ function drawTopBar(title,back){
   stats.forEach(([pre,lab,col],i)=>{
     cx.fillStyle=col;cx.beginPath();cx.arc(x+4,pcy,4,0,TAU);cx.fill();
     cx.fillStyle='rgba(255,255,255,.55)';cx.beginPath();cx.arc(x+3,pcy-1.4,1.4,0,TAU);cx.fill();
-    cx.font=FONT(tfs,700);
+    setFont(cx,FONT(tfs,700));
     txt(cx,pre,x+12,pcy+0.5,tfs,BROWN,'left',2.5,'#fff',700);
     x+=12+cx.measureText(pre).width;
     if(lab==='⚡'){boltGlyph(cx,x+5,pcy,10,col);x+=15}
-    else if(lab){cx.font=FONT(tfs-3.5,700);const lw2=cx.measureText(lab).width;
+    else if(lab){setFont(cx,FONT(tfs-3.5,700));const lw2=cx.measureText(lab).width;
       txt(cx,lab,x+5,pcy+1,tfs-3.5,'rgba(90,59,22,.8)','left',2,'#fff',700);x+=5+lw2}
     x+=9;
     if(i<stats.length-1){cx.strokeStyle='rgba(90,59,22,.22)';cx.lineWidth=1.2;cx.beginPath();cx.moveTo(x,py+9);cx.lineTo(x,py+ph-9);cx.stroke();x+=1}
@@ -171,7 +171,7 @@ function toastDraw(dt){let y=70;for(const t of G.toasts){t.t-=dt;t.age=(t.age||0
   const yOff=(1-eIn)*-46-overshoot;
   const a=Math.min(eIn,clamp(t.t,0,1)); // fade-in + tail fade-out
   cx.globalAlpha=a;
-  cx.font=FONT(17,700);const wd=cx.measureText(t.msg).width+64;
+  setFont(cx,FONT(17,700));const wd=cx.measureText(t.msg).width+64;
   const bx=640-wd/2;
   cx.save();cx.translate(0,yOff);
   // drop shadow under the chip
@@ -252,9 +252,9 @@ function drawTitle(dt){
     cx.restore();
   }else{ // streamed-in fallback: bouncy per-letter wordmark
     cx.save();cx.translate(640,215);cx.rotate(-0.04);
-    cx.font=FONT(30);cx.textAlign='left';cx.lineWidth=8;cx.strokeStyle='#20303f';cx.strokeText('THE',-330,-38);cx.fillStyle='#fff';cx.fillText('THE',-330,-38);
+    setFont(cx,FONT(30));cx.textAlign='left';cx.lineWidth=8;cx.strokeStyle='#20303f';cx.strokeText('THE',-330,-38);cx.fillStyle='#fff';cx.fillText('THE',-330,-38);
     cx.textAlign='center';cx.lineJoin='round';
-    const word=(s,x0,y0,size,fill,rim,ph)=>{cx.font=FONT(size);
+    const word=(s,x0,y0,size,fill,rim,ph)=>{setFont(cx,FONT(size));
       const widths=[...s].map(ch=>cx.measureText(ch).width);const tot=widths.reduce((a,b)=>a+b,0);
       let x=x0-tot/2;
       [...s].forEach((ch,i)=>{const yy=y0+Math.sin(G.t*2.2+ph+i*0.55)*5;const rot=Math.sin(G.t*1.7+ph+i*0.5)*0.06;
@@ -348,7 +348,7 @@ function drawHome(dt){
     cx.beginPath();cx.moveTo(181,25);cx.lineTo(161,25);cx.moveTo(166,21);cx.lineTo(160,25);cx.lineTo(166,29);cx.stroke();
     BTN('hareas',150,6,40,28,()=>{SFX.click();push('chapters')},{flat:true,nohov:true})}
   { // XP: gold LED-style counter, tappable like the original's XP shop shortcut
-    const s=fmt(SV.xp);cx.font=FONT(31,700);const w=cx.measureText(s).width;
+    const s=fmt(SV.xp);setFont(cx,FONT(31,700));const w=cx.measureText(s).width;
     txt(cx,'XP',1258-w-46,21,20,'#ffd23f','left',4,'#5a3406',700);
     txt(cx,s,1258,22,31,'#ffd23f','right',5.5,'#5a3406',700);
     BTN('hxp',1080,4,190,32,()=>{SFX.click();push('store')},{flat:true,nohov:true})}
@@ -489,7 +489,7 @@ function drawHome(dt){
       // label plate
       cx.fillStyle='#fffdf5';rr(cx,cxp-52,ty+74,104,20,9);cx.fill();
       cx.lineWidth=1.8;cx.strokeStyle='#8a5a20';rr(cx,cxp-52,ty+74,104,20,9);cx.stroke();
-      cx.font=FONT(9.5,700);
+      setFont(cx,FONT(9.5,700));
       let lab=label;while(cx.measureText(lab).width>98&&lab.length>4)lab=lab.slice(0,-2);
       txt(cx,lab+(lab===label?'':'\u2026'),cxp,ty+85,9.5,'#5a3b16','center',2.5,'#fff',700);
       if(count!=null){cx.save();cx.translate(cxp+30,ty+18);
@@ -516,7 +516,7 @@ function drawHome(dt){
       cx.lineWidth=2.2;cx.strokeStyle=bn[2];rr(cx,-bw2/2,-bh2/2,bw2,bh2,10);cx.stroke();
       cx.fillStyle='#ffd23f';cx.beginPath();cx.moveTo(-bw2/2+14,0);cx.lineTo(-bw2/2+22,-7);cx.lineTo(-bw2/2+22,7);cx.closePath();cx.fill();
       cx.beginPath();cx.moveTo(bw2/2-14,0);cx.lineTo(bw2/2-22,-7);cx.lineTo(bw2/2-22,7);cx.closePath();cx.fill();
-      let nm=bn[0];cx.font=FONT(13.5,700);while(cx.measureText(nm).width>bw2-56&&nm.length>4)nm=nm.slice(0,-2);
+      let nm=bn[0];setFont(cx,FONT(13.5,700));while(cx.measureText(nm).width>bw2-56&&nm.length>4)nm=nm.slice(0,-2);
       txt(cx,nm+(nm===bn[0]?'':'\u2026'),0,0.5,13.5,'#fff','center',3.5,'rgba(20,10,20,.9)',700);
       cx.restore();
       BTN('hbann'+i,bx-bw2/2,by-bh2/2,bw2,bh2,bn[3],{flat:true,nohov:true})});
@@ -530,7 +530,7 @@ function drawHome(dt){
 
   // daily splash bubble (authentic feature; anchored where the base's cat would speak from)
   {const tip=splashTip();
-    cx.font=FONT(13.5,700);
+    setFont(cx,FONT(13.5,700));
     const lines=wrapText(cx,tip,300);
     const bw2=336,bh2=lines.length*20+26,bx=1128-258,by=398-bh2;
     cx.fillStyle='rgba(20,14,6,.25)';rr(cx,bx+3,by+4,bw2,bh2,14);cx.fill();
@@ -875,7 +875,7 @@ function drawMap(dt){const c=CHMAP[G.chapter];
       ribbon(cx,0,0,72,18,'#5aa84a','#2e6a22');txt(cx,'CLEARED',0,0.5,10,'#fff','center',2.5,'#2e6a22',700);cx.restore()}
     // Energy -N (cyan number, white outline) — ONLY on the current stage (original)
     if(nd.cur){const eLbl='Energy -'+nd.energy;
-      cx.font=FONT(12.5,700);const ew=cx.measureText(eLbl).width;
+      setFont(cx,FONT(12.5,700));const ew=cx.measureText(eLbl).width;
       const exs=bx+bW/2-ew/2;
       txt(cx,eLbl,exs,by+bH+13,12.5,'#e8fdff','left',3,'rgba(30,40,50,.85)',700);
       txt(cx,String(nd.energy),exs+cx.measureText('Energy -').width,by+bH+13,12.5,'#54e0f0','left',3,'rgba(30,40,50,.85)',700)}
@@ -1336,11 +1336,11 @@ function drawUpgrade(dt){
   cx.fillStyle='#191922';rr(cx,22,50,196,30,15);cx.fill();cx.lineWidth=3;cx.strokeStyle='#fff8e8';rr(cx,24,52,192,26,13);cx.stroke();
   txt(cx,'Characters',120,65.5,15.5,'#fff','center',3,'#000',700);
   /* ---- top-right: XP emphasized (cyan label + gold number) + CF chip with a guaranteed ≥4px gap ---- */
-  cx.font=FONT(26,700);const xpw=cx.measureText(fmt(SV.xp)).width;
+  setFont(cx,FONT(26,700));const xpw=cx.measureText(fmt(SV.xp)).width;
   const xNumR=1264,xLabR=xNumR-xpw-10; // right edge of the cyan 'XP' label
   txt(cx,fmt(SV.xp),xNumR,24,26,'#ffd23f','right',5,'rgba(60,30,0,.9)',700);
   txt(cx,'XP',xLabR,24,15,'#37b6ff','right',3,'rgba(10,20,30,.85)',700);
-  cx.font=FONT(12.5,700);const cfw=cx.measureText(fmt(SV.cf)).width+42;
+  setFont(cx,FONT(12.5,700));const cfw=cx.measureText(fmt(SV.cf)).width+42;
   const pillR=xLabR-22-16; // CF pill ends 16px left of the XP label start (clear of the label's outline too)
   cx.fillStyle='rgba(255,248,232,.92)';rr(cx,pillR-cfw,10,cfw,28,14);cx.fill();cx.lineWidth=2;cx.strokeStyle='rgba(90,59,22,.5)';rr(cx,pillR-cfw,10,cfw,28,14);cx.stroke();
   drawCFCan(cx,pillR-cfw+15,24,8);
@@ -1360,7 +1360,7 @@ function drawUpgrade(dt){
     cx.fillStyle='#0c0c14';rr(cx,x+6,y+6,w-12,h-12,10);cx.fill(); // black interior
     if(active){cx.lineWidth=1.5;cx.strokeStyle='rgba(255,255,255,.22)';rr(cx,x+9,y+9,w-18,h-18,8);cx.stroke()}
     const nm=cc.forms[catForm(cc.id)].n;
-    let nfs=active?19:14;cx.font=FONT(nfs,700);while(cx.measureText(nm).width>w-70&&nfs>9)nfs--;
+    let nfs=active?19:14;setFont(cx,FONT(nfs,700));while(cx.measureText(nm).width>w-70&&nfs>9)nfs--;
     txt(cx,nm,x+w/2,y+27,nfs,'#fff','center',4,'#000',700);
     txt(cx,cc.rarity.toUpperCase(),x+w-12,y+27,9.5,shade(RAR_COL[cc.rarity],1.05),'right',3,'#000',700);
     ART.catIcon(cc.id,x+w/2,y+h/2-16,active?46:33,active?undefined:0.62);
@@ -1408,7 +1408,7 @@ function drawUpgrade(dt){
       cc.fillStyle=g;rr(cc,0,0,460,74,14);cc.fill();
       cc.lineWidth=5;cc.strokeStyle=cost==null?'#8a8a96':'#ff2fd0';rr(cc,2.5,2.5,455,69,12);cc.stroke();
       const lab=cost==null?'Max Level':'Upgrade!!';
-      cc.font=FONT(33,700);cc.textAlign='center';cc.textBaseline='middle';cc.lineJoin='round';
+      setFont(cc,FONT(33,700));cc.textAlign='center';cc.textBaseline='middle';cc.lineJoin='round';
       cc.lineWidth=9;cc.strokeStyle='#26262e';cc.strokeText(lab,230,39);
       cc.lineWidth=3;cc.strokeStyle='#eef0f8';cc.strokeText(lab,230,39);
       cc.fillStyle=cost==null?'#9a9aa8':'#e2e4f0';cc.fillText(lab,230,39);
@@ -1439,7 +1439,7 @@ function drawUpgrade(dt){
       const g=cc.createLinearGradient(0,0,0,74);g.addColorStop(0,'rgba(255,255,255,.2)');g.addColorStop(1,'rgba(0,0,0,.15)');
       cc.fillStyle=g;rr(cc,0,0,420,74,14);cc.fill();
       cc.lineWidth=4.5;cc.strokeStyle=evoReady?'#e8c8ff':'#c8c8d2';rr(cc,2.5,2.5,415,69,12);cc.stroke();
-      cc.font=FONT(24,700);cc.textAlign='center';cc.textBaseline='middle';cc.lineJoin='round';
+      setFont(cc,FONT(24,700));cc.textAlign='center';cc.textBaseline='middle';cc.lineJoin='round';
       cc.lineWidth=7;cc.strokeStyle='#241038';cc.strokeText('EVOLVE',210,30);
       cc.lineWidth=2.5;cc.strokeStyle=evoReady?'#f0e0ff':'#d8d8e2';cc.strokeText('EVOLVE',210,30);
       cc.fillStyle=evoReady?'#fff':'#c4c4d0';cc.fillText('EVOLVE',210,30);
@@ -1529,7 +1529,7 @@ function drawGacha(dt){drawTopBar('GACHA CAPSULES',true);
     cx.fillStyle=tb.col;cx.beginPath();cx.arc(tx+15,ty+th/2,8,Math.PI,0);cx.fill();
     cx.lineWidth=1.3;cx.strokeStyle='rgba(60,30,60,.55)';cx.beginPath();cx.arc(tx+15,ty+th/2,8,0,TAU);cx.stroke();
     cx.fillStyle='rgba(255,255,255,.55)';cx.beginPath();cx.arc(tx+12.5,ty+th/2-2.6,2.1,0,TAU);cx.fill(); // capsule glint
-    let nm=tb.n;cx.font=FONT(10.5,700);while(cx.measureText(nm).width>tw-32&&nm.length>4)nm=nm.slice(0,nm.length-2);
+    let nm=tb.n;setFont(cx,FONT(10.5,700));while(cx.measureText(nm).width>tw-32&&nm.length>4)nm=nm.slice(0,nm.length-2);
     txt(cx,nm+(nm===tb.n?'':'…'),tx+27,ty+th/2+0.5,10.5,'#fff','left',2.5,'rgba(60,30,20,.85)',700);
     BTN('gtab'+i,tx,ty,tw,th,()=>{G.gachaSel=i;SFX.click()},{flat:true,nohov:true})});
   // === active-banner wooden sign above the machine ===
@@ -2015,7 +2015,7 @@ function drawEnemyDetail(){const e=ENEMAP[G.selEnemy];cx.fillStyle='rgba(30,20,1
   txt(cx,e.n,524,128,24,'#fdfdf8','left',5,'rgba(0,0,0,.6)',700);
   const traits=e.tr.length?e.tr:['traitless'];
   let tx=524;
-  traits.forEach(t=>{const tc=TRAIT_COL[t]||'#a89a78';cx.font=FONT(11,700);
+  traits.forEach(t=>{const tc=TRAIT_COL[t]||'#a89a78';setFont(cx,FONT(11,700));
     const chw=cx.measureText(t.toUpperCase()).width+22;
     cx.fillStyle=t==='traitless'?'#6a6a78':shade(tc,.85);rr(cx,tx,148,chw,24,12);cx.fill();
     cx.lineWidth=2;cx.strokeStyle='rgba(255,255,255,.75)';rr(cx,tx,148,chw,24,12);cx.stroke();
@@ -2256,7 +2256,7 @@ function drawExpedition(dt){bgSky();drawTopBar('SCOUT EXPEDITIONS',true);
         // floating Z z z above the napping scout (idle anim — matches the flavor text)
         for(let z=0;z<3;z++){const zx=x2+w2/2-64+z*16,zy=y+52-z*16-Math.sin(G.t*1.6+z*0.9)*5;
           cx.fillStyle='rgba(90,120,180,'+(0.75-z*0.18).toFixed(2)+')';
-          cx.font=FONT(9+z*2.5,700);cx.textAlign='center';cx.textBaseline='middle';
+          setFont(cx,FONT(9+z*2.5,700));cx.textAlign='center';cx.textBaseline='middle';
           cx.fillText('z',zx,zy)}
         txt(cx,'Your scout is napping by the base.',x2+w2/2+24,y+96,13,'#8a7a5a','center',2.5,'#fff',400);
         txt(cx,'Pick a destination on the left to deploy!',x2+w2/2+24,y+120,12.5,'#5a3b16','center',2.5,'#fff',700);
@@ -2713,7 +2713,7 @@ function drawShrine(dt){bgSky();drawTopBar('CAT SHRINE',true);
       cx.fillStyle=on?'#ffd23f':'rgba(255,210,63,.18)';
       cx.beginPath();cx.moveTo(0,-7);cx.lineTo(6.2,0);cx.lineTo(0,7);cx.lineTo(-6.2,0);cx.closePath();cx.fill();
       if(on){cx.lineWidth=1.6;cx.strokeStyle='#8a5a10';cx.stroke();
-        cx.fillStyle='#5a3b16';cx.font=FONT(6.5,700);cx.textAlign='center';cx.fillText(String(c.mega),0,2.4)}
+        cx.fillStyle='#5a3b16';setFont(cx,FONT(6.5,700));cx.textAlign='center';cx.fillText(String(c.mega),0,2.4)}
       else{cx.lineWidth=1.2;cx.strokeStyle='rgba(138,106,58,.4)';cx.stroke()}
       cx.restore()});
     if(next)txt(cx,next.n+' at '+next.mega+' MEGA',rx+rw2-24,326,10,gotN?'#8a6a3a':'#b8a884','right',2,'#fff',400);
@@ -2797,7 +2797,7 @@ function drawSettings(dt){drawTopBar('SETTINGS',true);
         const bx=x+40,by=y+14,bw=w-80,bh=54;
         cx.fillStyle='#101218';rr(cx,bx,by,bw,bh,10);cx.fill();
         cx.lineWidth=2;cx.strokeStyle='#5a6478';rr(cx,bx,by,bw,bh,10);cx.stroke();
-        cx.font='16px monospace';cx.textAlign='left';cx.textBaseline='middle';
+        setFont(cx,'16px monospace');cx.textAlign='left';cx.textBaseline='middle';
         cx.fillStyle='#e8e8f0';cx.fillText(String(G.nameBuf||'').slice(0,26),bx+14,by+bh/2);
         if(!G.nameBuf)txt(cx,'(tap and type)',bx+14,by+bh/2,13,'#6a7488','left');
         G.hits.push({id:'namefield',x:bx,y:by,w:bw,h:bh,cb:()=>{nameFocus(bx,by,bw,bh)},hidden:false,modal:true})})},{col:'#7fd0ff',outline:'#2a5a7a',label:'EDIT',fs:12});
@@ -2817,7 +2817,7 @@ function drawSettings(dt){drawTopBar('SETTINGS',true);
         const bx=x+40,by=y+14,bw=w-80,bh=54;
         cx.fillStyle='#101218';rr(cx,bx,by,bw,bh,10);cx.fill();
         cx.lineWidth=2;cx.strokeStyle='#5a6478';rr(cx,bx,by,bw,bh,10);cx.stroke();
-        cx.font='16px monospace';cx.textAlign='left';cx.textBaseline='middle';
+        setFont(cx,'16px monospace');cx.textAlign='left';cx.textBaseline='middle';
         cx.fillStyle='#e8e8f0';cx.fillText(String(G.nameBuf||'').slice(0,26),bx+14,by+bh/2);
         if(!G.nameBuf)txt(cx,'(tap and type)',bx+14,by+bh/2,13,'#6a7488','left');
         G.hits.push({id:'knamefield',x:bx,y:by,w:bw,h:bh,cb:()=>{nameFocus(bx,by,bw,bh)},hidden:false,modal:true})})},{col:'#ffb95a',outline:'#8a4a10',label:'EDIT',fs:12});
@@ -2827,7 +2827,7 @@ function drawSettings(dt){drawTopBar('SETTINGS',true);
     {n:'COPY CODE',cb:()=>{try{navigator.clipboard.writeText(exportSave()).then(()=>toast('Save code copied!'),()=>toast('Copy blocked — use Download file','#ff7a7a'))}catch(e){toast('Copy blocked — use Download file','#ff7a7a')}}},
     {n:'CLOSE',cb:()=>{}}],(x,y,w,h)=>{
       cx.fillStyle='#101218';rr(cx,x+20,y+10,w-40,92,10);cx.fill();
-      const s=exportSave();cx.font='11px monospace';cx.textAlign='left';cx.textBaseline='top';
+      const s=exportSave();setFont(cx,'11px monospace');cx.textAlign='left';cx.textBaseline='top';
       cx.fillStyle='#e8e8f0';cx.fillText(s.slice(0,58),x+34,y+24);cx.fillText(s.slice(58,116)+'…',x+34,y+40);
       cx.fillStyle='#8a92a8';const d=new Date();const ds=d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
       cx.fillText('file: battle-cats-save-'+ds+'.txt  ·  pasted codes are accepted too',x+34,y+72)})},{col:'#ffd94a',outline:'#8a5a20',label:'EXPORT SAVE',fs:17});
@@ -2846,7 +2846,7 @@ function drawSettings(dt){drawTopBar('SETTINGS',true);
         cx.fillStyle='#101218';rr(cx,bx,by,bw,bh,10);cx.fill();
         cx.lineWidth=2;cx.strokeStyle='#5a6478';rr(cx,bx,by,bw,bh,10);cx.stroke();
         const s=String(G.importBuf||'');const cols=56;const shown=s.slice(0,cols*4);
-        cx.font='11px monospace';cx.textAlign='left';cx.textBaseline='top';
+        setFont(cx,'11px monospace');cx.textAlign='left';cx.textBaseline='top';
         if(!s){cx.fillStyle='#6a7488';cx.fillText('(tap here, then type or Ctrl+V — or use CHOOSE FILE)',bx+14,by+14)}
         else{cx.fillStyle='#e8e8f0';for(let i=0;i<4;i++){const ln=shown.slice(i*cols,(i+1)*cols);if(ln)cx.fillText(ln,bx+14,by+14+i*16)}
           if(s.length>shown.length){cx.fillStyle='#8a92a8';cx.fillText('… '+(s.length-shown.length)+' more chars',bx+14,by+14+4*16)}}
@@ -2855,7 +2855,7 @@ function drawSettings(dt){drawTopBar('SETTINGS',true);
   // ---- reset: double confirm (two modals) ----
   BTN('sreset',280,370,340,60,()=>{openModal('RESET GAME?',['This deletes ALL progress permanently!'],[
     {n:'DELETE ALL',col:'#ff5a5a',cb:()=>{openModal('FINAL CONFIRM',['Every cat, XP, treasure and clear will be','wiped from this browser. There is no undo.'],[
-      {n:'YES — WIPE SAVE',col:'#ff5a5a',cb:()=>{localStorage.removeItem(SAVE_KEY);localStorage.removeItem(SAVE_KEY_LEGACY);loadSave();toast('Game reset');G.screen='title';G.screenPrev=[]}},
+      {n:'YES — WIPE SAVE',col:'#ff5a5a',cb:()=>{localStorage.removeItem(SAVE_KEY);localStorage.removeItem(SAVE_KEY_LEGACY);localStorage.removeItem(SAVE_KEY_BAK);loadSave();toast('Game reset');G.screen='title';G.screenPrev=[]}},
       {n:'KEEP MY SAVE',cb:()=>{}}])}},
     {n:'CANCEL',cb:()=>{}}])},{col:'#ff5a5a',outline:'#8a1a1a',label:'RESET SAVE',fs:16});
   // ---- dev-only DEMO BOOST (not part of normal progression UI) ----

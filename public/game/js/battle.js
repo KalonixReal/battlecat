@@ -29,14 +29,26 @@ function startBattle(st){
   const tier=(typeof CHMAP!=='undefined'&&CHMAP[st.ch]&&CHMAP[st.ch].tier)||1;B.costMul=tier<=1?1:(tier===2?1.5:2); // official cost scaling: Ch2 x1.5, Ch3+ x2
   const wm=battleWalletMax()*WALLET_MAX[0];B.walletMax=battleWalletMax();
   teamIds.forEach(id=>B.cds[id]=0);
+  B.dock=teamIds.slice(0,10).map(id=>({id,st:catStats(id,undefined,B.costMul)})); // deck stats cached (cost/cd can't change mid-fight)
   // build spawn queue
   st.script.forEach(w=>{w.spawns.forEach(s=>{for(let k=0;k<s.count;k++)B.queue.push({t:w.t+k*s.interval,e:s.e})})});
   B.queue.sort((a,b)=>a.t-b.t);
   B.tint={eoc2:'rgba(255,72,40,.16)',eoc3:'rgba(24,22,44,.30)'}[st.ch]||null; // EoC Ch2 crimson / Ch3 shadow unit wash (original palette swap)
+  /* ---- battle loading gate (r27): collect EVERY image this fight touches — stage bg,
+     castle, cat-base strips, each team cat's strips+icon, every queued enemy's strips —
+     the field only fades in once all of them are fully decoded (nothing pops in later). */
+  const need=stageNeeds(st).map(n=>n[1]);
+  const cSeen=new Set();
+  teamIds.forEach(id=>{if(cSeen.has(id))return;cSeen.add(id);
+    if(typeof SPRIT!=='undefined'){SPRIT.needUnit('cat',id).forEach(im=>need.push(im));
+      const ic=SPRIT.needIcon('cat',id);if(ic)need.push(ic)}});
+  const eSeen=new Set();
+  st.script.forEach(w=>w.spawns.forEach(s=>{if(eSeen.has(s.e))return;eSeen.add(s.e);
+    if(typeof SPRIT!=='undefined')SPRIT.needUnit('enemy',s.e).forEach(im=>need.push(im))}));
+  B.load={need,ready:false,t:0,p:0,intro:0,started:false};
   G.onDrag=null;push('battle');
-  AudioSetBgm(st.bgm||'eoc');
-  SFX.start();
-  toast(st.name+' — GO!','#ffd94a');
+  // BGM + 'GO!' wait for the gate (music starting over a loading card felt broken)
+  if(need.length===0){B.load.ready=true;AudioSetBgm(st.bgm||'eoc');SFX.start();toast(st.name+' — GO!','#ffd94a')}
 }
 function spawnEnemy(eid,x0){
   const d=ENEMAP[eid];const mag=B.st.mag;
@@ -418,8 +430,43 @@ function applyBattleResult(){
     persist()}
   AudioSetBgm(null)}
 /* ---------- battle UI ---------- */
-function drawBattle(dt){updateBattle(dt);
+/* authentic battle loading card: black screen + chapter plate + stage name + walking
+   cat base + Now Loading bar — the original gates the fight on its art decoding too */
+function drawBattleLoading(b){
+  const L=b.load,w=1280;
+  cx.fillStyle='#0d0d12';cx.fillRect(0,0,1280,720);
+  const ch=CHMAP[b.st.ch];
+  txt(cx,(ch?ch.n:'THE BATTLE CATS').toUpperCase(),w/2,150,17,'rgba(255,217,74,.75)','center',4,'#1a1408',700);
+  // stage name — big official result-band styling
+  cx.save();cx.translate(w/2,240);cx.rotate(Math.sin(G.t*2.6)*0.004);
+  txt(cx,b.st.name,0,0,40,'#fdfdf8','center',7,'#14141c',700);
+  cx.restore();
+  if(b.st.boss)txt(cx,'⚠ BOSS STAGE ⚠',w/2,300,16,'#ff7a7a','center',4,'#201018',700);
+  // walking cat base (same authentic idle the boot screen uses)
+  if(typeof drawCatBaseWalk==='function')drawCatBaseWalk(w/2,470,110,L.t);
+  // progress
+  const bw=460,bx=w/2-bw/2,by=520;
+  cx.fillStyle='#242430';rr(cx,bx-3,by-3,bw+6,22,11);cx.fill();
+  cx.fillStyle='#111118';rr(cx,bx,by,bw,16,8);cx.fill();
+  if(L.p>0.01){cx.fillStyle='#ffd94a';rr(cx,bx,by,Math.max(14,bw*L.p),16,8);cx.fill();
+    cx.fillStyle='rgba(255,255,255,.25)';rr(cx,bx,by,Math.max(14,bw*L.p),6,4);cx.fill()}
+  txt(cx,'Now Loading... '+Math.round(L.p*100)+'%',w/2,by+42,17,'#e8dfc8','center');
+  txt(cx,'The Battle Cats — web replica',w/2,694,12,'rgba(255,255,255,.35)','center');
+}
+function drawBattle(dt){
   const b=B;
+  /* ---- battle loading gate: hold on the loading card until every image the fight
+     uses is decoded, then fade the field in (assets are prewarmed at boot, so this
+     is normally a single frame — but it GUARANTEES no mid-battle pop-in anywhere) ---- */
+  if(b.load&&!b.load.ready){
+    b.load.t+=dt;
+    let rdy=0;for(let i=0;i<b.load.need.length;i++)if(imgReady(b.load.need[i]))rdy++;
+    b.load.p=b.load.need.length?rdy/b.load.need.length:1;
+    if(rdy>=b.load.need.length){b.load.ready=true;b.load.intro=0.45;
+      AudioSetBgm(b.st.bgm||'eoc');SFX.start();toast(b.st.name+' — GO!','#ffd94a')}
+    else{drawBattleLoading(b);return}
+  }
+  updateBattle(dt);
   // (HUD drawn later fades out once a result is set — see end of this function)
   cx.save();
   const shx=b.shake?(Math.random()*2-1)*b.shake:0,shy=b.shake?(Math.random()*2-1)*b.shake:0;
@@ -428,9 +475,9 @@ function drawBattle(dt){updateBattle(dt);
   cx.save();cx.translate(shx-b.cam,shy);
   // bases
   drawBases(b);
-  // units sorted
-  const sorted=b.units.slice().sort((a,c)=>a.x-c.x);
-  for(const u of sorted)drawUnit(u);
+  // units sorted by x for painter's order — scratch array reused every frame (no per-frame alloc)
+  _SORTED.length=0;for(const u of b.units)_SORTED.push(u);_SORTED.sort((a,c)=>a.x-c.x);
+  for(const u of _SORTED)drawUnit(u);
   // waves / surges / fx
   for(const w of b.waves){cx.save();cx.translate(w.x,GROUND_Y-40);cx.scale(w.dir,1);
     cx.strokeStyle=w.side==='cat'?'rgba(255,240,150,.9)':'rgba(255,150,150,.9)';cx.lineWidth=6;
@@ -452,23 +499,37 @@ function drawBattle(dt){updateBattle(dt);
     txt(cx,'PAUSED',640,316,42,'#fff','center',7,'#14141c',700);
     txt(cx,'tap \u25b6 to resume',640,368,16,'rgba(255,255,255,.8)','center',4,'#14141c',700)}
   if(b.warnT>0){cx.globalAlpha=clamp(b.warnT,0,1);txt(cx,b.warn,640,150,30,'#ff5a5a','center',6,'#201018',700);cx.globalAlpha=1}
+  // fade from the battle loading card into the live field (one-shot, 0.45s)
+  if(b.load&&b.load.intro>0){b.load.intro-=dt;const a=clamp(b.load.intro/0.45,0,1);
+    cx.fillStyle='rgba(13,13,18,'+(a*a*0.98).toFixed(3)+')';cx.fillRect(0,0,1280,720)}
   if(b.result)drawResult(b)}
 /* ORIGINAL stage backgrounds (game rips, 770x512, tile seamlessly) */
 const BG_PIC={eoc1:'Bg000',eoc2:'Bg001',eoc3:'Bg002',itf1:'Bg014',itf2:'Bg016',itf3:'Bg033',
   cotc1:'Bg074',cotc2:'Bg017',cotc3:'Bg096',sol:null,ul:'Bg057',aku:'Bg019',dojo:'Bg043',event:'Bg023'};
 const SOL_ROT=['Bg005','Bg028','Bg030','Bg007','Bg012','Bg023','Bg025','Bg013','Bg098','Bg089','Bg061','Bg088'];
 const _bgImgs={};
+let _HZ_GRAD=null,_HAZE_GRAD=null;const _SKY_GRAD={}; // cached gradient objects (context-bound, reusable every frame)
 function bgImg(name,idx){
   if(name===null||name===undefined)return null;
   if(name==='sol')name=SOL_ROT[(idx||0)%SOL_ROT.length];
-  let im=_bgImgs[name];
-  if(im===undefined){im=new Image();im.onload=()=>{};im.src='assets/maps/'+name+'.png';_bgImgs[name]=im}
-  return im;
+  return lazyImg(_bgImgs,name,'assets/maps/'+name+'.png');
+}
+/* battle asset registry: which map/castle images a given stage needs (the battle
+   loading screen gates on exactly these — nothing pops in after the gate opens) */
+function stageBgPic(st){const n=BG_PIC[st.bg];return n||(st.bg==='sol'?'sol':null)} // SoL = rotating authentic bg set
+function stageNeeds(st){
+  const need=[];
+  const bg=stageBgPic(st);
+  if(bg)need.push(['bg',bgImg(bg,st.idx)]);
+  const set=CHAPTER_CASTLE[st.ch]||'eoc';
+  need.push(['castle',castleImg(set,st.idx)]);
+  if(_cbMeta&&_cbMeta.idle)need.push(['catbase',cbStrip(_cbMeta.idle.img)]);
+  return need.filter(n=>n[1]);
 }
 function drawBattleBG(b,shx,shy){
   const th=b.st.bg;const grad=BG_THEMES[th]||BG_THEMES.grass;
   /* ---- ORIGINAL background image when available (tiled + camera parallax) ---- */
-  const bim=bgImg(BG_PIC[th],b.st.idx);
+  const bim=bgImg(stageBgPic(b.st),b.st.idx);
   if(bim&&bim.complete&&bim.naturalWidth){
     const S=1280/bim.naturalWidth, DH=Math.round(bim.naturalHeight*S), offY=720-DH;
     const px=Math.round(((b.cam||0)*0.18)%1280);
@@ -479,17 +540,18 @@ function drawBattleBG(b,shx,shy){
     if(-px+2560<1280)cx.drawImage(bim,-px+2560,offY,1280+1,DH);
     cx.restore();
     // gentle horizon haze to seat the units (matches original's soft ground blend)
-    const hz=cx.createLinearGradient(0,GROUND_Y-140,0,GROUND_Y+30);
-    hz.addColorStop(0,'rgba(0,0,0,0)');hz.addColorStop(1,'rgba(0,0,20,.10)');
-    cx.fillStyle=hz;cx.fillRect(0,GROUND_Y-140,1280,170);
+    // gradient object cached once (identical every frame — recreating it per frame is pure waste)
+    if(!_HZ_GRAD){_HZ_GRAD=cx.createLinearGradient(0,GROUND_Y-140,0,GROUND_Y+30);
+      _HZ_GRAD.addColorStop(0,'rgba(0,0,0,0)');_HZ_GRAD.addColorStop(1,'rgba(0,0,20,.10)')}
+    cx.fillStyle=_HZ_GRAD;cx.fillRect(0,GROUND_Y-140,1280,170);
     return;
   }
-  /* sky — 3-stop gradient + horizon haze band (depth) */
-  const g=cx.createLinearGradient(0,0,0,720);
-  g.addColorStop(0,grad.sky1);g.addColorStop(0.62,grad.sky2);g.addColorStop(1,grad.sky2);
+  /* sky — 3-stop gradient + horizon haze band (depth) — gradient cached per theme */
+  let g=_SKY_GRAD[th];
+  if(!g){g=cx.createLinearGradient(0,0,0,720);g.addColorStop(0,grad.sky1);g.addColorStop(0.62,grad.sky2);g.addColorStop(1,grad.sky2);_SKY_GRAD[th]=g}
   cx.fillStyle=g;cx.fillRect(0,0,1280,720);
-  const hz=cx.createLinearGradient(0,GROUND_Y-150,0,GROUND_Y);
-  hz.addColorStop(0,'rgba(255,255,255,0)');hz.addColorStop(1,'rgba(255,255,255,.14)');
+  let hz=_HAZE_GRAD;
+  if(!hz){hz=cx.createLinearGradient(0,GROUND_Y-150,0,GROUND_Y);hz.addColorStop(0,'rgba(255,255,255,0)');hz.addColorStop(1,'rgba(255,255,255,.14)');_HAZE_GRAD=hz}
   cx.fillStyle=hz;cx.fillRect(0,GROUND_Y-150,1280,150);
   /* sun with soft rotating rays (alive, not static) */
   cx.save();cx.translate(1100,90);
@@ -599,9 +661,7 @@ function castleImg(set,stageIdx){
   else if(set==='zero')n='rc'+String(16+((stageIdx||0)%8)).padStart(3,'0');
   else if(set==='dojo')n='rc'+String(24+((stageIdx||0)%24)).padStart(3,'0');
   else n='ec'+String((stageIdx||0)%48).padStart(3,'0');                        // EoC/event = landmark set
-  let im=_castleImgs[n];
-  if(im===undefined){im=new Image();im.src='assets/castles/'+(set==='eoc'||set==='event'?'eoc':set==='cosmos'||set==='itf'?'cosmos':set==='world'?'world':'dark')+'/'+n+'.png';_castleImgs[n]=im}
-  return im&&im.complete&&im.naturalWidth?im:null;
+  return lazyImg(_castleImgs,n,'assets/castles/'+(set==='eoc'||set==='event'?'eoc':set==='cosmos'||set==='itf'?'cosmos':set==='world'?'world':'dark')+'/'+n+'.png');
 }
 const CHAPTER_CASTLE={eoc1:'eoc',eoc2:'eoc',eoc3:'eoc',itf1:'itf',itf2:'itf',itf3:'itf',
   cotc1:'cosmos',cotc2:'cosmos',cotc3:'cosmos',sol:'world',ul:'zero',aku:'dark',dojo:'dojo',event:'eoc'};
@@ -609,9 +669,7 @@ let _cbMeta=null;
 fetch('assets/sprites/catbase.json',{cache:'no-cache'}).then(r=>r.json()).then(j=>{_cbMeta=j}).catch(()=>{});
 const _cbStrips={};
 function cbStrip(fn){
-  let im=_cbStrips[fn];
-  if(im===undefined){im=new Image();im.src='assets/sprites/'+fn;_cbStrips[fn]=im}
-  return im&&im.complete&&im.naturalWidth?im:null;
+  return lazyImg(_cbStrips,fn,'assets/sprites/'+fn);
 }
 /* cat base: authentic idle anim (~200px tall); alarm = red tint + shake; kb pose on heavy hits */
 function drawCatBase(cb){
@@ -620,7 +678,7 @@ function drawCatBase(cb){
   const H=196;
   const drawEn=(entry,fi,alpha)=>{
     const im=entry?cbStrip(entry.img):null;
-    if(!im)return false;
+    if(!imgReady(im))return false;
     const fr=entry.frames[fi%entry.frames.length];
     const sc=H/(entry.refH||310);
     cx.globalAlpha=alpha===undefined?1:alpha;
@@ -661,7 +719,7 @@ function drawBases(b){
     cx.fillStyle='#ff5a5a';cx.beginPath();cx.ellipse(0,-105,100,125,0,0,TAU);cx.fill();cx.restore()}
   const cim=castleImg(CHAPTER_CASTLE[b.st.ch]||'eoc',b.st.idx);
   const CH=208;
-  if(cim){
+  if(imgReady(cim)){
     const sc=CH/cim.naturalHeight,w=cim.naturalWidth*sc;
     cx.imageSmoothingEnabled=true;
     cx.drawImage(cim,-w/2,-CH,w,CH);
@@ -737,6 +795,7 @@ function drawUnit(u){
     icons.forEach((ic,i)=>txt(cx,ic[0],u.x-(icons.length-1)*7+i*14,y-u.r*2.4-18,12,ic[1],'center',3,'#101018',700));
     if(u.shieldHp>0)txt(cx,'◈',u.x+u.r+4,y-40,14,'#c46adf','center',3,'#101018',700)}}
 const FXDUR={bossdie:1.2,baseboom:1.4,cannon:0.5,slowbeam:1.3,bolt:0.45,waterwave:1.0,holyblast:0.8,breaker:0.55,dust:0.6,crown:1.6,moneypop:0.7,impact:0.26};
+const _SORTED=[]; // reusable draw-order scratch (r27 perf)
 function drawFx(f){const p=clamp(1-f.t/(FXDUR[f.k]||0.5),0,1);
   cx.save();cx.translate(f.x,GROUND_Y-30+(f.y||0));
   switch(f.k){
@@ -809,12 +868,13 @@ function drawBattleHUD(b,dt){
   SCROLL('field',0,110,1280,470,()=>b.cam,v=>{b.cam=clamp(v,0,FIELD_W-1280)},FIELD_W-1280,null).horiz=true;
   /* ===== TOP-LEFT: wallet sign — yellow rounded plate, brown $ amount + cent coin (original) ===== */
   {
-    const mfs=27;cx.font=FONT(mfs,700);
+    const mfs=27;setFont(cx,FONT(mfs,700));
     const s='$'+fmt(Math.floor(b.wallet));
     const sw=cx.measureText(s).width;
     const pw=sw+56,px=16,py=12,ph=42;
-    cx.save();cx.shadowColor='rgba(0,0,0,.35)';cx.shadowBlur=6;cx.shadowOffsetY=3;
-    cx.fillStyle='#ffd23f';rr(cx,px,py,pw,ph,12);cx.fill();cx.restore();
+    if(!PERF_NOFX()){cx.save();cx.shadowColor='rgba(0,0,0,.35)';cx.shadowBlur=6;cx.shadowOffsetY=3;
+      cx.fillStyle='#ffd23f';rr(cx,px,py,pw,ph,12);cx.fill();cx.restore()}
+    else{cx.fillStyle='#ffd23f';rr(cx,px,py,pw,ph,12);cx.fill()}
     cx.lineWidth=3;cx.strokeStyle='#8a5a20';rr(cx,px,py,pw,ph,12);cx.stroke();
     cx.fillStyle='rgba(255,255,255,.35)';rr(cx,px+4,py+3,pw-8,10,6);cx.fill(); // top gloss
     txt(cx,s,px+18,py+28,mfs,'#7a4a10','left',4.5,'rgba(255,244,200,.85)',700);
@@ -849,8 +909,9 @@ function drawBattleHUD(b,dt){
      Wallet Lv drives BOTH max (WALLET_MAX) and regen (WORKER_MUL) — one combined level like the original. */
   const wLv=Math.max(b.walletLv,b.workerLv);b.walletLv=b.workerLv=wLv; // keep the two engine fields unified
   const wbx=20,wby=586,wbw=100,wbh=96;
-  cx.save();cx.shadowColor='rgba(0,0,0,.4)';cx.shadowBlur=8;cx.shadowOffsetY=3;
-  cx.fillStyle='#ffd23f';rr(cx,wbx,wby,wbw,wbh,14);cx.fill();cx.restore();
+  if(!PERF_NOFX()){cx.save();cx.shadowColor='rgba(0,0,0,.4)';cx.shadowBlur=8;cx.shadowOffsetY=3;
+    cx.fillStyle='#ffd23f';rr(cx,wbx,wby,wbw,wbh,14);cx.fill();cx.restore()}
+  else{cx.fillStyle='#ffd23f';rr(cx,wbx,wby,wbw,wbh,14);cx.fill()}
   cx.lineWidth=4;cx.strokeStyle='#8a5a20';rr(cx,wbx,wby,wbw,wbh,14);cx.stroke();
   ART.catIcon('cat',wbx+wbw/2,wby+44,26);
   // level plate across the top of the button (original 'Lv.N' badge)
@@ -865,8 +926,8 @@ function drawBattleHUD(b,dt){
     cx.fillStyle=can?'#5ad84a':'#5a6472';rr(cx,-cw/2,-13,cw,26,13);cx.fill();
     cx.lineWidth=2.5;cx.strokeStyle=can?'#1e5a14':'#2c3242';rr(cx,-cw/2,-13,cw,26,13);cx.stroke();
     // cost sits centered in the space RIGHT of the arrow; auto-shrinks for 4-digit costs (never touches the arrow)
-    cx.font=FONT(13,700);const ws2='$'+wkCost;let ww2=cx.measureText(ws2).width,wfs2=13;
-    while(ww2>44&&wfs2>9.5){wfs2-=0.5;cx.font=FONT(wfs2,700);ww2=cx.measureText(ws2).width}
+    setFont(cx,FONT(13,700));const ws2='$'+wkCost;let ww2=cx.measureText(ws2).width,wfs2=13;
+    while(ww2>44&&wfs2>9.5){wfs2-=0.5;setFont(cx,FONT(wfs2,700));ww2=cx.measureText(ws2).width}
     txt(cx,ws2,13,0.5,wfs2,'#fff','center',2.5,'rgba(10,30,8,.8)',700);
     // up-arrow affordance left of the cost
     cx.fillStyle='#fff';cx.beginPath();cx.moveTo(-cw/2+12,5);cx.lineTo(-cw/2+19,-5);cx.lineTo(-cw/2+26,5);cx.closePath();cx.fill();
@@ -883,10 +944,11 @@ function drawBattleHUD(b,dt){
   const c=b.cannon;const ready=c.t<=0;const fx=1190,fy=636;
   const cmeta=CANNON_TYPES.find(t=>t.id===c.type)||CANNON_TYPES[0];
   const frac=ready?1:1-c.t/c.charge;
-  cx.save();cx.shadowColor=ready?'rgba(255,74,216,.65)':'rgba(0,0,0,.35)';cx.shadowBlur=ready?16:5;
-  const cg=cx.createLinearGradient(fx,fy-44,fx,fy+44);
-  if(ready){cg.addColorStop(0,'#ff9ad5');cg.addColorStop(1,'#e8489a')}else{cg.addColorStop(0,'#4a5468');cg.addColorStop(1,'#2c3242')}
-  cx.fillStyle=cg;cx.beginPath();cx.arc(fx,fy,44,0,TAU);cx.fill();cx.restore();
+  if(!PERF_NOFX()){cx.save();cx.shadowColor=ready?'rgba(255,74,216,.65)':'rgba(0,0,0,.35)';cx.shadowBlur=ready?16:5;
+    const cg=cx.createLinearGradient(fx,fy-44,fx,fy+44);
+    if(ready){cg.addColorStop(0,'#ff9ad5');cg.addColorStop(1,'#e8489a')}else{cg.addColorStop(0,'#4a5468');cg.addColorStop(1,'#2c3242')}
+    cx.fillStyle=cg;cx.beginPath();cx.arc(fx,fy,44,0,TAU);cx.fill();cx.restore()}
+  else{cx.fillStyle=ready?'#e8489a':'#2c3242';cx.beginPath();cx.arc(fx,fy,44,0,TAU);cx.fill()}
   cx.lineWidth=5;cx.strokeStyle='#22262f';cx.beginPath();cx.arc(fx,fy,44,0,TAU);cx.stroke();
   cx.lineWidth=6;cx.strokeStyle=ready?(cmeta.ring||'#ffd23f'):'#8fd8ff';
   cx.beginPath();cx.arc(fx,fy,35,-Math.PI/2,-Math.PI/2+TAU*frac);cx.stroke();
@@ -895,23 +957,21 @@ function drawBattleHUD(b,dt){
   txt(cx,ready?'Fire!!':tstr(c.t),fx,fy+24,ready?16:13,ready?'#ffd23f':'#cfd3e0','center',3,'#22262f',700);
   BTN('cannon',fx-46,fy-46,92,92,()=>{if(B.result)return;fireCannon()},{flat:true,nohov:true});
   /* ===== BOTTOM-CENTER: ONE row of up to 10 unit cards (original deck) ===== */
-  const team=b.teamIds.filter(id=>id).slice(0,10);
+  const team=b.dock; // stats cached at battle start (they cannot change mid-fight)
   const dw=76,dh=84,gpx=7;
   const x0=132; // right of the worker button
-  team.forEach((id,i)=>{
+  team.forEach((d,i)=>{
+    const id=d.id,st=d.st;
     const dx=x0+i*(dw+gpx),dy=614;
     if(dx+dw>1120)return; // never collide with the Fire button
-    const st=catStats(id,undefined,B.costMul);const cd=b.cds[id]||0;const cdMax=st.cd;const can=b.wallet>=st.cost&&cd<=0;
+    const cd=b.cds[id]||0;const cdMax=st.cd;const can=b.wallet>=st.cost&&cd<=0;
     const afford=b.wallet>=st.cost;
     BTN('dock'+i,dx,dy,dw,dh+16,()=>{if(B.result||B.paused)return;if(!can){SFX.error();if(cd>0)toast(cd.toFixed(1)+'s','#ffb060');else toast('Not enough \u00a2!','#ff7a7a');return}
       b.wallet-=st.cost;b.cds[id]=cdMax;spawnCat(id)},{flat:true,nohov:true,draw:cc2=>{
-      // ready + affordable: soft breathing glow behind the card
-      if(can){const gl=0.5+0.5*Math.sin(G.t*3.2+i);
-        cc2.save();cc2.shadowColor='rgba(120,200,255,'+(0.25+gl*0.3).toFixed(3)+')';cc2.shadowBlur=10+gl*6;
-        cc2.fillStyle='#31405a';rr(cc2,0,0,dw,dh,10);cc2.fill();cc2.restore()}
-      else{cc2.save();cc2.shadowColor='rgba(0,0,0,.35)';cc2.shadowBlur=5;cc2.shadowOffsetY=3;
-        cc2.fillStyle=can?'#31405a':'#232a38';rr(cc2,0,0,dw,dh,10);cc2.fill();cc2.restore()}
-      cc2.lineWidth=3;cc2.strokeStyle=can?'#c8d2e4':'#3a4456';rr(cc2,1.5,1.5,dw-3,dh-3,10);cc2.stroke();
+      // ready + affordable: soft breathing glow (pre-baked sprite — no shadowBlur per frame)
+      if(can&&!PERF_NOFX()){const gl=0.5+0.5*Math.sin(G.t*3.2+i);const glw=cardGlow(dw,dh);
+        cc2.globalAlpha=0.45+gl*0.45;cc2.drawImage(glw.cv,-glw.pad,-glw.pad,dw+glw.pad*2,dh+glw.pad*2);cc2.globalAlpha=1}
+      cc2.drawImage(cardPlate(can,dw,dh),0,0,dw,dh);
       ART.catIcon(id,dw/2,36,25,can?undefined:0.45);
       if(cd>0){ // recharge curtain falls from the top, revealing the card as it recharges (original sweep)
         const hgt=dh*clamp(cd/cdMax,0,1);
@@ -919,12 +979,8 @@ function drawBattleHUD(b,dt){
         cc2.fillStyle='rgba(10,14,24,.78)';cc2.fillRect(1.5,1.5,dw-3,hgt);cc2.restore();
         txt(cc2,cd.toFixed(1),dw/2,dh/2+1,15,'#fff','center',3,'#22262f',700)}
       else if(!afford){cc2.fillStyle='rgba(16,20,30,.4)';rr(cc2,0,0,dw,dh,10);cc2.fill()}
-      // diagonal gloss highlight (glassy card)
-      cc2.save();cc2.beginPath();rr(cc2,1.5,1.5,dw-3,dh-3,10);cc2.clip();
-      const gg=cc2.createLinearGradient(0,0,dw,dh);gg.addColorStop(0,'rgba(255,255,255,.14)');gg.addColorStop(0.45,'rgba(255,255,255,.02)');gg.addColorStop(1,'rgba(255,255,255,0)');
-      cc2.fillStyle=gg;cc2.fillRect(0,0,dw,dh);cc2.restore();
       // cost badge at the card's bottom edge (original: dark plate + green number + ¢ symbol AFTER the digits)
-      const cs=String(st.cost);cc2.font=FONT(13,700);const csw=cc2.measureText(cs).width;
+      const cs=String(st.cost);setFont(cc2,FONT(13,700));const csw=cc2.measureText(cs).width;
       const bw2=csw+21,bx2=dw/2-bw2/2; // plate sized for [digits + gap + symbol], group centered
       cc2.fillStyle='rgba(10,14,22,.82)';rr(cc2,bx2,dh-16,bw2,18,9);cc2.fill();
       const cCol=afford?'#9ae89a':'#ff9a8a';
@@ -933,6 +989,37 @@ function drawBattleHUD(b,dt){
   });
 }
 function popTxtUI(s){toast(s,'#ffd94a')}
+/* ---- card plate bake (r27 perf): the deck draws up to 10 rounded plates + gloss
+   every frame; shadowBlur behind each one is the single most expensive HUD op.
+   Both plate variants are baked ONCE per DPR and blitted, and the animated 'ready'
+   glow becomes a pre-baked radial sprite alpha-pulsed behind the plate. */
+const PERF_NOFX=()=>(typeof PERF!=='undefined'&&PERF.tier>=2);
+const _CARD_PLATE={};
+function cardPlate(can,dw,dh){
+  const k=(can?1:0)+'|'+dw+'x'+dh;
+  if(_CARD_PLATE[k])return _CARD_PLATE[k];
+  const dp=Math.min(cv._dpr||1,DPR_CAP||2);
+  const oc=document.createElement('canvas');oc.width=Math.ceil(dw*dp);oc.height=Math.ceil(dh*dp);
+  const c2=oc.getContext('2d');c2.scale(dp,dp);
+  c2.fillStyle=can?'#31405a':'#232a38';rr(c2,0,0,dw,dh,10);c2.fill();
+  c2.lineWidth=3;c2.strokeStyle=can?'#c8d2e4':'#3a4456';rr(c2,1.5,1.5,dw-3,dh-3,10);c2.stroke();
+  c2.save();c2.beginPath();rr(c2,1.5,1.5,dw-3,dh-3,10);c2.clip();
+  const gg=c2.createLinearGradient(0,0,dw,dh);gg.addColorStop(0,'rgba(255,255,255,.14)');gg.addColorStop(0.45,'rgba(255,255,255,.02)');gg.addColorStop(1,'rgba(255,255,255,0)');
+  c2.fillStyle=gg;c2.fillRect(0,0,dw,dh);c2.restore();
+  return _CARD_PLATE[k]=oc;
+}
+let _CARD_GLOW=null;
+function cardGlow(dw,dh){
+  if(_CARD_GLOW)return _CARD_GLOW;
+  const pad=14,dp=Math.min(cv._dpr||1,DPR_CAP||2);
+  const w=dw+pad*2,h=dh+pad*2;
+  const oc=document.createElement('canvas');oc.width=Math.ceil(w*dp);oc.height=Math.ceil(h*dp);
+  const c2=oc.getContext('2d');c2.scale(dp,dp);
+  const g=c2.createRadialGradient(w/2,h/2,10,w/2,h/2,w/2);
+  g.addColorStop(0,'rgba(120,200,255,.5)');g.addColorStop(1,'rgba(120,200,255,0)');
+  c2.fillStyle=g;c2.fillRect(0,0,w,h);
+  return _CARD_GLOW={cv:oc,pad};
+}
 
 const RARITY_LABEL={normal:'Basic Cat',special:'Special Cat',rare:'Rare Cat',srar:'Super Rare Cat',uber:'Uber Super Rare Cat',legend:'Legend Rare Cat'};
 function drawResult(b){
@@ -956,7 +1043,7 @@ function drawResult(b){
      carry 'Score N' + 'Gained N XP!!'; drop-reward panel lists the drop; Ok + Post to SNS. */
   const ty=lerp(-180,250,e);
   cx.save();cx.translate(640,ty);cx.rotate(Math.sin(G.t*2.6)*0.008);
-  cx.font=FONT(92,700);cx.textAlign='center';cx.textBaseline='middle';cx.lineJoin='round';
+  setFont(cx,FONT(92,700));cx.textAlign='center';cx.textBaseline='middle';cx.lineJoin='round';
   const title=win?'Victory!':'Defeat...';
   cx.lineWidth=20;cx.strokeStyle='rgba(16,12,8,.95)';cx.strokeText(title,0,0);
   cx.lineWidth=7;cx.strokeStyle=win?'#6a4a10':'#4a1420';cx.strokeText(title,0,0);
@@ -992,10 +1079,10 @@ function drawResult(b){
       by+=66}
     cx.fillStyle='rgba(15,18,36,.8)';cx.fillRect(0,by-28,1280,56);
     // 'Gained [N] XP!!' — white label, gold numeral, white suffix, centered as one line
-    cx.font=FONT(30,700);const l1='Gained  ',l3='  XP!!';
+    setFont(cx,FONT(30,700));const l1='Gained  ',l3='  XP!!';
     const gold=fmt(B.rewardXP||0);
-    cx.font=FONT(34,700);const gw=cx.measureText(gold).width;
-    cx.font=FONT(30,700);const w1=cx.measureText(l1).width,w3=cx.measureText(l3).width;
+    setFont(cx,FONT(34,700));const gw=cx.measureText(gold).width;
+    setFont(cx,FONT(30,700));const w1=cx.measureText(l1).width,w3=cx.measureText(l3).width;
     const x0=640-(w1+gw+w3)/2;
     txt(cx,l1,x0+w1/2,by+1,30,'#fff','center',5,'rgba(10,10,20,.9)',700);
     txt(cx,gold,x0+w1+gw/2,by+1,34,'#ffd23f','center',6,'rgba(30,16,2,.95)',700);
@@ -1034,7 +1121,7 @@ function drawResult(b){
     cx.fillStyle='rgba(38,38,24,.94)';rr(cx,px2,py2,pw2,ph2,6);cx.fill();
     cx.lineWidth=3.5;cx.strokeStyle='#e8e4d4';rr(cx,px2,py2,pw2,ph2,6);cx.stroke();
     const dr='Drop Reward ',de='Earned!!';
-    cx.font=FONT(21,700);const dw1=cx.measureText(dr).width,dw2=cx.measureText(de).width;
+    setFont(cx,FONT(21,700));const dw1=cx.measureText(dr).width,dw2=cx.measureText(de).width;
     txt(cx,dr,640-(dw1+dw2)/2+dw1/2,py2+27,21,'#fff','center',4,'rgba(10,10,6,.9)',700);
     txt(cx,de,640+(dw1+dw2)/2-dw2/2,py2+27,21,'#ffd23f','center',4,'rgba(10,10,6,.9)',700);
     drops.forEach((s,i)=>{const hot=i===drops.length-1&&/Activate|Check|menu!/.test(s);

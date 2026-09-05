@@ -128,7 +128,7 @@ function gachaRarityTitle(bestKey,pr){ // big red→gold gradient chunky letters
   const s=GACHA_TITLE[bestKey]||'Rare!';
   const sc=(pr==null)?1:(0.55+0.45*clamp(pr,0,1));
   cx.save();cx.translate(640,102);cx.scale(sc,sc);
-  cx.font=FONT(52,700);cx.textAlign='center';cx.textBaseline='middle';cx.lineJoin='round';
+  setFont(cx,FONT(52,700));cx.textAlign='center';cx.textBaseline='middle';cx.lineJoin='round';
   const tg=cx.createLinearGradient(-340,0,340,0);tg.addColorStop(0,'#ff4040');tg.addColorStop(.55,'#ff9038');tg.addColorStop(1,'#ffd23f');
   cx.lineWidth=12;cx.strokeStyle='#2a0e08';cx.strokeText(s,0,0);
   cx.lineWidth=4.5;cx.strokeStyle='#7a1a10';cx.strokeText(s,0,0);
@@ -189,7 +189,7 @@ function drawGachaAnim(dt){const A=G.gachaAnim;A.t+=dt;cx.fillStyle='rgba(8,6,16
         cx.fillStyle='rgba(255,225,110,'+(0.5+0.4*Math.sin(G.t*7+si*2)).toFixed(2)+')';star(cx,sxp,syp,7,3);cx.fill()}}
       // dark-olive name bar + white name
       const nm=c.forms[0].n;const barW=460,barH=48,barY=556;
-      cx.font=FONT(24,700);let nfs=24;while(cx.measureText(nm).width>barW-60&&nfs>12)nfs--;
+      setFont(cx,FONT(24,700));let nfs=24;while(cx.measureText(nm).width>barW-60&&nfs>12)nfs--;
       cx.save();cx.shadowColor='rgba(0,0,0,.5)';cx.shadowBlur=10;cx.shadowOffsetY=4;
       cx.fillStyle='#3a3a26';rr(cx,640-barW/2,barY,barW,barH,10);cx.fill();cx.restore();
       cx.lineWidth=2.5;cx.strokeStyle='rgba(255,248,232,.85)';rr(cx,640-barW/2,barY,barW,barH,10);cx.stroke();
@@ -207,7 +207,7 @@ function drawGachaAnim(dt){const A=G.gachaAnim;A.t+=dt;cx.fillStyle='rgba(8,6,16
       gachaOkPill(960,572,220,56);
       BTN('gok',960,572,220,56,()=>{consumeGachaGrant()},{flat:true,nohov:true});
       // chrome: XP pill top-right + Cat Food can bottom-right (draw-only, official layout)
-      cx.font=FONT(22,700);const xpw2=cx.measureText(fmt(SV.xp)).width;
+      setFont(cx,FONT(22,700));const xpw2=cx.measureText(fmt(SV.xp)).width;
       txt(cx,fmt(SV.xp),1236,32,22,'#ffd23f','right',4.5,'rgba(20,16,4,.9)',700);
       txt(cx,'XP',1236-xpw2-10,32,13,'#37b6ff','right',3.5,'rgba(10,20,30,.85)',700);
       drawCFCan(cx,1120,666,12);

@@ -36,7 +36,9 @@ const SPRIT=(()=>{
       let n=0;const all=[...urls];
       const pump=()=>{ // staged preload: a few at a time so the first battle starts fast
         while(n<all.length&&n<6+((M._open||0))){
-          const u=all[n++];const image=new Image();
+          const u=all[n++];
+          if(M.imgs[u])continue; // already adopted by boot's preloader — no second fetch/decode
+          const image=new Image();
           M._open=(M._open||0)+1;
           image.onload=()=>{M.imgs[u]=image;M._open--;pump()};
           image.onerror=()=>{M.imgs[u]=null;M._open--;pump()};
@@ -169,6 +171,23 @@ const SPRIT=(()=>{
     c.restore();return true;
   }
   function stats(){return{units:Object.keys(M.units).length,icons:Object.keys(M.icons).length,imgs:Object.keys(M.imgs).filter(k=>M.imgs[k]&&M.imgs[k].naturalWidth).length,loaded:M.loaded}}
-  return{init,draw,icon,formEntry,stats,ready:(k,i,f)=>{const fm=formEntry(k,i,f);return!!(fm&&((fm.walk&&img(BASE+fm.walk.img).naturalWidth)||(fm.atk&&img(BASE+fm.atk.img).naturalWidth)))}};
+  /* ---- preload integration (r27) ----
+     adopt: boot's preloader hands its Image objects HERE so the runtime cache IS the
+     preloaded cache — first battle draws from the same objects, no re-decode pop-in.
+     needUnit/needIcon: the Image objects a given unit will use — the battle loading
+     screen gates on these being fully decoded before the field fades in. */
+  function adopt(url,im){if(im&&M.imgs[url]===undefined)M.imgs[url]=im}
+  function needUnit(kind,id,form){
+    const fm=formEntry(kind,id,form);const out=[];
+    if(!fm)return out;
+    if(fm.walk)out.push(img(BASE+fm.walk.img));
+    if(fm.atk)out.push(img(BASE+fm.atk.img));
+    return out}
+  function needIcon(kind,id,form){
+    let fn=M.icons[kind+':'+id+':'+(form!==undefined?form:0)];
+    if(!fn&&kind==='cat'){for(let f=(form||0);f>=0&&!fn;f--)fn=M.icons[kind+':'+id+':'+f];
+      for(let f=(form||0)+1;f<3&&!fn;f++)fn=M.icons[kind+':'+id+':'+f]}
+    return fn?img(BASE+fn):null}
+  return{init,draw,icon,formEntry,stats,adopt,needUnit,needIcon,ready:(k,i,f)=>{const fm=formEntry(k,i,f);return!!(fm&&((fm.walk&&img(BASE+fm.walk.img).naturalWidth)||(fm.atk&&img(BASE+fm.atk.img).naturalWidth)))}};
 })();
 if(typeof window!=='undefined'){window.SPRIT=SPRIT;window.addEventListener('DOMContentLoaded',()=>{try{SPRIT.init()}catch(e){}})}

@@ -162,7 +162,7 @@ const CP={
 kitten(c,t,d,a){const ph=a.ph,pk=a.pk||0;
   if(d.big)c.scale(1.12,1.12);
   if(d.tiny)c.scale(0.74,0.74);
-  if(d.coin){c.save();c.translate(-10,-30);c.beginPath();c.arc(0,0,5.5,0,TAU);c.fillStyle='#ffd23f';c.fill();c.lineWidth=1.8;c.strokeStyle='#b07818';c.stroke();c.fillStyle='#b07818';c.font='700 7px sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText('\u00a5',0,0.5);c.restore()}
+  if(d.coin){c.save();c.translate(-10,-30);c.beginPath();c.arc(0,0,5.5,0,TAU);c.fillStyle='#ffd23f';c.fill();c.lineWidth=1.8;c.strokeStyle='#b07818';c.stroke();c.fillStyle='#b07818';setFont(c,'700 7px sans-serif');c.textAlign='center';c.textBaseline='middle';c.fillText('\u00a5',0,0.5);c.restore()}
   if(d.dance)c.translate(0,-Math.abs(Math.sin(t*12))*3);
   legs(c,[[-10,-13],[-4,-12],[5,-12],[10,-13]],ph,3.2);
   tube(c,()=>{c.moveTo(-13,-19);c.bezierCurveTo(-25,-21,-28,-34,-18,-39+Math.sin(t*6)*2)},2.6);
