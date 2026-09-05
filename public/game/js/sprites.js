@@ -11,6 +11,22 @@
 const SPRIT=(()=>{
   const M={units:{},icons:{},imgs:{},loading:false,loaded:false};
   const BASE='assets/sprites/';
+  /* tiled strips: giant sheets exceed WebP's 16383px dimension limit, so the
+     encoder splits them BETWEEN frames into <=16000px tiles. Manifest entry:
+     img:[f0,f1,...] + tileW:[w0,w1,...] (each tile's own width in sheet px).
+     Every frame lives fully inside exactly one tile (split happens on frame
+     boundaries), so drawFrame only needs to resolve WHICH tile holds sx. */
+  function tileFor(en,sx){
+    const list=Array.isArray(en.img)?en.img:[en.img];
+    if(list.length===1)return[img(BASE+list[0]),sx];
+    const ws=en.tileW||[];
+    let acc=0;
+    for(let i=0;i<list.length;i++){
+      const w=ws[i]||16383;
+      if(sx<acc+w){const im=img(BASE+list[i]);return (im&&im.complete&&im.naturalWidth)?[im,sx-acc]:[im,-1]}
+      acc+=w}
+    return [img(BASE+list[0]),-1]
+  }
   function img(url){
     const im=M.imgs[url];
     if(im!==undefined)return im;
@@ -27,25 +43,10 @@ const SPRIT=(()=>{
       const r=await fetch(BASE+'sprites.json',{cache:'no-cache'});
       const j=await r.json();
       M.units=j.units||{};M.icons=j.icons||{};
-      const urls=new Set();
-      for(const k in M.units)for(const f in M.units[k].forms){
-        const fm=M.units[k].forms[f];
-        if(fm.walk)urls.add(BASE+fm.walk.img);
-        if(fm.atk)urls.add(BASE+fm.atk.img)}
-      for(const k in M.icons)urls.add(BASE+M.icons[k]);
-      let n=0;const all=[...urls];
-      const pump=()=>{ // staged preload: a few at a time so the first battle starts fast
-        while(n<all.length&&n<6+((M._open||0))){
-          const u=all[n++];
-          if(M.imgs[u])continue; // already adopted by boot's preloader — no second fetch/decode
-          const image=new Image();
-          M._open=(M._open||0)+1;
-          image.onload=()=>{M.imgs[u]=image;M._open--;pump()};
-          image.onerror=()=>{M.imgs[u]=null;M._open--;pump()};
-          image.src=u;M.imgs[u]=image}
-        if(n>=all.length&&!(M._open>0))M.loaded=true;
-        else if(n<all.length)setTimeout(pump,30)};
-      pump();
+      M.loaded=true;
+      /* r31: NO local pump — boot's prioritized background pool fetches every
+         strip/icon ONCE and feeds SPRIT.adopt (two racing queues used to double-
+         fetch the same files). img() below stays as the lazy last resort. */
     }catch(e){/* manifest absent — painter mode */}
   }
   function formEntry(kind,id,form){
@@ -76,9 +77,10 @@ const SPRIT=(()=>{
   function drawFrame(en,i,sc,flip){
     const fr=(en.frames||[])[i];
     if(!fr||fr.length<6)return false;
-    const im=img(BASE+en.img);
-    if(!im||!im.complete||!im.naturalWidth)return false;
-    const sx=fr[0],sy=fr[1],sw=fr[2],sh=fr[3],ax=fr[4],ay=fr[5];
+    const tr=tileFor(en,fr[0]);
+    const im=tr[0];
+    if(!im||!im.complete||!im.naturalWidth||tr[1]<0)return false;
+    const sx=tr[1],sy=fr[1],sw=fr[2],sh=fr[3],ax=fr[4],ay=fr[5];
     const c=cx;
     c.save();
     if(flip){c.scale(-1,1);c.translate(-sw*sc,0)} // mirror keeps the frame box in place
@@ -140,11 +142,12 @@ const SPRIT=(()=>{
       }
     }
     if(!ok){
-      const en=fm.walk||fm.atk;
+      const isIdle=e.idle||e.anim==='idle';
+      const en=(isIdle&&fm.idle)?fm.idle:(fm.walk||fm.atk);
       if(en){
         const list=en.idx||[0];
         let fi2;
-        if(e.idle||e.anim==='idle')fi2=list[0];
+        if(isIdle)fi2=(en===fm.idle&&list.length>1)?cycIdx(list,en.dur,(o.t||0)):list[0]; // authentic idle bob when the strip exists
         else fi2=cycIdx(list,en.dur,(o.t||0));
         ok=drawFrame(en,fi2,k*(en.dscale||1),flip);
       }
@@ -179,15 +182,16 @@ const SPRIT=(()=>{
   function adopt(url,im){if(im&&M.imgs[url]===undefined)M.imgs[url]=im}
   function needUnit(kind,id,form){
     const fm=formEntry(kind,id,form);const out=[];
+    const push=(en)=>{if(!en)return;(Array.isArray(en.img)?en.img:[en.img]).forEach(f=>out.push(img(BASE+f)))};
     if(!fm)return out;
-    if(fm.walk)out.push(img(BASE+fm.walk.img));
-    if(fm.atk)out.push(img(BASE+fm.atk.img));
+    push(fm.walk);push(fm.atk);push(fm.idle);
     return out}
   function needIcon(kind,id,form){
     let fn=M.icons[kind+':'+id+':'+(form!==undefined?form:0)];
     if(!fn&&kind==='cat'){for(let f=(form||0);f>=0&&!fn;f--)fn=M.icons[kind+':'+id+':'+f];
       for(let f=(form||0)+1;f<3&&!fn;f++)fn=M.icons[kind+':'+id+':'+f]}
     return fn?img(BASE+fn):null}
-  return{init,draw,icon,formEntry,stats,adopt,needUnit,needIcon,ready:(k,i,f)=>{const fm=formEntry(k,i,f);return!!(fm&&((fm.walk&&img(BASE+fm.walk.img).naturalWidth)||(fm.atk&&img(BASE+fm.atk.img).naturalWidth)))}};
+  const stripReady=(en)=>{if(!en)return false;const l=Array.isArray(en.img)?en.img:[en.img];return l.every(f=>{const im=img(BASE+f);return im&&im.naturalWidth})};
+  return{init,draw,icon,formEntry,stats,adopt,needUnit,needIcon,ready:(k,i,f)=>{const fm=formEntry(k,i,f);return!!(fm&&(stripReady(fm.walk)||stripReady(fm.atk)))}};
 })();
 if(typeof window!=='undefined'){window.SPRIT=SPRIT;window.addEventListener('DOMContentLoaded',()=>{try{SPRIT.init()}catch(e){}})}

@@ -522,7 +522,11 @@ let _HZ_GRAD=null,_HAZE_GRAD=null;const _SKY_GRAD={}; // cached gradient objects
 function bgImg(name,idx){
   if(name===null||name===undefined)return null;
   if(name==='sol')name=SOL_ROT[(idx||0)%SOL_ROT.length];
-  return lazyImg(_bgImgs,name,'assets/maps/'+name+'.jpg'); // r29: bgs are ESRGAN-upscaled x2 JPEG (crisp at any DPR)
+  /* r31: bgs ship as WebP q85 (PSNR>=42dB vs the old jpg — visually identical,
+     ~4x smaller); the few photographic bgs that didn't hit the quality bar stay
+     .jpg — preload.json's mapExt table lists those exceptions. */
+  const ext=(typeof mapFileExt==='function')?mapFileExt(name):'webp';
+  return lazyImg(_bgImgs,name,'assets/maps/'+name+'.'+ext);
 }
 /* battle asset registry: which map/castle images a given stage needs (the battle
    loading screen gates on exactly these — nothing pops in after the gate opens) */
@@ -696,7 +700,8 @@ function castleImg(set,stageIdx){
   else if(set==='zero')n='rc'+String(16+((stageIdx||0)%8)).padStart(3,'0');
   else if(set==='dojo')n='rc'+String(24+((stageIdx||0)%24)).padStart(3,'0');
   else n='ec'+String((stageIdx||0)%48).padStart(3,'0');                        // EoC/event = landmark set
-  return lazyImg(_castleImgs,n,'assets/castles/'+(set==='eoc'||set==='event'?'eoc':set==='cosmos'||set==='itf'?'cosmos':set==='world'?'world':'dark')+'/'+n+'.png');
+  const cext=(typeof castleFileExt==='function')?castleFileExt(n):'webp';
+  return lazyImg(_castleImgs,n,'assets/castles/'+(set==='eoc'||set==='event'?'eoc':set==='cosmos'||set==='itf'?'cosmos':set==='world'?'world':'dark')+'/'+n+'.'+cext);
 }
 const CHAPTER_CASTLE={eoc1:'eoc',eoc2:'eoc',eoc3:'eoc',itf1:'itf',itf2:'itf',itf3:'itf',
   cotc1:'cosmos',cotc2:'cosmos',cotc3:'cosmos',sol:'world',ul:'zero',aku:'dark',dojo:'dojo',event:'eoc'};

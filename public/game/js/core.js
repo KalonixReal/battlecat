@@ -25,6 +25,11 @@ function txt(c,s,x,y,px,fill,align,strokeW,strokeC,w){setFont(c,FONT(px,w));c.te
    strips all used to hand-roll the same pattern — now every cache shares this one).
    Cache values: undefined = never requested, Image = in-flight or decoded. */
 function lazyImg(cache,key,url){let im=cache[key];if(im===undefined){im=new Image();im.src=url;cache[key]=im}return im}
+/* r31 ship-shrink: battle bgs + castles now ship as WebP (q85/q90 — benchmarked
+   visually identical). Files that missed the 42dB PSNR bar stayed .jpg/.png;
+   preload.json carries the exception tables (mapExt/castleExt) — default webp. */
+function mapFileExt(n){const L=window.__LISTS;return (L&&L.mapExt&&L.mapExt[n])||'webp'}
+function castleFileExt(n){const L=window.__LISTS;return (L&&L.castleExt&&L.castleExt[n])||'webp'}
 /* imgReady: true once the image is fully decoded (safe to drawImage without pop-in) */
 function imgReady(im){return !!im&&im.complete&&im.naturalWidth>0}
 /* ===================== PORTS: official unit portraits & icons =====================
@@ -35,7 +40,7 @@ function imgReady(im){return !!im&&im.complete&&im.naturalWidth>0}
 const PORTS={img:null,meta:null};
 (function(){
   fetch('assets/sprites/ports_atlas.json',{cache:'no-cache'}).then(r=>r.json())
-    .then(j=>{PORTS.meta=j;PORTS.img=lazyImg(PORTS,'atlas','assets/sprites/ports.png')})
+    .then(j=>{PORTS.meta=j;if(!PORTS.img)PORTS.img=lazyImg(PORTS,'atlas','assets/sprites/ports.png')})
     .catch(()=>{});
 })();
 const PORT_FORM='fcs'; // form index 0/1/2 -> atlas letter (mirrors build-sprites 'fcs'[fi])

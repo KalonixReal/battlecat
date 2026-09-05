@@ -9,86 +9,141 @@
 const SCREENS={title:drawTitle,home:drawHome,chapters:drawChapters,map:drawMap,submap:drawSubmap,equip:drawEquip,upgrade:drawUpgrade,gacha:drawGacha,treasure:drawTreasure,guide:drawGuide,base:drawBase,settings:drawSettings,store:drawStore,battle:drawBattle,expedition:drawExpedition,leaderboard:drawLeaderboard,trophies:drawTrophies,shrine:drawShrine};
 let lastTs=0,persistT=0,energyT=0;
 
-/* ------------------------------ preload pipeline ------------------------------ */
-const PRELOAD={total:0,done:0,ready:false,tap:false,failed:[],phase:'',walking:0,disp:0};
+/* ------------------------------ preload pipeline v4 (r31) ------------------------------
+   OLD flow: download ALL 500MB before TAP TO START → minute-long boot on any
+   connection. NEW flow:
+   PHASE 1 — "first paint" gate (a handful of small files): official logo, title
+   bg, play/option buttons, doors (home bg), catbase json + idle strip (the
+   walking cat under the logo + the home-screen cat). READY → TAP in ~1-2s.
+   PHASE 2 — prioritized N-parallel BACKGROUND pool, starts as soon as the
+   manifest is read (while the TAP screen is still up): deck cats +
+   the real first battle's enemies first, then all strips/icons, portraits, ui,
+   maps, castles, and the full soundtrack. Battles never blind-wait on the pool:
+   the per-battle loading gate still checks the exact images that fight touches
+   (and the pool already finished them by the time you get there).
+   ONE queue — SPRIT no longer downloads on its own (two racing queues used to
+   double-fetch the same files and fight for bandwidth). */
+const PRELOAD={total:0,done:0,ready:false,tap:false,failed:[],phase:'',walking:0,disp:0,bgTotal:0,bgDone:0};
 function _pAdd(wt){PRELOAD.total+=wt}
-function _pDone(wt){PRELOAD.done+=wt}
+function _pDone(wt){PRELOAD.done+=wt;if(!PRELOAD.ready&&PRELOAD.total>0&&PRELOAD.done>=PRELOAD.total)finishPreload()}
+function finishPreload(){
+  if(PRELOAD.ready)return;PRELOAD.ready=true;PRELOAD.phase='ready';
+}
 /* adoptRuntime: hands each preloaded Image to the EXACT cache its runtime consumer
-   reads from (SPRIT strips, battle bg tiles, castle art, cat-base strips) — the old
-   flow preloaded into throwaway Images and let every renderer lazily re-fetch, which
-   is why maps/castles popped in the first time they were used (r27 user report). */
+   reads from (SPRIT strips, battle bg tiles, castle art, cat-base strips) — so the
+   runtime never re-fetches what the pool already downloaded. */
 function adoptRuntime(url,im){
   try{
     if(url.indexOf('assets/sprites/')===0){
       if(typeof SPRIT!=='undefined')SPRIT.adopt(url,im);
       const fn=url.slice(15);
       if(typeof _cbStrips!=='undefined')_cbStrips[fn]=im; // battle's cat-base strip cache (keys are unique filenames)
-      if(fn==='ports.png'&&typeof PORTS!=='undefined')PORTS.img=im; // portrait atlas — one decode shared with PORTS
+      if(fn==='ports.png'||fn==='ports.png'){if(typeof PORTS!=='undefined')PORTS.img=im; PORTS_LOADED()}
       return}
     if(url.indexOf('assets/maps/')===0){
-      const n=url.slice(12).replace(/\.png$/,'');
+      const n=url.slice(12).replace(/\.(png|jpg|webp)$/,'');
       if(typeof _bgImgs!=='undefined'&&n!=='eoc_map')_bgImgs[n]=im; // earth map has its own EARTH_MAP holder
       return}
     if(url.indexOf('assets/castles/')===0){
-      const n=url.split('/').pop().replace(/\.png$/,'');
+      const n=url.split('/').pop().replace(/\.(png|jpg|webp)$/,'');
       if(typeof _castleImgs!=='undefined')_castleImgs[n]=im;
       return}
   }catch(e){/* cache objects missing (old build order) — browser cache still covers it */}
 }
-function preloadImg(url,wt){
-  _pAdd(wt||1);
+function PORTS_LOADED(){/* hook for ui code that waits on the portrait atlas */}
+/* ---- phase-1 gate images (tiny, load FIRST, nothing else competes) ---- */
+function preloadImg(url){
+  _pAdd(1);
   const im=new Image();
-  im.onload=()=>{_pDone(wt||1)};
-  im.onerror=()=>{_pDone(wt||1);PRELOAD.failed.push(url)};
+  im.onload=()=>{_pDone(1);adoptRuntime(url,im)};
+  im.onerror=()=>{_pDone(1);PRELOAD.failed.push(url)};
   im.src=url;
-  adoptRuntime(url,im);
   return im;
 }
-async function preloadRun(){
-  PRELOAD.phase='assets';
-  // 1) static lists
+/* ---- phase-2 background pool (N parallel, priority-ordered, adopts everything) ---- */
+const _pool={q:[],active:0,MAX:14,started:false};
+function poolAdd(url){_pool.q.push(url);PRELOAD.bgTotal++;poolPump()}
+function poolPump(){
+  while(_pool.active<_pool.MAX&&_pool.q.length){
+    const url=_pool.q.shift();_pool.active++;
+    const im=new Image();
+    im.onload=()=>{_pool.active--;PRELOAD.bgDone++;adoptRuntime(url,im);poolPump()};
+    im.onerror=()=>{_pool.active--;PRELOAD.bgDone++;PRELOAD.failed.push(url);poolPump()};
+    im.src=url;
+  }
+}
+function spriteUrlsFromManifest(sp,filter){
+  const urls=[];
+  for(const k in (sp.units||{}))for(const f in sp.units[k].forms){
+    const fm=sp.units[k].forms[f];
+    for(const a of ('walk atk idle').split(' ')){const en=fm[a];if(!en)continue;
+      (Array.isArray(en.img)?en.img:[en.img]).forEach(img=>{if(!filter||filter(k,f,a))urls.push('assets/sprites/'+img)})}}
+  for(const k in (sp.icons||{}))urls.push('assets/sprites/'+sp.icons[k]);
+  return urls;
+}
+function preloadRun(){
+  PRELOAD.phase='first-paint';
+  // 1) PHASE 1: the files the loading screen + title + home need to look right
+  uiImgCache('title_logo.png','assets/ui/title_logo.webp');
+  uiImgCache('title_bg.png','assets/ui/title_bg.webp');
+  uiImgCache('title_bg_itf.png','assets/ui/title_bg_itf.webp');   // campaign-cleared title variants
+  uiImgCache('title_bg_cotc.png','assets/ui/title_bg_cotc.webp');
+  uiImgCache('play_button.png','assets/ui/play_button.png');
+  uiImgCache('doors_home.png','assets/ui/doors_home.webp');
+  preloadImg('assets/sprites/catbase_idle.webp');
+  // catbase.json feeds the walking-cat animation metadata
+  fetch('assets/sprites/catbase.json',{cache:'no-cache'}).then(r=>r.json()).then(j=>{cbMeta=j;try{_cbMeta=j}catch(e){}}).catch(()=>{});
+  // 2) manifest + stage data for priority planning (fetches overlap phase 1)
+  Promise.all([
+    fetch('assets/sprites/sprites.json',{cache:'no-cache'}).then(r=>r.json()),
+    fetch('assets/preload.json',{cache:'no-cache'}).then(r=>r.json())
+  ]).then(([sp,lists])=>{
+    window.__MANIFEST=sp;window.__LISTS=lists;
+    startBackgroundPool(sp,lists);
+  }).catch(()=>{/* offline/dev: renderers lazy-load as before */});
+  // safety: a slow/missed phase-1 file never blocks boot (failures also count as done)
+  setTimeout(finishPreload,12000);
+}
+function startBackgroundPool(sp,lists){
+  if(_pool.started)return;_pool.started=true;
+  PRELOAD.phase='background';
+  const q1=[],q2=[],q3=[]; // priority buckets
+  const seen=new Set();
+  const add=(bucket,url)=>{if(seen.has(url))return;seen.add(url);bucket.push(url)};
+  // BUCKET 1 — the actual first tap targets: deck cats (strips+icons) + first battle's enemies
   try{
-    const lists=await fetch('assets/preload.json',{cache:'no-cache'}).then(r=>r.json());
-    lists.ui.forEach(n=>{uiImgCache(n,'assets/ui/'+n)});
-    lists.castles.forEach(n=>preloadImg('assets/'+n,1));
-    lists.maps.forEach(n=>preloadImg('assets/maps/'+n,1));
-    // audio weight is registered by the poller from AUDIO_PRELOAD.reg (no double-count here)
-    // 2) unit strips straight out of the sprite manifest
-    try{
-      const sp=await fetch('assets/sprites/sprites.json',{cache:'no-cache'}).then(r=>r.json());
-      const urls=new Set();
-      for(const k in (sp.units||{}))for(const f in sp.units[k].forms){
-        const fm=sp.units[k].forms[f];
-        if(fm.walk)urls.add('assets/sprites/'+fm.walk.img);
-        if(fm.atk)urls.add('assets/sprites/'+fm.atk.img)}
-      for(const k in (sp.icons||{}))urls.add('assets/sprites/'+sp.icons[k]);
-      urls.forEach(u=>preloadImg(u,1));
-    }catch(e){}
-    (lists.sprites||[]).forEach(n=>{if(!n.endsWith('.json'))preloadImg('assets/sprites/'+n,1)});
-  }catch(e){/* offline/dev: keep booting, images load lazily */}
-  // 3) audio decode (works in a suspended context — the tap only RESUMES)
+    const deck=(SV&&SV.teams&&SV.teams[0]?SV.teams[0]:[]).filter(Boolean);
+    if(!deck.length&&typeof CATMAP!=='undefined')Object.keys(CATMAP).slice(0,10).forEach(id=>deck.push(id));
+    const first=typeof genStage==='function'?genStage('eoc1',0):null;
+    const foes=new Set();
+    if(first)first.script.forEach(w=>w.spawns.forEach(s=>foes.add(s.e)));
+    if(first&&first.boss)foes.add(first.boss);
+    (sp.units?Object.keys(sp.units):[]).forEach(k=>{
+      const [side,id]=k.split(':');
+      const hot=(side==='cat'&&deck.indexOf(id)>=0)||(side==='enemy'&&foes.has(id));
+      if(!hot)return;
+      for(const f in sp.units[k].forms){const fm=sp.units[k].forms[f];
+        for(const a of ['walk','atk','idle']){const en=fm[a];if(!en)continue;
+          (Array.isArray(en.img)?en.img:[en.img]).forEach(img=>add(q1,'assets/sprites/'+img))}}
+    });
+  }catch(e){}
+  // BUCKET 2 — everything else the roster draws: all strips + all icons + portraits
+  spriteUrlsFromManifest(sp).forEach(u=>add(q2,u));
+  add(q2,'assets/sprites/ports.png');
+  // BUCKET 3 — world art + remaining ui (battles gate per-fight regardless)
+  (lists.ui||[]).forEach(n=>add(q3,'assets/ui/'+n));
+  (lists.maps||[]).forEach(n=>add(q3,'assets/maps/'+n));
+  (lists.castles||[]).forEach(n=>add(q3,'assets/'+n)); // preload.json castle paths are 'castles/<set>/<file>' relative to assets/
+  [...q1,...q2,...q3].forEach(poolAdd);
+  // audio decodes in parallel with images (suspended context decodes fine; tap resumes)
   try{AudioUnlockSilent()}catch(e){}
   try{AudioBakeProbe()}catch(e){}
-  // poll: every audio file accounted for? (AUDIO_PRELOAD is maintained by audio.js)
-  const audioWait=setInterval(()=>{
-    if(audioRegistered!==AUDIO_PRELOAD.reg){ // sync pre-counted weight to the real queue length
-      PRELOAD.total+=AUDIO_PRELOAD.reg-audioRegistered;audioRegistered=AUDIO_PRELOAD.reg}
-    const aDone=AUDIO_PRELOAD.done-audioDoneSeen;
-    if(aDone>0){PRELOAD.done+=aDone;audioDoneSeen=AUDIO_PRELOAD.done}
-    if(PRELOAD.total>0&&PRELOAD.done>=PRELOAD.total){clearInterval(audioWait);finishPreload()}
-  },120);
-  // safety: never hang the loader — hard timeout at 40s finishes whatever loaded
-  setTimeout(finishPreload,40000);
-}
-let audioRegistered=0,audioDoneSeen=0;
-function finishPreload(){
-  if(PRELOAD.ready)return;PRELOAD.ready=true;PRELOAD.phase='ready';
 }
 /* ui images go through ui.js's cache so drawTitle/drawHome use the SAME objects */
 function uiImgCache(name,url){
   _pAdd(1);
   const im=new Image();
-  im.onload=()=>_pDone(1);
+  im.onload=()=>{_pDone(1);adoptRuntime(url,im)};
   im.onerror=()=>{_pDone(1);PRELOAD.failed.push(url)};
   im.src=url;
   UIIMG.imgs[name]=im;
