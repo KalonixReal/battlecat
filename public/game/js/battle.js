@@ -89,6 +89,7 @@ function applyDamage(src,tgt,dmg,o){o=o||{};
     if(!B.triggerDone&&B.st.trigger&&base.hp<=base.maxHp*B.st.trigger.onBase){B.triggerDone=true;
       B.st.trigger.spawn.forEach(s=>{for(let k=0;k<s.count;k++)spawnEnemy(s.e)});
       B.warn=B.st.trigger.warn;B.warnT=3.2;SFX.warn();
+      AudioSetBgmSafe(B.st.bossBgm||'boss'); // ORIGINAL: boss-appearance theme from the stage's map data
       if(B.st.shockwave){B.shake=14;SFX.shock();
         B.units.filter(v=>v.side==='cat').forEach(v=>{if((v.x-B.enemyBase.x)<500)startKb(v,130)})}
       B.queue.push({t:B.t+2,e:B.st.boss})}
@@ -326,7 +327,9 @@ function endBattle(win){
   if(B.result)return;B.result=win?'win':'lose';B.resultT=0;
   if(G.modal)G.modal=null; // battle over: drop any open overlay (worker menu etc.) so the result screen is unblocked
   B.newRecord=!!(B.st.endless&&B.score>(SV.dojoBest||0)); // NEW RECORD flag captured BEFORE applyBattleResult updates the best (official result shows it above the Score band)
-  if(win){SFX.win();B.fx.push({k:'baseboom',x:B.enemyBase.x,t:1.4,y:0});B.shake=16;
+  AudioStopBgmSoft(); // battle music out (no overlap with the fanfare)
+  if(win){AudioJingle('win');B.fx.push({k:'baseboom',x:B.enemyBase.x,t:1.4,y:0});B.shake=16;
+    setTimeout(()=>{if(B&&B.result==='win')AudioSetBgmSafe('results')},1500); // "Ending Party" on the result band (fanfare first, no overlap)
     // victory confetti: 42 streamers burst from the top, golds + pinks + whites (deterministic RNG)
     B.confetti=[];const R2=rnd((now()&0x7fffffff)>>>0);
     for(let i=0;i<42;i++)B.confetti.push({x:80+R2()*1120,y:-30-R2()*160,vx:(R2()-0.5)*40,vy:90+R2()*120,
@@ -582,51 +585,92 @@ Object.assign(BG_THEMES,{eoc1:BG_THEMES.grass,eoc2:BG_THEMES.desert,eoc3:BG_THEM
  cotc1:BG_THEMES.cosmos,cotc2:BG_THEMES.cosmos,cotc3:BG_THEMES.cosmos,
  sol:BG_THEMES.grass,ul:BG_THEMES.snow});
 function cloudDraw(x,y,s){cx.beginPath();cx.arc(x,y,18*s,0,TAU);cx.arc(x+20*s,y-8*s,14*s,0,TAU);cx.arc(x+38*s,y,16*s,0,TAU);cx.fill()}
+/* ---- REAL castles (original game sprites) ----
+   Cat base  = the authentic walking NEKO castle (unit 001) with its real idle
+               animation, baked from the APK animdata (catbase_*.png + catbase.json).
+   Enemy base= the authentic per-stage enemy castle art (assets/castles/<set>). */
+const _castleImgs={};
+function castleImg(set,stageIdx){
+  let n;
+  if(set==='cosmos')n='sc'+String(24+((stageIdx||0)%24)).padStart(3,'0');      // CotC = cosmic half
+  else if(set==='itf')n='sc'+String(((stageIdx||0)%24)).padStart(3,'0');       // ItF = sci-fi half
+  else if(set==='world')n='wc'+String((stageIdx||0)%48).padStart(3,'0');
+  else if(set==='dark')n='rc'+String((stageIdx||0)%16).padStart(3,'0');
+  else if(set==='zero')n='rc'+String(16+((stageIdx||0)%8)).padStart(3,'0');
+  else if(set==='dojo')n='rc'+String(24+((stageIdx||0)%24)).padStart(3,'0');
+  else n='ec'+String((stageIdx||0)%48).padStart(3,'0');                        // EoC/event = landmark set
+  let im=_castleImgs[n];
+  if(im===undefined){im=new Image();im.src='assets/castles/'+(set==='eoc'||set==='event'?'eoc':set==='cosmos'||set==='itf'?'cosmos':set==='world'?'world':'dark')+'/'+n+'.png';_castleImgs[n]=im}
+  return im&&im.complete&&im.naturalWidth?im:null;
+}
+const CHAPTER_CASTLE={eoc1:'eoc',eoc2:'eoc',eoc3:'eoc',itf1:'itf',itf2:'itf',itf3:'itf',
+  cotc1:'cosmos',cotc2:'cosmos',cotc3:'cosmos',sol:'world',ul:'zero',aku:'dark',dojo:'dojo',event:'eoc'};
+let _cbMeta=null;
+fetch('assets/sprites/catbase.json',{cache:'no-cache'}).then(r=>r.json()).then(j=>{_cbMeta=j}).catch(()=>{});
+const _cbStrips={};
+function cbStrip(fn){
+  let im=_cbStrips[fn];
+  if(im===undefined){im=new Image();im.src='assets/sprites/'+fn;_cbStrips[fn]=im}
+  return im&&im.complete&&im.naturalWidth?im:null;
+}
+/* cat base: authentic idle anim (~200px tall); alarm = red tint + shake; kb pose on heavy hits */
+function drawCatBase(cb){
+  const t=G.t*10;
+  let en=(_cbMeta&&_cbMeta.idle)||null;
+  const H=196;
+  const drawEn=(entry,fi,alpha)=>{
+    const im=entry?cbStrip(entry.img):null;
+    if(!im)return false;
+    const fr=entry.frames[fi%entry.frames.length];
+    const sc=H/(entry.refH||310);
+    cx.globalAlpha=alpha===undefined?1:alpha;
+    cx.drawImage(im,fr[0],fr[1],fr[2],fr[3],-fr[2]*sc/2,-fr[3]*sc,fr[2]*sc,fr[3]*sc);
+    cx.globalAlpha=1;
+    return true;
+  };
+  cx.save();
+  cx.translate(cb.x,GROUND_Y);
+  const alm=cb.alarm>0;
+  if(alm)cx.translate(0,Math.sin(G.t*30)*2.4);
+  if(alm){const pl=0.5+0.5*Math.sin(G.t*12); // warm hit-flash aura (original pulses red on the base)
+    cx.save();cx.globalAlpha=0.16+pl*0.16;
+    cx.fillStyle='#ff8a5a';cx.beginPath();cx.ellipse(0,-H*0.5,86,H*0.62,0,0,TAU);cx.fill();cx.restore()}
+  let drawn=false;
+  if(en){ // authentic 16-frame idle (walk-in-place)
+    const fi=Math.floor(t)%en.frames.length;
+    drawn=drawEn(en,fi);
+  }
+  if(!drawn){ // strips not decoded yet — tiny neutral plinth so the base is never invisible
+    cx.fillStyle='#c8ccd8';cx.fillRect(-56,-64,112,64);
+    cx.fillStyle='#a8aec0';cx.fillRect(-48,-128,96,64);
+  }
+  cx.restore();
+}
 function drawBases(b){
-  // cat base (left)
-  const cb=b.catBase;cx.save();cx.translate(cb.x,GROUND_Y);
-  const alm=cb.alarm>0;cx.translate(0,Math.sin(G.t*30)*(alm?3:0));
-  // alarm-state flash: warm rim light around the cat base while it takes hits
-  if(alm){const pl=0.5+0.5*Math.sin(G.t*12);
-    cx.save();cx.globalAlpha=0.20+pl*0.18;
-    cx.fillStyle='#ff8a5a';cx.beginPath();cx.ellipse(0,-95,95,115,0,0,TAU);cx.fill();cx.restore()}
-  cx.fillStyle=alm?'#ff8a8a':'#8a94a8';cx.fillRect(-64,-30,128,32); // platform
-  cx.fillStyle=alm?'#ffb0b0':'#a8b2c6';cx.fillRect(-52,-90,104,60); // body
-  cx.fillStyle=alm?'#ffdddd':'#f4f2ea';cx.fillRect(-40,-150,80,60);
-  // iconic cat face on base
-  cx.save();cx.translate(0,-120);
-  cx.fillStyle=alm?'#ffb8b8':'#fff';cx.strokeStyle='#22262f';cx.lineWidth=3;
-  [[-1,0],[1,0]].forEach(([sx])=>{cx.beginPath();cx.moveTo(sx*16,-14);cx.lineTo(sx*12,-30);cx.lineTo(sx*4,-19);cx.closePath();cx.fill();cx.stroke()});
-  cx.beginPath();cx.arc(0,0,19,0,TAU);cx.fill();cx.stroke();
-  cx.fillStyle='#22262f';cx.beginPath();cx.arc(-7,-3,2.4,0,TAU);cx.arc(7,-3,2.4,0,TAU);cx.fill();
-  cx.lineWidth=2.4;cx.beginPath();cx.moveTo(-6,7);cx.quadraticCurveTo(-3,12,0,8);cx.quadraticCurveTo(3,12,6,7);cx.stroke();
-  cx.restore();
-  // flag
-  cx.strokeStyle='#5a6478';cx.lineWidth=4;cx.beginPath();cx.moveTo(0,-150);cx.lineTo(0,-190);cx.stroke();
-  cx.fillStyle='#ffd94a';cx.beginPath();cx.moveTo(0,-190);cx.lineTo(34+Math.sin(G.t*4)*4,-182);cx.lineTo(0,-172);cx.fill();
-  // cannon barrel — points LEFT toward the enemy base (home base stands on the RIGHT)
-  cx.fillStyle='#3a3f4e';cx.fillRect(-40,-168,44,14);
-  cx.fillStyle='#5a6478';cx.fillRect(-40,-168,44,4);
-  cx.fillStyle='#22262f';cx.beginPath();cx.arc(-38,-161,8,0,TAU);cx.fill();
-  cx.fillStyle='#3a3f4e';cx.fillRect(-12,-176,26,20);
-  cx.restore();
-  // hp bar
-  baseBar(cb.x,GROUND_Y-215,cb.hp,cb.maxHp,'#7fe8a0');
-  // enemy base (right)
-  const eb=b.enemyBase;cx.save();cx.translate(eb.x,GROUND_Y);
+  /* ===== cat base — REAL animated NEKO castle (right side) ===== */
+  const cb=b.catBase;
+  drawCatBase(cb);
+  baseBar(cb.x,GROUND_Y-224,cb.hp,cb.maxHp,'#7fe8a0');
+  /* ===== enemy base — REAL per-stage castle art (left side) ===== */
+  const eb=b.enemyBase;
+  cx.save();cx.translate(eb.x,GROUND_Y);
   const ealm=eb.alarm>0;
-  // alarm-state aura: pulsing red glow behind the fortress when under attack
+  if(ealm)cx.translate(0,Math.sin(G.t*30)*2.2);
   if(ealm){const pl=0.5+0.5*Math.sin(G.t*12);
-    cx.save();cx.globalAlpha=0.30+pl*0.22;
-    cx.fillStyle='#ff5a5a';cx.beginPath();cx.ellipse(0,-100,110,130,0,0,TAU);cx.fill();cx.restore()}
-  cx.fillStyle='#4a3848';cx.fillRect(-70,-36,140,38);
-  cx.fillStyle='#5a4658';cx.fillRect(-56,-140,112,104);
-  cx.fillStyle='#4a3848';cx.beginPath();cx.moveTo(-66,-140);cx.lineTo(0,-205);cx.lineTo(66,-140);cx.fill();
-  cx.fillStyle='#2a1e28';cx.fillRect(-16,-60,32,60);
-  cx.fillStyle='#6a5468';cx.beginPath();cx.arc(0,-172,16,0,TAU);cx.fill();
-  cx.fillStyle='#ff5a5a';cx.beginPath();cx.arc(-6,-174,3,0,TAU);cx.arc(6,-174,3,0,TAU);cx.fill();
+    cx.save();cx.globalAlpha=0.22+pl*0.2;
+    cx.fillStyle='#ff5a5a';cx.beginPath();cx.ellipse(0,-105,100,125,0,0,TAU);cx.fill();cx.restore()}
+  const cim=castleImg(CHAPTER_CASTLE[b.st.ch]||'eoc',b.st.idx);
+  const CH=208;
+  if(cim){
+    const sc=CH/cim.naturalHeight,w=cim.naturalWidth*sc;
+    cx.imageSmoothingEnabled=true;
+    cx.drawImage(cim,-w/2,-CH,w,CH);
+  }else{ // castle sheet still decoding — original-proportioned silhouette placeholder
+    cx.fillStyle='#5a4658';cx.fillRect(-58,-150,116,150);
+    cx.fillStyle='#4a3848';cx.beginPath();cx.moveTo(-66,-150);cx.lineTo(0,-212);cx.lineTo(66,-150);cx.fill();
+  }
   cx.restore();
-  baseBar(eb.x,GROUND_Y-230,eb.hp,eb.maxHp,'#ff7a7a');
+  baseBar(eb.x,GROUND_Y-236,eb.hp,eb.maxHp,'#ff7a7a');
 }
 function baseBar(x,y,hp,max,col){if(hp>=max&&x!==B.enemyBase.x&&x!==B.catBase.x)return;
   const w=120;cx.fillStyle='rgba(10,10,16,.6)';rr(cx,x-w/2-2,y-2,w+4,12,6);cx.fill();

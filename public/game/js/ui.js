@@ -311,30 +311,8 @@ function wrapText(c,s,maxW){const words=s.split(' ');const lines=[];let cur='';
   for(const w of words){const t=cur?cur+' '+w:w;
     if(c.measureText(t).width>maxW&&cur){lines.push(cur);cur=w}else cur=t}
   if(cur)lines.push(cur);return lines}
-/* the big Cat face that peeks over the bottom bar (painted to match the original exactly) */
-function bigCatFace(c,x,y,s){
-  c.save();c.translate(x,y);c.scale(s,s);
-  c.lineWidth=13;c.strokeStyle='#141414';c.lineJoin='round';c.fillStyle='#fff';
-  // ears — short triangles sitting ON the head silhouette
-  c.beginPath();c.moveTo(-118,-92);c.lineTo(-134,-176);c.lineTo(-38,-130);c.closePath();c.fill();c.stroke();
-  c.beginPath();c.moveTo(118,-92);c.lineTo(134,-176);c.lineTo(38,-130);c.closePath();c.fill();c.stroke();
-  // head
-  c.beginPath();c.ellipse(0,0,178,152,0,0,TAU);c.fill();c.stroke();
-  // eyes
-  c.fillStyle='#141414';
-  c.beginPath();c.arc(-58,-40,14,0,TAU);c.fill();
-  c.beginPath();c.arc(58,-40,14,0,TAU);c.fill();
-  // \u03c9 mouth: nose notch + side arcs + chin V (the iconic face)
-  c.strokeStyle='#141414';c.lineWidth=11;c.lineCap='round';
-  c.beginPath();
-  c.moveTo(-46,10);
-  c.quadraticCurveTo(-30,38,0,14);
-  c.quadraticCurveTo(30,38,46,10);
-  c.stroke();
-  c.beginPath();c.moveTo(-11,-14);c.lineTo(0,-2);c.lineTo(11,-14);c.stroke(); // nose bridge
-  c.beginPath();c.moveTo(-16,22);c.lineTo(0,52);c.lineTo(16,22);c.stroke();   // chin V
-  c.restore();
-}
+/* (r26) the old painted big-Cat face was REMOVED - no invented art. The daily splash
+   bubble stays, anchored to the doors like the original's base-menu speech bubble. */
 function goldBtnAuth(id,y,label,h,cb,o){ // the original's gold bar buttons (Start!!/Upgrade/Equip)
   o=o||{};const bw=o.w||386,bh=h,x=o.x||26;
   const pu=(o.pulse?1+Math.sin(G.t*3.2)*0.012:1);
@@ -550,8 +528,7 @@ function drawHome(dt){
       openModal('CAT BASE INFO',['The Cat Base is your home front.','Send the Cat Army to battle with Start!!, organize it in Equip,','and power it up in Upgrade.','Daily deals wait in the Store. Good luck!'],[{n:'CLOSE',cb:()=>{}}])},{flat:true,nohov:true});
   }catch(e){}
 
-  // big Cat (right corner, chin seated behind the bottom bar) + speech bubble
-  bigCatFace(cx,1130,568,1.0);
+  // daily splash bubble (authentic feature; anchored where the base's cat would speak from)
   {const tip=splashTip();
     cx.font=FONT(13.5,700);
     const lines=wrapText(cx,tip,300);
@@ -2887,7 +2864,7 @@ function drawSettings(dt){drawTopBar('SETTINGS',true);
   else{ // harmless credits panel in its place
     cx.fillStyle='#fff8e8';rr(cx,660,370,340,60,14);cx.fill();cx.lineWidth=2.5;cx.strokeStyle='#b08a50';rr(cx,661.5,371.5,337,57,13);cx.stroke();
     txt(cx,'CREDITS',830,391,13.5,'#b06a10','center',3,'#fff',700);
-    txt(cx,'Fan tribute · vanilla JS · procedural art & audio',830,412,10.5,'#8a7a5a','center')}
+    txt(cx,'Fan tribute · original PONOS art & music · auto-saves',830,412,10.5,'#8a7a5a','center')}
   // ---- storage info line + storage-failure banner (from SV.saveStats) ----
   try{const st=SV.saveStats||{writes:0,fails:0,lastWrite:0};
     const kb=(JSON.stringify(SV).length/1024).toFixed(1);
@@ -2896,7 +2873,7 @@ function drawSettings(dt){drawTopBar('SETTINGS',true);
       cx.fillStyle='rgba(255,90,90,.18)';rr(cx,260,458,760,30,10);cx.fill();
       cx.lineWidth=2;cx.strokeStyle='#ff5a5a';rr(cx,260,458,760,30,10);cx.stroke();
       txt(cx,'⚠ STORAGE WRITE FAILURES ('+st.fails+') — progress may not be saved. Check browser storage settings.',640,473,12,'#ff7a7a','center',3,'#fff',700)}
-    else txt(cx,'SAVE: v'+SV.ver+' · '+kb+' KB · last write '+lw+' · '+st.writes+' writes · '+st.fails+' failed',640,473,12.5,'#8a7a5a','center',3,'#fff',400);
+    else txt(cx,'SAVE: v'+SV.ver+' · '+kb+' KB · last write '+lw+' · '+st.writes+' writes · '+st.fails+' failed · auto-saves to this browser',640,473,12.5,'#8a7a5a','center',3,'#fff',400);
     // Cat Food balance with the official can, right of the storage line (Defect 2)
     drawCFCan(cx,952,473,8);
     txt(cx,fmt(SV.cf),970,473,12.5,'#8a5a10','left',3,'#fff',700);

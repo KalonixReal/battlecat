@@ -756,81 +756,27 @@ function poseOf(e,t,gait){
 const ART={
  /* per-unit blink seed — desyncs idle blinking between units */
  _seed(id){let h=0;const s=String(id);for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return h%1000},
- cat(o){ if(typeof SPRIT!=='undefined'&&SPRIT.draw('cat',o))return; const d=ART_CATS[o.id]||ART_CATS.cat;const s=o.s||1,dir=o.dir||1;
-   const t=o.t||0,e=o.e||null;
-   const gait=GAIT[d.p]||GAIT.kitten;
-   const pose=poseOf(e,t,gait);
-   const dp=Math.min(cv._dpr||1,2);
-   const sB=Math.round(s*20)/20;
-   const ph=pose.walk?Math.floor((t%0.69813)/0.69813*18):(pose.win||pose.atk?Math.floor(pose.aT*16):0);
-   const bl=pose.walk&&!pose.idle&&!pose.win&&!pose.atk&&(((t||0)*0.26+ART._seed(o.id)*0.013)%1)<0.05; // ~0.19s blink every ~3.8s
-   const key='bc|'+o.id+'|'+sB+'|'+dir+'|'+pose.code+'|'+ph+'|'+(e&&e.weak?1:0)+'|'+(bl?1:0);
-   const BW=Math.ceil(330*s*dp),BH=Math.ceil(210*s*dp),PAD=22*s*dp;
-   const b=bakeGet(key,BW,BH,c2=>{c2.setTransform(dp,0,0,dp,BW/2,BH-PAD);
-     c2.scale(dir*s,s);
-     const bob=pose.idle?0:(pose.walk&&!pose.win&&!pose.atk?Math.abs(Math.sin(t*gait[1])*gait[0]):0);
-     const breathe=pose.idle?Math.sin(t*3)*0.018:0;
-     /* WALK v2 — real vertical hop + waddle roll + oscillating forward lean:
-        the original's march is a jaunty 2-beat trot (body bounces twice per stride) */
-     if(pose.walk&&!pose.idle){
-       c2.rotate(0.05+Math.sin(t*gait[1])*0.028);                                  // lean surges with each stride
-       c2.translate(0,-bob*0.9);                                                    // physical hop off the ground
-       c2.rotate(Math.sin(t*gait[1]*0.5)*0.05)}                                     // slow waddle roll (side-to-side)
-     c2.scale(1+bob*0.02+breathe,1-bob*0.024+breathe);                              // squash at the stride peak
-     if(pose.win){const c=Math.pow(pose.aT,1.15);c2.translate(-26*c,7*c);c2.rotate(-0.11*c);c2.scale(1-0.10*c,1-0.15*c)}  // foreswing: deep anticipation crouch (weight back, coiled)
-     if(pose.atk){const l=pose.pk;c2.translate(l*34,-l*9);c2.rotate(l*0.15);c2.scale(1+l*0.11,1-l*0.10)}        // strike: full-extension lunge — snappy forward jab with stretch
-     FACE_BLINK=bl;try{CP[d.p](c2,t,d,{walk:pose.walk&&!pose.idle,atk:pose.atk,pk:pose.pk,ph:pose.ph,e})}finally{FACE_BLINK=false};
-     volumeShade(c2,BW,BH)});
-   const c=cx;c.save();if(e&&e.weak)c.globalAlpha*=0.9;
-   if(e&&e.flash&&typeof c.filter==='string')c.filter='brightness(30)'; // ORIGINAL hit-blink: white silhouette (per-pixel — never a box)
-   c.drawImage(b.cv,o.x-BW/(2*dp),o.y-(BH-PAD)/dp,BW/dp,BH/dp);c.restore();
-   if(d.legend){c.save();c.globalAlpha=0.3+0.15*Math.sin(G.t*4);const g=c.createRadialGradient(o.x,o.y-40*s,0,o.x,o.y-40*s,90*s);
-     g.addColorStop(0,'rgba(196,106,223,.8)');g.addColorStop(1,'rgba(196,106,223,0)');c.fillStyle=g;
-     c.beginPath();c.arc(o.x,o.y-40*s,90*s,0,TAU);c.fill();c.restore()}
+ cat(o){ /* REAL SPRITES ONLY (user: no invented art). All 106 units ship authentic
+   cutout strips — if one is missing we draw nothing rather than a fake painter cat. */
+   if(typeof SPRIT!=='undefined'&&SPRIT.draw('cat',o))return;
+   const t=o.t||0,e=o.e||null,s=o.s||1;
+   const c=cx;c.save();
    if(e&&e.curse){c.fillStyle='#c46adf';const sa=t*3;
-     [[-16,-56],[15,-48]].forEach((p,i)=>{c.save();c.translate(o.x+p[0]*s+Math.sin(sa+i*2)*3,o.y+p[1]*s+Math.cos(sa+i)*2.5);c.rotate(0.785);c.fillRect(-2.4,-2.4,4.8,4.8);c.restore()})}}
- ,enemy(o){ const d=ENEMY_ART[o.id]||ENEMY_ART.doge;const s=o.s||1,dir=o.dir||-1;
+     [[-16,-56],[15,-48]].forEach((p,i)=>{c.save();c.translate(o.x+p[0]*s+Math.sin(sa+i*2)*3,o.y+p[1]*s+Math.cos(sa+i)*2.5);c.rotate(0.785);c.fillRect(-2.4,-2.4,4.8,4.8);c.restore()})}
+   c.restore()}
+ ,enemy(o){ const d=ENEMY_ART[o.id]||ENEMY_ART.doge;const s=o.s||1;
    const bz=o.e&&o.e.boss;const bsc=bz?(d.bsc!==undefined?d.bsc:0.55):1;
-   /* REAL SPRITE path — same bsc boss correction + trait aura as the painter below */
-   if(typeof SPRIT!=='undefined'){
-     if(bz){const c=cx;c.save();c.translate(o.x||0,o.y||0);c.scale(s*bsc,s*bsc);traitAura(c,22,o.e);c.restore()}
-     const o2=Object.assign({},o,{s:s*bsc});
-     if(SPRIT.draw('enemy',o2))return;
-     if(bz){/* aura drawn but sprite missing → repaint aura under painter body (painter path redraws it) */}}
    const t=o.t||0,e=o.e||null;
-   const gait=GAIT[d.p]||GAIT.kitten;
-   const pose=poseOf(e,t,gait);
-   const dp=Math.min(cv._dpr||1,2);
-   const sB=Math.round(s*bsc*20)/20;
-   const ph=pose.walk?Math.floor((t%0.69813)/0.69813*18):(pose.win||pose.atk?Math.floor(pose.aT*16):0);
-   const bl=pose.walk&&!pose.idle&&!pose.win&&!pose.atk&&(((t||0)*0.26+ART._seed(o.id)*0.017+0.37)%1)<0.05; // enemies blink out of phase with cats
-   const tint=o.tint||'';
-   const key='be|'+o.id+'|'+sB+'|'+dir+'|'+pose.code+'|'+ph+'|'+(e&&e.weak?1:0)+'|'+(bl?1:0)+'|'+tint;
-   const BW=Math.ceil(330*s*bsc*dp),BH=Math.ceil(210*s*bsc*dp),PAD=22*s*bsc*dp;
-   // boss trait aura stays live (drawn behind the baked body)
+   /* boss trait aura stays live behind the sprite */
    if(bz){const c=cx;c.save();c.translate(o.x,o.y);c.scale(s*bsc,s*bsc);traitAura(c,22,e);c.restore()}
-   const b=bakeGet(key,BW,BH,c2=>{c2.setTransform(dp,0,0,dp,BW/2,BH-PAD);
-     c2.scale(dir*s*bsc,s*bsc);
-     const bob=pose.idle?0:(pose.walk&&!pose.win&&!pose.atk?Math.abs(Math.sin(t*gait[1])*gait[0]):0);
-     const breathe=pose.idle?Math.sin(t*3)*0.018:0;
-     /* WALK v2 — real vertical hop + waddle roll + oscillating lean (matches ART.cat) */
-     if(pose.walk&&!pose.idle){
-       c2.rotate(0.05+Math.sin(t*gait[1])*0.028);
-       c2.translate(0,-bob*0.9);
-       c2.rotate(Math.sin(t*gait[1]*0.5)*0.05)}
-     c2.scale(1+bob*0.02+breathe,1-bob*0.024+breathe);
-     if(pose.win){const c=Math.pow(pose.aT,1.15);c2.translate(-26*c,7*c);c2.rotate(-0.11*c);c2.scale(1-0.10*c,1-0.15*c)}  // foreswing: deep anticipation crouch
-     if(pose.atk){const l=pose.pk;c2.translate(l*34,-l*9);c2.rotate(l*0.15);c2.scale(1+l*0.11,1-l*0.10)}        // strike: full-extension lunge
-     FACE_BLINK=bl;try{EP[d.p](c2,t,d,{walk:pose.walk&&!pose.idle,atk:pose.atk,pk:pose.pk,ph:pose.ph,e})}finally{FACE_BLINK=false};
-     volumeShade(c2,BW,BH);
-     if(tint){ // chapter tint wash (EoC Ch2 crimson / Ch3 shadow) — tints painted pixels only
-       c2.setTransform(1,0,0,1,0,0);c2.globalCompositeOperation='source-atop';
-       c2.fillStyle=tint;c2.fillRect(0,0,BW,BH);c2.globalCompositeOperation='source-over'}});
-   const c=cx;c.save();if(e&&e.weak)c.globalAlpha*=0.9;if(d.ghost)c.globalAlpha*=0.85;
-   if(e&&e.flash&&typeof c.filter==='string')c.filter='brightness(30)'; // ORIGINAL hit-blink: white silhouette (per-pixel — never a box)
-   c.drawImage(b.cv,o.x-BW/(2*dp),o.y-(BH-PAD)/dp,BW/dp,BH/dp);c.restore();
+   /* REAL SPRITES ONLY — authentic cutout strips for every enemy; no invented art */
+   if(typeof SPRIT!=='undefined'){
+     const o2=Object.assign({},o,{s:s*bsc});
+     if(SPRIT.draw('enemy',o2))return}
+   const c=cx;c.save();
    if(e&&e.curse){c.fillStyle='#c46adf';const sa=t*3;
-     [[-16,-52],[15,-44]].forEach((p,i)=>{c.save();c.translate(o.x+p[0]*s*bsc+Math.sin(sa+i*2)*3,o.y+p[1]*s*bsc+Math.cos(sa+i)*2.5);c.rotate(0.785);c.fillRect(-2.4,-2.4,4.8,4.8);c.restore()})}}
+     [[-16,-52],[15,-44]].forEach((p,i)=>{c.save();c.translate(o.x+p[0]*s*bsc+Math.sin(sa+i*2)*3,o.y+p[1]*s*bsc+Math.cos(sa+i)*2.5);c.rotate(0.785);c.fillRect(-2.4,-2.4,4.8,4.8);c.restore()})}
+   c.restore()}
  ,catIcon(id,x,y,r,dim){const c=cx;c.save();c.globalAlpha=dim!==undefined?dim:1;c.translate(x,y);
    const rar=(typeof CATMAP!=='undefined'?(CATMAP[id]||{}).rarity:null);
    if(rar==='uber'||rar==='legend'){c.save();c.globalAlpha*=0.3+0.08*Math.sin(G.t*4);
