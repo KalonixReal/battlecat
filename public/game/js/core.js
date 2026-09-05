@@ -27,6 +27,35 @@ function txt(c,s,x,y,px,fill,align,strokeW,strokeC,w){setFont(c,FONT(px,w));c.te
 function lazyImg(cache,key,url){let im=cache[key];if(im===undefined){im=new Image();im.src=url;cache[key]=im}return im}
 /* imgReady: true once the image is fully decoded (safe to drawImage without pop-in) */
 function imgReady(im){return !!im&&im.complete&&im.naturalWidth>0}
+/* ===================== PORTS: official unit portraits & icons =====================
+   One atlas (ports.png, 4096x4096) holds EVERY cat's official udi battle-card banner
+   (512x128) and uni framed icon (128x128), cut straight from the APK for all 46 cats
+   x 3 forms. One fetch, preloaded at boot, zero pop-in. Letter mapping f/c/s = form
+   1st/2nd/3rd (same convention as the anim strips). */
+const PORTS={img:null,meta:null};
+(function(){
+  fetch('assets/sprites/ports_atlas.json',{cache:'no-cache'}).then(r=>r.json())
+    .then(j=>{PORTS.meta=j;PORTS.img=lazyImg(PORTS,'atlas','assets/sprites/ports.png')})
+    .catch(()=>{});
+})();
+const PORT_FORM='fcs'; // form index 0/1/2 -> atlas letter (mirrors build-sprites 'fcs'[fi])
+function portsReady(){return imgReady(PORTS.img)&&!!PORTS.meta}
+function portsKey(kind,id,form){return kind+'_'+id+'_'+PORT_FORM[Math.max(0,Math.min(2,form|0))]}
+/* drawPort: official portrait/icon. kind='udi'|'uni'. face=true crops the udi face
+   (left ~45% — exactly the region the original battle cards show). mode='stretch'
+   fills the box edge-to-edge (the original PowerUp card stretches the banner).
+   Returns false if the atlas isn't decoded yet (caller falls back). */
+function drawPort(c,kind,id,form,x,y,w,h,face,stretch){
+  if(!portsReady())return false;
+  const m=PORTS.meta[portsKey(kind,id,form)];if(!m)return false;
+  let sx=m.x,sy=m.y,sw=m.w,sh=m.h;
+  if(face)sw=Math.min(sw,Math.round(sh*1.8)); // face crop of the udi banner
+  let dx=x,dy=y,dw=w,dh=h;
+  if(!stretch){const sc=Math.min(w/sw,h/sh);dw=sw*sc;dh=sh*sc;dx=x+(w-dw)/2;dy=y+(h-dh)/2}
+  c.save();c.imageSmoothingEnabled=true;
+  c.drawImage(PORTS.img,sx,sy,sw,sh,dx,dy,dw,dh);
+  c.restore();
+  return true}
 /* DPR_CAP: device-pixel-ratio ceiling — the PERF auto-tuner lowers it on weak systems
    (the single biggest perf lever; every pixel saved is 4x cheaper at DPR 1 vs 2) */
 let DPR_CAP=2;

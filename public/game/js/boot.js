@@ -23,6 +23,7 @@ function adoptRuntime(url,im){
       if(typeof SPRIT!=='undefined')SPRIT.adopt(url,im);
       const fn=url.slice(15);
       if(typeof _cbStrips!=='undefined')_cbStrips[fn]=im; // battle's cat-base strip cache (keys are unique filenames)
+      if(fn==='ports.png'&&typeof PORTS!=='undefined')PORTS.img=im; // portrait atlas — one decode shared with PORTS
       return}
     if(url.indexOf('assets/maps/')===0){
       const n=url.slice(12).replace(/\.png$/,'');
@@ -97,10 +98,11 @@ function AudioUnlockSilent(){
   if(AC)return;
   try{
     AC=new (window.AudioContext||window.webkitAudioContext)();
+    // true peak-safety limiter (matches audio.js AudioUnlock — one mix, two entry points)
     const comp=AC.createDynamicsCompressor();
-    comp.threshold.value=-14;comp.knee.value=20;comp.ratio.value=4;
-    comp.attack.value=0.003;comp.release.value=0.2;
-    masterG=AC.createGain();masterG.gain.value=0.6;
+    comp.threshold.value=-5;comp.knee.value=10;comp.ratio.value=2.5;
+    comp.attack.value=0.003;comp.release.value=0.15;
+    masterG=AC.createGain();masterG.gain.value=0.9;
     masterG.connect(comp);comp.connect(AC.destination);
     const bgmOn=(typeof SV!=='undefined'&&SV&&SV.settings.bgm);
     bgmG=AC.createGain();bgmG.gain.value=bgmOn?BGM_VOL:0;bgmG.connect(masterG);

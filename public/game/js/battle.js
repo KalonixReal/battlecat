@@ -9,7 +9,7 @@ const FIELD_W=2600,ENEMY_BASE_X=120,CAT_BASE_X=FIELD_W-120,GROUND_Y=560;
 const WALK_MUL=1.0; // official pacing: WALK_SPD (data.js) maps wiki SPD → px/s; no extra multiplier (parity with the original)
 let B=null;
 const WORKER_COST=[40,120,280,560,1000,1600,2400],WORKER_MUL=[1,1.35,1.7,2.1,2.6,3.2,3.9,4.7];
-const WALLET_COST=[30,90,180,360,720,1440,2880],WALLET_MAX=[1,2,3,4,5,6,8,10];
+const WALLET_COST=[30,90,160,240,320,420,520],WALLET_MAX=[1,2,3,4,5,6,8,10]; // gentle ~original curve (levels cost 30..520¢, not exponential)
 function startBattle(st){
   const teamIds=SV.teams[SV.teamSel].filter(id=>id&&CATMAP[id]); // tolerate invalid ids (imported/hand-edited saves)
   const combo=comboBonuses(teamIds);
@@ -665,75 +665,74 @@ function castleImg(set,stageIdx){
 }
 const CHAPTER_CASTLE={eoc1:'eoc',eoc2:'eoc',eoc3:'eoc',itf1:'itf',itf2:'itf',itf3:'itf',
   cotc1:'cosmos',cotc2:'cosmos',cotc3:'cosmos',sol:'world',ul:'zero',aku:'dark',dojo:'dojo',event:'eoc'};
+/* player CAT BASE = the official nyankoCastle art (8 chapter variants, straight from the APK:
+   00 calico EoC1 · 01 flower EoC2 · 02 steel EoC3 · 03-05 ItF · 06-07 CotC/Aku) */
+const CHAPTER_CATBASE={eoc1:0,eoc2:1,eoc3:2,itf1:3,itf2:4,itf3:5,cotc1:6,cotc2:7,cotc3:6,sol:0,ul:2,aku:7,dojo:2,event:0};
+const _baseImgs={};
+function baseImg(n){return lazyImg(_baseImgs,'base_'+n,'assets/ui/base_'+n+'.png')}
 let _cbMeta=null;
 fetch('assets/sprites/catbase.json',{cache:'no-cache'}).then(r=>r.json()).then(j=>{_cbMeta=j}).catch(()=>{});
 const _cbStrips={};
 function cbStrip(fn){
   return lazyImg(_cbStrips,fn,'assets/sprites/'+fn);
 }
-/* cat base: authentic idle anim (~200px tall); alarm = red tint + shake; kb pose on heavy hits */
-function drawCatBase(cb){
-  const t=G.t*10;
-  let en=(_cbMeta&&_cbMeta.idle)||null;
-  const H=196;
-  const drawEn=(entry,fi,alpha)=>{
-    const im=entry?cbStrip(entry.img):null;
-    if(!imgReady(im))return false;
-    const fr=entry.frames[fi%entry.frames.length];
-    const sc=H/(entry.refH||310);
-    cx.globalAlpha=alpha===undefined?1:alpha;
-    cx.drawImage(im,fr[0],fr[1],fr[2],fr[3],-fr[2]*sc/2,-fr[3]*sc,fr[2]*sc,fr[3]*sc);
-    cx.globalAlpha=1;
-    return true;
-  };
+/* cat base: OFFICIAL nyankoCastle art (calico house + cannon on top, per-chapter variant).
+   Hit feedback = brief white flash + shake (original-style), no invented aura. */
+function drawCatBase(cb,ch){
+  const H=214;
   cx.save();
   cx.translate(cb.x,GROUND_Y);
   const alm=cb.alarm>0;
   if(alm)cx.translate(0,Math.sin(G.t*30)*2.4);
-  if(alm){const pl=0.5+0.5*Math.sin(G.t*12); // warm hit-flash aura (original pulses red on the base)
-    cx.save();cx.globalAlpha=0.16+pl*0.16;
-    cx.fillStyle='#ff8a5a';cx.beginPath();cx.ellipse(0,-H*0.5,86,H*0.62,0,0,TAU);cx.fill();cx.restore()}
-  let drawn=false;
-  if(en){ // authentic 16-frame idle (walk-in-place)
-    const fi=Math.floor(t)%en.frames.length;
-    drawn=drawEn(en,fi);
-  }
-  if(!drawn){ // strips not decoded yet — tiny neutral plinth so the base is never invisible
+  const bim=baseImg(CHAPTER_CATBASE[ch]||0);
+  const canFilter=typeof cx.filter==='string';
+  if(imgReady(bim)){
+    const sc=H/bim.naturalHeight,w=bim.naturalWidth*sc;
+    cx.imageSmoothingEnabled=true;
+    if(alm&&canFilter)cx.filter='brightness(1.9) saturate(1.4)'; // per-pixel hit flash (original pulses the base)
+    cx.drawImage(bim,-w/2,-H,w,H);
+    if(alm&&canFilter)cx.filter='none';
+  }else{ // base art still decoding — tiny neutral plinth so the base is never invisible
     cx.fillStyle='#c8ccd8';cx.fillRect(-56,-64,112,64);
     cx.fillStyle='#a8aec0';cx.fillRect(-48,-128,96,64);
   }
   cx.restore();
 }
 function drawBases(b){
-  /* ===== cat base — REAL animated NEKO castle (right side) ===== */
+  /* ===== cat base — official nyankoCastle art (right side) + numeric HP like the original ===== */
   const cb=b.catBase;
-  drawCatBase(cb);
-  baseBar(cb.x,GROUND_Y-224,cb.hp,cb.maxHp,'#7fe8a0');
-  /* ===== enemy base — REAL per-stage castle art (left side) ===== */
+  drawCatBase(cb,b.st.ch);
+  baseHpText(cb.x,GROUND_Y-236,cb.hp,cb.maxHp);
+  /* ===== enemy base — REAL per-stage castle art (left side) + numeric HP ===== */
   const eb=b.enemyBase;
   cx.save();cx.translate(eb.x,GROUND_Y);
   const ealm=eb.alarm>0;
   if(ealm)cx.translate(0,Math.sin(G.t*30)*2.2);
-  if(ealm){const pl=0.5+0.5*Math.sin(G.t*12);
-    cx.save();cx.globalAlpha=0.22+pl*0.2;
-    cx.fillStyle='#ff5a5a';cx.beginPath();cx.ellipse(0,-105,100,125,0,0,TAU);cx.fill();cx.restore()}
   const cim=castleImg(CHAPTER_CASTLE[b.st.ch]||'eoc',b.st.idx);
   const CH=208;
+  const canFilter=typeof cx.filter==='string';
   if(imgReady(cim)){
     const sc=CH/cim.naturalHeight,w=cim.naturalWidth*sc;
     cx.imageSmoothingEnabled=true;
+    if(ealm&&canFilter)cx.filter='brightness(1.9) saturate(1.4)';
     cx.drawImage(cim,-w/2,-CH,w,CH);
+    if(ealm&&canFilter)cx.filter='none';
   }else{ // castle sheet still decoding — original-proportioned silhouette placeholder
     cx.fillStyle='#5a4658';cx.fillRect(-58,-150,116,150);
     cx.fillStyle='#4a3848';cx.beginPath();cx.moveTo(-66,-150);cx.lineTo(0,-212);cx.lineTo(66,-150);cx.fill();
   }
   cx.restore();
-  baseBar(eb.x,GROUND_Y-236,eb.hp,eb.maxHp,'#ff7a7a');
+  baseHpText(eb.x,GROUND_Y-236,eb.hp,eb.maxHp);
 }
-function baseBar(x,y,hp,max,col){if(hp>=max&&x!==B.enemyBase.x&&x!==B.catBase.x)return;
-  const w=120;cx.fillStyle='rgba(10,10,16,.6)';rr(cx,x-w/2-2,y-2,w+4,12,6);cx.fill();
-  cx.fillStyle='rgba(255,255,255,.2)';rr(cx,x-w/2,y,w,8,4);cx.fill();
-  cx.fillStyle=col;rr(cx,x-w/2,y,w*clamp(hp/max,0,1),8,4);cx.fill()}
+/* numeric base HP "cur/max" — the original shows plain white digits with a heavy black
+   outline above each base (no colored bars) */
+function baseHpText(x,y,hp,max){
+  const s=Math.max(0,Math.ceil(hp))+'/'+fmt(max);
+  setFont(cx,FONT(19,700));
+  cx.textAlign='center';cx.textBaseline='middle';cx.lineJoin='round';
+  cx.lineWidth=5;cx.strokeStyle='rgba(10,8,6,.9)';cx.strokeText(s,x,y);
+  cx.fillStyle='#fff';cx.fillText(s,x,y);
+}
 function drawUnit(u){
   if(u.state==='burrow'||u.state==='revive'){ // underground: draw only a dirt mound (not standing) — minimal draw-side edit for engine states
     cx.save();cx.translate(u.x,GROUND_Y);
@@ -862,104 +861,118 @@ function drawFx(f){const p=clamp(1-f.t/(FXDUR[f.k]||0.5),0,1);
   cx.restore();cx.globalAlpha=1}
 function drawBattleHUD(b,dt){
   // camera drag region registered FIRST so HUD buttons (registered later) win the hit scan.
-  // Layout mirrors the ORIGINAL battle screen exactly:
-  //   top-left $ wallet sign · top-right pause+speed · bottom-left Worker Cat lv-up button ·
-  //   ONE bottom row of up to 10 unit cards · bottom-right Fire!! cannon · nothing else.
+  // Layout = the ORIGINAL battle screen (verified vs official screenshots):
+  //   top-left pause + gold stage name · speed under it · top-right yellow 'cur/max¢' digits ·
+  //   bottom-left Worker Cat button (official face art) · row of official-art unit cards ·
+  //   bottom-right Fire!! cannon button (official face art).
   SCROLL('field',0,110,1280,470,()=>b.cam,v=>{b.cam=clamp(v,0,FIELD_W-1280)},FIELD_W-1280,null).horiz=true;
-  /* ===== TOP-LEFT: wallet sign — yellow rounded plate, brown $ amount + cent coin (original) ===== */
+  /* ===== TOP-LEFT: pause (official option_btn sprite) + stage name, like the original ===== */
   {
-    const mfs=27;setFont(cx,FONT(mfs,700));
-    const s='$'+fmt(Math.floor(b.wallet));
-    const sw=cx.measureText(s).width;
-    const pw=sw+56,px=16,py=12,ph=42;
-    if(!PERF_NOFX()){cx.save();cx.shadowColor='rgba(0,0,0,.35)';cx.shadowBlur=6;cx.shadowOffsetY=3;
-      cx.fillStyle='#ffd23f';rr(cx,px,py,pw,ph,12);cx.fill();cx.restore()}
-    else{cx.fillStyle='#ffd23f';rr(cx,px,py,pw,ph,12);cx.fill()}
-    cx.lineWidth=3;cx.strokeStyle='#8a5a20';rr(cx,px,py,pw,ph,12);cx.stroke();
-    cx.fillStyle='rgba(255,255,255,.35)';rr(cx,px+4,py+3,pw-8,10,6);cx.fill(); // top gloss
-    txt(cx,s,px+18,py+28,mfs,'#7a4a10','left',4.5,'rgba(255,244,200,.85)',700);
-    drawCent(cx,px+pw-20,py+21,10,'#ffb020','rgba(90,50,8,.9)',3.5);
+    const pb=uiImg('option_btn.png');
+    if(imgReady(pb)){cx.imageSmoothingEnabled=true;cx.drawImage(pb,14,9,48,48)}
+    else{
+      cx.fillStyle='#ffd23f';rr(cx,14,9,48,48,10);cx.fill();
+      cx.lineWidth=3.5;cx.strokeStyle='#5a3b16';rr(cx,14,9,48,48,10);cx.stroke();
+      cx.fillStyle='#3a2a12';cx.fillRect(30,21,6,24);cx.fillRect(41,21,6,24)}
+    txt(cx,b.st.name,74,34,22,'#ffd94a','left',4.5,'rgba(20,12,4,.9)',700);
   }
-  /* ===== TOP-RIGHT: pause (yellow circle w/ two dark bars) — retreat lives in the pause menu ===== */
-  cx.fillStyle=b.paused?'#e85840':'#ffd23f';cx.beginPath();cx.arc(1243,33,23,0,TAU);cx.fill();
-  cx.lineWidth=4;cx.strokeStyle=b.paused?'#7a1a10':'#8a5a20';cx.stroke();
-  if(b.paused)txt(cx,'\u25b6',1243,34,17,'#5a3b16','center',3,'#fff',700);
-  else{cx.fillStyle='#5a3b16';cx.fillRect(1235,23,6,20);cx.fillRect(1245,23,6,20)}
-  BTN('pause',1218,10,46,46,()=>{if(B.result)return;b.paused=!b.paused;SFX.click();
+  BTN('pause',14,9,48,48,()=>{if(B.result)return;b.paused=!b.paused;SFX.click();
     if(b.paused&&!b.result)openModal('PAUSED',['Battle paused.'],[
       {n:'Resume',col:'#ffd23f',cb:()=>{if(B)B.paused=false}},
       {n:'Retry',col:'#7fd0ff',cb:()=>{if(!B)return;const st=B.st;B=null;G.modal=null;startBattle(st)}},
-      {n:'Retreat',col:'#e85840',cb:()=>{if(!B)return;B.paused=false;endBattle(false);applyBattleResult();G.screen='map';G.screenPrev=[];B=null;AudioSetBgm('menu')}},
-      {n:'Close',cb:()=>{if(B)B.paused=false}}])},{flat:true,nohov:true});
-  // (no boss name label — the original announces bosses via the warning banner only)
-  /* ===== RIGHT EDGE: dark circular SPEED UP button (official caption style) ===== */
-  const sx=1234,sy=124,srad=36;
-  cx.fillStyle='#2c3242';cx.beginPath();cx.arc(sx,sy,srad,0,TAU);cx.fill();
-  cx.lineWidth=3.5;cx.strokeStyle='#171b26';cx.stroke();
-  cx.strokeStyle='rgba(255,255,255,.16)';cx.lineWidth=2;cx.beginPath();cx.arc(sx,sy,srad-3.5,-2.3,-0.7);cx.stroke();
-  txt(cx,'SPEED',sx,sy-13.5,11,'#e8ecf4','center',2.5,'#171b26',700);
-  txt(cx,'UP',sx,sy-2.5,11,'#e8ecf4','center',2.5,'#171b26',700);
-  txt(cx,'\u00d7'+b.speed,sx,sy+15,16,'#ffd23f','center',3,'#171b26',700);
-  if(SV.rank<20)drawPadlock(cx,sx+16,sy+19,8,'#ffd23f'); // ×3 is rank-gated
-  BTN('speed',sx-srad-2,sy-srad-2,srad*2+4,srad*2+4,()=>{if(B.result)return;
+      {n:'Retreat',col:'#e85840',cb:()=>{if(!B)return;B.paused=false;endBattle(false);applyBattleResult();G.screen='map';G.screenPrev=[];B=null;AudioSetBgm('menu')}}])},{flat:true,nohov:true});
+  /* ===== below pause: round yellow speed toggle (»x1/»x2/»x3) like the original ===== */
+  {
+    const sx2=38,sy2=84,sr2=25;
+    cx.fillStyle='#ffd23f';cx.beginPath();cx.arc(sx2,sy2,sr2,0,TAU);cx.fill();
+    cx.lineWidth=3.5;cx.strokeStyle='#8a5a20';cx.stroke();
+    cx.fillStyle='rgba(255,255,255,.35)';cx.beginPath();cx.arc(sx2,sy2-8,15,Math.PI,TAU);cx.fill();
+    // » chevrons
+    cx.fillStyle=b.speed>1?'#2a7a1a':'#3a2a12';
+    for(let ci=0;ci<2;ci++){cx.beginPath();cx.moveTo(sx2-11+ci*11,sy2-8);cx.lineTo(sx2-3+ci*11,sy2-1);cx.lineTo(sx2-11+ci*11,sy2+6);cx.lineTo(sx2-7+ci*11,sy2-1);cx.closePath();cx.fill()}
+    txt(cx,'\u00d7'+b.speed,sx2,sy2+13,13,'#3a2a12','center',2.5,'rgba(255,244,200,.9)',700);
+    if(SV.rank<20&&b.speed<3)drawPadlock(cx,sx2+15,sy2+16,8,'#3a2a12'); // ×3 is rank-gated
+  }
+  BTN('speed',13,59,50,50,()=>{if(B.result)return;
     if(b.speed===1){b.speed=2;SFX.click()}
     else if(b.speed===2){if(SV.rank>=20){b.speed=3;SFX.click()}else{SFX.error();toast('Speed x3 unlocks at User Rank 20! (now '+SV.rank+')','#ffb060')}}
     else{b.speed=1;SFX.click()}},{flat:true,nohov:true});
-  /* ===== BOTTOM-LEFT: Worker Cat level-up button (original: direct upgrade, no menu) =====
-     Wallet Lv drives BOTH max (WALLET_MAX) and regen (WORKER_MUL) — one combined level like the original. */
+  /* ===== TOP-RIGHT: wallet — big yellow digits 'cur/max¢', the original's exact style ===== */
+  {
+    const wLvH=Math.max(b.walletLv,b.workerLv);
+    const wmax=Math.floor(b.walletMax*WALLET_MAX[Math.max(0,Math.min(7,wLvH))]);
+    const cur=fmt(Math.floor(b.wallet));
+    setFont(cx,FONT(30,700));
+    const curW=cx.measureText(cur).width;
+    setFont(cx,FONT(21,700));
+    const maxS='/'+fmt(wmax);const maxW=cx.measureText(maxS).width;
+    const totW=curW+maxW+30;
+    const tx0=1266-totW;
+    txt(cx,cur,tx0,32,30,'#ffe95a','left',5,'rgba(24,14,2,.92)',700);
+    txt(cx,maxS,tx0+curW+3,34,21,'#fff','left',4,'rgba(24,14,2,.92)',700);
+    drawCent(cx,tx0+curW+maxW+16,32,10.5,'#ffb020','rgba(90,50,8,.95)',3.5);
+  }
+  /* ===== BOTTOM-LEFT: Worker Cat level-up button — OFFICIAL face art (worker_on/off.png
+     straight from the APK), Lv chip on top, cost pill below. One combined level, like the original. */
   const wLv=Math.max(b.walletLv,b.workerLv);b.walletLv=b.workerLv=wLv; // keep the two engine fields unified
-  const wbx=20,wby=586,wbw=100,wbh=96;
-  if(!PERF_NOFX()){cx.save();cx.shadowColor='rgba(0,0,0,.4)';cx.shadowBlur=8;cx.shadowOffsetY=3;
-    cx.fillStyle='#ffd23f';rr(cx,wbx,wby,wbw,wbh,14);cx.fill();cx.restore()}
-  else{cx.fillStyle='#ffd23f';rr(cx,wbx,wby,wbw,wbh,14);cx.fill()}
-  cx.lineWidth=4;cx.strokeStyle='#8a5a20';rr(cx,wbx,wby,wbw,wbh,14);cx.stroke();
-  ART.catIcon('cat',wbx+wbw/2,wby+44,26);
-  // level plate across the top of the button (original 'Lv.N' badge)
-  cx.fillStyle='#8a5a20';rr(cx,wbx+14,wby+6,wbw-28,22,11);cx.fill();
-  txt(cx,'Lv.'+(wLv+1),wbx+wbw/2,wby+17.5,14,'#ffe8a0','center',3,'rgba(40,20,4,.9)',700);
+  const wbx=12,wby=592,wbw=100,wbh=64;
   const wkCost=WALLET_COST[wLv];
-  if(wLv<7){ // upgrade cost pill (green when affordable, grey otherwise) — tap = direct upgrade
-    const can=b.wallet>=wkCost;
-    const cw=74;
-    cx.save();cx.translate(wbx+wbw/2,wby+wbh+16);
-    if(can){const pu=1+Math.sin(G.t*5)*0.05;cx.scale(pu,pu)}
-    cx.fillStyle=can?'#5ad84a':'#5a6472';rr(cx,-cw/2,-13,cw,26,13);cx.fill();
-    cx.lineWidth=2.5;cx.strokeStyle=can?'#1e5a14':'#2c3242';rr(cx,-cw/2,-13,cw,26,13);cx.stroke();
-    // cost sits centered in the space RIGHT of the arrow; auto-shrinks for 4-digit costs (never touches the arrow)
-    setFont(cx,FONT(13,700));const ws2='$'+wkCost;let ww2=cx.measureText(ws2).width,wfs2=13;
-    while(ww2>44&&wfs2>9.5){wfs2-=0.5;setFont(cx,FONT(wfs2,700));ww2=cx.measureText(ws2).width}
-    txt(cx,ws2,13,0.5,wfs2,'#fff','center',2.5,'rgba(10,30,8,.8)',700);
-    // up-arrow affordance left of the cost
+  const canW=b.wallet>=wkCost&&wLv<7;
+  const wimg=uiImg(canW?'worker_on.png':'worker_off.png');
+  if(!PERF_NOFX()){cx.save();cx.shadowColor='rgba(0,0,0,.35)';cx.shadowBlur=6;cx.shadowOffsetY=3;
+    if(imgReady(wimg))cx.drawImage(wimg,wbx,wby,wbw,wbh);
+    else{cx.fillStyle=canW?'#ffd23f':'#6a707c';cx.beginPath();cx.arc(wbx+wbw/2,wby+wbh/2,30,0,TAU);cx.fill()}
+    cx.restore()}
+  else if(imgReady(wimg))cx.drawImage(wimg,wbx,wby,wbw,wbh);
+  else{cx.fillStyle=canW?'#ffd23f':'#6a707c';cx.beginPath();cx.arc(wbx+wbw/2,wby+wbh/2,30,0,TAU);cx.fill()}
+  // 'Lv.N' chip across the top of the face (original layout)
+  cx.fillStyle='rgba(20,14,6,.85)';rr(cx,wbx+18,wby+2,wbw-36,20,10);cx.fill();
+  txt(cx,'Lv.'+(wLv+1),wbx+wbw/2,wby+12.5,13,'#ffe8a0','center',2.5,'rgba(0,0,0,.6)',700);
+  if(wLv<7){ // upgrade cost pill under the face (green when affordable, grey otherwise)
+    const cw=72;
+    cx.save();cx.translate(wbx+wbw/2,wby+wbh+14);
+    if(canW){const pu=1+Math.sin(G.t*5)*0.05;cx.scale(pu,pu)}
+    cx.fillStyle=canW?'#5ad84a':'#5a6472';rr(cx,-cw/2,-12,cw,24,12);cx.fill();
+    cx.lineWidth=2.5;cx.strokeStyle=canW?'#1e5a14':'#2c3242';rr(cx,-cw/2,-12,cw,24,12);cx.stroke();
+    setFont(cx,FONT(13,700));const ws2=fmt(wkCost);let ww2=cx.measureText(ws2).width,wfs2=13;
+    while(ww2>42&&wfs2>9.5){wfs2-=0.5;setFont(cx,FONT(wfs2,700));ww2=cx.measureText(ws2).width}
+    txt(cx,ws2,7,0.5,wfs2,'#fff','center',2.5,'rgba(10,30,8,.8)',700);
     cx.fillStyle='#fff';cx.beginPath();cx.moveTo(-cw/2+12,5);cx.lineTo(-cw/2+19,-5);cx.lineTo(-cw/2+26,5);cx.closePath();cx.fill();
     cx.restore();
-    BTN('worker',wbx,wby,wbw,wbh+30,()=>{if(B.result||B.paused)return;
+    BTN('worker',wbx,wby,wbw,wbh+28,()=>{if(B.result||B.paused)return;
       if(b.wallet>=wkCost&&wLv<7){b.wallet-=wkCost;b.walletLv=wLv+1;b.workerLv=wLv+1;SFX.up();
         popTxtUI('Wallet Lv.'+(wLv+2)+'!')}else SFX.error()},{flat:true,nohov:true});
-  }else{ // MAX: no arrow, golden plate
-    cx.fillStyle='#8a5a20';rr(cx,wbx+wbw/2-40,wby+wbh+6,80,26,13);cx.fill();
-    txt(cx,'MAX',wbx+wbw/2,wby+wbh+19.5,13,'#ffe8a0','center',2.5,'rgba(40,20,4,.9)',700);
+  }else{ // MAX: golden plate under the face
+    cx.fillStyle='#8a5a20';rr(cx,wbx+wbw/2-38,wby+wbh+4,76,24,12);cx.fill();
+    txt(cx,'MAX',wbx+wbw/2,wby+wbh+16.5,13,'#ffe8a0','center',2.5,'rgba(40,20,4,.9)',700);
     BTN('worker',wbx,wby,wbw,wbh,()=>{SFX.error()},{flat:true,nohov:true});
   }
-  /* ===== BOTTOM-RIGHT: Fire!! cannon button — magenta glow when ready ===== */
-  const c=b.cannon;const ready=c.t<=0;const fx=1190,fy=636;
+  /* ===== BOTTOM-RIGHT: Fire!! cannon button — OFFICIAL cannon face art (cannon_off /
+     cannon_blink from the APK), charge ring + gold 'Fire!!' text, exactly the original's look ===== */
+  const c=b.cannon;const ready=c.t<=0;const fx=1196,fy=634;
   const cmeta=CANNON_TYPES.find(t=>t.id===c.type)||CANNON_TYPES[0];
   const frac=ready?1:1-c.t/c.charge;
-  if(!PERF_NOFX()){cx.save();cx.shadowColor=ready?'rgba(255,74,216,.65)':'rgba(0,0,0,.35)';cx.shadowBlur=ready?16:5;
-    const cg=cx.createLinearGradient(fx,fy-44,fx,fy+44);
-    if(ready){cg.addColorStop(0,'#ff9ad5');cg.addColorStop(1,'#e8489a')}else{cg.addColorStop(0,'#4a5468');cg.addColorStop(1,'#2c3242')}
-    cx.fillStyle=cg;cx.beginPath();cx.arc(fx,fy,44,0,TAU);cx.fill();cx.restore()}
+  const cim2=uiImg(ready?'cannon_blink.png':'cannon_off.png');
+  const FW=112,FH=75; // official art is 194x130 incl. margins
+  if(!PERF_NOFX()){cx.save();cx.shadowColor=ready?'rgba(255,74,216,.6)':'rgba(0,0,0,.35)';cx.shadowBlur=ready?14:5;
+    if(imgReady(cim2))cx.drawImage(cim2,fx-FW/2,fy-FH/2,FW,FH);
+    else{cx.fillStyle=ready?'#e8489a':'#2c3242';cx.beginPath();cx.arc(fx,fy,44,0,TAU);cx.fill()}
+    cx.restore()}
+  else if(imgReady(cim2))cx.drawImage(cim2,fx-FW/2,fy-FH/2,FW,FH);
   else{cx.fillStyle=ready?'#e8489a':'#2c3242';cx.beginPath();cx.arc(fx,fy,44,0,TAU);cx.fill()}
-  cx.lineWidth=5;cx.strokeStyle='#22262f';cx.beginPath();cx.arc(fx,fy,44,0,TAU);cx.stroke();
+  // charge ring around the face
+  cx.lineWidth=5;cx.strokeStyle='rgba(20,16,10,.55)';cx.beginPath();cx.arc(fx,fy,50,0,TAU);cx.stroke();
   cx.lineWidth=6;cx.strokeStyle=ready?(cmeta.ring||'#ffd23f'):'#8fd8ff';
-  cx.beginPath();cx.arc(fx,fy,35,-Math.PI/2,-Math.PI/2+TAU*frac);cx.stroke();
-  cx.fillStyle=ready?'#fff':'#c8ccd4';cx.beginPath();cx.arc(fx,fy-6,15,0,TAU);cx.fill();
-  cx.fillStyle='#22262f';cx.beginPath();cx.arc(fx-5,fy-8,2.2,0,TAU);cx.arc(fx+5,fy-8,2.2,0,TAU);cx.fill();
-  txt(cx,ready?'Fire!!':tstr(c.t),fx,fy+24,ready?16:13,ready?'#ffd23f':'#cfd3e0','center',3,'#22262f',700);
-  BTN('cannon',fx-46,fy-46,92,92,()=>{if(B.result)return;fireCannon()},{flat:true,nohov:true});
-  /* ===== BOTTOM-CENTER: ONE row of up to 10 unit cards (original deck) ===== */
+  cx.beginPath();cx.arc(fx,fy,50,-Math.PI/2,-Math.PI/2+TAU*frac);cx.stroke();
+  if(ready){const bl=0.72+0.28*Math.sin(G.t*9);cx.globalAlpha=bl;
+    txt(cx,'Fire!!',fx,fy+48,20,'#ffd23f','center',4,'rgba(58,12,40,.95)',900);cx.globalAlpha=1}
+  else txt(cx,tstr(c.t),fx,fy+48,14,'#e8ecf4','center',3,'rgba(10,12,20,.9)',700);
+  BTN('cannon',fx-56,fy-56,112,112,()=>{if(B.result)return;fireCannon()},{flat:true,nohov:true});
+  /* ===== BOTTOM: ONE row of up to 10 unit cards — OFFICIAL udi portrait art (from the
+     APK atlas), price INSIDE the card, Lv chip top-left, recharge sweep — like the original ===== */
   const team=b.dock; // stats cached at battle start (they cannot change mid-fight)
   const dw=76,dh=84,gpx=7;
-  const x0=132; // right of the worker button
+  const x0=122; // right of the Worker Cat button
   team.forEach((d,i)=>{
     const id=d.id,st=d.st;
     const dx=x0+i*(dw+gpx),dy=614;
@@ -971,21 +984,30 @@ function drawBattleHUD(b,dt){
       // ready + affordable: soft breathing glow (pre-baked sprite — no shadowBlur per frame)
       if(can&&!PERF_NOFX()){const gl=0.5+0.5*Math.sin(G.t*3.2+i);const glw=cardGlow(dw,dh);
         cc2.globalAlpha=0.45+gl*0.45;cc2.drawImage(glw.cv,-glw.pad,-glw.pad,dw+glw.pad*2,dh+glw.pad*2);cc2.globalAlpha=1}
-      cc2.drawImage(cardPlate(can,dw,dh),0,0,dw,dh);
-      ART.catIcon(id,dw/2,36,25,can?undefined:0.45);
+      // card = official udi battle art (face crop) on a cream plate, like the original deck
+      cc2.fillStyle='#f5eeda';rr(cc2,0,0,dw,dh,10);cc2.fill();
+      cc2.save();rr(cc2,1.5,1.5,dw-3,dh-3,9);cc2.clip();
+      const form=(st&&typeof st.fi==='number')?st.fi:0;
+      if(!drawPort(cc2,'udi',id,form,3,3,dw-6,dh-6,true))ART.catIcon(id,dw/2,38,26,can?undefined:0.6);
+      cc2.restore();
+      cc2.lineWidth=3;cc2.strokeStyle=can?'#fff':'#b8b2a0';rr(cc2,1.5,1.5,dw-3,dh-3,9);cc2.stroke();
+      // Lv chip top-left (original: small dark chip on the card corner)
+      const lv=st.lv||1;
+      cc2.fillStyle='rgba(20,14,6,.82)';rr(cc2,2.5,2.5,30,16,7);cc2.fill();
+      txt(cc2,'Lv'+lv,17.5,11,10.5,'#ffe8a0','center',2,'rgba(0,0,0,.5)',700);
       if(cd>0){ // recharge curtain falls from the top, revealing the card as it recharges (original sweep)
         const hgt=dh*clamp(cd/cdMax,0,1);
-        cc2.save();rr(cc2,1.5,1.5,dw-3,dh-3,10);cc2.clip();
+        cc2.save();rr(cc2,1.5,1.5,dw-3,dh-3,9);cc2.clip();
         cc2.fillStyle='rgba(10,14,24,.78)';cc2.fillRect(1.5,1.5,dw-3,hgt);cc2.restore();
-        txt(cc2,cd.toFixed(1),dw/2,dh/2+1,15,'#fff','center',3,'#22262f',700)}
-      else if(!afford){cc2.fillStyle='rgba(16,20,30,.4)';rr(cc2,0,0,dw,dh,10);cc2.fill()}
-      // cost badge at the card's bottom edge (original: dark plate + green number + ¢ symbol AFTER the digits)
+        txt(cc2,cd.toFixed(1),dw/2,dh/2-6,15,'#fff','center',3,'#22262f',700)}
+      else if(!afford){cc2.fillStyle='rgba(16,20,30,.4)';rr(cc2,0,0,dw,dh,9);cc2.fill()}
+      // cost INSIDE the card's bottom edge (original: dark plate + digits + ¢ AFTER the digits)
       const cs=String(st.cost);setFont(cc2,FONT(13,700));const csw=cc2.measureText(cs).width;
       const bw2=csw+21,bx2=dw/2-bw2/2; // plate sized for [digits + gap + symbol], group centered
-      cc2.fillStyle='rgba(10,14,22,.82)';rr(cc2,bx2,dh-16,bw2,18,9);cc2.fill();
+      cc2.fillStyle='rgba(10,14,22,.82)';rr(cc2,bx2,dh-19,bw2,17,8.5);cc2.fill();
       const cCol=afford?'#9ae89a':'#ff9a8a';
-      txt(cc2,cs,bx2+7,dh-7,13,cCol,'left',2.5,'rgba(8,10,16,.9)',700);
-      drawCent(cc2,bx2+7+csw+6.5,dh-7.5,5.5,cCol,'rgba(8,10,16,.9)',3)}});
+      txt(cc2,cs,bx2+7,dh-10.5,13,cCol,'left',2.5,'rgba(8,10,16,.9)',700);
+      drawCent(cc2,bx2+7+csw+6.5,dh-11,5.5,cCol,'rgba(8,10,16,.9)',3)}});
   });
 }
 function popTxtUI(s){toast(s,'#ffd94a')}

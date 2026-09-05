@@ -16,7 +16,11 @@
 let AC=null,masterG=null,bgmG=null,sfxG=null;
 let bgmTheme=null,bgmSrc=null,bgmGain=null,bgmFade=null;
 let bgmPlaying=null; // {theme} — same-theme guard (no restart on screen changes)
-const BGM_VOL=0.55,SFX_VOL=1.0;
+/* Mix targets (measured with EBU R128 over the real files — original extracts sit at
+   -10.9..-11.6 LUFS BGM / ~0 dBFS peaks SFX, i.e. already HOT). Playback gains place
+   the MIX where mobile games sit: BGM ≈ -18 LUFS under the action, SFX present but
+   never masking (frequent hits are the quietest, UI clicks present, cannon big). */
+const BGM_VOL=0.40,SFX_VOL=0.65;
 
 /* ---------- theme -> file ---------- */
 const BGM_FILE={
@@ -61,10 +65,13 @@ const SFX_FILE={
   door:['sfx/door.ogg']
 };
 const SFX_BUF={}; // key -> {buf, gain}
-const SFX_BOOST={cannon:0.9,shockwave:0.9,cannonpre:1.4,cannonready:1.6,critical:1.6,basehit:1.7,
-  deploy:2.6,hit1:2.6,hit2:2.6,die1:2.4,die2:2.4,click:2.2,cancel:2.0,scroll:1.6,item:2.0,
-  blocked:2.0,recharge:2.2,notif:2.2,capsule:1.8,stamp:2.0,gamatoto_xp:2.2,
-  win:1.6,lose:1.6,reward:1.6,door:1.8};
+/* per-file playback gains: files peak ≈ 0 dBFS, so gains <1 (-0..-12 dB) keep every
+   effect inside the mix. Frequent combat SFX sit lowest (they fire constantly); UI
+   feedback stays crisp; one-shots (cannon/jingles) land loudest. */
+const SFX_BOOST={cannon:0.55,shockwave:0.5,cannonpre:0.46,cannonready:0.46,critical:0.45,basehit:0.48,
+  deploy:0.52,hit1:0.32,hit2:0.32,die1:0.44,die2:0.44,click:0.52,cancel:0.48,scroll:0.42,item:0.52,
+  blocked:0.48,recharge:0.42,notif:0.42,capsule:0.52,stamp:0.48,gamatoto_xp:0.48,
+  win:0.62,lose:0.62,reward:0.62,door:0.5};
 const sfxLast={}; // per-key throttle
 let _hitAlt=0,_dieAlt=0;
 
@@ -99,10 +106,11 @@ function AudioUnlock(){
   if(AC){if(AC.state==='suspended')AC.resume();return}
   try{
     AC=new (window.AudioContext||window.webkitAudioContext)();
+    // true peak-safety limiter: sits ABOVE the mix (only stacked-SFX moments touch it)
     const comp=AC.createDynamicsCompressor();
-    comp.threshold.value=-14;comp.knee.value=20;comp.ratio.value=4;
-    comp.attack.value=0.003;comp.release.value=0.2;
-    masterG=AC.createGain();masterG.gain.value=0.6;
+    comp.threshold.value=-5;comp.knee.value=10;comp.ratio.value=2.5;
+    comp.attack.value=0.003;comp.release.value=0.15;
+    masterG=AC.createGain();masterG.gain.value=0.9;
     masterG.connect(comp);comp.connect(AC.destination);
     const bgmOn=(typeof SV!=='undefined'&&SV&&SV.settings.bgm);
     bgmG=AC.createGain();bgmG.gain.value=bgmOn?BGM_VOL:0;bgmG.connect(masterG);

@@ -295,7 +295,7 @@ function catStats(id,formIdx,costMul){
   let spd=f.speed*WALK_SPD,cd=f.cd,cost=Math.round(f.cost*(costMul||1)),kb=f.kb,range=f.range,rate=f.rate;
   const tals=catTalents(id);(c.tal||[]).forEach((t,i)=>{const lv=talentLv(id,i);if(!lv||!t.e)return;const m=lv*0.05;if(t.e.hp)hp*=1+t.e.hp*lv;if(t.e.atk)atk*=1+t.e.atk*lv;if(t.e.spd)spd*=(1+t.e.spd*lv*0.5);if(t.e.kb)kb+=0;});
   hp*=1;cd*=Math.max(0.4,Math.pow(0.94,SV.base.research-1)/treasureMult('speed')); // Research upgrades + 'speed' treasures both SHORTEN cooldown (overall floor 0.4x)
-  return {hp:Math.round(hp),atk:Math.round(atk),rate,range,speed:spd,kb,cost,cd,f,fi}
+  return {hp:Math.round(hp),atk:Math.round(atk),rate,range,speed:spd,kb,cost,cd,f,fi,lv:Math.floor(effLv)}
 }
 function unlockCat(id,src){if(SV.cats[id])return false;SV.cats[id]={lv:1,plus:0};if(src==='dupe'){const c=CATMAP[id];const np={rare:1,srar:2,uber:5,legend:10}[c.rarity]||0;SV.np+=np;SV.dupeXp+=200;return {dupe:true,np}}persist();return {new:true}}
 function rollGacha(bannerId){

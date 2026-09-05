@@ -573,29 +573,34 @@ function drawHome(dt){
     BTN('hcf',1128,680,152,38,()=>{SFX.click();push('store')},{flat:true,nohov:true})}
 }
 
-/* ---- MENU BOOK overlay (the original's open-book menu) ---- */
+/* ---- MENU BOOK overlay (the original's open-book menu: a grid of round gold buttons) ---- */
 function openBookMenu(){SFX.click();
-  openModal('MENU — BASE GUIDE',['Everything in your Cat Base, one book.'],[{n:'CLOSE',cb:()=>{}}],(mx,my,mw,mh)=>{
+  openModal('MENU',[],
+    [{n:'CLOSE',cb:()=>{}}],(mx,my,mw,mh)=>{
     const items=[
-      ['cat','CAT GUIDE','View your Cat units & forms',()=>push('guide')],
-      ['doge','ENEMY GUIDE','Enemy dictionary & stats',()=>push('guide')],
-      ['chest','TREASURES','Treasure sets & radar',()=>push('treasure')],
-      ['torii','CAT SHRINE','Pray for blessings',()=>push('shrine')],
-      ['compass','EXPEDITIONS','Gamatoto scouting runs',()=>push('expedition')],
-      ['trophy','TROPHIES','Catdex milestones',()=>push('trophies')],
-      ['cannon','CAT BASE','Ototo base upgrades',()=>push('base')],
-      ['scroll','MISSIONS','Daily missions',()=>openMissionsModal()],
-      ['gear','SETTINGS','Options & data',()=>push('settings')]];
+      ['cat','CAT GUIDE',()=>push('guide')],
+      ['doge','ENEMY GUIDE',()=>push('guide')],
+      ['chest','TREASURES',()=>push('treasure')],
+      ['torii','CAT SHRINE',()=>push('shrine')],
+      ['compass','EXPEDITIONS',()=>push('expedition')],
+      ['trophy','TROPHIES',()=>push('trophies')],
+      ['cannon','CAT BASE',()=>push('base')],
+      ['scroll','MISSIONS',()=>openMissionsModal()],
+      ['gear','SETTINGS',()=>push('settings')]];
     const cols=3,rows=Math.ceil(items.length/cols);
-    const tw=(mw-40-(cols-1)*10)/cols,th=88;
+    const cellW=(mw-36-(cols-1)*14)/cols,cellH=104;
     items.forEach((it,i)=>{
-      const cxx=mx+20+(i%cols)*(tw+10),cyy=my+8+Math.floor(i/cols)*(th+10);
-      creamPanel(cxx,cyy,tw,th);
-      cx.fillStyle='#c8913a';cx.beginPath();cx.arc(cxx+30,cyy+44,20,0,TAU);cx.fill();
-      cx.lineWidth=2.5;cx.strokeStyle='#8a5a20';cx.stroke();
-      glyph(cx,it[0],cxx+30,cyy+44,12,'#fff','#8a5a20');
-      txt(cx,it[1],cxx+58,cyy+34,13,'#5a3b16','left',2.5,'#fff',700);
-      txt(cx,it[2],cxx+58,cyy+54,9.5,'#8a7a5a','left');
+      const cxr=mx+18+(i%cols)*(cellW+14),cyr=my+6+Math.floor(i/cols)*(cellH+8);
+      // round gold button with the icon + label UNDER it (original menu layout)
+      const bx=cxr+cellW/2,by=cyr+42;
+      if(!PERF_NOFX()){cx.save();cx.shadowColor='rgba(60,36,8,.45)';cx.shadowBlur=8;cx.shadowOffsetY=4;
+        cx.fillStyle='#f0b428';cx.beginPath();cx.arc(bx,by,34,0,TAU);cx.fill();cx.restore()}
+      else{cx.fillStyle='#f0b428';cx.beginPath();cx.arc(bx,by,34,0,TAU);cx.fill()}
+      cx.lineWidth=3.5;cx.strokeStyle='#8a5a20';cx.beginPath();cx.arc(bx,by,34,0,TAU);cx.stroke();
+      cx.fillStyle='rgba(255,255,255,.35)';cx.beginPath();cx.arc(bx,by-8,22,Math.PI,TAU);cx.fill();
+      cx.fillStyle='#c8913a';cx.beginPath();cx.arc(bx,by,25,0,TAU);cx.fill();
+      glyph(cx,it[0],bx,by,15,'#fff','#8a5a20');
+      txt(cx,it[1],bx,cyr+92,12.5,'#5a3b16','center',3,'#fff',700);
       // hot dots
       let hot=null,hotCol='#e84030';
       if(it[0]==='chest')hot=radarHotCount()||null;
@@ -603,12 +608,11 @@ function openBookMenu(){SFX.click();
       if(it[0]==='compass'&&expdAnyDone()){hot='!';hotCol='#3abc6a'}
       if(it[0]==='trophy'){const tc2=trophyClaimCount();hot=tc2||null;hotCol='#c46adf'}
       if(it[0]==='scroll')hot=MISSIONS.filter(m=>missionDone(m.id)&&!missionClaimed(m.id)).length||null;
-      if(hot){cx.save();cx.translate(cxx+tw-16,cyy+14);cx.rotate(Math.sin(G.t*5)*0.12);
+      if(hot){cx.save();cx.translate(bx+28,by-28);cx.rotate(Math.sin(G.t*5)*0.12);
         cx.fillStyle=hotCol;cx.beginPath();cx.arc(0,0,10,0,TAU);cx.fill();
         cx.lineWidth=2;cx.strokeStyle='rgba(60,20,10,.6)';cx.stroke();
         txt(cx,String(hot),0,0.5,10,'#fff','center',2,'rgba(60,20,10,.6)',700);cx.restore()}
-      BTN('bk'+i,cxx,cyy,tw,th,()=>{G.modal=null;it[3]()},{flat:true,nohov:true,modal:true})});
-    txt(cx,'GACHA & STORE live on the base field — tap the capsule cats!',mx+mw/2,my+mh-14,11.5,'#8a6a4a','center',2.5,'#fff',400)})}
+      BTN('bk'+i,cxr,cyr,cellW,cellH,()=>{G.modal=null;it[2]()},{flat:true,nohov:true,modal:true})})})}
 function catOwnedCount(){return CATS.filter(c=>catOwned(c.id)).length}
 
 /* ============================== MODAL: DAILY MISSIONS ============================== */
@@ -845,10 +849,10 @@ function drawMap(dt){const c=CHMAP[G.chapter];
     /* hit rect registered in SCREEN space: BTN hit tests run in design coords (toDesign),
        but this code draws under the mapCam translate — without the offset the banner's
        hitbox sat thousands of px off-screen and map taps never landed (r23 E2E finding) */
-    /* Original map rule: only the CURRENT stage carries a name banner; cleared stages keep
-       their small Clear! ribbon; every other stage is just a red dot — no plate, no energy
-       label, no padlock clutter (the user's video showed this noise). */
-    if(!(nd.cur||nd.done||nd.endless))continue;
+    /* Original map rule (verified vs official screenshots): EVERY UNLOCKED stage shows its
+       name plate + 'Energy -N' (cleared ones add the Clear! ribbon); locked stages stay
+       plain red dots so the map never gets cluttered ahead of progress. */
+    if(!nd.unl)continue;
     cx.save();cx.globalAlpha=nd.unl?1:0.5;
     // banner plate
     cx.save();cx.shadowColor='rgba(50,32,10,.35)';cx.shadowBlur=nd.cur?10:4;cx.shadowOffsetY=nd.cur?4:2;
@@ -873,8 +877,8 @@ function drawMap(dt){const c=CHMAP[G.chapter];
       ribbon(cx,0,0,72,18,'#ffd23f','#8a5a10');txt(cx,'ENDLESS',0,0.5,10,'#7a4a08','center',2.5,'#fff',700);cx.restore()}
     if(nd.ev&&nd.done){cx.save();cx.translate(bx+32,by-4);cx.rotate(-0.08);
       ribbon(cx,0,0,72,18,'#5aa84a','#2e6a22');txt(cx,'CLEARED',0,0.5,10,'#fff','center',2.5,'#2e6a22',700);cx.restore()}
-    // Energy -N (cyan number, white outline) — ONLY on the current stage (original)
-    if(nd.cur){const eLbl='Energy -'+nd.energy;
+    // Energy -N (cyan number, white outline) — every unlocked stage (original shows the cost per stage)
+    {const eLbl='Energy -'+nd.energy;
       setFont(cx,FONT(12.5,700));const ew=cx.measureText(eLbl).width;
       const exs=bx+bW/2-ew/2;
       txt(cx,eLbl,exs,by+bH+13,12.5,'#e8fdff','left',3,'rgba(30,40,50,.85)',700);
@@ -1133,8 +1137,11 @@ function openStageModal(ch,idx){const c=CHMAP[ch];const st=genStage(ch,idx);SFX.
         cx.fillStyle='#fffdf5';rr(cx,ex,ey,tw,74,10);cx.fill();
         const tc=TRAIT_COL[e.tr[0]]||'#a89a78';cx.lineWidth=3;cx.strokeStyle=e.boss?'#e84030':tc;rr(cx,ex+1.5,ey+1.5,tw-3,71,9);cx.stroke();
         ART.enemyIcon(eid,ex+tw/2,ey+28,17);
-        const tl=e.tr.length?e.tr.map(t2=>t2.toUpperCase()).join('·'):'TRAITLESS';
-        txt(cx,tl,ex+tw/2,ey+56,6.8,shade(tc,.6),'center',2,'#fff',700);
+        // enemy NAME under the icon (original popup shows names; trait lives in the ring color)
+        let nl=e.n||'';let nfs2=8;setFont(cx,FONT(nfs2,700));
+        while(cx.measureText(nl).width>tw-10&&nfs2>5.5){nfs2-=0.5;setFont(cx,FONT(nfs2,700))}
+        txt(cx,nl,ex+tw/2,ey+56,nfs2,'#4a3a28','center',2,'#fff',700);
+        if(e.tr.length)txt(cx,e.tr.map(t2=>t2.toUpperCase()).join('·'),ex+tw/2,ey+66,6.2,shade(tc,.6),'center',1.6,'#fff',700);
         if(e.boss){cx.save();cx.translate(ex+tw/2,ey-1);cx.rotate(-0.08);cx.fillStyle='#e84030';rr(cx,-21,-8,42,15,4);cx.fill();txt(cx,'BOSS',0,-0.5,9,'#fff','center',2,'#7a1a10',700);cx.restore()}});
       if(uni.length>6)txt(cx,'+'+(uni.length-6)+' more',x+w/2,y+yOff+112,11,'#a89878','center',2,'#fff',400);
       else if(!uni.length)txt(cx,'No enemies \u2014 destroy the base!',x+w/2,y+yOff+60,12,'#a89878','center',2,'#fff',400);
@@ -1180,8 +1187,10 @@ function openEventModal(ev){const s=ev.s;const uni=[...new Set(s.pool)];
         cx.fillStyle='#fffdf5';rr(cx,ex,ey,tw,74,10);cx.fill();
         const tc=TRAIT_COL[e.tr[0]]||'#a89a78';cx.lineWidth=3;cx.strokeStyle=e.boss?'#e84030':tc;rr(cx,ex+1.5,ey+1.5,tw-3,71,9);cx.stroke();
         ART.enemyIcon(eid,ex+tw/2,ey+28,17);
-        const tl=e.tr.length?e.tr.map(t2=>t2.toUpperCase()).join('·'):'TRAITLESS';
-        txt(cx,tl,ex+tw/2,ey+56,6.8,shade(tc,.6),'center',2,'#fff',700);
+        let nl=e.n||'';let nfs3=8;setFont(cx,FONT(nfs3,700));
+        while(cx.measureText(nl).width>tw-10&&nfs3>5.5){nfs3-=0.5;setFont(cx,FONT(nfs3,700))}
+        txt(cx,nl,ex+tw/2,ey+56,nfs3,'#4a3a28','center',2,'#fff',700);
+        if(e.tr.length)txt(cx,e.tr.map(t2=>t2.toUpperCase()).join('·'),ex+tw/2,ey+66,6.2,shade(tc,.6),'center',1.6,'#fff',700);
         if(e.boss){cx.save();cx.translate(ex+tw/2,ey-1);cx.rotate(-0.08);cx.fillStyle='#e84030';rr(cx,-21,-8,42,15,4);cx.fill();txt(cx,'BOSS',0,-0.5,9,'#fff','center',2,'#7a1a10',700);cx.restore()}});
       if(uni.length>6)txt(cx,'+'+(uni.length-6)+' more',x+w/2,y+108,11,'#a89878','center',2,'#fff',400);
       else if(!uni.length)txt(cx,'No enemies \u2014 destroy the base!',x+w/2,y+56,12,'#a89878','center',2,'#fff',400);
@@ -1285,8 +1294,11 @@ function drawEquip(dt){
     cx.save();cx.shadowColor='rgba(40,70,90,.25)';cx.shadowBlur=5;cx.shadowOffsetY=3;
     cx.fillStyle=own?'#fffdf6':'#e4e2da';rr(cx,x,y,cw,chh,10);cx.fill();cx.restore();
     cx.lineWidth=on?4.5:3;cx.strokeStyle=on?'#ffd23f':'#26262e';rr(cx,x,y,cw,chh,10);cx.stroke();
-    if(own)ART.catIcon(c.id,x+cw/2,y+50,28);
-    else{ART.catIcon(c.id,x+cw/2,y+50,28,0.15);txt(cx,'?',x+cw/2,y+54,24,'#9a9284','center',3,'#fff',700)}
+    if(own)drawPort(cx,'uni',c.id,catForm(c.id),x+cw/2-42,y+8,84,84)||ART.catIcon(c.id,x+cw/2,y+50,28);
+    else{ // locked: plain dark plate with a big '?' — the original hides unowned art completely
+      cx.fillStyle='#4a4a56';rr(cx,x+40,y+18,cw-80,86,8);cx.fill();
+      cx.lineWidth=2.5;cx.strokeStyle='#33333d';rr(cx,x+40,y+18,cw-80,86,8);cx.stroke();
+      txt(cx,'?',x+cw/2,y+60,42,'#8a8a98','center',5,'rgba(20,20,28,.8)',700)}
     if(own){ // Lv tag
       cx.fillStyle='#26262e';rr(cx,x+8,y+chh-27,66,21,7);cx.fill();
       txt(cx,'Lv'+catLv(c.id)+(catPlus(c.id)?' +'+catPlus(c.id):''),x+41,y+chh-16.5,11,'#ffd23f','center',2,'#26262e',700)}
@@ -1357,21 +1369,24 @@ function drawUpgrade(dt){
     cx.save();cx.shadowColor='rgba(60,40,10,.4)';cx.shadowBlur=active?14:6;cx.shadowOffsetY=active?6:3;
     cx.fillStyle='#fffdf6';rr(cx,x,y,w,h,14);cx.fill();cx.restore();
     cx.lineWidth=active?5:3;cx.strokeStyle='#fffdf6';rr(cx,x,y,w,h,14);cx.stroke();
-    cx.fillStyle='#0c0c14';rr(cx,x+6,y+6,w-12,h-12,10);cx.fill(); // black interior
-    if(active){cx.lineWidth=1.5;cx.strokeStyle='rgba(255,255,255,.22)';rr(cx,x+9,y+9,w-18,h-18,8);cx.stroke()}
+    cx.fillStyle='#f5eeda';rr(cx,x+6,y+6,w-12,h-12,10);cx.fill(); // cream interior (official card)
+    if(active){cx.lineWidth=1.5;cx.strokeStyle='rgba(122,82,26,.35)';rr(cx,x+9,y+9,w-18,h-18,8);cx.stroke()}
     const nm=cc.forms[catForm(cc.id)].n;
     let nfs=active?19:14;setFont(cx,FONT(nfs,700));while(cx.measureText(nm).width>w-70&&nfs>9)nfs--;
-    txt(cx,nm,x+w/2,y+27,nfs,'#fff','center',4,'#000',700);
-    txt(cx,cc.rarity.toUpperCase(),x+w-12,y+27,9.5,shade(RAR_COL[cc.rarity],1.05),'right',3,'#000',700);
-    ART.catIcon(cc.id,x+w/2,y+h/2-16,active?46:33,active?undefined:0.62);
+    txt(cx,nm,x+w/2,y+27,nfs,'#3a2a12','center',4,'rgba(255,250,235,.9)',700);
+    txt(cx,cc.rarity.toUpperCase(),x+w-12,y+27,9.5,shade(RAR_COL[cc.rarity],0.82),'right',3,'rgba(255,250,235,.9)',700);
+    /* official udi art (face crop, correct proportions) — fills the card like the original */
+    const bandH2=active?62:50;
+    if(!drawPort(cx,'udi',cc.id,catForm(cc.id),x+12,y+40,w-24,h-bandH2-48,true))
+      ART.catIcon(cc.id,x+w/2,y+h/2-16,active?46:33,active?undefined:0.62);
     if(inTeam){ // red circular IN USE stamp over the art
       cx.save();cx.translate(x+w-58,y+h/2-14);cx.rotate(-0.28);
       cx.strokeStyle='#ff4040';cx.lineWidth=4;cx.beginPath();cx.arc(0,0,33,0,TAU);cx.stroke();
       cx.lineWidth=1.6;cx.beginPath();cx.arc(0,0,27,0,TAU);cx.stroke();
       txt(cx,'In use',0,-0.5,12.5,'#ff4040','center',3,'rgba(255,255,255,.8)',700);cx.restore()}
     const bandH=active?62:50;
-    cx.fillStyle='#23232e';rr(cx,x+6,y+h-bandH-6,w-12,bandH,8);cx.fill();
-    txt(cx,'Level',x+18,y+h-bandH/2-9,active?11.5:10,'#cfcfe0','left');
+    cx.fillStyle='#3d3226';rr(cx,x+6,y+h-bandH-6,w-12,bandH,8);cx.fill();
+    txt(cx,'Level',x+18,y+h-bandH/2-9,active?11.5:10,'#d8cfc0','left');
     txt(cx,String(lvv)+(plv?' +'+plv:''),x+72,y+h-bandH/2-6,active?22:16,'#ffd23f','left',3.5,'rgba(0,0,0,.85)',700);
     if(cost2!=null){
       txt(cx,'Req. XP',x+18,y+h-bandH/2+13,active?11:9.5,'#9a9ab0','left');
