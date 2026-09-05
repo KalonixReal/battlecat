@@ -90,30 +90,6 @@ function bgSky(){const g=cx.createLinearGradient(0,-VOY,0,DH);g.addColorStop(0,'
    All textures are baked through bakeGet() so per-frame cost is a drawImage/pattern fill.
    No emoji anywhere — pictograms are vector paths. */
 
-/* Baked mottled-parchment TILE (256px) — seeded so every bake is identical. */
-function parchTileBase(c2,base,dark,light){
-  c2.fillStyle=base;c2.fillRect(0,0,256,256);
-  const R=rnd(9137);
-  for(let i=0;i<46;i++){ // soft blotches (very low-contrast: faint aged tint, never dirty blobs)
-    const x=R()*256,y=R()*256,r=10+R()*46;
-    const g=c2.createRadialGradient(x,y,0,x,y,r);
-    const browner=R()<0.5;
-    g.addColorStop(0,browner?'rgba(146,116,66,0.13)':'rgba(246,236,206,0.28)');g.addColorStop(1,'rgba(0,0,0,0)');
-    c2.fillStyle=g;c2.beginPath();c2.arc(x,y,r,0,TAU);c2.fill()}
-  for(let i=0;i<330;i++){ // paper speckles / fibers
-    const x=R()*256,y=R()*256;
-    c2.fillStyle=R()<0.5?dark:light;c2.globalAlpha=0.02+R()*0.038;
-    c2.fillRect(x,y,1+R()*2.4,1+R()*1.6)}
-  c2.globalAlpha=1;
-  for(let i=0;i<16;i++){ // faint short fibers
-    const x=R()*256,y=R()*256,a=R()*TAU,l=6+R()*16;
-    c2.strokeStyle=dark;c2.globalAlpha=0.035;c2.lineWidth=1;
-    c2.beginPath();c2.moveTo(x,y);c2.lineTo(x+Math.cos(a)*l,y+Math.sin(a)*l);c2.stroke()}
-  c2.globalAlpha=1}
-
-/* Full aged-parchment MAP scene (baked at content size): base tile + lat/long grid +
-   continent blobs + compass rose + galleon + sea-serpent doodles + deckled torn edge +
-   edge vignette. key must encode size+tint. Returns {cv,w,h}. */
 /* ---- REAL EARTH MAP (official EoC parchment world map, equirectangular 2940x1440).
    Used for Empire of Cats (natural parchment) and Into the Future (tech tint), like the original. ---- */
 const EARTH_MAP={img:null,loading:false,ready:false};
@@ -130,73 +106,38 @@ function geo2map(lon,lat,mw,mh){return[(lon+180)/360*mw,(90-lat)/180*mh]}
 /* Chapter tint table: which overlay each story chapter gets (original EoC2/3 are darker recolors) */
 const CH_TINT={eoc1:null,eoc2:'rgba(40,16,60,.22)',eoc3:'rgba(140,16,10,.18)',itf1:'rgba(16,60,120,.30)',itf2:'rgba(10,40,90,.42)',itf3:'rgba(60,10,80,.38)'};
 
-function parchScene(w,h,tint){
-  const key='parch|'+w+'x'+h+'|'+(tint||'');
-  return bakeGet(key,w,h,(c2)=>{
-    const pat=c2.createPattern((function(){const off=document.createElement('canvas');off.width=256;off.height=256;
-      parchTileBase(off.getContext('2d'),'#d9c9a2','rgba(146,116,66,0.5)','rgba(246,236,206,0.55)');return off})(),'repeat');
-    c2.fillStyle=pat;c2.fillRect(0,0,w,h);
-    const R=rnd(4211);
-    // large soft light/shade clouds over the tile seams (kept gentle so the parchment reads clean)
-    for(let i=0;i<26;i++){const x=R()*w,y=R()*h,r=60+R()*160;
-      const g=c2.createRadialGradient(x,y,0,x,y,r);
-      g.addColorStop(0,R()<0.5?'rgba(146,116,66,0.05)':'rgba(250,242,214,0.07)');g.addColorStop(1,'rgba(0,0,0,0)');
-      c2.fillStyle=g;c2.beginPath();c2.arc(x,y,r,0,TAU);c2.fill()}
-    // faint cartographic lat/long grid
-    c2.strokeStyle='rgba(120,96,54,.13)';c2.lineWidth=1;
-    for(let gx=0;gx<=w;gx+=88){c2.beginPath();c2.moveTo(gx,0);c2.lineTo(gx,h);c2.stroke()}
-    for(let gy=0;gy<=h;gy+=88){c2.beginPath();c2.moveTo(0,gy);c2.lineTo(w,gy);c2.stroke()}
-    // continent blobs (faint outlined landmasses with hatch shores)
-    c2.strokeStyle='rgba(112,88,48,.30)';c2.fillStyle='rgba(214,192,142,.5)';c2.lineWidth=2;
-    for(let b=0;b<Math.max(4,Math.round(w*h/210000));b++){
-      const bx=R()*w,by=R()*h,br=46+R()*92,sq=0.5+R()*0.35,rot=R()*3;
-      c2.save();c2.translate(bx,by);c2.rotate(rot);c2.scale(1,sq);
-      c2.beginPath();c2.arc(0,0,br,0.3,2.4);c2.arc(br*0.7,br*0.35,br*0.55,2.0,4.6);c2.arc(-br*0.55,br*0.4,br*0.5,3.6,5.9);c2.closePath();
-      c2.fill();c2.stroke();c2.restore()}
-    // compass rose (upper-left area)
-    c2.save();c2.translate(w*0.11,h*0.16);c2.globalAlpha=0.5;
-    c2.strokeStyle='#8a6a3a';c2.lineWidth=2;c2.beginPath();c2.arc(0,0,30,0,TAU);c2.stroke();
-    c2.beginPath();c2.arc(0,0,21,0,TAU);c2.stroke();
-    for(let a=0;a<8;a++){c2.save();c2.rotate(a*TAU/8);
-      c2.fillStyle=a%2?'#8a6a3a':'#b0563a';
-      c2.beginPath();c2.moveTo(0,-38);c2.lineTo(6,-6);c2.lineTo(-6,-6);c2.closePath();c2.fill();c2.restore()}
-    c2.font='700 13px Trebuchet MS';c2.fillStyle='#7a5a2a';c2.textAlign='center';c2.fillText('N',0,-44);
-    c2.restore();
-    // galleon doodle (upper-right)
-    c2.save();c2.translate(w*0.86,h*0.12);c2.globalAlpha=0.42;c2.strokeStyle='#6a5028';c2.lineWidth=2.4;c2.lineCap='round';
-    c2.beginPath();c2.moveTo(-34,10);c2.quadraticCurveTo(0,22,34,8);c2.lineTo(26,-2);c2.lineTo(-26,-2);c2.closePath();c2.stroke();
-    c2.beginPath();c2.moveTo(0,-2);c2.lineTo(0,-40);c2.stroke();
-    c2.beginPath();c2.moveTo(0,-38);c2.quadraticCurveTo(20,-30,4,-14);c2.closePath();c2.stroke();
-    c2.beginPath();c2.moveTo(-8,-8);c2.lineTo(-8,-26);c2.lineTo(-20,-26);c2.lineTo(-8,-14);c2.stroke();
-    c2.beginPath();c2.moveTo(-46,16);c2.quadraticCurveTo(-30,10,-20,14);c2.moveTo(40,14);c2.quadraticCurveTo(52,10,60,16);c2.stroke();
-    c2.restore();
-    // sea-serpent doodle (lower-left)
-    c2.save();c2.translate(w*0.12,h*0.82);c2.globalAlpha=0.34;c2.strokeStyle='#6a5028';c2.lineWidth=2.4;c2.lineCap='round';
-    c2.beginPath();c2.moveTo(-40,10);
-    for(let s=0;s<4;s++)c2.quadraticCurveTo(-40+s*22+11,-14,-40+(s+1)*22,10);
-    c2.stroke();
-    c2.beginPath();c2.arc(54,4,8,0,TAU);c2.stroke();
-    c2.beginPath();c2.moveTo(58,-3);c2.lineTo(64,-10);c2.moveTo(50,-4);c2.lineTo(44,-12);c2.stroke();
-    c2.restore();
-    // "HERE BE CATS" cartouche (decorative label)
-    c2.save();c2.translate(w*0.88,h*0.9);c2.globalAlpha=0.4;
-    c2.strokeStyle='#6a5028';c2.lineWidth=2;rr(c2,-70,-16,140,32,10);c2.stroke();
-    c2.font='700 14px Trebuchet MS';c2.fillStyle='#6a5028';c2.textAlign='center';c2.textBaseline='middle';
-    c2.fillText('HERE BE CATS',0,1);c2.restore();
-    // deckled torn inner edge: irregular bite marks just inside the border
-    c2.strokeStyle='rgba(92,70,36,.55)';c2.lineWidth=3;
-    c2.save();c2.beginPath();
-    const teeth=(x0,y0,x1,y1,horiz)=>{const steps=Math.round((horiz?x1-x0:y1-y0)/26);
-      for(let i2=0;i2<=steps;i2++){const t=i2/steps,j=(R()-0.5)*7;
-        const px=horiz?x0+(x1-x0)*t:x0+j, py=horiz?y0+j:y0+(y1-y0)*t;
-        if(i2===0)c2.moveTo(px,py);else c2.lineTo(px,py)}};
-    teeth(6,6,w-6,6,true);teeth(w-6,6,w-6,h-6,false);teeth(w-6,h-6,6,h-6,true);teeth(6,h-6,6,6,false);
-    c2.stroke();c2.restore();
-    // edge vignette (aged darkening)
-    const vg=c2.createRadialGradient(w/2,h/2,Math.min(w,h)*0.42,w/2,h/2,Math.max(w,h)*0.72);
-    vg.addColorStop(0,'rgba(80,58,24,0)');vg.addColorStop(1,'rgba(80,58,24,0.26)');
+/* ---- r32 REAL MAP BACKDROP for non-story maps (SoL/UL/Aku/Dojo/events): a genuine
+   in-game battle background, cover-fit to the map extents + readability veil + tint.
+   Replaces the invented parchment scene (fake continents/compass/galleon doodles) —
+   base-game art only. Own image cache so releasing a battle's memory never blanks
+   the map screen. ---- */
+const _mapBgImgs={};
+function mapBackdrop(name,w,h,tint){
+  const ext=(typeof mapFileExt==='function')?mapFileExt(name):'webp';
+  const im=lazyImg(_mapBgImgs,name,'assets/maps/'+name+'.'+ext);
+  const ready=imgReady(im);
+  const key='mapbg|'+name+'|'+w+'x'+h+'|'+(tint||'')+(ready?'|r':'');
+  if(!ready&&im.addEventListener&&!im._mbHook){ // still decoding: re-bake the moment it lands
+    im._mbHook=1;
+    const drop=()=>{try{for(const k of Array.from(BAKE.keys())){if(k.indexOf('mapbg|'+name+'|')===0)BAKE.delete(k)}}catch(e){}};
+    im.addEventListener('load',drop,{once:true});
+    im.addEventListener('error',drop,{once:true});
+  }
+  return bakeGet(key,Math.max(2,w),Math.max(2,h),(c2)=>{
+    c2.fillStyle='#3a2a16';c2.fillRect(0,0,w,h); // warm dark base tone (also the pre-decode look)
+    if(ready&&im.naturalWidth){
+      const s=Math.max(w/im.naturalWidth,h/im.naturalHeight); // cover-fit
+      const dw=Math.ceil(im.naturalWidth*s),dh=Math.ceil(im.naturalHeight*s);
+      c2.imageSmoothingEnabled=true;
+      c2.drawImage(im,Math.round((w-dw)/2),Math.round((h-dh)/2),dw,dh);
+    }
+    // readability veil + edge vignette — stage banners/dots pop like the original's map screens
+    c2.fillStyle='rgba(24,16,8,.28)';c2.fillRect(0,0,w,h);
+    const vg=c2.createRadialGradient(w/2,h/2,Math.min(w,h)*0.35,w/2,h/2,Math.max(w,h)*0.75);
+    vg.addColorStop(0,'rgba(10,6,2,0)');vg.addColorStop(1,'rgba(10,6,2,.42)');
     c2.fillStyle=vg;c2.fillRect(0,0,w,h);
-    if(tint){c2.fillStyle=tint;c2.fillRect(0,0,w,h)}})}
+    if(tint){c2.fillStyle=tint;c2.fillRect(0,0,w,h)}}).cv
+}
 
 /* Kikkou (interlocking-scale / seigaiha) baked TILE for chrome strips. */
 function kikkouTile(c2,fill,line){
@@ -254,12 +195,15 @@ function ribbon(c,x,y,w,h,col,edge){
   c.lineWidth=2;c.strokeStyle=edge;rr(c,-w/2,-h/2,w,h,h*0.28);c.stroke();
   c.restore()}
 
-/* White :3 cat map-marker with soft shadow + gentle bob (t = global time). */
+/* White cat map-marker with soft shadow + gentle bob (t = global time).
+   r32: draws the REAL basic-cat icon from the cutout atlas (base-game art) —
+   the old painted head painter was removed in r30 and left a crash here. */
 function catMarker(c,x,y,s,t){
   const bob=Math.sin(t*2.6)*2.5;
   c.save();c.translate(x,y+bob);
   c.fillStyle='rgba(60,40,14,.28)';c.beginPath();c.ellipse(0,s*0.92-bob,s*0.72,s*0.2,0,0,TAU);c.fill();
-  ART.catHead(0,-s*0.05,s*0.62,false);
+  const r=s*0.5;
+  if(typeof SPRIT!=='undefined'&&SPRIT.icon)SPRIT.icon('cat','cat',0,-s*0.12,r);
   c.restore()}
 
 /* Big capsule machine (gacha idle centerpiece). col/cap = banner colors, s = scale (~2.0).

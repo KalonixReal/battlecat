@@ -49,7 +49,13 @@ const BGM_FILE={
   win:'ogg/jingle_win.ogg',lose:'ogg/jingle_lose.ogg',reward:'ogg/jingle_reward.ogg',
   door:'sfx/door.ogg'
 };
+/* r32 LOAD SPLIT: themes the BOOT loading screen decodes (everything outside battles)
+   vs. themes the BATTLE loading screen decodes + releases when the fight is over. */
+const MENU_BGM=new Set(['menu','upgrade','results','gamatoto','win','lose','reward','door']);
+const BATTLE_BGM=new Set(Object.keys(BGM_FILE).filter(t=>!MENU_BGM.has(t)));
 const bgmBuf={}; // theme -> AudioBuffer
+const BGM_PENDING={}; // theme -> 1 while its decode is in flight (battle gate reads this)
+let _audioGen=0; // bumped by AudioReleaseBattle — stale in-flight decodes must not re-store buffers
 
 /* ---------- real SFX ---------- */
 const SFX_FILE={
@@ -64,6 +70,10 @@ const SFX_FILE={
   win:['ogg/jingle_win.ogg'],lose:['ogg/jingle_lose.ogg'],reward:['ogg/jingle_reward.ogg'],
   door:['sfx/door.ogg']
 };
+/* r32 LOAD SPLIT: menu/UI sounds decode at boot; combat sounds decode with the battle. */
+const MENU_SFX=new Set(['click','cancel','scroll','item','blocked','notif','capsule','stamp','gamatoto_xp','win','lose','reward','door']);
+const BATTLE_SFX=new Set(Object.keys(SFX_FILE).filter(k=>!MENU_SFX.has(k)));
+const SFX_PENDING={}; // key -> 1 while decode in flight (battle gate reads this)
 const SFX_BUF={}; // key -> {buf, gain}
 /* per-file playback gains: files peak ≈ 0 dBFS, so gains <1 (-0..-12 dB) keep every
    effect inside the mix. Frequent combat SFX sit lowest (they fire constantly); UI
@@ -78,27 +88,71 @@ let _hitAlt=0,_dieAlt=0;
 function sfxOn(){return typeof SV!=='undefined'&&SV&&SV.settings.sfx&&AC}
 
 const AUDIO_PRELOAD={reg:0,done:0};
-function AudioBakeProbe(){ // kept for boot compatibility — loads the AUTHENTIC audio now
+/* r32: AudioBakeProbe now decodes ONLY the menu set (boot screen scope). Battle themes
+   + combat SFX decode in AudioPreloadBattle() when the battle loading screen is up,
+   and AudioReleaseBattle() frees them when the fight ends (finished or quit). */
+function AudioBakeProbe(){
   if(!AC)return;
   const load=(key,file,gain)=>{
-    if(SFX_BUF[key])return;
+    if(SFX_BUF[key]||SFX_PENDING[key])return;
+    SFX_PENDING[key]=1;
     AUDIO_PRELOAD.reg++;
     fetch('assets/audio/'+file).then(r=>r.ok?r.arrayBuffer():null)
       .then(b=>b?AC.decodeAudioData(b):null)
-      .then(ab=>{if(ab)SFX_BUF[key]={buf:ab,gain:gain};AUDIO_PRELOAD.done++}).catch(()=>{AUDIO_PRELOAD.done++});
+      .then(ab=>{if(ab)SFX_BUF[key]={buf:ab,gain:gain};delete SFX_PENDING[key];AUDIO_PRELOAD.done++}).catch(()=>{delete SFX_PENDING[key];AUDIO_PRELOAD.done++});
   };
-  for(const k in SFX_FILE){if(SFX_BUF[k])continue;load(k,SFX_FILE[k][0],SFX_BOOST[k]||1.4)}
-  for(const t in BGM_FILE){
-    if(bgmBuf[t])continue;
-    AUDIO_PRELOAD.reg++;
+  for(const k of MENU_SFX){if(SFX_BUF[k]||!SFX_FILE[k])continue;load(k,SFX_FILE[k][0],SFX_BOOST[k]||1.4)}
+  for(const t of MENU_BGM){
+    if(bgmBuf[t]||BGM_PENDING[t]||!BGM_FILE[t])continue;
+    BGM_PENDING[t]=1;AUDIO_PRELOAD.reg++;
     (t=>{fetch('assets/audio/'+BGM_FILE[t]).then(r=>r.ok?r.arrayBuffer():null)
       .then(b=>b?AC.decodeAudioData(b):null)
       .then(ab=>{if(ab){bgmBuf[t]=ab}
+        delete BGM_PENDING[t];
         AUDIO_PRELOAD.done++;
         // late decode: if this theme is wanted but silent, start it now
         if(bgmTheme===t&&!bgmSrc)bgmStart()
-      }).catch(()=>{AUDIO_PRELOAD.done++})})(t);
+      }).catch(()=>{delete BGM_PENDING[t];AUDIO_PRELOAD.done++})})(t);
   }
+}
+/* ---- r32 BATTLE AUDIO: decoded by the battle loading screen, released when the
+   battle is over. themes = the exact themes the upcoming fight can switch to. ---- */
+function AudioPreloadBattle(themes){
+  if(!AC)return;
+  const gen=_audioGen;
+  const want=new Set();
+  (themes||[]).forEach(t=>{if(BGM_FILE[t])want.add(t)});
+  BATTLE_BGM.forEach(t=>want.add(t)); // whole battle set (browser cache makes repeats instant)
+  want.forEach(t=>{
+    if(bgmBuf[t]||BGM_PENDING[t])return;
+    BGM_PENDING[t]=1;
+    fetch('assets/audio/'+BGM_FILE[t]).then(r=>r.ok?r.arrayBuffer():null)
+      .then(b=>b?AC.decodeAudioData(b):null)
+      .then(ab=>{if(gen===_audioGen&&ab){bgmBuf[t]=ab}
+        delete BGM_PENDING[t];
+        if(bgmTheme===t&&!bgmSrc)bgmStart()
+      }).catch(()=>{delete BGM_PENDING[t]})
+  });
+  BATTLE_SFX.forEach(k=>{
+    if(SFX_BUF[k]||SFX_PENDING[k]||!SFX_FILE[k])return;
+    SFX_PENDING[k]=1;
+    fetch('assets/audio/'+SFX_FILE[k][0]).then(r=>r.ok?r.arrayBuffer():null)
+      .then(b=>b?AC.decodeAudioData(b):null)
+      .then(ab=>{if(gen===_audioGen&&ab)SFX_BUF[k]={buf:ab,gain:SFX_BOOST[k]||1.4};delete SFX_PENDING[k]})
+      .catch(()=>{delete SFX_PENDING[k]})
+  });
+}
+/* gate helper: every battle theme/sfx the fight touches decoded (or failed → not pending)? */
+function AudioBattleReady(themes){
+  for(const t of (themes||[])){if(BGM_PENDING[t])return false}
+  for(const k of BATTLE_SFX){if(SFX_PENDING[k])return false}
+  return true}
+/* memory release: drop decoded battle BGM buffers + combat SFX (menu set stays).
+   _audioGen invalidates any in-flight decode so a late finish can't re-store. */
+function AudioReleaseBattle(){
+  _audioGen++;
+  for(const t of BATTLE_BGM){delete bgmBuf[t]}
+  for(const k of BATTLE_SFX){delete SFX_BUF[k]}
 }
 
 /* ---------- core unlock ---------- */
@@ -119,6 +173,7 @@ function AudioUnlock(){
     if(bgmTheme)bgmStart();
   }catch(e){}
 }
+window.AudioPreloadBattle=AudioPreloadBattle;window.AudioBattleReady=AudioBattleReady;window.AudioReleaseBattle=AudioReleaseBattle;
 
 /* ---------- synth primitives (fallbacks; signatures preserved) ---------- */
 function tone(f,dur,type,vol,slide,when,dest){

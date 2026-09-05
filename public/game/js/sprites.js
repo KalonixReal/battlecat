@@ -180,6 +180,16 @@ const SPRIT=(()=>{
      needUnit/needIcon: the Image objects a given unit will use — the battle loading
      screen gates on these being fully decoded before the field fades in. */
   function adopt(url,im){if(im&&M.imgs[url]===undefined)M.imgs[url]=im}
+  /* r32 MEMORY SPLIT: drop the decoded ENEMY STRIP bitmaps when a battle ends
+     (finished/quit). Enemy ICONS + all cat art stay (equip/guide/trophies use them
+     outside battle); a re-entered battle re-fetches strips from the HTTP cache —
+     the battle loading screen gates on them again, so nothing pops in. */
+  function releaseEnemies(){
+    let n=0;
+    for(const k in M.imgs){
+      if(k.indexOf('assets/sprites/c_enemy_')===0){delete M.imgs[k];n++}
+    }
+    return n}
   function needUnit(kind,id,form){
     const fm=formEntry(kind,id,form);const out=[];
     const push=(en)=>{if(!en)return;(Array.isArray(en.img)?en.img:[en.img]).forEach(f=>out.push(img(BASE+f)))};
@@ -192,6 +202,6 @@ const SPRIT=(()=>{
       for(let f=(form||0)+1;f<3&&!fn;f++)fn=M.icons[kind+':'+id+':'+f]}
     return fn?img(BASE+fn):null}
   const stripReady=(en)=>{if(!en)return false;const l=Array.isArray(en.img)?en.img:[en.img];return l.every(f=>{const im=img(BASE+f);return im&&im.naturalWidth})};
-  return{init,draw,icon,formEntry,stats,adopt,needUnit,needIcon,ready:(k,i,f)=>{const fm=formEntry(k,i,f);return!!(fm&&(stripReady(fm.walk)||stripReady(fm.atk)))}};
+  return{init,draw,icon,formEntry,stats,adopt,releaseEnemies,needUnit,needIcon,ready:(k,i,f)=>{const fm=formEntry(k,i,f);return!!(fm&&(stripReady(fm.walk)||stripReady(fm.atk)))}};
 })();
 if(typeof window!=='undefined'){window.SPRIT=SPRIT;window.addEventListener('DOMContentLoaded',()=>{try{SPRIT.init()}catch(e){}})}

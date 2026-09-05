@@ -9,20 +9,13 @@
 const SCREENS={title:drawTitle,home:drawHome,chapters:drawChapters,map:drawMap,submap:drawSubmap,equip:drawEquip,upgrade:drawUpgrade,gacha:drawGacha,treasure:drawTreasure,guide:drawGuide,base:drawBase,settings:drawSettings,store:drawStore,battle:drawBattle,expedition:drawExpedition,leaderboard:drawLeaderboard,trophies:drawTrophies,shrine:drawShrine};
 let lastTs=0,persistT=0,energyT=0;
 
-/* ------------------------------ preload pipeline v4 (r31) ------------------------------
-   OLD flow: download ALL 500MB before TAP TO START → minute-long boot on any
-   connection. NEW flow:
-   PHASE 1 — "first paint" gate (a handful of small files): official logo, title
-   bg, play/option buttons, doors (home bg), catbase json + idle strip (the
-   walking cat under the logo + the home-screen cat). READY → TAP in ~1-2s.
-   PHASE 2 — prioritized N-parallel BACKGROUND pool, starts as soon as the
-   manifest is read (while the TAP screen is still up): deck cats +
-   the real first battle's enemies first, then all strips/icons, portraits, ui,
-   maps, castles, and the full soundtrack. Battles never blind-wait on the pool:
-   the per-battle loading gate still checks the exact images that fight touches
-   (and the pool already finished them by the time you get there).
-   ONE queue — SPRIT no longer downloads on its own (two racing queues used to
-   double-fetch the same files and fight for bandwidth). */
+/* ------------------------------ preload pipeline v5 (r32) ------------------------------
+   LOAD SPLIT, exactly as the original game divides its data:
+   BOOT loading screen — cats, the map, everything OUTSIDE battles: title/home art,
+   all cat strips, every icon, portrait atlas, UI chrome, the real Earth map, the
+   menu soundtrack. Battle loading screen — EVERYTHING ELSE: the enemy strips, the
+   battle backgrounds, the castles and the full battle soundtrack, and when a
+   battle is finished or quit, releaseBattleMemory() frees those decodes again. */
 const PRELOAD={total:0,done:0,ready:false,tap:false,failed:[],phase:'',walking:0,disp:0,bgTotal:0,bgDone:0};
 function _pAdd(wt){PRELOAD.total+=wt}
 function _pDone(wt){PRELOAD.done+=wt;if(!PRELOAD.ready&&PRELOAD.total>0&&PRELOAD.done>=PRELOAD.total)finishPreload()}
@@ -72,13 +65,13 @@ function poolPump(){
     im.src=url;
   }
 }
-function spriteUrlsFromManifest(sp,filter){
+function spriteUrlsFromManifest(sp,filter,withIcons){
   const urls=[];
   for(const k in (sp.units||{}))for(const f in sp.units[k].forms){
     const fm=sp.units[k].forms[f];
     for(const a of ('walk atk idle').split(' ')){const en=fm[a];if(!en)continue;
       (Array.isArray(en.img)?en.img:[en.img]).forEach(img=>{if(!filter||filter(k,f,a))urls.push('assets/sprites/'+img)})}}
-  for(const k in (sp.icons||{}))urls.push('assets/sprites/'+sp.icons[k]);
+  if(withIcons!==false)for(const k in (sp.icons||{}))urls.push('assets/sprites/'+sp.icons[k]);
   return urls;
 }
 function preloadRun(){
@@ -110,34 +103,58 @@ function startBackgroundPool(sp,lists){
   const q1=[],q2=[],q3=[]; // priority buckets
   const seen=new Set();
   const add=(bucket,url)=>{if(seen.has(url))return;seen.add(url);bucket.push(url)};
-  // BUCKET 1 — the actual first tap targets: deck cats (strips+icons) + first battle's enemies
+  // BUCKET 1 — the actual first tap targets: deck cats (strips+icons)
   try{
     const deck=(SV&&SV.teams&&SV.teams[0]?SV.teams[0]:[]).filter(Boolean);
     if(!deck.length&&typeof CATMAP!=='undefined')Object.keys(CATMAP).slice(0,10).forEach(id=>deck.push(id));
-    const first=typeof genStage==='function'?genStage('eoc1',0):null;
-    const foes=new Set();
-    if(first)first.script.forEach(w=>w.spawns.forEach(s=>foes.add(s.e)));
-    if(first&&first.boss)foes.add(first.boss);
     (sp.units?Object.keys(sp.units):[]).forEach(k=>{
       const [side,id]=k.split(':');
-      const hot=(side==='cat'&&deck.indexOf(id)>=0)||(side==='enemy'&&foes.has(id));
+      const hot=(side==='cat'&&deck.indexOf(id)>=0);
       if(!hot)return;
       for(const f in sp.units[k].forms){const fm=sp.units[k].forms[f];
         for(const a of ['walk','atk','idle']){const en=fm[a];if(!en)continue;
           (Array.isArray(en.img)?en.img:[en.img]).forEach(img=>add(q1,'assets/sprites/'+img))}}
     });
   }catch(e){}
-  // BUCKET 2 — everything else the roster draws: all strips + all icons + portraits
-  spriteUrlsFromManifest(sp).forEach(u=>add(q2,u));
+  /* r32 LOAD SPLIT — the BOOT screen owns everything OUTSIDE battles:
+     all CAT strips, every icon (cats + enemies — the guide/trophies draw those),
+     the portrait atlas, the UI chrome and the real Earth map. Enemy STRIPS,
+     battle backgrounds and the castles are NOT touched here — they belong to the
+     battle loading screen (window.__BATTLE_POOL, started on first battle entry,
+     released when the fight ends). */
+  spriteUrlsFromManifest(sp,(k)=>k.split(':')[0]!=='enemy',true).forEach(u=>add(q2,u)); // strips+icons for menu side
   add(q2,'assets/sprites/ports.png');
-  // BUCKET 3 — world art + remaining ui (battles gate per-fight regardless)
+  // BUCKET 3 — world art for the menu screens: ui images + the real Earth map
   (lists.ui||[]).forEach(n=>add(q3,'assets/ui/'+n));
-  (lists.maps||[]).forEach(n=>add(q3,'assets/maps/'+n));
-  (lists.castles||[]).forEach(n=>add(q3,'assets/'+n)); // preload.json castle paths are 'castles/<set>/<file>' relative to assets/
+  add(q3,'assets/maps/eoc_map.png');
   [...q1,...q2,...q3].forEach(poolAdd);
+  // ---- BATTLE POOL (deferred): enemy strips + battle backgrounds + castles.
+  // battle.js starts this the moment a battle loading screen appears (prioritized:
+  // this fight's enemies first), and releaseBattleMemory() drops the decoded
+  // bitmaps when the battle is finished or quit. ----
+  const bq=[];
+  const bseen=new Set();
+  const badd=(url)=>{if(bseen.has(url))return;bseen.add(url);bq.push(url)};
+  spriteUrlsFromManifest(sp,(k)=>k.split(':')[0]==='enemy',false).forEach(badd); // enemy STRIPS only (icons already at boot)
+  (lists.maps||[]).forEach(n=>{if(n!=='eoc_map')badd('assets/maps/'+n)});
+  (lists.castles||[]).forEach(n=>badd('assets/'+n));
+  window.__BATTLE_POOL={urls:bq,started:false};
   // audio decodes in parallel with images (suspended context decodes fine; tap resumes)
+  // r32: boot decodes the MENU set only — battle themes/SFX decode at battle load
   try{AudioUnlockSilent()}catch(e){}
   try{AudioBakeProbe()}catch(e){}
+}
+/* r32: battle.js calls this when a battle starts — pumps the deferred battle pool
+   (fight-critical urls first) through the same N-parallel queue. */
+function battlePoolStart(priorityUrls){
+  const P=window.__BATTLE_POOL;
+  if(!P)return;
+  if(!P.started){P.started=true;
+    const pri=(priorityUrls||[]);
+    P.urls.sort((a,b)=>{const pa=pri.indexOf(a),pb=pri.indexOf(b);
+      return (pa<0?1e9:pa)-(pb<0?1e9:pb)});
+  }
+  poolPump();
 }
 /* ui images go through ui.js's cache so drawTitle/drawHome use the SAME objects */
 function uiImgCache(name,url){

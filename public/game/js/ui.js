@@ -794,7 +794,12 @@ function drawMap(dt){const c=CHMAP[G.chapter];
     mapW=Math.max(DW,x0+(cols-1)*sx+230);mapH=Math.max(660,y0+Math.ceil(K.n/cols)*sy+130);
   }
   const tint=useReal?(CH_TINT[G.chapter]||null):(c.kind==='aku'?'rgba(84,24,100,.20)':c.kind==='event'?'rgba(255,168,64,.12)':c.kind==='dojo'?'rgba(120,72,26,.14)':'');
-  const scene=useReal?null:parchScene(Math.round(mapW),Math.round(mapH),tint);
+  /* r32: non-story maps (SoL/UL/Aku/Dojo/events) use a REAL in-game background as
+     the map backdrop — base-game art only, the invented parchment scene (fake
+     continents/compass/galleon/serpent doodles) is gone. Own cache so a battle's
+     memory release never blanks the map screen. */
+  const MAP_BG={sol:'Bg028',ul:'Bg057',aku:'Bg019',dojo:'Bg043',event:'Bg023'};
+  const scene=useReal?null:mapBackdrop(MAP_BG[c.kind]||'Bg012',Math.round(mapW),Math.round(mapH),tint);
   // ---- node state table ----
   const next=nextPlayableIdx(c);
   const clearedN=c.kind==='sol'||c.kind==='ul'?Object.keys(SV.cleared[c.id]||{}).length:0;
@@ -828,7 +833,7 @@ function drawMap(dt){const c=CHMAP[G.chapter];
     cx.drawImage(im,16-G.mapCam.x,70-G.mapCam.y);
     if(tint){cx.fillStyle=tint;cx.fillRect(16-G.mapCam.x,70-G.mapCam.y,mapW,mapH)}
   }else{
-    cx.drawImage(scene.cv,16-G.mapCam.x,70-G.mapCam.y);
+    cx.drawImage(scene,16-G.mapCam.x,70-G.mapCam.y);
   }
   cx.translate(-G.mapCam.x+16,-G.mapCam.y+70);
   // white dotted path winding through the nodes

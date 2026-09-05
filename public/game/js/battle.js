@@ -34,18 +34,42 @@ function startBattle(st){
   st.script.forEach(w=>{w.spawns.forEach(s=>{for(let k=0;k<s.count;k++)B.queue.push({t:w.t+k*s.interval,e:s.e})})});
   B.queue.sort((a,b)=>a.t-b.t);
   B.tint={eoc2:'rgba(255,72,40,.16)',eoc3:'rgba(24,22,44,.30)'}[st.ch]||null; // EoC Ch2 crimson / Ch3 shadow unit wash (original palette swap)
-  /* ---- battle loading gate (r27): collect EVERY image this fight touches — stage bg,
-     castle, cat-base strips, each team cat's strips+icon, every queued enemy's strips —
-     the field only fades in once all of them are fully decoded (nothing pops in later). */
-  const need=stageNeeds(st).map(n=>n[1]);
+  /* ---- battle loading gate (r32): collect EVERY asset this fight touches — stage bg,
+     castle, cat-base strips, each team cat's strips+icon, every queued enemy's strips,
+     plus the battle soundtrack — the field only fades in once all of them are fully
+     decoded (nothing pops in later). FAILED assets never wedge the bar: a 404 marks
+     its entry ready-with-warning, and a 12s valve forces the fight open. ---- */
+  const need=stageNeeds(st).map(n=>n[1]).filter(Boolean);
   const cSeen=new Set();
   teamIds.forEach(id=>{if(cSeen.has(id))return;cSeen.add(id);
-    if(typeof SPRIT!=='undefined'){SPRIT.needUnit('cat',id).forEach(im=>need.push(im));
+    if(typeof SPRIT!=='undefined'){SPRIT.needUnit('cat',id).forEach(im=>{if(im)need.push(im)});
       const ic=SPRIT.needIcon('cat',id);if(ic)need.push(ic)}});
   const eSeen=new Set();
+  const priUrls=[]; // battle-pool priority: this fight's enemy strips + bg + castle first
   st.script.forEach(w=>w.spawns.forEach(s=>{if(eSeen.has(s.e))return;eSeen.add(s.e);
-    if(typeof SPRIT!=='undefined')SPRIT.needUnit('enemy',s.e).forEach(im=>need.push(im))}));
-  B.load={need,ready:false,t:0,p:0,intro:0,started:false};
+    if(typeof SPRIT!=='undefined')SPRIT.needUnit('enemy',s.e).forEach(im=>{if(im)need.push(im)})}));
+  if(st.boss&&typeof SPRIT!=='undefined'&&!eSeen.has(st.boss)){SPRIT.needUnit('enemy',st.boss).forEach(im=>{if(im)need.push(im)})}
+  const failSet=new Set();
+  need.forEach(im=>{
+    if(im.complete&&!im.naturalWidth){failSet.add(im);return} // already failed (cached 404)
+    if(im.addEventListener)im.addEventListener('error',()=>{failSet.add(im)},{once:true});
+  });
+  const themes=[st.bgm||'eoc',st.bossBgm||'boss','boss2','boss3','god'];
+  B.load={need,ready:false,t:0,p:0,intro:0,started:false,failSet,themes,valve:12};
+  // r32: battle loading screen owns the battle-side assets — start the deferred pool
+  // (fight-critical urls first) + decode the battle soundtrack now
+  try{const bg=stageBgPic(st);if(bg)priUrls.push('assets/maps/'+bg+'.'+((typeof mapFileExt==='function')?mapFileExt(bg):'webp'));
+    if(typeof castleUrlFor==='function')priUrls.push(castleUrlFor(st));
+    (typeof window.__MANIFEST!=='undefined'&&window.__MANIFEST.units?Object.keys(window.__MANIFEST.units):[]).forEach(k=>{
+      if(k.split(':')[0]!=='enemy')return;const eid=k.split(':')[1];
+      if(!eSeen.has(eid))return;
+      const u=window.__MANIFEST.units[k];
+      for(const f in u.forms){const fm=u.forms[f];
+        for(const a of ['walk','atk','idle']){const en=fm[a];if(!en)continue;
+          (Array.isArray(en.img)?en.img:[en.img]).forEach(fn=>priUrls.push('assets/sprites/'+fn))}}});
+  }catch(e){}
+  try{if(typeof battlePoolStart==='function')battlePoolStart(priUrls)}catch(e){}
+  try{if(typeof AudioPreloadBattle==='function')AudioPreloadBattle(themes)}catch(e){}
   G.onDrag=null;push('battle');
   // BGM + 'GO!' wait for the gate (music starting over a loading card felt broken)
   if(need.length===0){B.load.ready=true;AudioSetBgm(st.bgm||'eoc');SFX.start();toast(st.name+' — GO!','#ffd94a')}
@@ -464,14 +488,24 @@ function drawBattleLoading(b){
 }
 function drawBattle(dt){
   const b=B;
-  /* ---- battle loading gate: hold on the loading card until every image the fight
-     uses is decoded, then fade the field in (assets are prewarmed at boot, so this
-     is normally a single frame — but it GUARANTEES no mid-battle pop-in anywhere) ---- */
+  /* ---- battle loading gate (r32): hold on the loading card until every image
+     the fight uses is decoded + the battle soundtrack is baked, then fade the field
+     in. Failed images count as ready (a 404 must never wedge the bar — the missing
+     sprite simply doesn't draw, like the original's blank slot), and a 12s valve
+     forces the fight open even on a stalled connection. ---- */
   if(b.load&&!b.load.ready){
     b.load.t+=dt;
-    let rdy=0;for(let i=0;i<b.load.need.length;i++)if(imgReady(b.load.need[i]))rdy++;
-    b.load.p=b.load.need.length?rdy/b.load.need.length:1;
-    if(rdy>=b.load.need.length){b.load.ready=true;b.load.intro=0.45;
+    if(b.load.valve>0)b.load.valve-=dt;
+    let rdy=0;const N=b.load.need.length;
+    for(let i=0;i<N;i++){const im=b.load.need[i];
+      if(imgReady(im)||b.load.failSet.has(im))rdy++}
+    const aRdy=(typeof AudioBattleReady==='function')?AudioBattleReady(b.load.themes):true;
+    const imgP=N?rdy/N:1;
+    b.load.p=aRdy?imgP:imgP*0.9; // soundtrack counts as the last 10% of the bar
+    const forced=b.load.valve<=0;
+    if((rdy>=N&&aRdy)||forced||N===0){
+      if(forced&&(N===0||rdy<N))toast('Some assets were slow — starting anyway','#ffb46a');
+      b.load.ready=true;b.load.intro=0.45;
       AudioSetBgm(b.st.bgm||'eoc');SFX.start();toast(b.st.name+' — GO!','#ffd94a')}
     else{drawBattleLoading(b);return}
   }
@@ -512,9 +546,30 @@ function drawBattle(dt){
   if(b.load&&b.load.intro>0){b.load.intro-=dt;const a=clamp(b.load.intro/0.45,0,1);
     cx.fillStyle='rgba(13,13,18,'+(a*a*0.98).toFixed(3)+')';cx.fillRect(0,-VOY,DW,DH)}
   if(b.result)drawResult(b)}
-/* ORIGINAL stage backgrounds (game rips, 770x512, tile seamlessly) */
+/* r32 MEMORY RELEASE — called when a battle is FINISHED (result Ok) or QUIT
+   (Retreat). Frees every battle-only decode so the game holds no memory of battles
+   it is not in:
+   - enemy STRIP bitmaps (icons + all cat art stay — the roster/guide uses those)
+   - battle background images + their portrait-edge bakes
+   - every enemy-castle decode
+   - the battle soundtrack (BGM buffers + combat SFX; menu themes stay)
+   Re-entering a battle re-fetches from the HTTP cache and the battle loading
+   screen gates on the decodes again — same flow as the original's per-battle load. */
+function releaseBattleMemory(){
+  try{
+    for(const k in _bgImgs)delete _bgImgs[k];        // battle backgrounds
+    for(const k in _castleImgs)delete _castleImgs[k];// enemy castles
+    if(typeof _bgEdge!=='undefined'&&_bgEdge.clear)_bgEdge.clear(); // portrait bakes of those bgs
+    if(typeof _bgBakes!=='undefined'&&_bgBakes.clear)_bgBakes.clear();
+    if(typeof SPRIT!=='undefined'&&SPRIT.releaseEnemies){const n=SPRIT.releaseEnemies();
+      if(typeof console!=='undefined')console.log('%c[MEM] battle cleared — '+n+' enemy strips + bgs + castles + battle audio released','color:#9fe89a')}
+    if(typeof AudioReleaseBattle==='function')AudioReleaseBattle();
+    G.flingCam=null;
+  }catch(e){}
+}
 const BG_PIC={eoc1:'Bg000',eoc2:'Bg001',eoc3:'Bg002',itf1:'Bg014',itf2:'Bg016',itf3:'Bg033',
   cotc1:'Bg074',cotc2:'Bg017',cotc3:'Bg096',sol:null,ul:'Bg057',aku:'Bg019',dojo:'Bg043',event:'Bg023'};
+/* ORIGINAL stage backgrounds (game rips, 770x512, tiled + parallax) */
 const SOL_ROT=['Bg005','Bg028','Bg030','Bg007','Bg012','Bg023','Bg025','Bg013','Bg098','Bg089','Bg061','Bg088'];
 const _bgImgs={};
 const _bgEdge=new Map(); // bg image -> [top-edge rgb, bottom-edge rgb] for portrait backfill
@@ -702,6 +757,21 @@ function castleImg(set,stageIdx){
   else n='ec'+String((stageIdx||0)%48).padStart(3,'0');                        // EoC/event = landmark set
   const cext=(typeof castleFileExt==='function')?castleFileExt(n):'webp';
   return lazyImg(_castleImgs,n,'assets/castles/'+(set==='eoc'||set==='event'?'eoc':set==='cosmos'||set==='itf'?'cosmos':set==='world'?'world':'dark')+'/'+n+'.'+cext);
+}
+/* r32: same URL as a stage's castleImg (relative form — matches the battle pool list) */
+function castleUrlFor(st){
+  const set=CHAPTER_CASTLE[st.ch]||'eoc';
+  let n;
+  if(set==='cosmos')n='sc'+String(24+((st.idx||0)%24)).padStart(3,'0');
+  else if(set==='itf')n='sc'+String(((st.idx||0)%24)).padStart(3,'0');
+  else if(set==='world')n='wc'+String((st.idx||0)%48).padStart(3,'0');
+  else if(set==='dark')n='rc'+String((st.idx||0)%16).padStart(3,'0');
+  else if(set==='zero')n='rc'+String(16+((st.idx||0)%8)).padStart(3,'0');
+  else if(set==='dojo')n='rc'+String(24+((st.idx||0)%24)).padStart(3,'0');
+  else n='ec'+String((st.idx||0)%48).padStart(3,'0');
+  const cext=(typeof castleFileExt==='function')?castleFileExt(n):'webp';
+  const dir=set==='eoc'||set==='event'?'eoc':set==='cosmos'||set==='itf'?'cosmos':set==='world'?'world':'dark';
+  return 'assets/castles/'+dir+'/'+n+'.'+cext;
 }
 const CHAPTER_CASTLE={eoc1:'eoc',eoc2:'eoc',eoc3:'eoc',itf1:'itf',itf2:'itf',itf3:'itf',
   cotc1:'cosmos',cotc2:'cosmos',cotc3:'cosmos',sol:'world',ul:'zero',aku:'dark',dojo:'dojo',event:'eoc'};
@@ -920,7 +990,9 @@ function drawBattleHUD(b,dt){
     if(b.paused&&!b.result)openModal('PAUSED',['Battle paused.'],[
       {n:'Resume',col:'#ffd23f',cb:()=>{if(B)B.paused=false}},
       {n:'Retry',col:'#7fd0ff',cb:()=>{if(!B)return;const st=B.st;B=null;G.modal=null;startBattle(st)}},
-      {n:'Retreat',col:'#e85840',cb:()=>{if(!B)return;B.paused=false;endBattle(false);applyBattleResult();G.screen='map';G.screenPrev=[];B=null;AudioSetBgm('menu')}}])},{flat:true,nohov:true});
+      {n:'Retreat',col:'#e85840',cb:()=>{if(!B)return;B.paused=false;endBattle(false);applyBattleResult();G.screen='map';G.screenPrev=[];B=null;
+        releaseBattleMemory(); // r32: battle quit — clear every battle-only decode
+        AudioSetBgm('menu')}}])},{flat:true,nohov:true});
   /* ===== below pause: round yellow speed toggle (»x1/»x2/»x3) like the original ===== */
   {
     const sx2=38,sy2=84,sr2=25;
@@ -1210,6 +1282,7 @@ function drawResult(b){
         txt(cc,'Continue',110,32,24,'#fff','center',0,null,700);
         txt(cc,'3 \u00a2 CF \u2014 base revived',110,58,13,'#ffd9f2','center',2.5,'rgba(60,8,40,.9)',700)}});}
     BTN('resOk',430,610,420,76,()=>{SFX.click();const st=b.st;const kind=CHMAP[st.ch]&&CHMAP[st.ch].kind;B=null;
+      releaseBattleMemory(); // r32: battle finished — clear every battle-only decode
       if(kind==='sol'||kind==='ul'){G.screen='submap';G.screenPrev=[]}else{G.screen='map';G.screenPrev=[]}
       AudioSetBgm('menu')},{flat:true,nohov:true,draw:cc=>{
       cc.save();cc.shadowColor='rgba(255,180,20,.5)';cc.shadowBlur=14;
