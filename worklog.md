@@ -2588,3 +2588,31 @@ Stage Summary:
 - 2 CRITICAL playability bugs found by real-input testing and fixed (map banner hitboxes, chapters scroll sign)
 - Full content + flow gauntlet green; leaderboard LIVE; gh-pages website branch live with index.html at root
 - Known-remaining: 17 painter-fallback units (no usable wiki/BCU sheets — Miraheze GIF pipeline still the next-phase upgrade), per-unit walk frame timing still uniform 110ms
+
+---
+Task ID: r26
+Agent: Super Z (main)
+Task: loading screen w/ full preload; fix overlapping/unprofessional music (real tracks); remove non-original assets; real cat+enemy castle textures; save system; upscale blurry art; push to GitHub.
+
+Work Log:
+- Found InstallPack.apk (137MB) on disk → extracted 35 REAL snd files (ogg+caf→ogg via ffmpeg): snd000 title theme, snd034 God's Descent, snd164-192 collab/UL tracks.
+- Decoded the game's OWN BGM mapping from pack 000001's MapStageData CSVs (Japanese-commented): stage col2=start snd id, col4=boss snd id; ids are DIRECT snd numbers (3=Invading Japan!, 30-33=battle/boss set, 58=dojo, 81/82=relic).
+- Downloaded 30 missing authentic tracks + 22 real SFX (click/deploy/hit/die/cannon/capsule/victory/defeat/treasure...) from battle-cats fandom static CDN (md5-path trick, custom file names e.g. VictoryChime.ogg, CotCBGM01.ogg).
+- Baked cat base unit 001 (001_s animdata) via cutout_render: idle 16-frame walking-in-place strip + jump-attack anim (a2) → assets/sprites/catbase_*.png + catbase.json.
+- Extracted 288 authentic enemy castles (ec=landmarks/EoC, sc=cosmic→CotC+ItF split, wc=world monuments/SoL, rc=dark forts→Aku + sealed-cat dojo set) from pack 000001.
+- ESPCN x2 upscaled doors_home/title_bg x3/title_logo/catbase strips (EDSR OOM'd at 5.0; alpha handled by split/nearest-reattach).
+- audio.js v3: full rewrite — real buffer BGM via single AudioBufferSource (stop-before-start = zero overlap; same-theme restarts are no-ops), 32 decoded tracks, boss-theme switch on boss spawn (AudioSetBgmSafe(st.bossBgm)), victory jingle → 1.5s → 'Ending Party' results theme → menu on OK; real SFX buffers w/ per-key throttle + gains (level-analyzed) + synth fallbacks.
+- BGM_SEQ: per-stage start/boss rotation tables generated from original map CSVs, wired into genStage (st.bgm/st.bossBgm); ItF/CotC dedicated tables.
+- boot.js v3: authentic loading screen (official logo + REAL walking cat base anim + Now Loading % bar + TAP TO START audio-unlock gate); preload.json (376 entries: ui+castles+maps+audio+sprites manifest strips) all preloaded/decoded before play; 40s safety timeout.
+- battle.js: drawBases replaced — animated NEKO cat base + per-chapter authentic castle images w/ alarm aura+shake (avoided source-atop tint = same white-box bug class).
+- REMOVED invented art: ART.cat/ART.enemy painter bodies (real cutouts only, aura/curse FX kept), home big painted cat (splash bubble kept), sprites/raw intermediates deleted, synth bank.json/sfx_bank/bgm_*.wav|ogg deleted.
+- Save system verified end-to-end (autosave 8s + hide/unload flush, export/import/reset intact, storage stats line); credits text updated.
+- Fixed audio.js stray comp.ratio line; index.html cache bump v40-43.
+- E2E: video (r26_full.webm 60s) full flow loading→title→home→battle w/ live boss-theme switch (bgm→boss3, 14 units); 8-chapter castle/bg/bgm sweep all authentic; victory flow + persistence verified; live gh-pages E2E: battle+castle:true+boss3.
+- Waydroid: impossible in sandbox (no /dev/binder, no KVM) — APK direct extraction used instead.
+
+Stage Summary:
+- The game now uses ONLY original PONOS assets for music/SFX/castles/cat base; loading screen preloads everything (174MB, original-style).
+- Per-stage music = the game's own rotation data; boss appearances switch themes like the original.
+- Commits: r26 on main (02c3bde); gh-pages redeployed (328MB standalone, index.html at root), live assets verified 200.
+- Live: https://kalonixreal.github.io/battlecat/
