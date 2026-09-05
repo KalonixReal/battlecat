@@ -1017,11 +1017,11 @@ ART.catHead=function(x,y,r,walking){const c=cx;
   c.beginPath();c.moveTo(-r*0.3,r*0.28);c.quadraticCurveTo(-r*0.15,r*0.5,0,r*0.3);c.quadraticCurveTo(r*0.15,r*0.5,r*0.3,r*0.28);c.stroke();
   c.restore()};
 
-function bgSky(){const g=cx.createLinearGradient(0,0,0,720);g.addColorStop(0,'#a8d8f0');g.addColorStop(.75,'#c8e8b8');g.addColorStop(1,'#d8f0c0');cx.fillStyle=g;cx.fillRect(0,0,1280,720);
+function bgSky(){const g=cx.createLinearGradient(0,-VOY,0,DH);g.addColorStop(0,'#a8d8f0');g.addColorStop(.75,'#c8e8b8');g.addColorStop(1,'#d8f0c0');cx.fillStyle=g;cx.fillRect(0,-VOY,DW,DH);
   // soft sun glow upper-right + slow back cloud layer + faster foreground wisps (parallax depth)
-  const sg=cx.createRadialGradient(1180,86,20,1180,86,300);
+  const sg=cx.createRadialGradient(DW-100,86,20,DW-100,86,300);
   sg.addColorStop(0,'rgba(255,246,200,.55)');sg.addColorStop(.5,'rgba(255,246,200,.18)');sg.addColorStop(1,'rgba(255,246,200,0)');
-  cx.fillStyle=sg;cx.fillRect(880,0,400,380);
+  cx.fillStyle=sg;cx.fillRect(DW-400,0,400,380);
   cx.fillStyle='rgba(255,255,255,.8)';for(let i=0;i<6;i++)cloudDraw(((i*260)+G.t*8)%1500-100,70+(i*47)%140,1+(i%3)*0.4);
   cx.fillStyle='rgba(255,255,255,.5)';for(let i=0;i<3;i++){const sc=0.9+(i%2)*0.5;
     cloudDraw(((i*430)+G.t*(15+i*5))%1500-120,104+(i*61)%92,sc)}}

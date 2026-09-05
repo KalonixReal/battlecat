@@ -111,23 +111,23 @@ const GACHA_TINT={ // interior radial tint keyed by the BEST rarity of the pull
 const GACHA_TITLE={normal:'Rare!',special:'Super Rare!!',rare:'Rare!',srar:'Super Rare!!',uber:'Uber Super Rare!!',legend:'Legend Rare!!'};
 function gachaResultBackdrop(bestKey){ // full-screen wood frame + colored radial interior + rays
   const tint=GACHA_TINT[bestKey]||GACHA_TINT.rare;
-  const g=cx.createRadialGradient(640,330,70,640,330,790);
+  const g=cx.createRadialGradient(DW/2,330,70,DW/2,330,790);
   g.addColorStop(0,tint[0]);g.addColorStop(1,tint[1]);
-  cx.fillStyle=g;cx.fillRect(0,0,1280,720);
-  cx.save();cx.translate(640,240);cx.globalAlpha=.055;cx.fillStyle='#fff'; // slow celebratory rays
+  cx.fillStyle=g;cx.fillRect(0,-VOY,DW,DH);
+  cx.save();cx.translate(DW/2,240);cx.globalAlpha=.055;cx.fillStyle='#fff'; // slow celebratory rays
   cx.rotate(G.t*0.05);
   for(let i=0;i<10;i++){cx.rotate(TAU/10);cx.beginPath();cx.moveTo(0,0);cx.lineTo(880,-64);cx.lineTo(880,64);cx.closePath();cx.fill()}
   cx.restore();
-  const vg=cx.createLinearGradient(0,0,0,720); // seat the scene into the frame
+  const vg=cx.createLinearGradient(0,-VOY,0,DH); // seat the scene into the frame
   vg.addColorStop(0,'rgba(0,0,0,.34)');vg.addColorStop(.25,'rgba(0,0,0,0)');
   vg.addColorStop(.78,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,.42)');
-  cx.fillStyle=vg;cx.fillRect(0,0,1280,720);
-  woodFrame(0,0,1280,720,16);
-  kikkouStrip(0,688,1280,32,true,'#d2a868','rgba(122,82,26,.65)')} // official patterned bottom strip
+  cx.fillStyle=vg;cx.fillRect(0,-VOY,DW,DH);
+  woodFrame(0,0,DW,720,16);
+  kikkouStrip(0,688,DW,32,true,'#d2a868','rgba(122,82,26,.65)')} // official patterned bottom strip
 function gachaRarityTitle(bestKey,pr){ // big red→gold gradient chunky letters, top-center
   const s=GACHA_TITLE[bestKey]||'Rare!';
   const sc=(pr==null)?1:(0.55+0.45*clamp(pr,0,1));
-  cx.save();cx.translate(640,102);cx.scale(sc,sc);
+  cx.save();cx.translate(DW/2,102);cx.scale(sc,sc);
   setFont(cx,FONT(52,700));cx.textAlign='center';cx.textBaseline='middle';cx.lineJoin='round';
   const tg=cx.createLinearGradient(-340,0,340,0);tg.addColorStop(0,'#ff4040');tg.addColorStop(.55,'#ff9038');tg.addColorStop(1,'#ffd23f');
   cx.lineWidth=12;cx.strokeStyle='#2a0e08';cx.strokeText(s,0,0);
@@ -136,7 +136,7 @@ function gachaRarityTitle(bestKey,pr){ // big red→gold gradient chunky letters
   cx.save();cx.beginPath();cx.rect(-420,-46,840,38);cx.clip(); // top-half gloss
   cx.fillStyle='rgba(255,255,255,.22)';cx.fillText(s,0,0);cx.restore();
   cx.restore();
-  for(let i=0;i<5;i++){const sa=G.t*1.6+i*1.7;const sxp=640+Math.cos(sa)*300,syp=102+Math.sin(sa*1.3)*46;
+  for(let i=0;i<5;i++){const sa=G.t*1.6+i*1.7;const sxp=DW/2+Math.cos(sa)*300,syp=102+Math.sin(sa*1.3)*46;
     cx.fillStyle='rgba(255,240,170,'+(0.35+0.3*Math.sin(G.t*5+i*2)).toFixed(2)+')';star(cx,sxp,syp,6+(i%2)*3,2.6+i);cx.fill()}}
 function gachaYellowCircle(id,cxL,cyd,l1,l2,enabled,cb){ // official yellow circle side-button
   const r=50;
@@ -159,18 +159,18 @@ function gachaOkPill(x,y,wd,ht){ // official gold "Ok" pill w/ magenta border
   cx.lineWidth=4.5;cx.strokeStyle='#ff2fd0';rr(cx,x,y,wd,ht,ht/2);cx.stroke();
   cx.lineWidth=1.5;cx.strokeStyle='rgba(255,255,255,.65)';rr(cx,x+4,y+4,wd-8,ht-8,ht/2-4);cx.stroke();
   txt(cx,'Ok',x+wd/2,y+ht/2+1,24,'#4a2f10','center',4,'rgba(255,255,255,.8)',700)}
-function drawGachaAnim(dt){const A=G.gachaAnim;A.t+=dt;cx.fillStyle='rgba(8,6,16,.82)';cx.fillRect(0,0,1280,720);
+function drawGachaAnim(dt){const A=G.gachaAnim;A.t+=dt;cx.fillStyle='rgba(8,6,16,.82)';cx.fillRect(0,-VOY,DW,DH);
   if(A.phase===0){const drop=Math.min(1,A.t/0.5);const y=lerp(-100,340,drop*drop);
-    cx.save();cx.translate(640,y);cx.rotate(A.t>0.7?Math.sin((A.t-0.7)*40)*0.25:0);
+    cx.save();cx.translate(DW/2,y);cx.rotate(A.t>0.7?Math.sin((A.t-0.7)*40)*0.25:0);
     cx.fillStyle='#ff9ad5';cx.beginPath();cx.arc(0,0,80,Math.PI,0);cx.fill();cx.fillStyle='#fff';cx.beginPath();cx.arc(0,0,80,0,Math.PI);cx.fill();cx.fillStyle='#2a1e46';cx.fillRect(-80,-8,160,16);
     cx.fillStyle='rgba(255,255,255,.55)';cx.beginPath();cx.ellipse(-32,-36,24,13,-0.6,0,TAU);cx.fill();
     cx.fillStyle='rgba(255,255,255,.3)';cx.beginPath();cx.ellipse(12,-44,32,10,-0.35,0,TAU);cx.fill();
     cx.strokeStyle='rgba(42,30,70,.6)';cx.lineWidth=4;cx.beginPath();cx.arc(0,0,80,0,TAU);cx.stroke();cx.restore();
     if(A.t>1.6||A.tap){A.phase=1;A.t=0;A.tap=false;SFX.capsule()}}
   else if(A.phase===1){const col=RAR_FLASH[Object.keys(RAR_FLASH)[A.best]];
-    const r=Math.min(1,A.t/0.8);cx.save();cx.translate(640,300);cx.rotate(Math.min(1.6,A.t*4));
+    const r=Math.min(1,A.t/0.8);cx.save();cx.translate(DW/2,300);cx.rotate(Math.min(1.6,A.t*4));
     cx.fillStyle=col;cx.globalAlpha=1-r*0.9;cx.beginPath();cx.arc(0,0,80,Math.PI,0);cx.fill();cx.globalAlpha=1;cx.restore();
-    cx.globalAlpha=r;cx.fillStyle=col;cx.beginPath();cx.arc(640,300,40+r*380*r,0,TAU);cx.globalAlpha=r*0.5;cx.fill();cx.globalAlpha=1;
+    cx.globalAlpha=r;cx.fillStyle=col;cx.beginPath();cx.arc(DW/2,300,40+r*380*r,0,TAU);cx.globalAlpha=r*0.5;cx.fill();cx.globalAlpha=1;
     if(A.t>1.2||A.tap){A.phase=2;A.t=0;A.tap=false;SFX.win2();A.reveal=0}}
   else{A.reveal=Math.min(A.results.length,A.reveal+dt*2.2);
     const shown=Math.floor(A.reveal)+1;
@@ -181,19 +181,19 @@ function drawGachaAnim(dt){const A=G.gachaAnim;A.t+=dt;cx.fillStyle='rgba(8,6,16
       const id=A.results[0];const c=CATMAP[id];const dup=catOwned(id);
       const pr=clamp(A.reveal/0.45,0,1);const q=pr-1;const sc=1+2.7*q*q*q+1.7*q*q;
       gachaRarityTitle(c.rarity,pr);
-      cx.save();cx.globalAlpha=pr;cx.translate(640,322);cx.scale(sc,sc);
+      cx.save();cx.globalAlpha=pr;cx.translate(DW/2,322);cx.scale(sc,sc);
       cx.fillStyle='rgba(20,8,24,.35)';cx.beginPath();cx.ellipse(0,196,122,20,0,0,TAU);cx.fill();
       ART.cat({id,x:0,y:186,s:2.6,t:G.t}); // LARGE full-body center art (walk-idle, legend/uber aura included)
       cx.restore();
-      if(!dup){for(let si=0;si<3;si++){const sa=G.t*2.4+si*2.1;const sxp=640+Math.cos(sa)*160,syp=320+Math.sin(sa)*130;
+      if(!dup){for(let si=0;si<3;si++){const sa=G.t*2.4+si*2.1;const sxp=DW/2+Math.cos(sa)*160,syp=320+Math.sin(sa)*130;
         cx.fillStyle='rgba(255,225,110,'+(0.5+0.4*Math.sin(G.t*7+si*2)).toFixed(2)+')';star(cx,sxp,syp,7,3);cx.fill()}}
       // dark-olive name bar + white name
       const nm=c.forms[0].n;const barW=460,barH=48,barY=556;
       setFont(cx,FONT(24,700));let nfs=24;while(cx.measureText(nm).width>barW-60&&nfs>12)nfs--;
       cx.save();cx.shadowColor='rgba(0,0,0,.5)';cx.shadowBlur=10;cx.shadowOffsetY=4;
-      cx.fillStyle='#3a3a26';rr(cx,640-barW/2,barY,barW,barH,10);cx.fill();cx.restore();
-      cx.lineWidth=2.5;cx.strokeStyle='rgba(255,248,232,.85)';rr(cx,640-barW/2,barY,barW,barH,10);cx.stroke();
-      txt(cx,nm,640,barY+barH/2+1,nfs,'#fff','center',4,'rgba(0,0,0,.75)',700);
+      cx.fillStyle='#3a3a26';rr(cx,DW/2-barW/2,barY,barW,barH,10);cx.fill();cx.restore();
+      cx.lineWidth=2.5;cx.strokeStyle='rgba(255,248,232,.85)';rr(cx,DW/2-barW/2,barY,barW,barH,10);cx.stroke();
+      txt(cx,nm,DW/2,barY+barH/2+1,nfs,'#fff','center',4,'rgba(0,0,0,.75)',700);
       // white "New!" tag with red border, rotated, left of the name bar (dupes get none)
       if(!dup){cx.save();cx.translate(368,barY+4);cx.rotate(-0.22);
         cx.shadowColor='rgba(0,0,0,.4)';cx.shadowBlur=8;cx.shadowOffsetY=3;
@@ -214,7 +214,7 @@ function drawGachaAnim(dt){const A=G.gachaAnim;A.t+=dt;cx.fillStyle='rgba(8,6,16
       txt(cx,fmt(SV.cf),1142,666,19,'#ffd23f','left',4,'rgba(20,16,4,.95)',700)}
     else{ // ===== MULTI-PULL: card grid reveal restyled to official dark-bordered cards =====
       gachaRarityTitle(bestKey,null);
-      const cols=n>6?6:n;const cw=150;const ox=640-(cols*cw+(cols-1)*10)/2;
+      const cols=n>6?6:n;const cw=150;const ox=DW/2-(cols*cw+(cols-1)*10)/2;
       const gy=n<=6?210:168;
       A.results.slice(0,Math.min(shown,n)).forEach((id,i)=>{const col=i%cols,row=Math.floor(i/cols);const x=ox+col*(cw+10),y=gy+row*192;
         // per-card pop-in: back-eased scale + rarity glow flash + NEW sparkles (timing unchanged)
@@ -289,7 +289,7 @@ function saveEnsureTA(){
   return _pasteTA}
 function saveFocusPasteArea(dx,dy,dw,dh){ // design-space rect (1280x720) → screen px over the canvas
   const ta=saveEnsureTA();
-  const sx=(OX+dx*SC),sy=(OY+dy*SC),sw=Math.max(40,dw*SC),sh=Math.max(24,dh*SC);
+  const sx=(OX+dx*SC),sy=(OY+(dy+VOY)*SC),sw=Math.max(40,dw*SC),sh=Math.max(24,dh*SC);
   ta.style.left=sx+'px';ta.style.top=sy+'px';ta.style.width=sw+'px';ta.style.height=sh+'px';
   ta.value=G.importBuf||'';
   setTimeout(()=>{try{ta.focus();ta.setSelectionRange(ta.value.length,ta.value.length)}catch(e){}},0)}

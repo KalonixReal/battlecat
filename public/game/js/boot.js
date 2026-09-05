@@ -158,8 +158,8 @@ function perfApply(){
   try{DPR_CAP=PERF_DPR[PERF.tier];resize()}catch(e){}
   console.log('%c[PERF] tier '+PERF.tier+' (dpr≤'+PERF_DPR[PERF.tier]+', fx='+(PERF.tier>=2?'off':'on')+')','color:#7fd0ff')}
 function drawLoading(dt){
-  const w=1280,h=720;
-  cx.fillStyle='#0d0d12';cx.fillRect(0,0,w,h);
+  const w=DW,h=DH;
+  cx.fillStyle='#0d0d12';cx.fillRect(0,VOY>0?-VOY:0,w,VOY>0?DH:h);
   // official logo
   const logo=uiImg('title_logo.png');
   if(logo)cx.drawImage(logo,w/2-270,110,540,243);
@@ -194,7 +194,8 @@ function loop(ts){
   cx.setTransform(1,0,0,1,0,0);cx.clearRect(0,0,cv.width,cv.height);cx.setTransform(cv._dpr||1,0,0,cv._dpr||1,0,0);
   G.hits.length=0;
   cx.save();cx.scale(SC,SC);cx.translate(OX/SC,OY/SC);
-  cx.beginPath();cx.rect(0,0,1280,720);cx.clip(); // keep all art inside the 1280x720 design area (no letterbox leaks)
+  cx.beginPath();cx.rect(0,0,DW,DH);cx.clip(); // design space fills the window at ANY aspect ratio
+  cx.translate(0,VOY); // portrait: center the 720-tall content band (VOY=0 in landscape)
   if(!PRELOAD.ready){
     drawLoading(dt);
   }else if(!PRELOAD.tap){
@@ -202,11 +203,11 @@ function loop(ts){
     // any pointer down anywhere starts the game (registered by the canvas hit layer below)
   }else{
     const fn=SCREENS[G.screen]||drawTitle;
-    try{fn(dt)}catch(err){console.error('SCREEN ERR',G.screen,err);cx.fillStyle='#300';cx.fillRect(0,0,1280,720);txt(cx,'⚠ UI ERROR: '+err.message,640,360,20,'#fff','center')}
+    try{fn(dt)}catch(err){console.error('SCREEN ERR',G.screen,err);cx.fillStyle='#300';cx.fillRect(-VOY,-VOY,DW,DH);txt(cx,'⚠ UI ERROR: '+err.message,DW/2,360,20,'#fff','center')}
     modalDraw();toastDraw(dt); // toasts render ABOVE modals (in-modal action feedback stays visible)
     // screen-change transition: quick fade-from-black on push()/pop() (official-style cut)
     if(G.transT>0){G.transT-=dt;const ta=clamp(G.transT/0.30,0,1);
-      cx.fillStyle='rgba(18,10,6,'+(ta*ta*0.92).toFixed(3)+')';cx.fillRect(0,0,1280,720);
+      cx.fillStyle='rgba(18,10,6,'+(ta*ta*0.92).toFixed(3)+')';cx.fillRect(0,-VOY,DW,DH);
       if(G.transT<=0)G.transT=0}
   }
   cx.restore();
