@@ -131,7 +131,24 @@ function parchBody(){const pg=cx.createLinearGradient(0,54,0,720);pg.addColorSto
 function woodBody(){const wg=cx.createLinearGradient(0,54,0,720);wg.addColorStop(0,'#9a7434');wg.addColorStop(1,'#6f4e1c');cx.fillStyle=wg;cx.fillRect(0,54,DW,666+VOY);
   cx.strokeStyle='rgba(50,32,10,.22)';cx.lineWidth=2;
   for(let i=0;i<7;i++){cx.beginPath();cx.moveTo(0,120+i*86);cx.bezierCurveTo(DW*0.25,112+i*86,DW*0.75,128+i*86,DW,118+i*86);cx.stroke()}}
-function creamPanel(x,y,w,h,ln){cx.fillStyle='#fff8e8';rr(cx,x,y,w,h,16);cx.fill();cx.lineWidth=3;cx.strokeStyle=ln||'#b08a50';rr(cx,x+1,y+1,w-2,h-2,15);cx.stroke();cx.lineWidth=1.2;cx.strokeStyle='rgba(176,138,80,.45)';rr(cx,x+5,y+5,w-10,h-10,12);cx.stroke()}
+/* r36 PONOS PANEL PASS — creamPanel is the single shared card container (store,
+   treasure, trophies, leaderboard, stage modal, shrine…) so it gets the original's
+   full treatment: cream vertical gradient, top inner light band, bottom inner shade,
+   corner studs (the little rivet dots on PONOS panels), and a solid offset underlay
+   instead of per-frame shadowBlur (perf: dozens of panels per screen per frame). */
+const PONOS_PANELS=true;function creamPanel(x,y,w,h,ln){
+  cx.fillStyle='rgba(90,60,20,.28)';rr(cx,x+3,y+4,w,h,16);cx.fill(); // soft drop underlay
+  const g=cx.createLinearGradient(0,y,0,y+h);g.addColorStop(0,'#fffdf2');g.addColorStop(.55,'#fff8e8');g.addColorStop(1,'#f3e8cd');
+  cx.fillStyle=g;rr(cx,x,y,w,h,16);cx.fill();
+  cx.fillStyle='rgba(255,255,255,.65)';rr(cx,x+6,y+5,w-12,Math.min(14,h*0.2),8);cx.fill(); // top light band
+  if(h>40){cx.fillStyle='rgba(150,110,50,.10)';rr(cx,x+6,y+h-Math.min(12,h*0.16),w-12,Math.min(12,h*0.16)-5,6);cx.fill()} // bottom shade
+  cx.lineWidth=3;cx.strokeStyle=ln||'#b08a50';rr(cx,x+1,y+1,w-2,h-2,15);cx.stroke();
+  cx.lineWidth=1.2;cx.strokeStyle='rgba(176,138,80,.45)';rr(cx,x+5,y+5,w-10,h-10,12);cx.stroke();
+  // corner studs (only on cards big enough to carry them)
+  if(w>=70&&h>=34){cx.fillStyle='#c8a060';
+    [[x+11,y+11],[x+w-11,y+11],[x+11,y+h-11],[x+w-11,y+h-11]].forEach(p=>{cx.beginPath();cx.arc(p[0],p[1],2.6,0,TAU);cx.fill()});
+    cx.fillStyle='rgba(255,255,255,.5)';
+    [[x+10.2,y+10.2],[x+w-11.8,y+10.2],[x+10.2,y+h-11.8],[x+w-11.8,y+h-11.8]].forEach(p=>{cx.beginPath();cx.arc(p[0],p[1],0.9,0,TAU);cx.fill()})}}
 function glyph(c,kind,x,y,s,col,bg){c.save();c.translate(x,y);c.scale(s/10,s/10);c.strokeStyle=col;c.fillStyle=col;c.lineWidth=2.6;c.lineCap='round';c.lineJoin='round';
   if(kind==='swords'){c.beginPath();c.moveTo(-8,8);c.lineTo(6,-6);c.moveTo(-6,-6);c.lineTo(8,8);c.moveTo(-9,6);c.lineTo(-4,9);c.moveTo(4,9);c.lineTo(9,6);c.stroke()}
   else if(kind==='cat'){c.beginPath();c.arc(0,1.5,7,0,TAU);c.fill();c.beginPath();c.moveTo(-6.5,-3);c.lineTo(-8,-9);c.lineTo(-2.5,-5.5);c.closePath();c.fill();c.beginPath();c.moveTo(6.5,-3);c.lineTo(8,-9);c.lineTo(2.5,-5.5);c.closePath();c.fill();c.fillStyle=bg;c.beginPath();c.arc(-2.8,0.5,1.3,0,TAU);c.arc(2.8,0.5,1.3,0,TAU);c.fill()}
@@ -195,7 +212,18 @@ function drawTopBar(title,back){
     if(i<stats.length-1){cx.strokeStyle='rgba(90,59,22,.22)';cx.lineWidth=1.2;cx.beginPath();cx.moveTo(x,py+9);cx.lineTo(x,py+ph-9);cx.stroke();x+=1}
     x+=9});
 }
-function panel(x,y,w,h,col,bd){cx.fillStyle=col||'rgba(22,25,36,.96)';rr(cx,x,y,w,h,16);cx.fill();if(bd!==false){cx.lineWidth=2;cx.strokeStyle=bd||'rgba(255,255,255,.14)';rr(cx,x+1,y+1,w-2,h-2,16);cx.stroke()}}
+/* r36: dark panels (modal bodies, leaderboards, info cards) get the same depth pass —
+   vertical gradient + inner top sheen + rivets, replacing the flat single-fill. */
+function panel(x,y,w,h,col,bd){
+  if(col&&col!=='rgba(22,25,36,.96)'&&bd===false){cx.fillStyle=col;rr(cx,x,y,w,h,16);cx.fill();return} // caller wants a FLAT custom fill
+  const dark=!col||col==='rgba(22,25,36,.96)';
+  if(dark){const g=cx.createLinearGradient(0,y,0,y+h);g.addColorStop(0,'#232838');g.addColorStop(.5,'rgba(22,25,36,.97)');g.addColorStop(1,'#181b26');
+    cx.fillStyle=g;rr(cx,x,y,w,h,16);cx.fill();
+    cx.fillStyle='rgba(255,255,255,.10)';rr(cx,x+6,y+5,w-12,Math.min(12,h*0.18),8);cx.fill();
+    if(w>=80&&h>=44){cx.fillStyle='#3a4155';
+      [[x+12,y+12],[x+w-12,y+12],[x+12,y+h-12],[x+w-12,y+h-12]].forEach(p=>{cx.beginPath();cx.arc(p[0],p[1],2.4,0,TAU);cx.fill()})}}
+  else{cx.fillStyle=col;rr(cx,x,y,w,h,16);cx.fill()}
+  if(bd!==false){cx.lineWidth=2;cx.strokeStyle=bd||'rgba(255,255,255,.14)';rr(cx,x+1,y+1,w-2,h-2,16);cx.stroke()}}
 function toastDraw(dt){let y=70;for(const t of G.toasts){t.t-=dt;t.age=(t.age||0)+dt;
   const enter=clamp(t.age/0.28,0,1); // slide-in spring
   const eIn=1-Math.pow(1-enter,3);
@@ -227,6 +255,7 @@ function modalDraw(){const m=G.modal;if(!m)return;
   if(m.title&&m.title.startsWith('DAILY MISSIONS'))h=612; // 6 mission rows need a taller board
   if(m.title&&m.title.startsWith('TREASURE RADAR'))h=612; // tab pills + 6 radar rows + digest footer
   if(m.title&&m.title.startsWith('FARM:'))h=560; // 5 stage-picker rows + footer
+  if(m.title&&m.title.startsWith('DAILY LOGIN BONUS'))h=520; // 7 stamp slots + footer (r36)
   const w=Math.min(760,1180);
   // pop-in: purely visual transform — all drawing/hit coords below stay in FINAL
   // (unscaled) design space so hit rects stay valid even mid-animation
@@ -320,6 +349,55 @@ function drawTitle(dt){
     BTN('play',DW/2-bw/2,by-bh/2,bw,bh,()=>{SFX.click();push('home')},{flat:true,nohov:true})}
   txt(cx,'\u00A9 PONOS Corp.',14,18,13,'rgba(90,60,20,.9)','left',3,'rgba(255,235,200,.6)');
   txt(cx,'Version 12.6.0',DW-14,18,13,'rgba(90,60,20,.9)','right',3,'rgba(255,235,200,.6)');
+}
+
+/* ---- r36 LOGIN BONUS card (authentic daily stamp): 7 slots, paw-stamped past days,
+   pulsing current slot, CF/XP icons per slot, day-7 SUPER reward. Shown once per day
+   right after the boot tap (bootFirstTap hook). ---- */
+function showLoginBonus(){
+  ensureLoginBonus();
+  const day=loginBonusDay(); // 1..7
+  const st=LOGIN_STAMPS[day-1];
+  const claim=()=>{
+    SV.login.last=todayKey();SV.login.day=day;SV.login.stamps=(SV.login.stamps||0)+1;
+    if(st.cf){SV.cf+=st.cf}
+    if(st.xp){addXP(st.xp)}
+    persist();
+    SFX.win2&&SFX.win2();SFX.click&&SFX.click();
+    toast('LOGIN BONUS day '+day+(st.cf?' · +'+st.cf+' Cat Food!':'')+(st.xp?' · +'+fmt(st.xp)+' XP!':''),'#ffd23f');
+    trophyCheckAll&&trophyCheckAll()};
+  openModal('DAILY LOGIN BONUS',[],[{n:'CLAIM!',col:'#ffd23f',cb:claim}],(mx,my,mw,mh)=>{
+    txt(cx,'Come back every day for bigger rewards!',mx+mw/2,my+8,13,'#c8b088','center',2.5,'#1a1020',700);
+    // 7 stamp slots in one row (sized for the 760-wide modal)
+    const n=7,sw=94,gap=(mw-36-n*sw)/(n-1),y0=my+34;
+    for(let i=0;i<n;i++){
+      const sx=mx+18+i*(sw+gap),sy=y0,cur=i===day-1,past=i<day-1,last=i===n-1;
+      const rw=LOGIN_STAMPS[i];
+      // slot plate
+      cx.fillStyle=cur?'#fffdf0':(past?'#efe4c4':'#e2d6b8');rr(cx,sx,sy,sw,148,12);cx.fill();
+      cx.lineWidth=cur?3.5:2.5;cx.strokeStyle=cur?'#e8951f':(last?'#c89030':'#b8a478');rr(cx,sx+1,sy+1,sw-2,146,11);cx.stroke();
+      if(cur){const pl=0.5+0.5*Math.sin(G.t*5);
+        cx.strokeStyle='rgba(255,170,40,'+(0.4+pl*0.5).toFixed(2)+')';cx.lineWidth=4;
+        rr(cx,sx-3,sy-3,sw+6,154,14);cx.stroke()}
+      // day label (day 7 = SUPER reward slot)
+      txt(cx,last?'DAY 7 ★':'DAY '+(i+1),sx+sw/2,sy+16,cur?12.5:(last?12:11.5),cur?'#d07000':(last?'#a87018':'#8a744c'),'center',2.5,'#fff',700);
+      // reward icon + value
+      if(rw.cf){drawCFCan(cx,sx+sw/2-21,sy+32,15);txt(cx,'+'+rw.cf,sx+sw/2+10,sy+48,15,'#2a8a4a','center',3,'#fff',700)}
+      else{cx.save();cx.translate(sx+sw/2,sy+38);
+        cx.fillStyle='#ffd23f';star(cx,0,0,13,5.6);cx.fill();cx.lineWidth=2.2;cx.strokeStyle='#8a5a10';star(cx,0,0,14.4,6.3);cx.stroke();cx.restore();
+        txt(cx,'+'+fmt(rw.xp),sx+sw/2,sy+70,12.5,'#c07a10','center',3,'#fff',700)}
+      // paw stamp on past days
+      if(past){cx.save();cx.globalAlpha=0.85;cx.translate(sx+sw/2,sy+108);cx.rotate(-0.18);
+        cx.fillStyle='#e8941f';cx.beginPath();cx.arc(0,0,11.5,0,TAU);cx.fill();
+        [[-7,-7],[7,-7],[-10,4],[10,4]].forEach(p=>{cx.beginPath();cx.arc(p[0],p[1]-2,3.8,0,TAU);cx.fill()});
+        cx.restore()}
+      else if(cur)txt(cx,'TODAY!',sx+sw/2,sy+108,13,'#e84030','center',3,'#fff',700);
+      else txt(cx,'· · ·',sx+sw/2,sy+108,12,'#b8a478','center');
+    }
+    // streak footer
+    const stamps=SV.login.stamps||0;
+    txt(cx,'Total stamps: '+stamps+'  ·  miss a day and the cycle restarts at DAY 1',mx+mw/2,y0+172,11.5,'#a89a78','center',2.5,'#1a1020',400);
+  });
 }
 
 /* ============================== CAT BASE MENU (authentic v11.10 layout) ==============================

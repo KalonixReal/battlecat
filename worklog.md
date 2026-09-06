@@ -2815,3 +2815,21 @@ Work Log:
 Stage Summary:
 - Live site fully on r35: no clipped UI at any aspect ratio, battle HUD visible in letterboxed/portrait views, all r34 features intact.
 - main: 18426d0. gh-pages: e2595c5 (v52).
+
+---
+Task ID: r36
+Agent: Super Z (cron webDevReview round)
+Task: assess status, QA the r35 build, then advance styling + features.
+
+Work Log:
+- STATUS: r35 (viewport-clipping fixes + battle HUD stray-restore fix) is deployed and live-verified; repo stable at 56bca76.
+- HOUSEKEEPING: dropped an unpushed cron auto-commit that had committed 37 QA screenshots (~6MB repo bloat); added tests/shots/ to .gitignore so future review rounds can't re-commit screenshot junk. (The token-bearing upload/ path was already ignored in r35.)
+- QA (agent-browser, fresh single-load discipline): boot 1409/1409 at 1280x720; title/home/map clean; battle smoke test OK (HUD cards present, China stage started, zero console errors); VLM "Cat Food clipped"/"Korea label overlap" claims pixel-verified as FALSE POSITIVES (gold digits end x1260/1280; label sits under its own banner by design).
+- FEATURE — DAILY LOGIN BONUS (authentic BC stamp card, r36): opens automatically on the first tap of a new day (bootFirstTap hook, exactly where the original surfaces it). 7-slot stamp strip: CF days (100/150/200/500) + XP days (2k/5k/10k), day-7 SUPER (500CF+5kXP); past days get a rotated paw stamp, current day pulses with TODAY!; consecutive-day progression (miss a day → back to DAY 1, finish day 7 → cycle restarts, total stamps counter); CLAIM grants CF/XP via the existing addCF/addXP rank systems. State: SV.login={last,day,stamps}. Verified E2E: modal opens on tap → CLAIM → +100 CF granted, state persisted, modal closes, no errors; day-2 progression + XP-star slot + paw-stamped day 1 verified visually.
+- STYLING — PONOS PANEL PASS (r36, the last big "wireframe feel" item from the r33 critique): creamPanel (THE shared card container across store/treasure/trophies/leaderboard/stage-modal/shrine/missions) upgraded from flat single-fill to cream vertical gradient + top inner light band + bottom inner shade + 4 corner stud rivets + offset drop underlay (no shadowBlur — perf-safe); panel() (dark modal bodies/leaderboards) got the same depth pass (gradient + sheen + rivets). One helper edit = every screen textured. Verified on store/treasure/leaderboard/stage-modal — VLM confirms textured, no overlaps, no console errors.
+- Cache-bust v=53; bun run lint 0 errors.
+
+Stage Summary:
+- New: automatic daily login stamp bonus (7-day cycle) + game-wide PONOS panel texturing.
+- No regressions: boot, screens, battle, memory policy all unchanged and verified.
+- Next: push main + redeploy gh-pages (v53) + live verify.

@@ -349,6 +349,9 @@ function bootFirstTap(){
   try{AudioUnlock()}catch(e){}
   try{AudioSetBgm('menu')}catch(e){}
   try{SFX.click()}catch(e){}
+  /* r36: the daily LOGIN BONUS stamp card opens automatically on the first tap of a
+     new day — exactly where the original surfaces it (right at the title screen). */
+  try{if(typeof loginBonusDue==='function'&&loginBonusDue())showLoginBonus()}catch(e){}
 }
 addEventListener('pointerdown',bootFirstTap,{capture:true});
 addEventListener('keydown',bootFirstTap,{capture:true});

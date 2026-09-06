@@ -253,6 +253,16 @@ function ensureMissions(){
   // login streak continuity (claimed flag lives in eventsDone via store screen)
   if(SV.dailyLast&&SV.dailyLast!==todayKey()&&SV.dailyLast!==yesterKey())SV.dailyStreak=0;
 }
+/* ---- r36 LOGIN STAMP (authentic daily login bonus, singleplayer): 7-day cycle of
+   CF/XP rewards, shown automatically once per day right after the boot tap.
+   Miss a day → back to day 1; finish day 7 → cycle restarts (streak keeps counting). ---- */
+const LOGIN_STAMPS=[
+  {cf:100,xp:0},{cf:0,xp:2000},{cf:150,xp:0},{cf:0,xp:5000},{cf:200,xp:0},{cf:0,xp:10000},{cf:500,xp:5000}];
+function ensureLoginBonus(){if(!SV.login)SV.login={last:'',day:0,stamps:0}}
+function loginBonusDue(){ensureLoginBonus();return SV.login.last!==todayKey()}
+function loginBonusDay(){ensureLoginBonus();
+  if(SV.login.last===yesterKey())return Math.min(SV.login.day+1,7); // consecutive → next slot
+  return 1}
 const MISSIONS=[
   {id:'clear',n:'Clear 2 stages',goal:2,cf:80,icon:'swords'},
   {id:'pull',n:'Summon from Gacha',goal:1,cf:50,icon:'capsule'},
