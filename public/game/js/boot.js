@@ -99,9 +99,9 @@ function preloadRun(){
   uiImgCache('gacha_icon_normal.png','assets/ui/gacha_icon_normal.png?v=54');
   uiImgCache('gacha_icon_rare.png','assets/ui/gacha_icon_rare.png?v=54');
   // r38: authentic rank bar + info button + menu plates (img007_en cuts)
-  uiImgCache('rank_bar.png','assets/ui/rank_bar.png?v=55');
-  uiImgCache('info_btn.png','assets/ui/info_btn.png?v=55');
-  uiImgCache('menu_button.png','assets/ui/menu_button.png?v=55');
+  uiImgCache('rank_bar.png','assets/ui/rank_bar.png?v=56');
+  uiImgCache('info_btn.png','assets/ui/info_btn.png?v=56');
+  uiImgCache('menu_button.png','assets/ui/menu_button.png?v=56');
   uiImgCache('doors_home.png','assets/ui/doors_home.webp?v=50');
   preloadImg('assets/sprites/catbase_idle.webp');
   // catbase.json feeds the walking-cat animation metadata

@@ -382,7 +382,7 @@ function modalDraw(){const m=G.modal;if(!m)return;
    the official MenuTitle logo, and the real Play button texture. Background swaps to
    ItF / CotC art as those campaigns are cleared (like the original). */
 const UIIMG={imgs:{}};
-const UI_V='?v=55'; // r32: cache-bust for the x2 re-encodes
+const UI_V='?v=56'; // r32: cache-bust for the x2 re-encodes
 function uiImg(name){
   let im=UIIMG.imgs[name];
   if(im===undefined){
@@ -590,21 +590,23 @@ function drawHome(dt){
       ['Version 12.6.0 \u00b7 Browser Version',
        'User Rank '+SV.rank+' \u00b7 total XP '+fmt(SV.xpTotal)+' \u00b7 NP '+fmt(SV.np)],
       [{n:'CLOSE',cb:()=>{}}])},{flat:true,nohov:true});
-    // rank bar — r38: the AUTHENTIC PONOS wooden rank bar (img007_en cut, 326x56;
-    // "User Rank" label is baked into the art) + gold LED rank number + recessed
-    // progress slot on the right half (the dark well in the sprite)
+    // rank bar — r38: the AUTHENTIC PONOS wooden rank bar (img007_en cut, 326x56):
+    // "User Rank" label is baked into the art (x55..145), the recessed dark progress
+    // slot spans x163..320 — the gold rank number sits at the slot's LEFT end and the
+    // XP total at its right end, both over the fill (original layout)
     const rb=uiImg('rank_bar.png'),rbx=78,rby=58,rbw=326,rbh=56;
     if(rb){cx.drawImage(rb,rbx,rby,rbw,rbh)}
     else{cx.fillStyle='#4a2e0e';rr(cx,rbx,rby+10,rbw,36,18);cx.fill();
       cx.lineWidth=2.5;cx.strokeStyle='#2a1a06';rr(cx,rbx,rby+10,rbw,36,18);cx.stroke()}
-    // rank number: gold LED digits in the badge zone right after the baked label
-    txt(cx,String(SV.rank),rbx+108,rby+rbh/2+2,24,'#ffd23f','center',4.5,'rgba(20,10,0,.9)',700);
-    // progress fill inside the recessed slot (bar-right half)
-    const sx=rbx+152,sw=rbw-162,sy=rby+17,sh=22;
+    // progress fill inside the recessed slot
+    const sx=rbx+167,sw=rbw-173,sy=rby+17,sh=22;
     if(fr>0){const pg=cx.createLinearGradient(sx,0,sx+sw,0);pg.addColorStop(0,'#ffe264');pg.addColorStop(1,'#e8a010');
       cx.fillStyle=pg;rr(cx,sx,sy,Math.max(10,sw*fr),sh,11);cx.fill()}
     cx.lineWidth=1.5;cx.strokeStyle='rgba(255,220,140,.35)';rr(cx,sx,sy,sw,sh,11);cx.stroke();
-    txt(cx,fmt(SV.xpTotal),sx+sw/2,sy+sh/2+1,17,'#ffd23f','center',3.5,'rgba(20,10,0,.9)',700);
+    // rank number: gold LED digits at the slot's left end (clear of the baked label)
+    txt(cx,String(SV.rank),sx+30,rby+rbh/2+1,26,'#ffd23f','center',5,'rgba(20,10,0,.9)',700);
+    // XP total: LED digits at the slot's right end
+    txt(cx,fmt(SV.xpTotal),sx+sw-34,sy+sh/2+1,16,'#ffd23f','center',3.5,'rgba(20,10,0,.9)',700);
     BTN('hrank',rbx,rby,rbw,rbh,()=>{SFX.click();toast('User Rank '+SV.rank+' \u00b7 '+fmt(SV.xpTotal)+' XP collected','#ffd23f')},{flat:true,nohov:true});
     // calendar with cat face (shifted right to clear the wider authentic bar)
     cx.save();cx.translate(430,86);
