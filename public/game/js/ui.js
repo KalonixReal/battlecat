@@ -13,9 +13,14 @@ let VW=0,VH=0,SC=1,OX=0,OY=0;
    backgrounds use (0,-VOY,DW,DH) so they cover the whole window at ANY ratio. */
 let DW=1280,DH=720,VOY=0;
 function resize(){VW=innerWidth;VH=innerHeight;const dpr=Math.min(devicePixelRatio||1,DPR_CAP||2);cv.width=Math.round(VW*dpr);cv.height=Math.round(VH*dpr);cv.style.width=VW+'px';cv.style.height=VH+'px';
-  if(VW>=VH){SC=VH/720;DW=VW/SC;DH=720;VOY=0;
-    if(DW<960){SC=VW/960;DW=960}
-    OX=0;OY=(VH-720*SC)/2;}
+  /* r35 FIX (the "where is my attack button" bug): landscape windows NARROWER than 16:9
+     used to keep DW=VW/SC (down to 960) — but every screen's right-edge UI (Attack!,
+     Energy, Equip, CLEARED/TREASURE pills, Cat Food, XP) is designed for the fixed
+     1280-wide grid, so anything past design x=DW was simply CUT OFF. Now: lock the full
+     1280 design width and center the 720-tall band vertically (the same math as portrait,
+     which the whole engine already handles — VOY letterbox + full-space backgrounds). */
+  if(VW>=VH){SC=VH/720;DW=VW/SC;DH=720;VOY=0;OX=0;OY=0;
+    if(DW<1280){SC=VW/1280;DW=1280;DH=VH/SC;VOY=(DH-720)/2}}
   else{SC=VW/1280;DW=1280;DH=VH/SC;VOY=(DH-720)/2;OX=0;OY=0}
   cx.setTransform(dpr,0,0,dpr,0,0);cx._bcf=null;cv._dpr=dpr;
   const rot=document.getElementById('rotate');if(rot)rot.style.display='none'}
@@ -119,11 +124,11 @@ function SCROLL(id,x,y,w,h,getOff,setOff,maxH,onTap){const hIt={id,x,y,w,h,scrol
 function inScroll(s,x,y){return s&&x>=s.x&&x<=s.x+s.w&&y>=s.y&&y<=s.y+s.h}
 /* ---- warm brown/parchment chrome palette (matches Stage Select) ---- */
 const WOOD1='#c98a3c',WOOD2='#8a5a20',PARCH1='#f2e3c0',PARCH2='#e0c890',CREAM='#fff8e8',CARD='#fffdf5',BROWN='#5a3b16',BROWN2='#7a5a2a',GOLD='#ffd23f',GOLDLN='#5a3b16';
-function woodBar(){const g=cx.createLinearGradient(0,0,0,54);g.addColorStop(0,'#c98a3c');g.addColorStop(1,'#8a5a20');cx.fillStyle=g;cx.fillRect(0,0,DW,54);cx.fillStyle='rgba(60,35,10,.4)';cx.fillRect(0,52,DW,3);
+function woodBar(){const g=cx.createLinearGradient(0,0,0,54);g.addColorStop(0,'#c98a3c');g.addColorStop(1,'#8a5a20');cx.fillStyle=g;cx.fillRect(0,-VOY,DW,54+VOY);cx.fillStyle='rgba(60,35,10,.4)';cx.fillRect(0,52,DW,3);
   cx.strokeStyle='rgba(60,35,10,.16)';cx.lineWidth=1.6;
   for(let i=0;i<3;i++){cx.beginPath();cx.moveTo(0,15+i*13);cx.bezierCurveTo(DW*0.25,11+i*13,DW*0.75,20+i*13,DW,14+i*13);cx.stroke()}}
-function parchBody(){const pg=cx.createLinearGradient(0,54,0,720);pg.addColorStop(0,'#f2e3c0');pg.addColorStop(1,'#e0c890');cx.fillStyle=pg;cx.fillRect(0,54,DW,666)}
-function woodBody(){const wg=cx.createLinearGradient(0,54,0,720);wg.addColorStop(0,'#9a7434');wg.addColorStop(1,'#6f4e1c');cx.fillStyle=wg;cx.fillRect(0,54,DW,666);
+function parchBody(){const pg=cx.createLinearGradient(0,54,0,720);pg.addColorStop(0,'#f2e3c0');pg.addColorStop(1,'#e0c890');cx.fillStyle=pg;cx.fillRect(0,54,DW,666+VOY)}
+function woodBody(){const wg=cx.createLinearGradient(0,54,0,720);wg.addColorStop(0,'#9a7434');wg.addColorStop(1,'#6f4e1c');cx.fillStyle=wg;cx.fillRect(0,54,DW,666+VOY);
   cx.strokeStyle='rgba(50,32,10,.22)';cx.lineWidth=2;
   for(let i=0;i<7;i++){cx.beginPath();cx.moveTo(0,120+i*86);cx.bezierCurveTo(DW*0.25,112+i*86,DW*0.75,128+i*86,DW,118+i*86);cx.stroke()}}
 function creamPanel(x,y,w,h,ln){cx.fillStyle='#fff8e8';rr(cx,x,y,w,h,16);cx.fill();cx.lineWidth=3;cx.strokeStyle=ln||'#b08a50';rr(cx,x+1,y+1,w-2,h-2,15);cx.stroke();cx.lineWidth=1.2;cx.strokeStyle='rgba(176,138,80,.45)';rr(cx,x+5,y+5,w-10,h-10,12);cx.stroke()}
@@ -314,7 +319,7 @@ function drawTitle(dt){
     cx.restore();
     BTN('play',DW/2-bw/2,by-bh/2,bw,bh,()=>{SFX.click();push('home')},{flat:true,nohov:true})}
   txt(cx,'\u00A9 PONOS Corp.',14,18,13,'rgba(90,60,20,.9)','left',3,'rgba(255,235,200,.6)');
-  txt(cx,'Version 12.6.0',1266,18,13,'rgba(90,60,20,.9)','right',3,'rgba(255,235,200,.6)');
+  txt(cx,'Version 12.6.0',DW-14,18,13,'rgba(90,60,20,.9)','right',3,'rgba(255,235,200,.6)');
 }
 
 /* ============================== CAT BASE MENU (authentic v11.10 layout) ==============================
@@ -361,6 +366,7 @@ function goldBtnAuth(id,y,label,h,cb,o){ // the original's gold bar buttons (Sta
 function drawHome(dt){
   ensureMissions();
   const mDone=MISSIONS.filter(m=>missionDone(m.id)&&!missionClaimed(m.id)).length;
+  {const g=cx.createLinearGradient(0,-VOY,0,DH-VOY);g.addColorStop(0,'#8fb2a4');g.addColorStop(1,'#6f9a8a');cx.fillStyle=g;cx.fillRect(0,-VOY,DW,DH)} // r35: full-space wall tone fills letterbox strips
   const doors=uiImg('doors_home.png');
   if(doors){const S=Math.max(DW/doors.naturalWidth,DH/doors.naturalHeight),sw=doors.naturalWidth*S,sh=doors.naturalHeight*S;
     cx.drawImage(doors,(DW-sw)/2,(720-sh)/2,sw,sh)}
@@ -368,7 +374,7 @@ function drawHome(dt){
 
   /* ===== top bar: "Cat Base" + area swap | XP counter ===== */
   {const g=cx.createLinearGradient(0,0,0,40);g.addColorStop(0,'#b57a35');g.addColorStop(1,'#7a4a18');
-    cx.fillStyle=g;cx.fillRect(0,0,DW,40);
+    cx.fillStyle=g;cx.fillRect(0,-VOY,DW,40+VOY);
     cx.fillStyle='rgba(50,28,8,.5)';cx.fillRect(0,37,DW,3)}
   txt(cx,'Cat Base',16,21,25,'#fff','left',5.5,'rgba(56,32,8,.95)',700);
   { // swap-button (area select) — the \u21c4 chip beside the wordmark
@@ -380,9 +386,9 @@ function drawHome(dt){
     BTN('hareas',150,6,40,28,()=>{SFX.click();push('chapters')},{flat:true,nohov:true})}
   { // XP: gold LED-style counter, tappable like the original's XP shop shortcut
     const s=fmt(SV.xp);setFont(cx,FONT(31,700));const w=cx.measureText(s).width;
-    txt(cx,'XP',1258-w-46,21,20,'#ffd23f','left',4,'#5a3406',700);
-    txt(cx,s,1258,22,31,'#ffd23f','right',5.5,'#5a3406',700);
-    BTN('hxp',1080,4,190,32,()=>{SFX.click();push('store')},{flat:true,nohov:true})}
+    txt(cx,'XP',DW-22-w-46,21,20,'#ffd23f','left',4,'#5a3406',700);
+    txt(cx,s,DW-22,22,31,'#ffd23f','right',5.5,'#5a3406',700);
+    BTN('hxp',DW-200,4,190,32,()=>{SFX.click();push('store')},{flat:true,nohov:true})}
 
   /* ===== LEFT door ===== */
   // user-rank bar + (i) + calendar
@@ -477,12 +483,13 @@ function drawHome(dt){
     cx.strokeStyle='#8a7a5a';cx.lineWidth=2;cx.beginPath();cx.moveTo(-14,20);cx.lineTo(14,20);cx.moveTo(-14,26);cx.lineTo(6,26);cx.stroke();
     cx.restore()},mDone||'','#e84030',()=>{SFX.click();openMissionsModal()},0);
 
-  // back-to-title round arrow (bottom-left)
-  {cx.fillStyle='#fdc321';cx.beginPath();cx.arc(62,646,42,0,TAU);cx.fill();
+  // back-to-title round arrow (bottom-left) — r35: raised so the FULL circle clears the
+  // bottom bar (the user's screenshot showed it half-clipped into the corner)
+  {cx.fillStyle='#fdc321';cx.beginPath();cx.arc(62,632,42,0,TAU);cx.fill();
     cx.lineWidth=4;cx.strokeStyle='#221808';cx.stroke();
-    cx.fillStyle='rgba(255,255,255,.35)';cx.beginPath();cx.arc(62,646,35,Math.PI,TAU);cx.fill();
-    drawBackArrow(cx,62,646,22);
-    BTN('hback',20,604,84,84,()=>{SFX.click();push('title')},{flat:true,nohov:true})}
+    cx.fillStyle='rgba(255,255,255,.35)';cx.beginPath();cx.arc(62,632,35,Math.PI,TAU);cx.fill();
+    drawBackArrow(cx,62,632,22);
+    BTN('hback',20,590,84,84,()=>{SFX.click();push('title')},{flat:true,nohov:true})}
 
   /* ===== door gap: wooden tray with Storage + the two capsule buttons ===== */
   {const ty=576,tx=482,tw=318,th=104;
@@ -552,10 +559,10 @@ function drawHome(dt){
       cx.restore();
       BTN('hbann'+i,bx-bw2/2,by-bh2/2,bw2,bh2,bn[3],{flat:true,nohov:true})});
     // green (i) at the far right of the banner row
-    cx.fillStyle='#2a8a4a';cx.beginPath();cx.arc(1258,66,16,0,TAU);cx.fill();
+    cx.fillStyle='#2a8a4a';cx.beginPath();cx.arc(DW-22,66,16,0,TAU);cx.fill();
     cx.lineWidth=2.5;cx.strokeStyle='#1a5a30';cx.stroke();
-    txt(cx,'i',1258,67,17,'#fff','center',3,'#1a5a30',700);
-    BTN('hinfo2',1242,50,32,32,()=>{SFX.click();
+    txt(cx,'i',DW-22,67,17,'#fff','center',3,'#1a5a30',700);
+    BTN('hinfo2',DW-38,50,32,32,()=>{SFX.click();
       openModal('CAT BASE INFO',['The Cat Base is your home front.','Send the Cat Army to battle with Start!!, organize it in Equip,','and power it up in Upgrade.','Daily deals wait in the Store. Good luck!'],[{n:'CLOSE',cb:()=>{}}])},{flat:true,nohov:true});
   }catch(e){}
 
@@ -564,7 +571,7 @@ function drawHome(dt){
      bar beside the Cat Food counter and speaks the daily tip from a bubble anchored
      to its head. It periodically ducks behind the bar; tapping it meows. ===== */
   {const PCS=0.52,PCW=116*PCS,PCH=156*PCS; // 116x156 sprite -> ~60x81 on the design grid
-    const pcx=1078;                         // head center x (left of the Cat Food counter)
+    const pcx=DW-202;                    // head center x (left of the Cat Food counter)
     // duck cycle: peek ~5.6s, then duck behind the bar for ~0.4s (deterministic from G.t)
     const cyc=G.t%6.4,duckT=cyc<0.4?(0.4-cyc)/0.4:(cyc>5.9?clamp((cyc-5.9)/0.5,0,1):0);
     const duckOff=Math.sin(duckT*Math.PI)*88; // 0 -> 88 -> 0 (fully behind the bar & back up)
@@ -592,7 +599,7 @@ function drawHome(dt){
 
   /* ===== bottom bar: Store + Cat Food ===== */
   {const g=cx.createLinearGradient(0,676,0,720);g.addColorStop(0,'#b57a35');g.addColorStop(1,'#7a4a18');
-    cx.fillStyle=g;cx.fillRect(0,676,DW,44);
+    cx.fillStyle=g;cx.fillRect(0,676,DW,44+VOY);
     cx.fillStyle='rgba(50,28,8,.5)';cx.fillRect(0,676,DW,3)}
   { // Store button (gold pill + cart) — sits center-left in the bar like the original
     const bw2=260,bh2=38,bx=660,by=679;
@@ -603,7 +610,7 @@ function drawHome(dt){
     txt(cx,'Store',bx+bw2/2+22,by+bh2/2+1,24,'#fff','center',5.5,'#221808',700);
     BTN('hstore',bx,by,bw2,bh2,()=>{SFX.click();push('store')},{flat:true,nohov:true})}
   { // Cat Food: label + can icon + counter (right end of the bar, like the original)
-    cx.save();cx.translate(1188,698);
+    cx.save();cx.translate(DW-92,698);
     cx.fillStyle='#d83a2a';rr(cx,-16,-14,32,28,6);cx.fill();
     cx.lineWidth=2.4;cx.strokeStyle='#7a1a10';rr(cx,-16,-14,32,28,6);cx.stroke();
     cx.fillStyle='#e8e4da';rr(cx,-16,-18,32,10,4);cx.fill();
@@ -615,8 +622,8 @@ function drawHome(dt){
     cx.lineWidth=1.8;cx.strokeStyle='#7a4a08';cx.stroke();
     txt(cx,'+',14,12.5,12,'#7a4a08','center',2,'#fff',700);
     cx.restore();
-    txt(cx,'Cat Food',1160,698,15,'#fff','right',4,'rgba(56,32,8,.95)',700);
-    txt(cx,fmt(SV.cf),1262,698,24,'#ffd23f','right',4.5,'#5a3406',700);
+    txt(cx,'Cat Food',DW-120,698,15,'#fff','right',4,'rgba(56,32,8,.95)',700);
+    txt(cx,fmt(SV.cf),DW-18,698,24,'#ffd23f','right',4.5,'#5a3406',700);
     BTN('hcf',DW-152,680,152,38,()=>{SFX.click();push('store')},{flat:true,nohov:true})}
 }
 
@@ -801,6 +808,7 @@ function drawMap(dt){const c=CHMAP[G.chapter];
      stage nodes placed on real geographic positions (lon/lat), panned/zoomed like the original.
      Other modes keep the parchment serpentine layout. */
   drawTopBar(c.kind==='story'?'Stage Select':c.n,false);
+  cx.fillStyle='#3a2712';cx.fillRect(0,-VOY,DW,DH); // r35: deep-wood tone fills letterbox strips at ANY aspect
   cx.fillStyle='#4a3319';cx.fillRect(0,54,DW,666); // dark wood backboard behind the map
   const isRealMap=c.kind==='story'&&G.chapter!=='eoc999'; // story = real geography
   const GEO=isRealMap?(GEO_EOC&&GEO_EOC.length===(c.names||[]).length&&c.names===COUNTRY?GEO_EOC:(GEO_ITF&&GEO_ITF.length===(c.names||[]).length&&c.names===FUT?GEO_ITF:null)):null;
@@ -972,50 +980,51 @@ function drawMap(dt){const c=CHMAP[G.chapter];
       BTN('farmx',bx2+bw2-40,by2+3,30,28,()=>{G.mapFocusIdx=null;SFX.click()},{col:'#e85840',outline:'#8a1a10',label:'×',fs:12,r:14})}}
   // ---- dark wood frame around the map ----
   woodFrame(0,54,DW,666,16);
-  // progress label (story)
+  // progress label (story) — r35: right-edge cluster anchored to DW (was hardcoded 1108..1258,
+  // clipped off-screen on every window narrower than 16:9)
   if(c.kind==='story'){const last=lastClearedIdx(c)+1;
-    cx.fillStyle='rgba(255,248,232,.9)';rr(cx,1108,86,150,30,15);cx.fill();
-    cx.lineWidth=2.5;cx.strokeStyle='#8a5a20';rr(cx,1108,86,150,30,15);cx.stroke();
-    txt(cx,Math.min(last,48)+' / 48 CLEARED',1183,101.5,13,'#8a5a10','center',3,'#fff',700);
+    cx.fillStyle='rgba(255,248,232,.9)';rr(cx,DW-172,86,150,30,15);cx.fill();
+    cx.lineWidth=2.5;cx.strokeStyle='#8a5a20';rr(cx,DW-172,86,150,30,15);cx.stroke();
+    txt(cx,Math.min(last,48)+' / 48 CLEARED',DW-97,101.5,13,'#8a5a10','center',3,'#fff',700);
     // treasure-set completion chip (radar legend): complete sets / 9 for this chapter
     if(CHSETS[c.id]){let done=0;for(let k=0;k<9;k++)if(tCount(c.id,k)===3)done++;
-      cx.fillStyle='rgba(255,248,232,.9)';rr(cx,1108,122,150,30,15);cx.fill();
-      cx.lineWidth=2.5;cx.strokeStyle='#c8a030';rr(cx,1108,122,150,30,15);cx.stroke();
-      cx.fillStyle='#ffd23f';cx.save();cx.translate(1124,137);cx.beginPath();cx.moveTo(0,-6.5);cx.lineTo(5.8,0);cx.lineTo(0,6.5);cx.lineTo(-5.8,0);cx.closePath();cx.fill();
+      cx.fillStyle='rgba(255,248,232,.9)';rr(cx,DW-172,122,150,30,15);cx.fill();
+      cx.lineWidth=2.5;cx.strokeStyle='#c8a030';rr(cx,DW-172,122,150,30,15);cx.stroke();
+      cx.fillStyle='#ffd23f';cx.save();cx.translate(DW-156,137);cx.beginPath();cx.moveTo(0,-6.5);cx.lineTo(5.8,0);cx.lineTo(0,6.5);cx.lineTo(-5.8,0);cx.closePath();cx.fill();
       cx.lineWidth=1.6;cx.strokeStyle='#8a5a10';cx.stroke();cx.restore();
-      txt(cx,'TREASURE '+done+'/9',1224,137.5,13,'#b08028','center',2.5,'#fff',700);
-      if(done<9)txt(cx,'gold ◇ = set at 2/3 pieces',1183,164,10.5,'#f0e2c0','center',2.5,'rgba(60,36,8,.85)',700)}}
+      txt(cx,'TREASURE '+done+'/9',DW-56,137.5,13,'#b08028','center',2.5,'#fff',700);
+      if(done<9)txt(cx,'gold ◇ = set at 2/3 pieces',DW-97,164,10.5,'#f0e2c0','center',2.5,'rgba(60,36,8,.85)',700)}}
   // ---- chapter cycle arrows on the frame (official side arrows) ----
   const chIdx=CHAPTERS.indexOf(c);
   const cyc=dir=>{for(let k=1;k<=CHAPTERS.length;k++){const nc=CHAPTERS[(chIdx+dir*k+CHAPTERS.length*2)%CHAPTERS.length];
     if(chapterUnlocked(nc.id)){G.chapter=nc.id;G.mapFor=null;G.mapFocusIdx=null;SFX.click();break}}};
-  [[36,388,-1,'chprev'],[1244,388,1,'chnext']].forEach(([ax,ay,dir,id])=>{
+  [[36,388,-1,'chprev'],[DW-36,388,1,'chnext']].forEach(([ax,ay,dir,id])=>{
     cx.fillStyle='rgba(58,40,16,.88)';cx.beginPath();cx.arc(ax,ay,24,0,TAU);cx.fill();
     cx.strokeStyle='#c8913a';cx.lineWidth=3;cx.beginPath();cx.arc(ax,ay,24,0,TAU);cx.stroke();
     cx.fillStyle='#ffd23f';cx.beginPath();cx.moveTo(ax+dir*10,ay);cx.lineTo(ax-dir*6,ay-11);cx.lineTo(ax-dir*6,ay+11);cx.closePath();cx.fill();
     BTN(id,ax-26,ay-26,52,52,()=>cyc(dir),{flat:true,nohov:true})});
-  // ---- right action cluster: Equip chip / Energy pill / ATTACK! ----
+  // ---- right action cluster: Equip chip / Energy pill / ATTACK! (r35: DW-anchored) ----
   const teamFilled=SV.teams[SV.teamSel].filter(Boolean).length;
-  cx.fillStyle='#e8b23c';rr(cx,1030,498,192,40,12);cx.fill();cx.lineWidth=3;cx.strokeStyle='#5a3b16';rr(cx,1030,498,192,40,12);cx.stroke();
-  glyph(cx,'cat',1052,518,10,'#5a3b16','#e8b23c');
-  txt(cx,'Equip',1080,513,15,'#5a3b16','left',3,'#fff',700);
-  txt(cx,'Slots '+teamFilled+'/10',1080,530,11,'#6a4a1a','left',2,'#fff',700);
-  BTN('mequip',1030,498,192,40,()=>{push('equip');SFX.click()},{flat:true,nohov:true});
-  cx.fillStyle='#ffd23f';rr(cx,1006,548,238,44,22);cx.fill();cx.lineWidth=3.5;cx.strokeStyle='#c07818';rr(cx,1006,548,238,44,22);cx.stroke();
-  txt(cx,'Energy',1034,570,19,'#5a3b16','left',3,'#fff',700);
+  cx.fillStyle='#e8b23c';rr(cx,DW-250,498,192,40,12);cx.fill();cx.lineWidth=3;cx.strokeStyle='#5a3b16';rr(cx,DW-250,498,192,40,12);cx.stroke();
+  glyph(cx,'cat',DW-228,518,10,'#5a3b16','#e8b23c');
+  txt(cx,'Equip',DW-200,513,15,'#5a3b16','left',3,'#fff',700);
+  txt(cx,'Slots '+teamFilled+'/10',DW-200,530,11,'#6a4a1a','left',2,'#fff',700);
+  BTN('mequip',DW-250,498,192,40,()=>{push('equip');SFX.click()},{flat:true,nohov:true});
+  cx.fillStyle='#ffd23f';rr(cx,DW-274,548,238,44,22);cx.fill();cx.lineWidth=3.5;cx.strokeStyle='#c07818';rr(cx,DW-274,548,238,44,22);cx.stroke();
+  txt(cx,'Energy',DW-246,570,19,'#5a3b16','left',3,'#fff',700);
   cx.fillStyle='#1a1a22';rr(cx,DW-152,556,100,28,14);cx.fill();
-  txt(cx,String(SV.energy),1178,571,19,'#7fe86a','center',3,'#061806',700);
+  txt(cx,String(SV.energy),DW-102,571,19,'#7fe86a','center',3,'#061806',700);
   const curIdx=c.kind==='story'?next:c.kind==='aku'?next:c.kind==='dojo'?Math.min(14,lastClearedIdx(c)+1):0;
   const canPlay=c.kind==='event'?(G.lastEvents.length>0):stageUnlocked(c.id,curIdx);
   cx.save();
   const glow=.5+.5*Math.sin(G.t*4);
   cx.shadowColor='rgba(255,60,200,'+(0.35+glow*0.4)+')';cx.shadowBlur=16;
   const ag=cx.createLinearGradient(0,604,0,672);ag.addColorStop(0,'#ffe24a');ag.addColorStop(1,'#ffb420');
-  cx.fillStyle=ag;rr(cx,986,604,278,68,34);cx.fill();cx.restore();
-  cx.lineWidth=4.5;cx.strokeStyle='#ff4bd8';rr(cx,986,604,278,68,34);cx.stroke();
-  cx.lineWidth=1.5;cx.strokeStyle='rgba(122,26,16,.5)';rr(cx,990,608,270,60,30);cx.stroke();
-  txt(cx,'Attack!',1125,639,32,'#fff','center',5,'#7a1a50',700);
-  BTN('attack',986,604,278,68,()=>{
+  cx.fillStyle=ag;rr(cx,DW-294,604,278,68,34);cx.fill();cx.restore();
+  cx.lineWidth=4.5;cx.strokeStyle='#ff4bd8';rr(cx,DW-294,604,278,68,34);cx.stroke();
+  cx.lineWidth=1.5;cx.strokeStyle='rgba(122,26,16,.5)';rr(cx,DW-290,608,270,60,30);cx.stroke();
+  txt(cx,'Attack!',DW-155,639,32,'#fff','center',5,'#7a1a50',700);
+  BTN('attack',DW-294,604,278,68,()=>{
     if(!canPlay){const _unlockReq={eoc2:'eoc1',eoc3:'eoc2',itf1:'eoc3',itf2:'itf1',itf3:'itf2',cotc1:'itf3',cotc2:'cotc1',cotc3:'cotc2',dojo:'eoc2',aku:'itf3',sol:'eoc1'};
       const _reqCh=_unlockReq[c.id];
       toast(chapterUnlocked(c.id)?'Stage locked — clear the previous stage first!':('Unlock '+c.n+' — clear '+(CHMAP[_reqCh]?CHMAP[_reqCh].n:'the previous saga')+' first!'),'#ffb060');SFX.error();return}
@@ -1049,7 +1058,7 @@ function drawMap(dt){const c=CHMAP[G.chapter];
   txt(cx,'Store',726,683,19,'#5a3b16','center',3,'#fff',700);
   BTN('storepill',628,662,170,40,()=>{push('store');SFX.click()},{flat:true,nohov:true});
   drawCFCan(cx,DW-152,688,13);
-  txt(cx,fmt(SV.cf),1150,688,21,'#ffd23f','left',4,'#5a3210',700);
+  txt(cx,fmt(SV.cf),DW-130,688,21,'#ffd23f','left',4,'#5a3210',700);
   // dojo record board (dojo only)
   if(c.kind==='dojo'){
     cx.save();cx.globalAlpha=0.94;
@@ -1070,7 +1079,7 @@ function drawMap(dt){const c=CHMAP[G.chapter];
 }
 function brownBottomBar(){
   const g=cx.createLinearGradient(0,666,0,720);g.addColorStop(0,'#c98a3c');g.addColorStop(1,'#8a5a20');
-  cx.fillStyle=g;cx.fillRect(0,666,DW,54);
+  cx.fillStyle=g;cx.fillRect(0,666,DW,54+VOY);
   // menu circular buttons with pictogram glyphs
   const items=[['equip','CATS','cat',()=>push('equip')],['upgrade','UPGRADE','up',()=>{G.selCat=null;push('upgrade')}],['gacha','GACHA','capsule',()=>push('gacha')],['treasure','TREASURE','chest',()=>push('treasure')],['guide','ENEMIES','doge',()=>push('guide')],['base','BASE','cannon',()=>push('base')],['settings','MENU','gear',()=>push('settings')]];
   items.forEach((it,i)=>{const x=110+i*86,y=686;
@@ -1084,9 +1093,9 @@ function brownBottomBar(){
   glyph(cx,'cart',686,694,9.5,'#5a3b16','#ffd23f');
   txt(cx,'Store',722,695,18,'#5a3b16','center');
   BTN('storepill',DW/2,676,150,36,()=>{push('store');SFX.click()},{flat:true,nohov:true});
-  txt(cx,'Cat Food',880,694,15,'#fff','left',3,'#5a3b16',700);
-  drawCFCan(cx,975,694,12);
-  txt(cx,fmt(SV.cf),1052,694,22,'#ffd23f','left',4,'#5a3b16',700);
+  txt(cx,'Cat Food',DW-400,694,15,'#fff','left',3,'#5a3b16',700);
+  drawCFCan(cx,DW-305,694,12);
+  txt(cx,fmt(SV.cf),DW-228,694,22,'#ffd23f','left',4,'#5a3b16',700);
   // back button bottom-left (curved arrow)
   drawBackArrow(cx,56,693,30);
   BTN('back',22,659,68,68,pop,{flat:true,nohov:true});
@@ -1368,7 +1377,7 @@ function drawEquip(dt){
   cx.restore();
   // page arrows at the screen edges (page-wise scroll)
   const pageGo=d=>{G.scrollColl=clamp(G.scrollColl+d*(gh-60),0,maxScroll);SFX.click()};
-  [[10,-1,'eqpgL',G.scrollColl<=0],[1270,1,'eqpgR',G.scrollColl>=maxScroll]].forEach(([ax,dir,id,dis])=>{
+  [[10,-1,'eqpgL',G.scrollColl<=0],[DW-10,1,'eqpgR',G.scrollColl>=maxScroll]].forEach(([ax,dir,id,dis])=>{
     cx.save();cx.globalAlpha=dis?0.45:0.92;cx.translate(ax,gy+gh/2);
     cx.fillStyle='#e8f4b0';cx.beginPath();
     if(dir<0){cx.moveTo(18,0);cx.lineTo(-12,-26);cx.lineTo(-12,26)}
@@ -1463,7 +1472,7 @@ function drawUpgrade(dt){
     else{cx.moveTo(-16,0);cx.lineTo(14,-24);cx.lineTo(14,24)}
     cx.closePath();cx.fill();cx.lineWidth=3;cx.strokeStyle='rgba(30,60,100,.55)';cx.stroke();cx.restore();
     BTN(id,ax-34,204,68,84,()=>{G.upIdx=(G.upIdx+dir+n)%n;SFX.click()},{flat:true,nohov:true})};
-  navArrow(46,-1,'upL');navArrow(1234,1,'upR');
+  navArrow(46,-1,'upL');navArrow(DW-46,1,'upR');
   /* ---- LEVEL UP !! button: dark olive fill, silver chunky letters, thick magenta border ---- */
   const cost=lvlUpCost(c.id);
   BTN('lvlup',80,412,460,74,()=>{
@@ -1702,7 +1711,7 @@ function drawGacha(dt){drawTopBar('GACHA CAPSULES',true);
   // Cat Food can + balance (bottom-right of the machine room \u2014 the global bottom menu is
   // intentionally NOT shown on this screen, matching the official gacha layout; Defect 10)
   drawCFCan(cx,DW-152,646,12);
-  txt(cx,fmt(SV.cf),1150,646,21,'#ffd23f','left',4,'rgba(30,16,4,.95)',700);
+  txt(cx,fmt(SV.cf),DW-130,646,21,'#ffd23f','left',4,'rgba(30,16,4,.95)',700);
   // banner cycle arrows flanking the machine
   const drawArrow=(ax,ay,dir,id)=>{cx.save();cx.translate(ax,ay);
     cx.fillStyle='rgba(20,12,30,.45)';cx.beginPath();cx.moveTo(dir*22,0);cx.lineTo(-dir*14,-26);cx.lineTo(-dir*14,26);cx.closePath();cx.fill();

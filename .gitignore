@@ -13,3 +13,4 @@ tests/videos/*.png
 # r34: the downloaded APK + its decrypted extraction (3GB+ — assets are copied into public/ instead)
 download/apk/
 download/apk_menu_cat/work/
+upload/

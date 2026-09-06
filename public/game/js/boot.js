@@ -325,7 +325,11 @@ function loop(ts){
       cx.fillStyle='rgba(18,10,6,'+(ta*ta*0.92).toFixed(3)+')';cx.fillRect(0,-VOY,DW,DH);
       if(G.transT<=0)G.transT=0}
   }
+  /* r35 safety: if a screen left the save/restore stack unbalanced (the battle's stray
+     restore bug did exactly that), re-assert the base transform AFTER the pop so the
+     next frame always starts clean — a leaked stack must never compound across frames. */
   cx.restore();
+  cx.setTransform(cv._dpr||1,0,0,cv._dpr||1,0,0);
   requestAnimationFrame(loop)}
 loadSave();
 if(typeof earthMap==='function')earthMap(); // preload the real Earth map AT BOOT — the stage-select map never flashes a placeholder (r22 user report)

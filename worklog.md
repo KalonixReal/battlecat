@@ -2779,3 +2779,24 @@ Stage Summary:
 - Main: a28a513 + d1e3c73 (deploy script). gh-pages: 15a512e (560MB standalone site, index.html at root).
 - The user's three live-site complaints are all verified fixed ON THE LIVE SITE: cat present, attack button present, everything loads at startup.
 - Game architecture now: single full preload → instant battles; fully offline (no /api, no IAP, daily-rival leaderboard); authentic PONOS art for the home cat + gacha capsule.
+
+---
+Task ID: r35
+Agent: Super Z (main)
+Task: user round — "fix these ui bugs": diagnose the 2 new screenshots (map screen with action cluster clipped at screen edge + half-empty wood; home with clipped corner button) and fix.
+
+Work Log:
+- DIAGNOSED both new screenshots (upload/pasted_image_1788665740165/76168059): pixel + VLM analysis against live renders at the same viewports isolated the true reproducible defects: (a) at any landscape window narrower than 16:9 (e.g. 802x486 → DW=1188), EVERY right-edge element designed for the fixed 1280 grid was silently cut off — the Attack! button (986..1264), Energy pill, Equip chip, CLEARED/TREASURE pills, chapter arrows, XP + Cat Food counters — the "where is my attack button" bug; (b) home back-to-title circle half-clipped into the bottom-left corner; (c) a stray cx.restore() in the battle's portrait background path popped drawBattle's outer save mid-frame, so the whole battle HUD (unit cards / worker / Fire!! cannon) rendered at the RAW dpr transform — cards at design y614+ landed BELOW the visible screen in ANY VOY>0 viewport (letterboxed landscape AND portrait phones).
+- FIX 1 (ui.js resize): landscape windows with DW<1280 now lock the full 1280 design width and center the 720 band vertically via VOY (identical to the portrait math the engine already handles everywhere). DW is now guaranteed ≥1280 at every aspect ratio — nothing can clip horizontally ever again.
+- FIX 2 (drawMap): right-edge cluster re-anchored to DW (CLEARED/TREASURE pills, legend, chnext arrow, Equip chip, Energy pill + inset + digits, Attack! button + glow + text, CF can/count) — correct for ultrawide too (1920x800 → DW=1728, attack hugs the physical right edge like the original).
+- FIX 3 (drawHome + brownBottomBar + woodBar/parchBody/woodBody helpers): XP counter, green (i) button, Cat Food label/can/count, peeking cat, version string, equip page arrows, upgrade nav arrows, gacha CF count all DW-anchored; back-to-title circle raised (design y 632) so it fully clears the bottom bar; all shared bars/bodies now fill the letterbox strips (top bar extends to -VOY, bodies to 720+VOY, home gets a full-space wall gradient, map a deep-wood tone) — no raw black bars at any ratio.
+- FIX 4 (battle.js): removed the unbalanced cx.restore() in the VOY>0 background branch (was copied from the landscape path's balanced save/restore but this branch never saves). Battle HUD now renders in the correct transform in portrait AND letterboxed landscape.
+- FIX 5 (boot.js loop): defensive setTransform base re-assert after each frame's restore so a leaked save/restore stack can never compound across frames.
+- QA (agent-browser, fresh single-load discipline): boot 1409/1409; 802x486 → Attack outline x617..792 fully visible (was 664..801 clipped at edge), all map pills visible, letterbox strips wood-toned; 564x884 portrait map + battle verified (cards/worker/cannon all present — the portrait battle HUD bug is fixed); 1920x800 ultrawide attack at 1591..1903 (DW-anchored); 800x600 4:3 clean; full golden path battle → 3× speed → VICTORY (S rank, 105 XP) → OK → map, battle memory released ([MEM] 216 strips), zero console errors; submap/chapters/home screens edge-checked clean; bun run lint 0 errors.
+- index.html scripts bumped v=52 (cache-bust).
+
+Stage Summary:
+- The three screenshot symptoms all traced to one architectural flaw (adaptive DW vs fixed-1280 content) plus one leaked canvas restore — both now fixed at the root.
+- Every screen is now clip-free at ANY aspect ratio: <16:9 letterboxes vertically (themed fills), 16:9 exact, ultrawide pins edge UI to the physical edges.
+- Battle HUD visible in portrait + letterboxed landscape for the first time (stray-restore bug also affected all portrait phones).
+- Next: push main + redeploy gh-pages (v52) + live verify at the user's viewports.

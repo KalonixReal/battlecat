@@ -626,7 +626,12 @@ function drawBattleBG(b,shx,shy){
         try{o.filter='none'}catch(e){}
         ext={key,cv:oc};_bgEdge.set(bim,ext)}
       cx.drawImage(ext.cv,0,-VOY,DW,DH);
-      cx.restore();
+      /* r35 FIX: there was a stray cx.restore() here (copied from the landscape path's
+         balanced save/restore, but this branch never saves). It popped drawBattle's outer
+         save mid-draw, so the whole HUD (unit cards / worker / Fire!! cannon) then rendered
+         at the RAW dpr transform — 1:1 pixel coords, pushing the card row (design y 614+)
+         BELOW the visible screen. This broke every battle in ANY letterboxed/portrait
+         viewport (VOY>0): the cards, worker and cannon simply vanished. */
       if(!_HZ_GRAD){_HZ_GRAD=cx.createLinearGradient(0,GROUND_Y-140,0,GROUND_Y+30);
         _HZ_GRAD.addColorStop(0,'rgba(0,0,0,0)');_HZ_GRAD.addColorStop(1,'rgba(0,0,20,.10)')}
       cx.fillStyle=_HZ_GRAD;cx.fillRect(0,GROUND_Y-140,DW,170);
