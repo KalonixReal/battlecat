@@ -2800,3 +2800,18 @@ Stage Summary:
 - Every screen is now clip-free at ANY aspect ratio: <16:9 letterboxes vertically (themed fills), 16:9 exact, ultrawide pins edge UI to the physical edges.
 - Battle HUD visible in portrait + letterboxed landscape for the first time (stray-restore bug also affected all portrait phones).
 - Next: push main + redeploy gh-pages (v52) + live verify at the user's viewports.
+
+---
+Task ID: r35-deploy
+Agent: Super Z (main)
+Task: push r35 + redeploy gh-pages + verify the LIVE site.
+
+Work Log:
+- Push protection blocked the first push: the r34-era auto-commit 4600e78 (cron webDevReview job) had re-committed upload/prompt.txt (contains the user's PAT). History rewritten again via soft-reset + git rm --cached upload/ + upload/ added to .gitignore → clean commit 18426d0 pushed to main.
+- gh-pages redeployed with the deploy script: full 560MB standalone tree, orphan commit e2595c5 forced over 15a512e. .website-deploy removed after push (disk hygiene).
+- LIVE verification (https://kalonixreal.github.io/battlecat/, fresh single-load browser at 802x486): index.html serves v=52 scripts; boot 1409/1409; map screen Attack outline x617..792 (10px right margin — was clipped at the 801 edge pre-fix); battle started from the live deploy shows the unit-card HUD present (cream plates y33..454, n=1986 — the stray-restore fix is live).
+- Cron cleanup: deleted the duplicate r32 webDevReview job (362361) that double-scheduled with the r34 one (362566) and caused 'glm-5.3 concurrency limit exceeded' failures; the surviving job carries the memory-discipline instructions.
+
+Stage Summary:
+- Live site fully on r35: no clipped UI at any aspect ratio, battle HUD visible in letterboxed/portrait views, all r34 features intact.
+- main: 18426d0. gh-pages: e2595c5 (v52).
