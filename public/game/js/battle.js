@@ -362,6 +362,17 @@ function updateBattle(dt){
      world: the battlefield follows the finger) and releases with a fling that
      glides with friction, hard-clamped to the field bounds. The view starts at
      the home base (right end) and only moves when the player moves it. */
+  /* r34 OPENING REVEAL: hold on the enemy castle while the fade completes, then
+     smoothstep the camera home. Any touch cancels and hands control instantly. */
+  if(Bn.camIntro>0&&!B.result){
+    if(G.pdown){Bn.camIntro=0;Bn.cam=Math.max(0,FIELD_W-DW)}
+    else{
+      Bn.camIntro=Math.max(0,Bn.camIntro-dt);
+      const t=2.6-Bn.camIntro;
+      if(t<0.5)Bn.cam=0;
+      else{const u=clamp((t-0.5)/1.8,0,1);const e=u*u*(3-2*u);Bn.cam=e*Math.max(0,FIELD_W-DW)}
+      Bn.camHold=0;
+      if(Bn.camIntro<=0)Bn.cam=Math.max(0,FIELD_W-DW)}}
   if(G.flingCam&&!B.result){
     Bn.cam=clamp(Bn.cam-G.flingCam.v*dt,0,Math.max(0,FIELD_W-DW)); // grab-the-world: content follows the finger's release direction
     G.flingCam.v*=Math.pow(0.002,dt);
@@ -381,20 +392,15 @@ function endBattle(win){
       rot:R2()*TAU,vr:(R2()-0.5)*6,w:7+R2()*6,h:3+R2()*4,ph:R2()*TAU,
       col:['#ffd23f','#ff9ad5','#fdfdf8','#7fd0ff','#c46adf'][i%5]})}
   else{SFX.lose();B.fx.push({k:'baseboom',x:B.catBase.x,t:1.4,y:0});B.shake=16}}
-/* endless dojo run ended: update local top-5, then fire-and-forget POST to the world
-   ranking (/api/leaderboard — Prisma SQLite). failures are silent (offline = local only). */
+/* endless dojo run ended: update the local top-5 + best grade.
+   r34: fully offline — the "world ranking" is the daily rival board (ui.js). */
 function dojoRecordRun(){
   SV.dojoBoard=SV.dojoBoard||[];
   SV.dojoBoard.push({s:B.score,d:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'})});
   SV.dojoBoard.sort((a,b)=>b.s-a.s);SV.dojoBoard=SV.dojoBoard.slice(0,5);
   if(B.score>(SV.dojoBest||0))SV.dojoBest=B.score;
-  if(B.score>0&&B.newRecord){ // only post record-breaking runs — keeps the board meaningful
-    try{
-      fetch('/api/leaderboard',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({name:SV.cmdName||'CAT COMMANDER',score:B.score,stage:B.st.endless?'dojo':B.st.ch})})
-        .then(r=>r.json()).then(j=>{if(j&&j.ok&&j.entry)B.worldRank=j.entry.score})
-        .catch(()=>{});
-    }catch(e){}}}
+  /* r34: fully offline — the world ranking is the local daily rival board
+     (ui.js lbLocalBoard) scaled around the player's dojoBest. No server, no POST. */}
 function applyBattleResult(){
   if(B.applied)return;B.applied=true;const st=B.st;
   const acc=1+0.15*(SV.base.account-1);
@@ -505,7 +511,8 @@ function drawBattle(dt){
     const forced=b.load.valve<=0;
     if((rdy>=N&&aRdy)||forced||N===0){
       if(forced&&(N===0||rdy<N))toast('Some assets were slow — starting anyway','#ffb46a');
-      b.load.ready=true;b.load.intro=0.45;
+      b.load.ready=true;b.load.intro=0.55;
+      b.camIntro=2.6; // r34 OPENING REVEAL: 0-0.5s hold on the ENEMY castle (fade completes over it), 0.5-2.3s smooth sweep home
       AudioSetBgm(b.st.bgm||'eoc');SFX.start();toast(b.st.name+' — GO!','#ffd94a')}
     else{drawBattleLoading(b);return}
   }
@@ -546,25 +553,23 @@ function drawBattle(dt){
   if(b.load&&b.load.intro>0){b.load.intro-=dt;const a=clamp(b.load.intro/0.45,0,1);
     cx.fillStyle='rgba(13,13,18,'+(a*a*0.98).toFixed(3)+')';cx.fillRect(0,-VOY,DW,DH)}
   if(b.result)drawResult(b)}
-/* r32 MEMORY RELEASE — called when a battle is FINISHED (result Ok) or QUIT
-   (Retreat). Frees every battle-only decode so the game holds no memory of battles
-   it is not in:
-   - enemy STRIP bitmaps (icons + all cat art stay — the roster/guide uses those)
-   - battle background images + their portrait-edge bakes
-   - every enemy-castle decode
-   - the battle soundtrack (BGM buffers + combat SFX; menu themes stay)
-   Re-entering a battle re-fetches from the HTTP cache and the battle loading
-   screen gates on the decodes again — same flow as the original's per-battle load. */
+/* r34 MEMORY POLICY — "load all 500MB at startup": on roomy devices (≥6GB RAM,
+   navigator.deviceMemory default 8 when unreported) battle decodes STAY cached
+   after a battle ends, so every next battle opens instantly from RAM. Leaner
+   machines (<6GB) release battle-only decodes when a fight ends (same r32 list) —
+   the next battle re-decodes from the warm HTTP cache behind its loading gate. */
 function releaseBattleMemory(){
   try{
+    const dm=(typeof navigator!=='undefined'&&navigator.deviceMemory)||8;
+    if(dm>=6){G.flingCam=null;return} // full-preload experience: nothing is dropped
     for(const k in _bgImgs)delete _bgImgs[k];        // battle backgrounds
     for(const k in _castleImgs)delete _castleImgs[k];// enemy castles
     if(typeof _bgEdge!=='undefined'&&_bgEdge.clear)_bgEdge.clear(); // portrait bakes of those bgs
     if(typeof _bgBakes!=='undefined'&&_bgBakes.clear)_bgBakes.clear();
     if(typeof SPRIT!=='undefined'&&SPRIT.releaseEnemies){const n=SPRIT.releaseEnemies();
-      if(typeof console!=='undefined')console.log('%c[MEM] battle cleared — '+n+' enemy strips + bgs + castles + battle audio released','color:#9fe89a')}
+      if(typeof console!=='undefined')console.log('%c[MEM] low-memory device — '+n+' enemy strips + bgs + castles + battle audio released','color:#9fe89a')}
     if(typeof AudioReleaseBattle==='function')AudioReleaseBattle();
-    if(typeof battlePoolStop==='function')battlePoolStop(); // deferred pool stops refilling battle memory
+    if(typeof battlePoolStop==='function')battlePoolStop();
     G.flingCam=null;
   }catch(e){}
 }
@@ -1004,7 +1009,7 @@ function drawBattleHUD(b,dt){
     cx.fillStyle=b.speed>1?'#2a7a1a':'#3a2a12';
     for(let ci=0;ci<2;ci++){cx.beginPath();cx.moveTo(sx2-11+ci*11,sy2-8);cx.lineTo(sx2-3+ci*11,sy2-1);cx.lineTo(sx2-11+ci*11,sy2+6);cx.lineTo(sx2-7+ci*11,sy2-1);cx.closePath();cx.fill()}
     txt(cx,'\u00d7'+b.speed,sx2,sy2+13,13,'#3a2a12','center',2.5,'rgba(255,244,200,.9)',700);
-    if(SV.rank<20&&b.speed<3)drawPadlock(cx,sx2+15,sy2+16,8,'#3a2a12'); // ×3 is rank-gated
+    if(SV.rank<20&&b.speed<3)txt(cx,'×3',sx2+15,sy2+30,8,'rgba(255,248,232,.5)','center',1.5,'#3a2a12',700); // ×3 rank hint (tiny text, no padlock glyph — was read as debug UI)
   }
   BTN('speed',13,59,50,50,()=>{if(B.result)return;
     if(b.speed===1){b.speed=2;SFX.click()}

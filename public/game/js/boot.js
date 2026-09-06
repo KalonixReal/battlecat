@@ -9,13 +9,13 @@
 const SCREENS={title:drawTitle,home:drawHome,chapters:drawChapters,map:drawMap,submap:drawSubmap,equip:drawEquip,upgrade:drawUpgrade,gacha:drawGacha,treasure:drawTreasure,guide:drawGuide,base:drawBase,settings:drawSettings,store:drawStore,battle:drawBattle,expedition:drawExpedition,leaderboard:drawLeaderboard,trophies:drawTrophies,shrine:drawShrine};
 let lastTs=0,persistT=0,energyT=0;
 
-/* ------------------------------ preload pipeline v5 (r32) ------------------------------
-   LOAD SPLIT, exactly as the original game divides its data:
-   BOOT loading screen — cats, the map, everything OUTSIDE battles: title/home art,
-   all cat strips, every icon, portrait atlas, UI chrome, the real Earth map, the
-   menu soundtrack. Battle loading screen — EVERYTHING ELSE: the enemy strips, the
-   battle backgrounds, the castles and the full battle soundtrack, and when a
-   battle is finished or quit, releaseBattleMemory() frees those decodes again. */
+/* ------------------------------ preload pipeline v6 (r34) ------------------------------
+   FULL PRELOAD, per player mandate: the BOOT loading screen loads EVERYTHING —
+   cats, the map, UI chrome, every icon, the FULL soundtrack, AND all battle-only
+   assets (enemy strips, battle backgrounds, castles, battle BGM/SFX). The bar
+   tracks the real byte-level progress of all ~900 files, and battles therefore
+   open instantly (their loading gate passes on the first frame). Low-memory
+   devices (<2GB deviceMemory) still release battle decodes after a fight. */
 const PRELOAD={total:0,done:0,ready:false,tap:false,failed:[],phase:'',walking:0,disp:0,bgTotal:0,bgDone:0};
 function _pAdd(wt){PRELOAD.total+=wt}
 function _pDone(wt){PRELOAD.done+=wt;if(!PRELOAD.ready&&PRELOAD.total>0&&PRELOAD.done>=PRELOAD.total)finishPreload()}
@@ -31,15 +31,21 @@ function adoptRuntime(url,im){
       if(typeof SPRIT!=='undefined')SPRIT.adopt(url,im);
       const fn=url.slice(15);
       if(typeof _cbStrips!=='undefined')_cbStrips[fn]=im; // battle's cat-base strip cache (keys are unique filenames)
-      if(fn==='ports.png'||fn==='ports.png'){if(typeof PORTS!=='undefined')PORTS.img=im; PORTS_LOADED()}
       return}
     if(url.indexOf('assets/maps/')===0){
-      const n=url.slice(12).replace(/\.(png|jpg|webp)$/,'');
+      // strip extension AND any cache-bust query — bgImg() keys are bare names ('Bg000')
+      const n=url.slice(12).replace(/\.(png|jpg|webp)(\?.*)?$/,'');
       if(typeof _bgImgs!=='undefined'&&n!=='eoc_map')_bgImgs[n]=im; // earth map has its own EARTH_MAP holder
       return}
     if(url.indexOf('assets/castles/')===0){
-      const n=url.split('/').pop().replace(/\.(png|jpg|webp)$/,'');
+      const n=url.split('/').pop().replace(/\.(png|jpg|webp)(\?.*)?$/,'');
       if(typeof _castleImgs!=='undefined')_castleImgs[n]=im;
+      return}
+    if(url.indexOf('assets/ui/')===0){
+      // ui pool urls are 'assets/ui/<file>?v=50' — adopt into UIIMG under the bare
+      // filename so uiImg() finds the SAME decoded object (no re-fetch/decode).
+      const n=url.slice(11).replace(/\?.*$/,'');
+      if(typeof UIIMG!=='undefined'&&UIIMG.imgs[n]===undefined)UIIMG.imgs[n]=im;
       return}
   }catch(e){/* cache objects missing (old build order) — browser cache still covers it */}
 }
@@ -53,15 +59,19 @@ function preloadImg(url){
   im.src=url;
   return im;
 }
-/* ---- phase-2 background pool (N parallel, priority-ordered, adopts everything) ---- */
-const _pool={q:[],active:0,MAX:14,started:false};
-function poolAdd(url){_pool.q.push(url);PRELOAD.bgTotal++;poolPump()}
+/* ---- phase-2 background pool (N parallel, priority-ordered, adopts everything).
+   r34: pool completions count toward the SAME total/done counters the loading bar
+   reads — the bar now reflects the REAL full preload (it used to finish after the
+   7 phase-1 images while half a GB still streamed silently — players tapped in and
+   hit half-loaded screens; that was the "stuff doesn't load" experience). ---- */
+const _pool={q:[],active:0,MAX:16,started:false};
+function poolAdd(url){_pool.q.push(url);PRELOAD.bgTotal++;_pAdd(1);poolPump()}
 function poolPump(){
   while(_pool.active<_pool.MAX&&_pool.q.length){
     const url=_pool.q.shift();_pool.active++;
     const im=new Image();
-    im.onload=()=>{_pool.active--;PRELOAD.bgDone++;adoptRuntime(url,im);poolPump()};
-    im.onerror=()=>{_pool.active--;PRELOAD.bgDone++;PRELOAD.failed.push(url);poolPump()};
+    im.onload=()=>{_pool.active--;PRELOAD.bgDone++;_pDone(1);adoptRuntime(url,im);poolPump()};
+    im.onerror=()=>{_pool.active--;PRELOAD.bgDone++;PRELOAD.failed.push(url);_pDone(1);poolPump()};
     im.src=url;
   }
 }
@@ -86,16 +96,23 @@ function preloadRun(){
   preloadImg('assets/sprites/catbase_idle.webp');
   // catbase.json feeds the walking-cat animation metadata
   fetch('assets/sprites/catbase.json',{cache:'no-cache'}).then(r=>r.json()).then(j=>{cbMeta=j;try{_cbMeta=j}catch(e){}}).catch(()=>{});
-  // 2) manifest + stage data for priority planning (fetches overlap phase 1)
+  // 2) manifest + stage data for priority planning (fetches overlap phase 1).
+  // MANIFEST BARRIER: +1 unit that only completes when the full pool has been
+  // registered — phase-1 (7 fast images) alone can never fill the bar (the old
+  // pipeline let the bar hit 100% in ~2s while half a GB silently streamed).
+  _pAdd(1);
   Promise.all([
     fetch('assets/sprites/sprites.json',{cache:'no-cache'}).then(r=>r.json()),
     fetch('assets/preload.json',{cache:'no-cache'}).then(r=>r.json())
   ]).then(([sp,lists])=>{
     window.__MANIFEST=sp;window.__LISTS=lists;
     startBackgroundPool(sp,lists);
-  }).catch(()=>{/* offline/dev: renderers lazy-load as before */});
-  // safety: a slow/missed phase-1 file never blocks boot (failures also count as done)
-  setTimeout(finishPreload,12000);
+  }).catch(()=>{_pDone(1);/* offline/dev: renderers lazy-load as before */});
+  // safety valve: a stalled connection can never wedge the boot forever — after 90s
+  // the bar eases to full and TAP TO START shows while remaining files keep streaming
+  // (battles still gate on their own asset decodes). 90s (was 12s) because the pool is
+  // now the FULL ~500MB, not just the menu set.
+  setTimeout(finishPreload,90000);
 }
 function startBackgroundPool(sp,lists){
   if(_pool.started)return;_pool.started=true;
@@ -116,68 +133,62 @@ function startBackgroundPool(sp,lists){
           (Array.isArray(en.img)?en.img:[en.img]).forEach(img=>add(q1,'assets/sprites/'+img))}}
     });
   }catch(e){}
-  /* r32 LOAD SPLIT — the BOOT screen owns everything OUTSIDE battles:
-     all CAT strips, every icon (cats + enemies — the guide/trophies draw those),
-     the portrait atlas, the UI chrome and the real Earth map. Enemy STRIPS,
-     battle backgrounds and the castles are NOT touched here — they belong to the
-     battle loading screen (window.__BATTLE_POOL, started on first battle entry,
-     released when the fight ends). */
+  /* BUCKET 2 — everything the roster/menu screens draw: ALL cat strips, every icon
+     (cats + enemies — the guide/trophies draw those), the portrait atlas. */
   spriteUrlsFromManifest(sp,(k)=>k.split(':')[0]!=='enemy',true).forEach(u=>add(q2,u)); // strips+icons for menu side
   add(q2,'assets/sprites/ports.png');
   // BUCKET 3 — world art for the menu screens: ui images + the real Earth map
   (lists.ui||[]).forEach(n=>add(q3,'assets/ui/'+n+'?v=50'));
   add(q3,'assets/maps/eoc_map.png');
-  [...q1,...q2,...q3].forEach(poolAdd);
-  // ---- BATTLE POOL (deferred): enemy strips + battle backgrounds + castles.
-  // battle.js starts this the moment a battle loading screen appears (prioritized:
-  // this fight's enemies first), and releaseBattleMemory() drops the decoded
-  // bitmaps when the battle is finished or quit. ----
-  const bq=[];
-  const bseen=new Set();
-  const badd=(url)=>{if(bseen.has(url))return;bseen.add(url);bq.push(url)};
-  spriteUrlsFromManifest(sp,(k)=>k.split(':')[0]==='enemy',false).forEach(badd); // enemy STRIPS only (icons already at boot)
-  (lists.maps||[]).forEach(n=>{if(n!=='eoc_map')badd('assets/maps/'+n)});
-  (lists.castles||[]).forEach(n=>badd('assets/'+n));
-  window.__BATTLE_POOL={urls:bq,started:false};
+  // cat-base attack strips (idle is already phase-1) — the in-battle base attack anim
+  ['catbase_a1.webp','catbase_a2.webp','catbase_a3.webp'].forEach(f=>add(q3,'assets/sprites/'+f));
+  /* BUCKET 4 — r34 FULL PRELOAD (player mandate: "load all 500MB on startup"):
+     the battle-only assets join the BOOT pool (after the menu-critical buckets so
+     the first screens are always ready first). Enemy STRIPS, every battle bg and
+     all castles — battles then open instantly since their gate finds everything
+     decoded. window.__BATTLE_POOL is GONE (battlePoolStart is a safe no-op now). */
+  const q4=[];
+  spriteUrlsFromManifest(sp,(k)=>k.split(':')[0]==='enemy',false).forEach(u=>add(q4,u)); // enemy STRIPS
+  (lists.maps||[]).forEach(n=>{if(n!=='eoc_map')add(q4,'assets/maps/'+n)});              // battle bgs
+  (lists.castles||[]).forEach(n=>add(q4,'assets/'+n));                                   // enemy castles
+  [...q1,...q2,...q3,...q4].forEach(poolAdd);
+  _pDone(1); // manifest barrier complete — the FULL pool is registered (bar can fill for real)
   // audio decodes in parallel with images (suspended context decodes fine; tap resumes)
-  // r32: boot decodes the MENU set only — battle themes/SFX decode at battle load
+  // r34: boot decodes the ENTIRE soundtrack (menu + battle sets) — AudioPreloadBattle
+  // finds everything baked and the battle gate passes instantly.
   try{AudioUnlockSilent()}catch(e){}
   try{AudioBakeProbe()}catch(e){}
+  audioProgressBridge();
 }
-/* r32: battle.js calls this when a battle starts — pumps the deferred battle pool
-   (fight-critical urls first) through the same N-parallel queue. */
+/* r34: audio decode progress feeds the SAME loading bar (each file = 1 unit, polled
+   at 300ms — registrations and completions arrive as deltas). First tick is
+   synchronous so registrations made by AudioBakeProbe count immediately. */
+function audioProgressBridge(){
+  let lastReg=0,lastDone=0;
+  const tick=()=>{
+    try{
+      if(typeof AUDIO_PRELOAD==='undefined'){clearInterval(iv);return}
+      const reg=AUDIO_PRELOAD.reg,done=AUDIO_PRELOAD.done;
+      if(reg>lastReg){_pAdd(reg-lastReg);lastReg=reg}
+      if(done>lastDone){_pDone(done-lastDone);lastDone=done}
+      if(PRELOAD.ready&&done>=reg&&_pool.q.length===0&&_pool.active===0)clearInterval(iv);
+    }catch(e){clearInterval(iv)}};
+  const iv=setInterval(tick,300);
+  tick();
+}
+/* r34: battle.js calls this on battle entry — the full pool is already loaded at
+   boot, so this is a harmless no-op kept for call-site compatibility (it floats
+   any still-streaming urls to the front if the boot pool somehow isn't finished). */
 function battlePoolStart(priorityUrls){
-  const P=window.__BATTLE_POOL;
-  if(!P)return;
-  if(!P.started){P.started=true;
-    const pri=(priorityUrls||[]);
-    P.urls.sort((a,b)=>{const pa=pri.indexOf(a),pb=pri.indexOf(b);
-      return (pa<0?1e9:pa)-(pb<0?1e9:pb)});
-    // enqueue everything (fight-critical first). Items already decoded/adopted are
-    // skipped by adopt(); duplicates in q are harmless (browser cache).
-    const seen=new Set();
-    _pool.q.forEach(u=>seen.add(u));
-    P.urls.forEach(u=>{if(!seen.has(u)){_pool.q.push(u);seen.add(u)}});
-  }else if(priorityUrls&&priorityUrls.length){
-    // already running: float the fight-critical urls to the FRONT of what's left
-    const pri=new Set(priorityUrls);
-    const hot=_pool.q.filter(u=>pri.has(u));
-    if(hot.length){_pool.q=_pool.q.filter(u=>!pri.has(u));_pool.q=hot.concat(_pool.q)}}
+  if(!priorityUrls||!priorityUrls.length){poolPump();return}
+  const pri=new Set(priorityUrls);
+  const hot=_pool.q.filter(u=>pri.has(u));
+  if(hot.length){_pool.q=_pool.q.filter(u=>!pri.has(u));_pool.q=hot.concat(_pool.q)}
   poolPump();
 }
-/* r32: releaseBattleMemory calls this — the deferred battle pool must stop
-   refilling battle memory once we are out of the battle. Pending battle urls are
-   dropped from the queue (≤14 in-flight requests finish + adopt, bounded); the
-   next battle re-enqueues with its own fight-critical priorities. */
-function battlePoolStop(){
-  try{
-    const P=window.__BATTLE_POOL;
-    if(!P)return;
-    const set=new Set(P.urls);
-    _pool.q=_pool.q.filter(u=>!set.has(u));
-    P.started=false;
-  }catch(e){}
-}
+/* r34: kept for call-site compatibility — with the full preload there is no
+   separate battle pool to stop. */
+function battlePoolStop(){}
 /* ui images go through ui.js's cache so drawTitle/drawHome use the SAME objects */
 function uiImgCache(name,url){
   _pAdd(1);
@@ -276,7 +287,8 @@ function drawLoading(dt){
   if(p>0.01){cx.fillStyle='#ffd94a';rr(cx,bx,by,Math.max(14,bw*p),16,8);cx.fill();
     cx.fillStyle='rgba(255,255,255,.25)';rr(cx,bx,by,Math.max(14,bw*p),6,4);cx.fill()}
   const barDone=p>=0.999;
-  txt(cx,PRELOAD.ready?(barDone?'READY':'Now Loading... '+Math.round(p*100)+'%'):('Now Loading... '+Math.round(p*100)+'%'),w/2,by+42,17,'#e8dfc8','center');
+  const filesTxt=(PRELOAD.total>10&&!PRELOAD.ready)?' · '+Math.min(PRELOAD.done,PRELOAD.total)+' / '+PRELOAD.total:'';
+  txt(cx,PRELOAD.ready?(barDone?'READY':'Now Loading... '+Math.round(p*100)+'%'):('Now Loading... '+Math.round(p*100)+'%'+filesTxt),w/2,by+42,17,'#e8dfc8','center');
   txt(cx,'The Battle Cats — Browser Version',w/2,h-26,12,'rgba(255,255,255,.35)','center');
   // READY + TAP TO START only once the bar has VISUALLY reached the end
   if(PRELOAD.ready&&barDone){

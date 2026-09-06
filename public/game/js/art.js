@@ -206,72 +206,48 @@ function catMarker(c,x,y,s,t){
   if(typeof SPRIT!=='undefined'&&SPRIT.icon)SPRIT.icon('cat','cat',0,-s*0.12,r);
   c.restore()}
 
-/* Big capsule machine (gacha idle centerpiece). col/cap = banner colors, s = scale (~2.0).
-   Local extents: x -104..104, y -78..112 (glass globe + wooden cabinet + coin slot + knob + chute + tray). */
+/* REAL gacha capsule (authentic PONOS gatya_000 render): the golden cat-face capsule
+   ball floats over a banner-colored glow. The invented wooden cabinet machine is
+   retired (r34). col/cap = banner colors (glow/accent only — the sprite stays pure
+   PONOS art). shakeT = pull in progress: hard wobble + squash. s = height scale
+   (~2.0 -> ~300px tall). */
+const _capImgs={};
+function capImg(fn){return lazyImg(_capImgs,fn,'assets/ui/'+fn)}
 function capsuleMachine(c,x,y,s,col,cap,shakeT){
-  c.save();c.translate(x,y);c.scale(s,s);
-  if(shakeT)c.rotate(Math.sin(shakeT*30)*0.045);
-  // soft ground shadow
-  c.fillStyle='rgba(30,18,6,.32)';c.beginPath();c.ellipse(0,106,104,13,0,0,TAU);c.fill();
-  // pedestal base plate
-  c.fillStyle='#5f3f1c';rr(c,-100,92,200,18,7);c.fill();
-  c.strokeStyle='#33200c';c.lineWidth=2.5;rr(c,-100,92,200,18,7);c.stroke();
-  c.fillStyle='rgba(255,220,150,.14)';rr(c,-100,92,200,4,2);c.fill();
-  // wooden cabinet body
-  const body=c.createLinearGradient(-75,0,75,0);
-  body.addColorStop(0,'#8a5a28');body.addColorStop(.5,'#a5713a');body.addColorStop(1,'#7c4e20');
-  c.fillStyle=body;rr(c,-75,4,150,92,10);c.fill();
-  c.strokeStyle='#3f2a10';c.lineWidth=3;rr(c,-75,4,150,92,10);c.stroke();
-  // vertical wood slats on the cabinet
-  c.strokeStyle='rgba(60,36,12,.32)';c.lineWidth=2;
-  for(let i=-2;i<=2;i++){c.beginPath();c.moveTo(i*28,10);c.lineTo(i*28,90);c.stroke()}
-  // collar band under the globe + gold trim
-  c.fillStyle='#4a3624';rr(c,-62,-12,124,20,8);c.fill();
-  c.strokeStyle='#2e1e0e';c.lineWidth=2.5;rr(c,-62,-12,124,20,8);c.stroke();
-  c.strokeStyle='rgba(255,210,63,.8)';c.lineWidth=2;c.beginPath();c.moveTo(-56,-2.5);c.lineTo(56,-2.5);c.stroke();
-  // center medal on the band
-  c.fillStyle='#ffd23f';c.beginPath();c.arc(0,-2,9,0,TAU);c.fill();
-  c.strokeStyle='#8a5a10';c.lineWidth=2;c.beginPath();c.arc(0,-2,9,0,TAU);c.stroke();
-  c.fillStyle='rgba(255,255,255,.5)';c.beginPath();c.arc(-3,-5,2.6,0,TAU);c.fill();
-  // glass dome
-  c.fillStyle='rgba(210,232,244,.50)';c.beginPath();c.arc(0,-14,56,Math.PI,0);c.fill();
-  // capsules piled inside (clipped to the dome)
-  c.save();c.beginPath();c.arc(0,-14,52,Math.PI,0);c.closePath();c.clip();
-  c.fillStyle='rgba(255,244,214,.22)';c.beginPath();c.arc(0,-18,42,Math.PI,0);c.fill();
-  const caps=[[-32,-24],[-8,-34],[16,-26],[34,-16],[-40,-12],[6,-16],[-16,-8],[26,-38],[-26,-38],[42,-30],[44,-14]];
-  caps.forEach((p,i)=>{c.save();c.translate(p[0],p[1]);c.rotate((i*1.7)%3-1);
-    c.fillStyle=i%2?cap:col;c.beginPath();c.arc(0,0,9.5,0,TAU);c.fill();
-    c.fillStyle=i%2?col:cap;c.beginPath();c.arc(0,0,9.5,Math.PI,0);c.fill();
-    c.strokeStyle='rgba(60,40,60,.5)';c.lineWidth=1.4;c.beginPath();c.arc(0,0,9.5,0,TAU);c.stroke();
-    c.fillStyle='rgba(255,255,255,.5)';c.beginPath();c.arc(-3,-3,2.6,0,TAU);c.fill();c.restore()});
-  c.restore();
-  // dome outline + rim light + shine
-  c.strokeStyle='#4a3a2a';c.lineWidth=4;c.beginPath();c.arc(0,-14,56,Math.PI,0);c.stroke();
-  c.strokeStyle='rgba(255,255,255,.55)';c.lineWidth=2;c.beginPath();c.arc(0,-14,50,Math.PI*1.12,Math.PI*1.42);c.stroke();
-  c.fillStyle='rgba(255,255,255,.35)';c.beginPath();c.ellipse(-20,-38,9,18,-0.65,0,TAU);c.fill();
-  // dome cap finial
-  c.fillStyle='#4a3a2a';c.beginPath();c.arc(0,-72,6,0,TAU);c.fill();
-  c.fillStyle='rgba(255,255,255,.3)';c.beginPath();c.arc(-1.8,-73.8,2,0,TAU);c.fill();
-  // coin slot (right side of cabinet)
-  c.fillStyle='#33200c';rr(c,46,18,18,30,4);c.fill();
-  c.fillStyle='#ffd23f';rr(c,51,24,8,16,2);c.fill();
-  c.strokeStyle='#8a6a10';c.lineWidth=1.2;rr(c,51,24,8,16,2);c.stroke();
-  // red turn-knob (left)
-  c.fillStyle='#33200c';c.beginPath();c.arc(-46,32,10,0,TAU);c.fill();
-  c.fillStyle='#e84830';c.beginPath();c.arc(-46,32,7,0,TAU);c.fill();
-  c.fillStyle='rgba(255,255,255,.4)';c.beginPath();c.arc(-48.5,29.5,2.2,0,TAU);c.fill();
-  // discharge chute (center bottom of cabinet)
-  c.fillStyle='#2e1e0e';rr(c,-18,58,36,26,5);c.fill();
-  c.fillStyle='#1c1208';rr(c,-13,64,26,20,4);c.fill();
-  // catch tray under the chute
-  c.fillStyle='#4a3624';rr(c,-56,84,112,12,5);c.fill();
-  c.strokeStyle='#2e1e0e';c.lineWidth=2;rr(c,-56,84,112,12,5);c.stroke();
-  c.fillStyle='#33200c';c.beginPath();c.ellipse(0,90,42,5,0,0,TAU);c.fill();
-  // a capsule waiting in the tray
-  c.fillStyle=cap;c.beginPath();c.arc(0,84,8,0,TAU);c.fill();
-  c.fillStyle=col;c.beginPath();c.arc(0,84,8,Math.PI,0);c.fill();
-  c.strokeStyle='rgba(60,40,60,.5)';c.lineWidth=1.3;c.beginPath();c.arc(0,84,8,0,TAU);c.stroke();
-  c.fillStyle='rgba(255,255,255,.5)';c.beginPath();c.arc(-2.4,81.6,2.2,0,TAU);c.fill();
+  const im=capImg('capsule_ball.png');
+  const H=150*s; // draw height (source 274x281)
+  const t=(typeof G!=='undefined'&&G)?G.t:0;
+  c.save();c.translate(x,y+H*0.02);
+  // banner glow disc under the ball
+  if(typeof PERF_NOFX!=='function'||!PERF_NOFX()){
+    c.save();c.globalAlpha=.45;
+    const g=c.createRadialGradient(0,H*0.42,H*0.1,0,H*0.42,H*0.78);
+    g.addColorStop(0,col);g.addColorStop(1,'rgba(0,0,0,0)');
+    c.fillStyle=g;c.beginPath();c.ellipse(0,H*0.46,H*0.66,H*0.26,0,0,TAU);c.fill();
+    c.restore()}
+  // soft ground shadow (squeezes while the ball bobs up)
+  const bob=Math.sin(t*1.7)*H*0.02;
+  const sq=1-bob/(H*0.10);
+  c.fillStyle='rgba(20,10,4,.35)';
+  c.beginPath();c.ellipse(0,H*0.44,H*0.34*sq,H*0.055,0,0,TAU);c.fill();
+  if(imgReady(im)){
+    c.translate(0,bob-H*0.06);
+    if(shakeT){c.rotate(Math.sin(shakeT*30)*0.055);
+      const w2=1+Math.sin(shakeT*22)*0.045;c.scale(w2,2-w2)}
+    const W=H*(im.naturalWidth/im.naturalHeight);
+    c.drawImage(im,-W/2,-H/2,W,H);
+  }else{ // stream-in placeholder: banner two-tone ball (same silhouette)
+    c.fillStyle=cap;c.beginPath();c.arc(0,0,H*0.44,Math.PI,0);c.fill();
+    c.fillStyle=col;c.beginPath();c.arc(0,0,H*0.44,0,Math.PI);c.fill();
+    c.strokeStyle='rgba(60,40,60,.55)';c.lineWidth=3;c.beginPath();c.arc(0,0,H*0.44,0,TAU);c.stroke()}
+  // idle twinkle sparkles orbiting the ball (skip while shaking — the wobble carries it)
+  if(!shakeT&&(typeof PERF_NOFX!=='function'||!PERF_NOFX())){
+    for(let i=0;i<3;i++){const sa=t*1.5+i*2.09;
+      const sxp=Math.cos(sa)*H*0.60,syp=-H*0.05+Math.sin(sa*0.8)*H*0.34;
+      const a=0.35+0.35*Math.sin(t*5+i*1.7);
+      if(a>0.1){c.save();c.globalAlpha=a;c.fillStyle='#fff';
+        if(typeof star==='function'){star(c,sxp,syp,H*0.035,H*0.014);c.fill()}
+        c.restore()}}}
   c.restore()}
 
 /* Official CAT FOOD can (Builder P, Defect 2): orange can + silver top rim + white cat-face

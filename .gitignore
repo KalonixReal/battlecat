@@ -9,3 +9,7 @@ public/game/assets/sprites/raw/
 .website-deploy/
 tests/videos/fr*/
 tests/videos/*.png
+
+# r34: the downloaded APK + its decrypted extraction (3GB+ — assets are copied into public/ instead)
+download/apk/
+download/apk_menu_cat/work/

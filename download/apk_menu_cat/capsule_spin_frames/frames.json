@@ -1,0 +1,735 @@
+{
+ "source": "PONOS gatya_000.png + gatya_000_spin_01ren.{maanim,mamodel} (rendered with tools/cutout_render.py engine)",
+ "note": "anim frames 0..59 of 140 (claw descends, grabs capsule, shakes; capsule splits at frame ~60)",
+ "canvas": [
+  900,
+  1300
+ ],
+ "origin": [
+  450,
+  750
+ ],
+ "fps_native": 30,
+ "frames": [
+  {
+   "file": "capsule_spin_f00.png",
+   "anim_frame": 0,
+   "w": 274,
+   "h": 392,
+   "src_rect": [
+    307,
+    0,
+    581,
+    392
+   ]
+  },
+  {
+   "file": "capsule_spin_f01.png",
+   "anim_frame": 1,
+   "w": 274,
+   "h": 394,
+   "src_rect": [
+    307,
+    0,
+    581,
+    394
+   ]
+  },
+  {
+   "file": "capsule_spin_f02.png",
+   "anim_frame": 2,
+   "w": 274,
+   "h": 755,
+   "src_rect": [
+    307,
+    0,
+    581,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f03.png",
+   "anim_frame": 3,
+   "w": 274,
+   "h": 755,
+   "src_rect": [
+    307,
+    0,
+    581,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f04.png",
+   "anim_frame": 4,
+   "w": 274,
+   "h": 755,
+   "src_rect": [
+    307,
+    0,
+    581,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f05.png",
+   "anim_frame": 5,
+   "w": 274,
+   "h": 755,
+   "src_rect": [
+    307,
+    0,
+    581,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f06.png",
+   "anim_frame": 6,
+   "w": 274,
+   "h": 742,
+   "src_rect": [
+    307,
+    13,
+    581,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f07.png",
+   "anim_frame": 7,
+   "w": 274,
+   "h": 700,
+   "src_rect": [
+    307,
+    55,
+    581,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f08.png",
+   "anim_frame": 8,
+   "w": 274,
+   "h": 638,
+   "src_rect": [
+    307,
+    117,
+    581,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f09.png",
+   "anim_frame": 9,
+   "w": 274,
+   "h": 473,
+   "src_rect": [
+    307,
+    282,
+    581,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f10.png",
+   "anim_frame": 10,
+   "w": 274,
+   "h": 473,
+   "src_rect": [
+    278,
+    332,
+    552,
+    805
+   ]
+  },
+  {
+   "file": "capsule_spin_f11.png",
+   "anim_frame": 11,
+   "w": 274,
+   "h": 471,
+   "src_rect": [
+    293,
+    302,
+    567,
+    773
+   ]
+  },
+  {
+   "file": "capsule_spin_f12.png",
+   "anim_frame": 12,
+   "w": 274,
+   "h": 483,
+   "src_rect": [
+    307,
+    272,
+    581,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f13.png",
+   "anim_frame": 13,
+   "w": 274,
+   "h": 478,
+   "src_rect": [
+    307,
+    277,
+    581,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f14.png",
+   "anim_frame": 14,
+   "w": 274,
+   "h": 473,
+   "src_rect": [
+    307,
+    282,
+    581,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f15.png",
+   "anim_frame": 15,
+   "w": 274,
+   "h": 477,
+   "src_rect": [
+    307,
+    278,
+    581,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f16.png",
+   "anim_frame": 16,
+   "w": 274,
+   "h": 473,
+   "src_rect": [
+    307,
+    282,
+    581,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f17.png",
+   "anim_frame": 17,
+   "w": 274,
+   "h": 473,
+   "src_rect": [
+    307,
+    282,
+    581,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f18.png",
+   "anim_frame": 18,
+   "w": 274,
+   "h": 473,
+   "src_rect": [
+    307,
+    282,
+    581,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f19.png",
+   "anim_frame": 19,
+   "w": 274,
+   "h": 473,
+   "src_rect": [
+    307,
+    282,
+    581,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f20.png",
+   "anim_frame": 20,
+   "w": 274,
+   "h": 473,
+   "src_rect": [
+    307,
+    282,
+    581,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f21.png",
+   "anim_frame": 21,
+   "w": 274,
+   "h": 473,
+   "src_rect": [
+    307,
+    282,
+    581,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f22.png",
+   "anim_frame": 22,
+   "w": 274,
+   "h": 473,
+   "src_rect": [
+    307,
+    282,
+    581,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f23.png",
+   "anim_frame": 23,
+   "w": 274,
+   "h": 473,
+   "src_rect": [
+    307,
+    282,
+    581,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f24.png",
+   "anim_frame": 24,
+   "w": 274,
+   "h": 473,
+   "src_rect": [
+    307,
+    282,
+    581,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f25.png",
+   "anim_frame": 25,
+   "w": 274,
+   "h": 473,
+   "src_rect": [
+    307,
+    282,
+    581,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f26.png",
+   "anim_frame": 26,
+   "w": 274,
+   "h": 473,
+   "src_rect": [
+    307,
+    282,
+    581,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f27.png",
+   "anim_frame": 27,
+   "w": 274,
+   "h": 473,
+   "src_rect": [
+    307,
+    282,
+    581,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f28.png",
+   "anim_frame": 28,
+   "w": 274,
+   "h": 473,
+   "src_rect": [
+    307,
+    282,
+    581,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f29.png",
+   "anim_frame": 29,
+   "w": 274,
+   "h": 473,
+   "src_rect": [
+    307,
+    282,
+    581,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f30.png",
+   "anim_frame": 30,
+   "w": 274,
+   "h": 473,
+   "src_rect": [
+    306,
+    282,
+    580,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f31.png",
+   "anim_frame": 31,
+   "w": 274,
+   "h": 476,
+   "src_rect": [
+    306,
+    279,
+    580,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f32.png",
+   "anim_frame": 32,
+   "w": 274,
+   "h": 473,
+   "src_rect": [
+    307,
+    282,
+    581,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f33.png",
+   "anim_frame": 33,
+   "w": 274,
+   "h": 473,
+   "src_rect": [
+    306,
+    282,
+    580,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f34.png",
+   "anim_frame": 34,
+   "w": 274,
+   "h": 473,
+   "src_rect": [
+    304,
+    282,
+    578,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f35.png",
+   "anim_frame": 35,
+   "w": 274,
+   "h": 473,
+   "src_rect": [
+    306,
+    282,
+    580,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f36.png",
+   "anim_frame": 36,
+   "w": 274,
+   "h": 473,
+   "src_rect": [
+    307,
+    282,
+    581,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f37.png",
+   "anim_frame": 37,
+   "w": 274,
+   "h": 473,
+   "src_rect": [
+    306,
+    282,
+    580,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f38.png",
+   "anim_frame": 38,
+   "w": 274,
+   "h": 473,
+   "src_rect": [
+    305,
+    282,
+    579,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f39.png",
+   "anim_frame": 39,
+   "w": 274,
+   "h": 473,
+   "src_rect": [
+    304,
+    282,
+    578,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f40.png",
+   "anim_frame": 40,
+   "w": 274,
+   "h": 473,
+   "src_rect": [
+    303,
+    282,
+    577,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f41.png",
+   "anim_frame": 41,
+   "w": 274,
+   "h": 476,
+   "src_rect": [
+    308,
+    279,
+    582,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f42.png",
+   "anim_frame": 42,
+   "w": 274,
+   "h": 478,
+   "src_rect": [
+    302,
+    277,
+    576,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f43.png",
+   "anim_frame": 43,
+   "w": 274,
+   "h": 473,
+   "src_rect": [
+    296,
+    282,
+    570,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f44.png",
+   "anim_frame": 44,
+   "w": 274,
+   "h": 473,
+   "src_rect": [
+    299,
+    282,
+    573,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f45.png",
+   "anim_frame": 45,
+   "w": 274,
+   "h": 473,
+   "src_rect": [
+    302,
+    282,
+    576,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f46.png",
+   "anim_frame": 46,
+   "w": 274,
+   "h": 472,
+   "src_rect": [
+    306,
+    283,
+    580,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f47.png",
+   "anim_frame": 47,
+   "w": 274,
+   "h": 472,
+   "src_rect": [
+    299,
+    283,
+    573,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f48.png",
+   "anim_frame": 48,
+   "w": 274,
+   "h": 471,
+   "src_rect": [
+    293,
+    284,
+    567,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f49.png",
+   "anim_frame": 49,
+   "w": 274,
+   "h": 471,
+   "src_rect": [
+    300,
+    284,
+    574,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f50.png",
+   "anim_frame": 50,
+   "w": 274,
+   "h": 471,
+   "src_rect": [
+    307,
+    284,
+    581,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f51.png",
+   "anim_frame": 51,
+   "w": 274,
+   "h": 478,
+   "src_rect": [
+    292,
+    277,
+    566,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f52.png",
+   "anim_frame": 52,
+   "w": 274,
+   "h": 473,
+   "src_rect": [
+    299,
+    282,
+    573,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f53.png",
+   "anim_frame": 53,
+   "w": 274,
+   "h": 473,
+   "src_rect": [
+    307,
+    282,
+    581,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f54.png",
+   "anim_frame": 54,
+   "w": 274,
+   "h": 473,
+   "src_rect": [
+    304,
+    282,
+    578,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f55.png",
+   "anim_frame": 55,
+   "w": 274,
+   "h": 472,
+   "src_rect": [
+    300,
+    283,
+    574,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f56.png",
+   "anim_frame": 56,
+   "w": 806,
+   "h": 472,
+   "src_rect": [
+    46,
+    283,
+    852,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f57.png",
+   "anim_frame": 57,
+   "w": 536,
+   "h": 472,
+   "src_rect": [
+    177,
+    283,
+    713,
+    755
+   ]
+  },
+  {
+   "file": "capsule_spin_f58.png",
+   "anim_frame": 58,
+   "w": 806,
+   "h": 621,
+   "src_rect": [
+    46,
+    284,
+    852,
+    905
+   ]
+  },
+  {
+   "file": "capsule_spin_f59.png",
+   "anim_frame": 59,
+   "w": 752,
+   "h": 471,
+   "src_rect": [
+    72,
+    284,
+    824,
+    755
+   ]
+  }
+ ]
+}

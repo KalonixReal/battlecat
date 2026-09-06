@@ -387,11 +387,11 @@ function cannonUnlocked(id){const t=CANNON_TYPES.find(c=>c.id===id);if(!t||!t.un
 /* Gamatoto-style idle meta: send your scout cat on timed trips for XP/CF/tickets/fruit.
    3 of the 5 destinations rotate daily (date-seeded) so there's always a fresh spread. */
 const EXPD=[
- {id:'meadow', n:'Sunny Meadow',    mins:3,  danger:1, xp:400,   cf:15,  tk:0.10, tkr:'rare', fruit:0.10, terr:'#7fc86a', blurb:'Rolling grassland — easy pickings, quick turnaround.'},
- {id:'woods',  n:'Whispering Woods',mins:8,  danger:2, xp:1100,  cf:40,  tk:0.18, tkr:'rare', fruit:0.16, terr:'#5a8a4a', blurb:'Hushed pines full of catnip and stray treasure.'},
- {id:'peaks',  n:'Howling Peaks',   mins:15, danger:3, xp:2600,  cf:90,  tk:0.25, tkr:'rare', fruit:0.25, terr:'#9aa8b8', blurb:'Bitter winds guard a rich hoard of supplies.'},
- {id:'cavern', n:'Sunken Caverns',  mins:30, danger:4, xp:6000,  cf:180, tk:0.30, tkr:'gold', fruit:0.32, terr:'#7a6a9a', blurb:'Dripping depths where gold tickets glitter.'},
- {id:'fort',   n:'Storm Fortress',  mins:60, danger:5, xp:15000, cf:400, tk:0.14, tkr:'plat', fruit:0.50, terr:'#8a5a5a', blurb:'The scouts legend — only the boldest return loaded.'}];
+ {id:'meadow', n:'Sunny Meadow',    mins:3,  danger:1, xp:400,   cf:15,  tk:0.10, tkr:'rare', fruit:0.10, terr:'#7fc86a', bg:'Bg012', blurb:'Rolling grassland — easy pickings, quick turnaround.'},
+ {id:'woods',  n:'Whispering Woods',mins:8,  danger:2, xp:1100,  cf:40,  tk:0.18, tkr:'rare', fruit:0.16, terr:'#5a8a4a', bg:'Bg005', blurb:'Hushed pines full of catnip and stray treasure.'},
+ {id:'peaks',  n:'Howling Peaks',   mins:15, danger:3, xp:2600,  cf:90,  tk:0.25, tkr:'rare', fruit:0.25, terr:'#9aa8b8', bg:'Bg030', blurb:'Bitter winds guard a rich hoard of supplies.'},
+ {id:'cavern', n:'Sunken Caverns',  mins:30, danger:4, xp:6000,  cf:180, tk:0.30, tkr:'gold', fruit:0.32, terr:'#7a6a9a', bg:'Bg057', blurb:'Dripping depths where gold tickets glitter.'},
+ {id:'fort',   n:'Storm Fortress',  mins:60, danger:5, xp:15000, cf:400, tk:0.14, tkr:'plat', fruit:0.50, terr:'#8a5a5a', bg:'Bg019', blurb:'The scouts legend — only the boldest return loaded.'}];
 function expdToday(){ // 3-of-5 daily rotation (deterministic per date)
   const R=rnd((new Date().toDateString().length*9103+new Date().getDate()*7717)>>>0);
   return EXPD.slice().sort(()=>R()-0.5).slice(0,3)}

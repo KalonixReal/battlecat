@@ -88,9 +88,9 @@ let _hitAlt=0,_dieAlt=0;
 function sfxOn(){return typeof SV!=='undefined'&&SV&&SV.settings.sfx&&AC}
 
 const AUDIO_PRELOAD={reg:0,done:0};
-/* r32: AudioBakeProbe now decodes ONLY the menu set (boot screen scope). Battle themes
-   + combat SFX decode in AudioPreloadBattle() when the battle loading screen is up,
-   and AudioReleaseBattle() frees them when the fight ends (finished or quit). */
+/* r34 FULL PRELOAD: AudioBakeProbe decodes the ENTIRE soundtrack at boot (menu +
+   battle themes, every SFX) — the whole game is single-load, battles open instantly.
+   AudioPreloadBattle/AudioReleaseBattle stay for low-memory devices only. */
 function AudioBakeProbe(){
   if(!AC)return;
   const load=(key,file,gain)=>{
@@ -102,7 +102,8 @@ function AudioBakeProbe(){
       .then(ab=>{if(ab)SFX_BUF[key]={buf:ab,gain:gain};delete SFX_PENDING[key];AUDIO_PRELOAD.done++}).catch(()=>{delete SFX_PENDING[key];AUDIO_PRELOAD.done++});
   };
   for(const k of MENU_SFX){if(SFX_BUF[k]||!SFX_FILE[k])continue;load(k,SFX_FILE[k][0],SFX_BOOST[k]||1.4)}
-  for(const t of MENU_BGM){
+  for(const k of BATTLE_SFX){if(SFX_BUF[k]||!SFX_FILE[k])continue;load(k,SFX_FILE[k][0],SFX_BOOST[k]||1.4)} // r34: combat SFX too
+  for(const t of Object.keys(BGM_FILE)){ // r34: ALL themes — menu AND battle
     if(bgmBuf[t]||BGM_PENDING[t]||!BGM_FILE[t])continue;
     BGM_PENDING[t]=1;AUDIO_PRELOAD.reg++;
     (t=>{fetch('assets/audio/'+BGM_FILE[t]).then(r=>r.ok?r.arrayBuffer():null)
@@ -115,8 +116,9 @@ function AudioBakeProbe(){
       }).catch(()=>{delete BGM_PENDING[t];AUDIO_PRELOAD.done++})})(t);
   }
 }
-/* ---- r32 BATTLE AUDIO: decoded by the battle loading screen, released when the
-   battle is over. themes = the exact themes the upcoming fight can switch to. ---- */
+/* ---- battle audio: with the r34 full preload everything is decoded at boot, so
+   this is normally a no-op. It stays as a safety net (files that failed at boot get
+   one retry here) and feeds the battle gate's AudioBattleReady check. ---- */
 function AudioPreloadBattle(themes){
   if(!AC)return;
   const gen=_audioGen;
@@ -147,7 +149,8 @@ function AudioBattleReady(themes){
   for(const t of (themes||[])){if(BGM_PENDING[t])return false}
   for(const k of BATTLE_SFX){if(SFX_PENDING[k])return false}
   return true}
-/* memory release: drop decoded battle BGM buffers + combat SFX (menu set stays).
+/* memory release (LOW-MEMORY DEVICES ONLY — releaseBattleMemory gates this):
+   drop decoded battle BGM buffers + combat SFX (menu set stays).
    _audioGen invalidates any in-flight decode so a late finish can't re-store. */
 function AudioReleaseBattle(){
   _audioGen++;

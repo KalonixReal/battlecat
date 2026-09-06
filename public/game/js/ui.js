@@ -95,7 +95,18 @@ function BTN(id,x,y,w,h,cb,o){o=o||{};G.hits.push({id,x,y,w,h,cb,scroll:o.scroll
   cx.save();cx.translate(x+(act?2:0),y+(act?2:0));
   const R=o.r||14;
   if(o.flat){o.draw&&o.draw(cx,hov,act)}
-  else{cx.shadowColor='rgba(0,0,0,.35)';cx.shadowBlur=6;cx.shadowOffsetY=3;cx.fillStyle=o.col||'#ffd94a';rr(cx,0,0,w,h,R);cx.fill();cx.shadowColor='transparent';
+  else{ /* r34 PONOS bevel: vertical gradient (lit top), glossy highlight band, darker
+       bottom edge — the signature look of the original's gold buttons, applied to
+       every raised button game-wide. */
+    const base=o.col||'#ffd94a';
+    const bg2=cx.createLinearGradient(0,0,0,h);
+    bg2.addColorStop(0,shade(base,1.14));bg2.addColorStop(.55,base);bg2.addColorStop(1,shade(base,.78));
+    cx.shadowColor='rgba(0,0,0,.35)';cx.shadowBlur=6;cx.shadowOffsetY=3;
+    cx.fillStyle=bg2;rr(cx,0,0,w,h,R);cx.fill();cx.shadowColor='transparent';
+    cx.save();rr(cx,0,0,w,h,R);cx.clip();
+    cx.fillStyle='rgba(255,255,255,.30)';cx.beginPath();cx.ellipse(w/2,h*0.16,w*0.46,h*0.16,0,0,TAU);cx.fill();
+    cx.fillStyle='rgba(0,0,0,.14)';cx.fillRect(0,h-3.2,w,3.2);
+    cx.restore();
     if(hov){cx.fillStyle='rgba(255,255,255,.18)';rr(cx,0,0,w,h,R);cx.fill()}
     if(o.outline){cx.lineWidth=2.5;cx.strokeStyle=o.outline;rr(cx,1.5,1.5,w-3,h-3,R);cx.stroke()}
     if(o.disabled){cx.fillStyle='rgba(30,30,40,.55)';rr(cx,0,0,w,h,R);cx.fill()}
@@ -548,20 +559,36 @@ function drawHome(dt){
       openModal('CAT BASE INFO',['The Cat Base is your home front.','Send the Cat Army to battle with Start!!, organize it in Equip,','and power it up in Upgrade.','Daily deals wait in the Store. Good luck!'],[{n:'CLOSE',cb:()=>{}}])},{flat:true,nohov:true});
   }catch(e){}
 
-  // daily splash bubble (authentic feature; anchored where the base's cat would speak from)
-  {const tip=splashTip();
+  /* ===== THE PEEKING CAT (authentic PONOS asset: ネコのぞくやつ, "the cat peeking thing")
+     — exactly like the original home screen: the cat pokes its head over the bottom
+     bar beside the Cat Food counter and speaks the daily tip from a bubble anchored
+     to its head. It periodically ducks behind the bar; tapping it meows. ===== */
+  {const PCS=0.52,PCW=116*PCS,PCH=156*PCS; // 116x156 sprite -> ~60x81 on the design grid
+    const pcx=1078;                         // head center x (left of the Cat Food counter)
+    // duck cycle: peek ~5.6s, then duck behind the bar for ~0.4s (deterministic from G.t)
+    const cyc=G.t%6.4,duckT=cyc<0.4?(0.4-cyc)/0.4:(cyc>5.9?clamp((cyc-5.9)/0.5,0,1):0);
+    const duckOff=Math.sin(duckT*Math.PI)*88; // 0 -> 88 -> 0 (fully behind the bar & back up)
+    const bob=Math.sin(G.t*2.2)*1.5;          // gentle idle bob while peeking
+    const pcTop=676-PCH+8+duckOff+bob;        // head pokes above the bar top (bar draws after -> clips the bottom)
+    const pc=uiImg('peeking_cat.png');
+    if(pc)cx.drawImage(pc,pcx-PCW/2,pcTop,PCW,PCH);
+    // daily splash bubble — anchored to the cat's head (original behavior)
+    const tip=splashTip();
     setFont(cx,FONT(13.5,700));
     const lines=wrapText(cx,tip,300);
-    const bw2=336,bh2=lines.length*20+26,bx=DW-152-258,by=398-bh2;
+    const bw2=336,bh2=lines.length*20+26,bx=DW-152-258,by=Math.round(596-bh2-6);
     cx.fillStyle='rgba(20,14,6,.25)';rr(cx,bx+3,by+4,bw2,bh2,14);cx.fill();
     cx.fillStyle='#f6f6ef';rr(cx,bx,by,bw2,bh2,14);cx.fill();
     cx.lineWidth=3;cx.strokeStyle='#3a3a40';rr(cx,bx,by,bw2,bh2,14);cx.stroke();
-    cx.fillStyle='#f6f6ef';cx.beginPath();cx.moveTo(bx+bw2-108,by+bh2-3);cx.lineTo(bx+bw2-52,by+bh2+30);cx.lineTo(bx+bw2-58,by+bh2-3);cx.closePath();cx.fill();
+    // tail: bubble bottom -> the cat's head
+    const tx=pcx+6;
+    cx.fillStyle='#f6f6ef';cx.beginPath();cx.moveTo(tx-26,by+bh2-3);cx.lineTo(tx,by+bh2+30);cx.lineTo(tx+24,by+bh2-3);cx.closePath();cx.fill();
     cx.strokeStyle='#3a3a40';cx.lineWidth=3;
-    cx.beginPath();cx.moveTo(bx+bw2-110,by+bh2-2);cx.lineTo(bx+bw2-52,by+bh2+30);cx.stroke();
-    cx.beginPath();cx.moveTo(bx+bw2-52,by+bh2+30);cx.lineTo(bx+bw2-56,by+bh2-2);cx.stroke();
+    cx.beginPath();cx.moveTo(tx-26,by+bh2-2);cx.lineTo(tx,by+bh2+30);cx.stroke();
+    cx.beginPath();cx.moveTo(tx,by+bh2+30);cx.lineTo(tx+24,by+bh2-2);cx.stroke();
     lines.forEach((l,i)=>txt(cx,l,bx+bw2/2,by+22+i*20,13.5,'#3a3a40','center'));
-    BTN('hcat',bx,by,bw2,bh2+20,()=>{SFX.meow?SFX.meow():SFX.click();toast(splashTip(),'#ffd23f')},{flat:true,nohov:true})}
+    BTN('hcat',bx,by,bw2,bh2+20,()=>{SFX.meow?SFX.meow():SFX.click();toast(splashTip(),'#ffd23f')},{flat:true,nohov:true});
+    BTN('hpeekcat',pcx-PCW/2,676-PCH,PCW,PCH,()=>{SFX.meow?SFX.meow():SFX.click();toast('Meow!','#ffd23f')},{flat:true,nohov:true})}
 
   /* ===== bottom bar: Store + Cat Food ===== */
   {const g=cx.createLinearGradient(0,676,0,720);g.addColorStop(0,'#b57a35');g.addColorStop(1,'#7a4a18');
@@ -748,8 +775,9 @@ function drawChapters(dt){
       cx.fillStyle=unl?'#ffffff':'#d8cfb8';rr(cx,0,0,DW-40,60,12);cx.fill();
       cx.lineWidth=unl?3:2;cx.strokeStyle=unl?'#3a3a44':'#a89a78';rr(cx,1.5,1.5,1237,57,12);cx.stroke();
       if(unl)BTN('ch'+i,20,yy,DW-40,60,()=>{G.chapter=c.id;G.mapSub=0;G.mapFocusIdx=null;push('map');SFX.click()},{flat:true,nohov:true});
-      cx.globalAlpha=unl?1:.55;
+      cx.globalAlpha=unl?1:.88; // r34: locked rows keep the icon legible (was .55 — icons read as missing assets)
       if(c.id==='eoc1')ART.catIcon('cat',36,30,17);else if(c.id==='itf1')ART.catIcon('lizard',36,30,17);else if(c.id==='cotc1')ART.catIcon('gao',36,30,17);else if(c.kind==='sol')ART.catIcon('gross',36,30,17);else if(c.kind==='ul')ART.catIcon('luza',36,30,17);else if(c.kind==='aku')ART.enemyIcon('akumother',36,30,17);else if(c.kind==='dojo')ART.catIcon('kungfu',36,30,17);else ART.catIcon('mr',36,30,17);
+      if(!unl){cx.save();cx.globalAlpha=1;drawPadlock(cx,36,32,9,'#5a4a32');cx.restore()} // clear lock badge
       txt(cx,c.n,66,24,19,unl?'#e8a020':'#8a8272','left',4,'#fff',700);
       txt(cx,c.desc||'',66,44,13,'#8a7a5a','left');
       txt(cx,unl?(clearedN?(c.kind==='story'?clearedN+'/48 cleared':''):''):'',DW-152,20,13,'#8a7a5a','right');
@@ -926,7 +954,7 @@ function drawMap(dt){const c=CHMAP[G.chapter];
     // (padlocks removed from the map — original shows dots only)
     cx.restore()}
   // white cat marker stands on the current node
-  if(markerNode)catMarker(cx,markerNode.p.x,markerNode.p.y-16,30,G.t);
+  if(markerNode)catMarker(cx,markerNode.p.x+27,markerNode.p.y-12,24,G.t); // stands BESIDE the dot — the node's Energy label (py-21) stays fully legible
   cx.restore(); // un-clip + un-translate
   // ---- FARM TARGET banner (from the treasure screen FARM SET jump): dismissible overlay chip ----
   if(G.mapFocusIdx!=null&&c.kind==='story'&&CHSETS[c.id]){const fs2=CHSETS[c.id][G.mapFocusIdx%9];
@@ -956,7 +984,7 @@ function drawMap(dt){const c=CHMAP[G.chapter];
       cx.fillStyle='#ffd23f';cx.save();cx.translate(1124,137);cx.beginPath();cx.moveTo(0,-6.5);cx.lineTo(5.8,0);cx.lineTo(0,6.5);cx.lineTo(-5.8,0);cx.closePath();cx.fill();
       cx.lineWidth=1.6;cx.strokeStyle='#8a5a10';cx.stroke();cx.restore();
       txt(cx,'TREASURE '+done+'/9',1224,137.5,13,'#b08028','center',2.5,'#fff',700);
-      if(done<9)txt(cx,'gold ◇ = set at 2/3 pieces',1183,162,9.5,'#a89878','center',2,'#fff',400)}}
+      if(done<9)txt(cx,'gold ◇ = set at 2/3 pieces',1183,164,10.5,'#f0e2c0','center',2.5,'rgba(60,36,8,.85)',700)}}
   // ---- chapter cycle arrows on the frame (official side arrows) ----
   const chIdx=CHAPTERS.indexOf(c);
   const cyc=dir=>{for(let k=1;k<=CHAPTERS.length;k++){const nc=CHAPTERS[(chIdx+dir*k+CHAPTERS.length*2)%CHAPTERS.length];
@@ -1035,7 +1063,7 @@ function drawMap(dt){const c=CHMAP[G.chapter];
       txt(cx,'#'+(i2+1)+' '+e2.s,chx+12,574,12,'#fff','left',2.5,'#1c1006',700);
       txt(cx,e2.d,chx+12,590,9,'#a89878','left',2,'#1c1006',400)});
     else txt(cx,'Enter Endless grading to set your first score!',52,578,11.5,'#c8b890','left',2.5,'#1c1006',400);
-    // world ranking button (global board via /api/leaderboard)
+    // world ranking button (offline daily rival board — r34, no backend)
     BTN('worldrank',52,606,180,34,()=>{push('leaderboard');SFX.click()},{col:'#ffd23f',outline:'#8a5a20',label:'WORLD RANKING',fs:12});
     txt(cx,'global board',260,624,10,'#c8b890','left',2,'#1c1006',400);
     cx.restore()}
@@ -1740,11 +1768,16 @@ function doGoldPull(bannerId){
 const RAR_FLASH={normal:'#c9c9d6',rare:'#8fe8ff',special:'#7fd0ff',srar:'#ffd94a',uber:'#ff9ad5',legend:'#c46adf'};
 function drawGachaAnim(dt){const A=G.gachaAnim;A.t+=dt;cx.fillStyle='rgba(8,6,16,.82)';cx.fillRect(0,0,DW,720);
   if(A.phase===0){const drop=Math.min(1,A.t/0.5);const y=lerp(-100,340,drop*drop);
+    /* r34: the REAL golden cat capsule (PONOS gatya_000) drops in and wobbles —
+       the invented pink/white ball is retired. */
+    const cim=uiImg('capsule_ball.png');
     cx.save();cx.translate(DW/2,y);cx.rotate(A.t>0.7?Math.sin((A.t-0.7)*40)*0.25:0);
-    cx.fillStyle='#ff9ad5';cx.beginPath();cx.arc(0,0,80,Math.PI,0);cx.fill();cx.fillStyle='#fff';cx.beginPath();cx.arc(0,0,80,0,Math.PI);cx.fill();cx.fillStyle='#2a1e46';cx.fillRect(-80,-8,160,16);
-    cx.fillStyle='rgba(255,255,255,.55)';cx.beginPath();cx.ellipse(-32,-36,24,13,-0.6,0,TAU);cx.fill();
-    cx.fillStyle='rgba(255,255,255,.3)';cx.beginPath();cx.ellipse(12,-44,32,10,-0.35,0,TAU);cx.fill();
-    cx.strokeStyle='rgba(42,30,70,.6)';cx.lineWidth=4;cx.beginPath();cx.arc(0,0,80,0,TAU);cx.stroke();cx.restore();
+    if(cim){const CH=190,cw2=CH*(cim.naturalWidth/cim.naturalHeight);
+      cx.shadowColor='rgba(0,0,0,.35)';cx.shadowBlur=24;cx.shadowOffsetY=10;
+      cx.drawImage(cim,-cw2/2,-CH/2,cw2,CH)}
+    else{cx.fillStyle='#ffe264';cx.beginPath();cx.arc(0,0,88,0,TAU);cx.fill();
+      cx.strokeStyle='rgba(120,80,10,.6)';cx.lineWidth=4;cx.beginPath();cx.arc(0,0,88,0,TAU);cx.stroke()}
+    cx.restore();
     if(A.t>1.6||A.tap){A.phase=1;A.t=0;A.tap=false;SFX.capsule()}}
   else if(A.phase===1){const col=RAR_FLASH[Object.keys(RAR_FLASH)[A.best]];
     const r=Math.min(1,A.t/0.8);cx.save();cx.translate(DW/2,300);cx.rotate(Math.min(1.6,A.t*4));
@@ -2111,7 +2144,7 @@ function drawBase(dt){drawTopBar('CAT BASE UPGRADES',true);
     cx.globalAlpha=1});
   // summary
   creamPanel(20,552,DW-40,104);
-  const sums=[['Battle wallet max',fmt(battleWalletMax())+'¢'],['Worker income',battleRegen().toFixed(1)+'¢/s'],['Cannon charge',cannonChargeBase().toFixed(1)+'s'],['Cat base HP',fmt(Math.round(1200*treasureMult('baseHp')*(1+0.3*(SV.base.bhp-1))))],['Research cd','×'+Math.max(0.55,treasureMult('speed')*Math.pow(0.94,SV.base.research-1)).toFixed(2)],['Cannon power','×'+(1+0.25*(SV.base.cpow-1)).toFixed(2)]];
+  const sums=[['Battle wallet max',fmt(battleWalletMax())+'¢'],['Worker income',battleRegen().toFixed(1)+'¢/s'],['Cannon charge',cannonChargeBase().toFixed(1)+'s'],['Cat base HP',fmt(Math.round(1200*treasureMult('baseHp')*(1+0.3*(SV.base.bhp-1))))],['Research speed','×'+Math.max(0.55,treasureMult('speed')*Math.pow(0.94,SV.base.research-1)).toFixed(2)],['Cannon power','×'+(1+0.25*(SV.base.cpow-1)).toFixed(2)]];
   sums.forEach((s,i)=>{const x=76+i*200;txt(cx,s[0],x,584,12.5,'#8a7a5a','center');txt(cx,String(s[1]),x,614,16,'#b06a10','center')});
   brownBottomBar()}
 
@@ -2155,15 +2188,14 @@ function drawExpedition(dt){bgSky();drawTopBar('SCOUT EXPEDITIONS',true);
     const y=140+i*132,x=20,w=744,h=118;
     const mine=actList.find(a=>a.dest===d.id);
     creamPanel(x,y,w,h,mine?'#d8913a':'#c8913a');
-    // terrain swatch with little hills
+    /* r34 REAL terrain swatch (invented painted hills retired): the destination's
+       actual in-game battle background, cover-fit + vignette via mapBackdrop. */
     const tx=x+14,ty=y+12,tw=88,th=94;
-    cx.fillStyle=d.terr;rr(cx,tx,ty,tw,th,10);cx.fill();
     cx.save();rr(cx,tx,ty,tw,th,10);cx.clip();
-    cx.fillStyle='rgba(255,255,255,.22)';
-    cx.beginPath();cx.arc(tx+18,ty+th-16,20,Math.PI,0);cx.fill();
-    cx.beginPath();cx.arc(tx+54,ty+th-10,26,Math.PI,0);cx.fill();
-    cx.beginPath();cx.arc(tx+84,ty+th-18,16,Math.PI,0);cx.fill();
-    cx.fillStyle='rgba(255,255,255,.35)';cx.beginPath();cx.arc(tx+tw-16,ty+16,10,0,TAU);cx.fill();
+    cx.fillStyle=d.terr;cx.fillRect(tx,ty,tw,th);
+    const sw=(typeof mapBackdrop==='function'&&d.bg)?mapBackdrop(d.bg,tw,th,null):null;
+    if(sw)cx.drawImage(sw,tx,ty,tw,th);
+    else{cx.fillStyle=d.terr;cx.fillRect(tx,ty,tw,th)}
     cx.restore();
     cx.lineWidth=2.5;cx.strokeStyle='rgba(90,59,22,.55)';rr(cx,tx,ty,tw,th,10);cx.stroke();
     txt(cx,d.n,x+118,y+26,17,'#5a3b16','left',3.5,'#fff',700);
@@ -2313,14 +2345,30 @@ function drawExpedition(dt){bgSky();drawTopBar('SCOUT EXPEDITIONS',true);
         txt(cx,'Rank progress '+Math.round(prog*100)+'%',x2+w2/2,y+150,10.5,'#a89878','center',2,'#fff',400)}}}
   brownBottomBar()}
 
-/* ============================== SCREEN: WORLD DOJO RANKING ============================== */
-/* Global endless-Dojo scores via the Next.js /api/leaderboard (Prisma SQLite).
-   Canvas rendering only — fetch happens on entry + REFRESH, own row highlighted. */
-function lbFetch(){
-  if(G.lbFetching)return;G.lbFetching=true;
-  fetch('/api/leaderboard?limit=20').then(r=>r.json()).catch(()=>({ok:false}))
-    .then(j=>{G.lbData={ts:now(),entries:j&&j.ok?j.entries:null};G.lbFetching=false})
-    .catch(()=>{G.lbData={ts:now(),entries:null};G.lbFetching=false})}
+/* ============================== SCREEN: WORLD DOJO RANKING ==============================
+   r34: FULLY OFFLINE (singleplayer mandate — no backend, no /api). Rivals are
+   simulated deterministically from a DAILY seed: stable within a day, fresh
+   faces tomorrow, scaled around YOUR best grade so there is always someone
+   just ahead to beat. The player's real run is inserted at its earned rank. */
+const LB_NAMES=['NEKOSAMURAI','GAMATOTO JR','CATSAINT','SIR WHISKERS','MOCHI','TAMA-CHAN','COMMANDER KOI','NYANBUILDER','SENPAI SNIPER','LT. PAWS','CALICO ACE','MITTENS THE BRAVE','SHOGUN CATFOOD','DARK LUGIA','SENOR MEOW','BOSS BABY CAT','CAPTAIN FUR','KUNG FU KITTY','GATO LOCO','PRINCESS PAWS','MEOWZILLA','SGT SUNDAE','DR TREATS','NYAN SPEED','SENSEI KATANA','OCTO PAWS','LEOPARD LEE','GENERAL FLOOF'];
+function lbLocalBoard(){
+  const seed=Math.floor(now()/86400000); // daily board
+  const R=rnd((seed^0xBC34)>>>0);
+  const own=Math.max(0,SV.dojoBest||0);
+  // frontier: the ladder's top sits just past the player's own grade — always a
+  // reachable #1 and 1-3 rivals breathing down the player's neck
+  const frontier=Math.max(28,Math.round(own*1.18+16));
+  const es=[];const used=new Set();
+  for(let i=0;i<20;i++){
+    const s=Math.max(1,Math.round(frontier*(1.04-0.052*i)-R()*5));
+    let nm=LB_NAMES[Math.floor(R()*LB_NAMES.length)];
+    let g=0;while(used.has(nm)&&g++<24)nm=LB_NAMES[Math.floor(R()*LB_NAMES.length)];
+    used.add(nm);
+    es.push({name:nm,score:s,stage:'dojo'})}
+  if(own>0)es.push({name:(SV.cmdName||'CAT COMMANDER'),score:own,stage:'dojo'});
+  es.sort((a,b)=>b.score-a.score);
+  return es.slice(0,20)}
+function lbFetch(){G.lbData={ts:now(),entries:lbLocalBoard()}}
 function lbEnter(){if(!G.lbData||now()-G.lbData.ts>15000)lbFetch()}
 function drawLeaderboard(dt){lbEnter();
   const g=cx.createLinearGradient(0,54,0,720);g.addColorStop(0,'#233152');g.addColorStop(1,'#141a2c');
@@ -2370,9 +2418,7 @@ function drawLeaderboard(dt){lbEnter();
   // ---- rows 4..20 ----
   const rowX=340,rowY=386,rowW=916,rowH=29;
   txt(cx,'ALL COMMANDERS — TOP 20',rowX,372,12.5,'#e8c890','left',3,'#141a2c',700);
-  if(G.lbFetching&&(!D||!D.entries))txt(cx,'Fetching world scores…',rowX+rowW/2,460,16,'#c9b28a','center');
-  else if(D&&!D.entries)txt(cx,'Offline — could not reach the ranking server.',rowX+rowW/2,460,15,'#ff9a6a','center',3,'#141a2c',700);
-  else if(es.length===0)txt(cx,'No scores yet — be the first! Enter Endless grading in the Dojo!',rowX+rowW/2,460,14,'#c9b28a','center');
+  if(es.length===0)txt(cx,'No scores yet — be the first! Enter Endless grading in the Dojo!',rowX+rowW/2,460,14,'#c9b28a','center');
   else es.slice(3).forEach((e,i)=>{
     const y=rowY+6+i*rowH;
     const isOwn=e.name===(SV.cmdName||'CAT COMMANDER');
@@ -2384,18 +2430,18 @@ function drawLeaderboard(dt){lbEnter();
     txt(cx,String(e.score),rowX+rowW-140,y,13.5,'#ffd23f','right',3,'#141a2c',700);
     txt(cx,e.stage,rowX+rowW-16,y,10.5,'#8a92a8','right',2,'#141a2c',400);
     if(isOwn)txt(cx,'YOU',rowX+rowW-260,y,10.5,'#9fd8ff','right',2,'#141a2c',700)});
-  // ---- WORLD DOJO FEED panel (fills the right void; hosts the refresh button) ----
+  // ---- DOJO RIVALS panel (fills the right void; hosts the refresh button) ----
   {const fx2=866,fy2=232,fw2=372,fh2=106;
     cx.fillStyle='rgba(255,248,232,.06)';rr(cx,fx2,fy2,fw2,fh2,14);cx.fill();
     cx.lineWidth=2;cx.strokeStyle='rgba(127,208,255,.45)';rr(cx,fx2+1,fy2+1,fw2-2,fh2-2,13);cx.stroke();
-    txt(cx,'WORLD DOJO FEED',fx2+20,fy2+24,12.5,'#9fd8ff','left',3,'#141a2c',700);
-    {const pu=0.5+0.5*Math.sin(G.t*3); // LIVE chip: pulsing green dot + label
-      cx.fillStyle='rgba(58,188,106,'+(0.75+pu*0.25).toFixed(2)+')';cx.beginPath();cx.arc(fx2+fw2-84,fy2+20,5,0,TAU);cx.fill();
-      txt(cx,'LIVE',fx2+fw2-44,fy2+22,10.5,'#3abc6a','center',2,'#141a2c',700)}
+    txt(cx,'DOJO RIVALS',fx2+20,fy2+24,12.5,'#9fd8ff','left',3,'#141a2c',700);
+    {const pu=0.5+0.5*Math.sin(G.t*3); // DAILY chip: pulsing dot + label (offline daily board)
+      cx.fillStyle='rgba(58,188,106,'+(0.75+pu*0.25).toFixed(2)+')';cx.beginPath();cx.arc(fx2+fw2-70,fy2+20,5,0,TAU);cx.fill();
+      txt(cx,'DAILY',fx2+fw2-34,fy2+22,10.5,'#3abc6a','center',2,'#141a2c',700)}
     txt(cx,'Endless survival — waves cleared per run',fx2+20,fy2+44,10.5,'#8a92a8','left',2,'#141a2c',400);
     BTN('lbrefresh',fx2+14,fy2+58,168,36,()=>{G.lbData=null;lbFetch();SFX.click()},{col:'#ffd23f',outline:'#8a5a20',label:D&&D.entries?('⟳ '+(Math.round((now()-D.ts)/1000))+'s ago').slice(0,12):'⟳ RETRY',fs:11.5});
-    txt(cx,D&&D.entries?'world scores synced':'offline — retry above',fx2+fw2-14,fy2+66,10,'#8a92a8','right',2,'#141a2c',400)}
-  txt(cx,'Scores post automatically when an Endless Dojo run ends. Set your commander name in SETTINGS!',DW/2,690,11.5,'#c9b28a','center',2.5,'#141a2c',400)}
+    txt(cx,'rivals rotate daily — beat your best!',fx2+fw2-14,fy2+66,10,'#8a92a8','right',2,'#141a2c',400)}
+  txt(cx,'Your Dojo grade is ranked against the daily rival board. Set your commander name in SETTINGS!',DW/2,690,11.5,'#c9b28a','center',2.5,'#141a2c',400)}
 
 /* ============================== SCREEN: TROPHY STAND ============================== */
 /* Achievement showcase: 10 themed group panels (2-column, scrollable). Progress is

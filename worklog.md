@@ -2695,3 +2695,70 @@ Unresolved / next-phase priorities
 2. gh-pages website branch needs a redeploy with the new assets (deploy-website-branch.sh)
 3. The gacha capsule machine is still a drawn in-style centerpiece (no clean base-game asset available without the APK — InstallPack.apk no longer on disk)
 4. PERF auto-tuner can now hold tier 0 at 2560x1440 on real GPUs (headless SwiftShader reports low fps — ignore)
+---
+Task ID: 4-apk
+Agent: apk-researcher
+Task: download APK + extract menu cat art
+
+Work Log:
+- Resumed a partial prior run of this task on disk: download/apk/ already had battlecats_15.5.0.xapk (181MB, APKPure, jp.co.ponos.battlecatsen v15.5.0), extracted InstallPack.apk, decrypted local packs into ex/ (ImageDataLocal animdata, 4828 imgcuts, ImageServer_100600_01_en + ImageServer_current PNG sets). Verified all of it, then continued.
+- Downloaded tbcml 1.1.0 wheel + used the BCGM/tbcml cipher recipes to decrypt PONOS's server packs from the BCData mirror (/tmp/bcdata): .list = AES-ECB key hex(md5("pack")[:8]); *Server*.pack chunks = AES-ECB key hex(md5("battlecats")[:8]). Decrypted all 80 ImageServer/NumberServer lists.
+- Hunted the home-screen peeking cat by grepping ALL 4828 imgcuts for Japanese labels: found "のぞくにゃんこ" (peeking cat) cuts in unit sheets 004_f/016_f/131_f (full-frontal meme faces — rejected) and the real one: "ネコのぞくやつ" ("the cat peeking thing") at rect 313,436,29,39 in img060_01.png (Gamatoto sheet, reused by the home screen).
+- Provenance closed to the CURRENT APK: the v15.5.0 InstallPack's own ImageDataLocal.pack img060_01.imgcut (404 cuts, decrypted fresh from the APK) lists the SAME rect; the img060_01.png pixels were decrypted from PONOS's own ImageServer_100700_00_en.pack (region byte-identical in the 100600_01 pack). Peek region identical across both versions.
+- Extracted 004_f/016_f/131_f unit sheets from ANumber/BNumber server packs for comparison; VLM-verified the candidates on a contact sheet: cut060 (img060_01) is the only "cat peeking over an edge" (white/cream, big dot eyes, ears, :3 mouth, D-shape with flat right edge to tuck against the screen edge) — VLM: "matches the description of a 'peeking cat face'". Cross-checked the description against web screenshots + VLM game knowledge ("white cat face peeking up near the Store button area").
+- Rendered the authentic gacha CAPSULE MACHINE from PONOS animdata with the repo's cutout_render engine: gatya_000.png + gatya_000_wait.mamodel → capsule_ball.png (274x281); gatya_000_spin_01ren.maanim → capsule_machine.png (274x473, claw+capsule, f25) + 60 spin frames w/ frames.json (VLM-verified: golden cat-faced capsule + mechanical claw + lightning).
+- Collected menu UI chrome from PONOS's own sheets: img010_en (gold Start!!/Upgrade/Equip EN button art + menu window), img006_en (proceed window, Cat-Food buy button, XP), img001_en (XP/CatFood digits), img015/016/017_en/037_en, gatya_UI_1, img002_en (battle UI), img007_en (title bust-up cats) — full sheets + imgcut sidecars in menu_chrome/ + 15 ready-to-use tight crops (gold_btn_*.png, btn_yellow.png, catfood_digits.png, text_window_bar.png, grid_bg.png, ...).
+- Deliverables written under download/apk_menu_cat/ (7.3MB) + FOUND.md (full source chain, decrypt recipe, hashes). APK + InstallPack kept in download/apk/ (457MB total, 3.4GB free).
+- No game code touched (asset acquisition only).
+
+Stage Summary:
+- PRIORITY 1 DONE: download/apk_menu_cat/peeking_cat.png (29x39 RGBA, md5 fb7d07d74b6ab312bcefb0fd2128e431) — PONOS's own "ネコのぞくやつ" home-screen peeking cat, cut rect identical in the current v15.5.0 APK; single static cut (no animation).
+- PRIORITY 2 DONE: capsule_machine.png (274x473) + capsule_ball.png (274x281) + capsule_spin_frames/ f00-f59 + frames.json — authentic gacha capsule/claw machine, rendered from PONOS maanim.
+- PRIORITY 3 DONE: menu_chrome/ (12 official sheets + imgcuts) + 15 tight crops incl. the real gold Start!!/Upgrade/Equip buttons.
+- Integration: peeking cat draws ~2-3x, right-aligned, bottom-clipped by the home bar under the tips-bubble tail; imgcut rects are 0-based (repo convention); ex/ (2.5GB decrypted PONOS packs) retained as the local asset mine.
+
+---
+Task ID: 6-critique
+Agent: vlm-critic
+Task: VLM critique pass on all screens
+
+Work Log:
+- Visited + screenshotted + VLM-critiqued 16 menu screens (title, home, chapters, map, equip, upgrade, gacha, treasure, guide, base, settings, store, expedition, leaderboard, trophies, shrine) at 1280x720, plus battle (eoc1 stage 2, re-run twice at 2s/8s with camera/base introspection) and ONE responsive check (viewport 388x446 on map, then restored 1280x720). 21 screenshots, ~30 VLM calls incl. targeted zoom crops (Korea label, battle bases, cannon, chapters icons, expedition thumbs, trophies numbers, home buttons) to separate real defects from VLM misreads.
+- Console checked after every screen: ZERO errors on every screen and in battle.
+- VERIFIED FIXED: the user's portrait-388x446 complaint — Attack! button fully visible, styled (no black pill); no clipped text; layout usable. Map is just horizontally squeezed (expected).
+- CONFIRMED REAL DEFECTS (VLM-sighting then code/pixel verified):
+  * MAP: white cat marker is drawn AFTER the "Energy -N" label of the current node and covers it (ui.js catMarker call at ~line 945 after node loop) → label reads as garbled "E□5" (VLM initially reported a broken glyph).
+  * BATTLE: camera starts at cam=1320 of a 2600px field (bases 2360 apart ≈1.84 screens) so the ENEMY castle is OFF-SCREEN at battle start; field reads empty/objective-missing (VLM: "missing base art"). Also field orientation is MIRRORED vs original (cat base RIGHT x=2480, enemies walk right→ original has cat base LEFT, cats march right toward enemy base on the right).
+  * EXPEDITION: destination thumbnails are invented solid-color abstract shapes (placeholder look) — violates the r32 "no invented art" policy.
+  * CHAPTERS: locked-chapter icons (EoC Ch2/3, ItF Ch2) are washed-out near-invisible blurs vs crisp unlocked icons — read like missing art.
+  * Global polish: system-ish typography (not the chunky rounded BC font) + flat untextured buttons/panels across chapters/store/treasure/trophies/leaderboard ("wireframe" feel per VLM on 10+ screens).
+  * Minor: BASE stats label "Research cd" misread as "Research ed" (unclear label); BATTLE speed button shows tiny "×1"+8px padlock that reads like debug; MAP legend "gold ◇ = set at 2/3 pieces" 9.5px floating, barely legible; treasure empty slots muddy placeholders; gacha "Try 10+!" disabled state washed-out; leaderboard top-3 lacks gold/silver/bronze.
+- DEBUNKED (VLM misreads, do NOT chase): "GLAM" button on store (actually CLAIM); "Dogge" (actually Doge); trophies "0/4B" (actually 0/48); cannon "Fire!!" clipped (fully visible + progress ring present); "cat base missing art" (it IS the authentic walking NEKO castle w/ HP digits); home Start!!/Upgrade/Equip buttons ARE authentic gold APK art.
+- No game code edited (research/report only). Browser left on home screen, viewport restored 1280x720.
+
+Stage Summary:
+- Top defects for the main agent, in priority order: (1) map cat-marker occluding current node's Energy label; (2) battle camera/field so the enemy castle is invisible at battle start + verify mirrored orientation vs original; (3) expedition placeholder thumbnails; (4) locked-chapter icons washed out; (5) global font/texture polish pass (custom BC-style font + bevel/gloss on flat buttons).
+- Zero console errors anywhere; portrait complaint verified fixed; 6 MAJOR + ~13 MINOR defects cataloged; 6 VLM false positives identified and dismissed.
+
+---
+Task ID: r34
+Agent: Super Z (main)
+Task: user round — load ALL ~500MB at startup (2-click rule), fix the live-site crash + missing attack button (stale gh-pages), remove every backend/IAP dependency, authentic peeking cat + capsule art from a fresh APK, polish pass, full QA, push everything.
+
+Work Log:
+- DIAGNOSED the user's two screenshots: (1) home screen speech bubble with NO cat (r26 removed the painted cat, never replaced), (2) map screen missing Attack!/Energy — reproduced on the LIVE gh-pages site: `SCREEN ERR map: ART.catHead is not a function` — the r32 fix never got deployed to gh-pages (the site runs the v48 deploy). The gh-pages site also had the black-pill/missing-button = the crash overlay region.
+- FULL PRELOAD (boot pipeline v6): battle pool merged into the boot pool — enemy strips, all 167 battle bgs, 288 castles, catbase attack strips ALL load at startup (bucket 4 after menu-critical buckets). AudioBakeProbe now decodes the ENTIRE soundtrack (32 BGM themes + every SFX) at boot. The loading bar tracks the REAL total (1409 units — it previously only tracked the 7 phase-1 images and hit 100% in ~2s while half a GB silently streamed = the "stuff doesn't load" experience). Manifest barrier stops phase-1 alone from completing the bar; 90s stall valve; audio progress bridge; boot bar shows file counts.
+- Battle gate now passes instantly (verified: gate ready in 2ms, intro fade only) — battles open with zero loading.
+- MEMORY POLICY: ≥6GB RAM devices keep everything cached between battles (instant re-entry); <6GB releases battle-only decodes after a fight (r32 list) behind the battle gate. navigator.deviceMemory adaptive.
+- BACKEND REMOVED (singleplayer mandate): leaderboard is now a local DAILY RIVAL board (deterministic seed, 28 cat-themed names, ladder scaled around the player's dojoBest so #1 is always reachable); /api/leaderboard GET+POST deleted; DOJO RIVALS panel replaces the "world feed".
+- AUTHENTIC PONOS ART from a fresh 15.5.0 XAPK (APKPure; PONOS packs AES-decrypted via tbcml recipes): the home-screen peeking cat (ネコのぞくやつ, img060_01 cut) — ESPCN x4, integrated with bob + duck-behind-bar cycle + tap-meow, speech bubble re-anchored to its head; the REAL gacha capsule (gatya_000 golden cat-face ball) replaces BOTH the invented wooden machine painter and the pull-animation's pink ball.
+- POLISH (from a 16-screen VLM critique subagent): map cat marker no longer covers the node's Energy label (stands beside the dot); battle OPENING REVEAL — camera holds on the enemy castle 0.5s while the fade completes, then smoothsteps home (the "no objective visible" complaint); expedition destination swatches now REAL battle backgrounds (mapBackdrop, was invented painted hills); locked chapter icons legible (.88 alpha + lock badge, was washed-out .55); every raised button game-wide got the PONOS bevel/gloss treatment (BTN widget: gradient + highlight band + bottom edge); "Research cd"→"Research speed"; speed-toggle padlock → tiny ×3 text; treasure radar legend made legible.
+- QA (agent-browser, memory-constrained single-load discipline after 2 OOM kills of the 4GB box): boot 1409/1409 ready, 0 failed; home peeking-cat + bubble verified by VLM; gacha capsule verified; offline leaderboard verified; battle gate instant (2ms); full E2E battle played to VICTORY at 3× speed (28 units, rank-up to RANK 2, 0 console errors); battle reveal sequence verified frame-by-frame (castle hold → sweep → home); victory screen verified; portrait 388×446 attack-button visibility verified by the critique subagent.
+- index.html scripts bumped v51.
+
+Stage Summary:
+- The loading experience is now exactly what the user asked: EVERYTHING (~556MB, 1409 files) loads on the first loading screen; battles open instantly; memory stays resident on capable machines.
+- The live site's crash (catHead), missing Attack button, and black pill are fixed by this deploy (they were stale-deploy symptoms).
+- Zero backend/server dependencies remain; the store already used earned currency (singleplayer-safe).
+- New authentic assets: peeking cat, gacha capsule. Invented art removed from gacha centerpiece + expedition swatches.
+- Next: push main + redeploy gh-pages (script updated for this workspace layout).
