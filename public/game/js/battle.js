@@ -56,7 +56,8 @@ function startBattle(st){
     if(im.addEventListener)im.addEventListener('error',()=>{failSet.add(im)},{once:true});
   });
   const themes=[st.bgm||'eoc',st.bossBgm||'boss','boss2','boss3','god'];
-  B.load={need,ready:false,t:0,p:0,intro:0,started:false,failSet,themes,valve:12};
+  B.load={need,ready:false,t:0,p:0,disp:0,intro:0,started:false,failSet,themes,valve:12,
+    minT:1.15,tip:BATTLE_TIPS[(Math.random()*BATTLE_TIPS.length)|0]}; // r39: the gate ALWAYS shows (like the original's brief NOW LOADING) — min display time even when fully preloaded
   // r32: battle loading screen owns the battle-side assets — start the deferred pool
   // (fight-critical urls first) + decode the battle soundtrack now
   try{const bg=stageBgPic(st);if(bg)priUrls.push('assets/maps/'+bg+'.'+((typeof mapFileExt==='function')?mapFileExt(bg):'webp')+'?v=50');
@@ -72,9 +73,21 @@ function startBattle(st){
   try{if(typeof battlePoolStart==='function')battlePoolStart(priUrls)}catch(e){}
   try{if(typeof AudioPreloadBattle==='function')AudioPreloadBattle(themes)}catch(e){}
   G.onDrag=null;push('battle');
-  // BGM + 'GO!' wait for the gate (music starting over a loading card felt broken)
-  if(need.length===0){B.load.ready=true;AudioSetBgm(st.bgm||'eoc');SFX.start();toast(st.name+' — GO!','#ffd94a')}
+  // BGM + 'GO!' wait for the gate (music starting over a loading card felt broken).
+  // r39: even with nothing left to decode (full preload), the card still shows minT —
+  // the r32 instant-flip made battles hard-cut in with no transition at all.
 }
+const BATTLE_TIPS=[ // r39: rotating hints on the battle loading card (original-style)
+  'Upgrade the Worker Cat to earn money faster!',
+  'The Fire!! cannon recharges over time — save it for a rush!',
+  'Long-range cats attack safely from behind your tanks.',
+  'Knockback pushes enemies back — burst them at the line!',
+  'Treasures boost your whole army — collect them all!',
+  'Tap any unit on the field to inspect its live stats.',
+  'Base HP carries between stages — upgrade it at the Cat Base!',
+  'Bosses have massive HP — hold the line and stack damage!',
+  'Rare tickets come from missions and event stages.',
+  'Cat Food is earned from login bonuses and missions!'];
 function spawnEnemy(eid,x0){
   const d=ENEMAP[eid];const mag=B.st.mag;
   const u={side:'enemy',def:d,id:eid,x:x0!==undefined?x0:ENEMY_BASE_X+70+Math.random()*30,y:0,
@@ -474,6 +487,9 @@ function applyBattleResult(){
    cat base + Now Loading bar — the original gates the fight on its art decoding too */
 function drawBattleLoading(b){
   const L=b.load,w=DW;
+  // eased display progress (the real p jumps to 100% instantly on full preload —
+  // an instantly-full bar sitting still looks broken; ease it + add a live sheen)
+  L.disp+=(Math.max(L.p,L.disp)-L.disp)*Math.min(1,0.14);
   cx.fillStyle='#0d0d12';cx.fillRect(0,-VOY,DW,DH);
   const ch=CHMAP[b.st.ch];
   txt(cx,(ch?ch.n:'THE BATTLE CATS').toUpperCase(),w/2,150,17,'rgba(255,217,74,.75)','center',4,'#1a1408',700);
@@ -488,9 +504,18 @@ function drawBattleLoading(b){
   const bw=460,bx=w/2-bw/2,by=520;
   cx.fillStyle='#242430';rr(cx,bx-3,by-3,bw+6,22,11);cx.fill();
   cx.fillStyle='#111118';rr(cx,bx,by,bw,16,8);cx.fill();
-  if(L.p>0.01){cx.fillStyle='#ffd94a';rr(cx,bx,by,Math.max(14,bw*L.p),16,8);cx.fill();
-    cx.fillStyle='rgba(255,255,255,.25)';rr(cx,bx,by,Math.max(14,bw*L.p),6,4);cx.fill()}
-  txt(cx,'Now Loading... '+Math.round(L.p*100)+'%',w/2,by+42,17,'#e8dfc8','center');
+  if(L.disp>0.01){const fw=Math.max(14,bw*L.disp);
+    cx.fillStyle='#ffd94a';rr(cx,bx,by,fw,16,8);cx.fill();
+    cx.fillStyle='rgba(255,255,255,.25)';rr(cx,bx,by,fw,6,4);cx.fill();
+    // moving sheen keeps the bar alive even while holding at 100%
+    const sh=bx+((G.t*340)%(bw+120))-60;
+    cx.save();rr(cx,bx,by,fw,16,8);cx.clip();
+    const g=cx.createLinearGradient(sh-30,0,sh+30,0);
+    g.addColorStop(0,'rgba(255,255,255,0)');g.addColorStop(.5,'rgba(255,255,255,.5)');g.addColorStop(1,'rgba(255,255,255,0)');
+    cx.fillStyle=g;cx.fillRect(bx,by,fw,16);cx.restore()}
+  txt(cx,L.p>0.985?'Get ready!':'Now Loading... '+Math.round(L.p*100)+'%',w/2,by+42,17,'#e8dfc8','center');
+  // rotating gameplay tip (r39, original-style)
+  if(L.tip)txt(cx,'TIP: '+L.tip,w/2,by+72,13,'rgba(255,233,160,.85)','center',3,'rgba(10,8,14,.9)');
   txt(cx,'The Battle Cats — Browser Version',w/2,694,12,'rgba(255,255,255,.35)','center');
 }
 function drawBattle(dt){
@@ -511,11 +536,19 @@ function drawBattle(dt){
     b.load.p=aRdy?imgP:imgP*0.9; // soundtrack counts as the last 10% of the bar
     const forced=b.load.valve<=0;
     if((rdy>=N&&aRdy)||forced||N===0){
+      /* r39: everything decoded — pre-bake the portrait background NOW, behind the card
+         (the 1280x1472 bake + blurs would otherwise hitch the reveal frame), then hold
+         the card for minT so the loading transition is always visible (user request). */
+      if(!b.load.warmed){b.load.warmed=true;
+        try{const bim2=bgImg(stageBgPic(b.st),b.st.idx);
+          if(typeof ensureBgEdge==='function')ensureBgEdge(bim2)}catch(e){}}
       if(forced&&(N===0||rdy<N))toast('Some assets were slow — starting anyway','#ffb46a');
-      b.load.ready=true;b.load.intro=0.55;
-      b.camIntro=2.6; // r34 OPENING REVEAL: 0-0.5s hold on the ENEMY castle (fade completes over it), 0.5-2.3s smooth sweep home
-      AudioSetBgm(b.st.bgm||'eoc');SFX.start();toast(b.st.name+' — GO!','#ffd94a')}
-    else{drawBattleLoading(b);return}
+      if(b.load.t>=(b.load.minT||0)){
+        b.load.ready=true;b.load.intro=0.55;
+        b.camIntro=2.6; // r34 OPENING REVEAL: 0-0.5s hold on the ENEMY castle (fade completes over it), 0.5-2.3s smooth sweep home
+        AudioSetBgm(b.st.bgm||'eoc');SFX.start();toast(b.st.name+' — GO!','#ffd94a')}
+    }
+    if(!b.load.ready){drawBattleLoading(b);return}
   }
   updateBattle(dt);
   // (HUD drawn later fades out once a result is set — see end of this function)
@@ -637,6 +670,46 @@ function stageNeeds(st){
   if(_cbMeta&&_cbMeta.idle)need.push(['catbase',cbStrip(_cbMeta.idle.img)]);
   return need.filter(n=>n[1]);
 }
+/* r39: portrait full-height bg bake, extracted so the battle loading gate can pre-bake
+   it BEHIND its card (the ~1280x1472 canvas + blurs would otherwise hitch the exact
+   frame the field reveals). Also fixes the r39 seam: the mirrored letterbox strips now
+   get a blur scaled to the strip size AND a depth vignette (fade toward the screen
+   edges) — at portrait viewports the old fixed 7px blur left the soil visibly repeated. */
+function ensureBgEdge(bim){
+  if(VOY<=0||!bim||!bim.complete||!bim.naturalWidth)return null;
+  const key=bim.naturalWidth+'x'+Math.round(DW)+'x'+Math.round(DH);
+  let ext=_bgEdge.get(bim);
+  if(ext&&ext.key===key)return ext;
+  const S0=DW/bim.naturalWidth, DHg0=Math.round(bim.naturalHeight*S0);
+  const off0=720-DHg0+VOY; // band position INSIDE the bake (bake is drawn at -VOY)
+  const oc=document.createElement('canvas');oc.width=Math.round(DW);oc.height=Math.round(DH);
+  const o=oc.getContext('2d');o.imageSmoothingEnabled=true;
+  o.drawImage(bim,0,off0,DW,DHg0);
+  const bl=Math.max(10,Math.min(26,VOY*0.08)); // r39: strip-scaled blur (was fixed 7px — soil copy was recognizable)
+  try{o.filter='blur('+bl.toFixed(1)+'px)'}catch(e){}
+  o.save();o.translate(0,off0);o.scale(1,-1); // top mirror of the sky (low-frequency — mirrors invisibly)
+  o.drawImage(bim,0,0,bim.naturalWidth,VOY/S0,0,0,DW,VOY);o.restore();
+  /* r39 bottom: NO mirror — mirroring repeated the grass/dirt structure (an upside-down
+     terrain copy was clearly visible at portrait viewports). Instead: VERTICALLY-STRETCH
+     the image's own bottom soil (≈9x) into the strip — stretched soil reads as soft
+     foreground streaks, seamless at the seam (its first row IS the field's last dirt). */
+  {
+    const sH=Math.max(10,Math.min(56,Math.round(bim.naturalHeight*0.10)));
+    o.drawImage(bim,0,bim.naturalHeight-sH,bim.naturalWidth,sH,0,VOY+720-2,DW,VOY+3);
+  }
+  try{o.filter='none'}catch(e){}
+  // depth vignette over both letterbox strips: reads as out-of-focus foreground/sky,
+  // never as a duplicated terrain band (r39 fix)
+  if(off0>2){const gT=o.createLinearGradient(0,0,0,off0);
+    gT.addColorStop(0,'rgba(10,12,20,.5)');gT.addColorStop(1,'rgba(10,12,20,0)');
+    o.fillStyle=gT;o.fillRect(0,0,DW,off0)}
+  const b0=off0+DHg0; // == VOY+720 in bake space (band always ends at design y 720)
+  if(DH-b0>2){const gB=o.createLinearGradient(0,b0,0,DH);
+    gB.addColorStop(0,'rgba(8,10,16,0)');gB.addColorStop(.3,'rgba(8,10,16,.3)');gB.addColorStop(1,'rgba(8,10,16,.66)');
+    o.fillStyle=gB;o.fillRect(0,b0,DW,DH-b0)}
+  ext={key,cv:oc};_bgEdge.set(bim,ext);
+  return ext;
+}
 function drawBattleBG(b,shx,shy){
   const th=b.st.bg;const grad=BG_THEMES[th]||BG_THEMES.grass;
   /* ---- ORIGINAL background image when available (tiled + camera parallax) ---- */
@@ -646,22 +719,8 @@ function drawBattleBG(b,shx,shy){
        pixel-true and the areas above/below are mirrored+blurred strips of the photo's own
        sky/soil (seamless, no black bars). Bake is cached per (image,size). */
     if(VOY>0){
-      const key=bim.naturalWidth+'x'+Math.round(DW)+'x'+Math.round(DH);
-      let ext=_bgEdge.get(bim);
-      if(!ext||ext.key!==key){
-        const S0=DW/bim.naturalWidth, DHg0=Math.round(bim.naturalHeight*S0);
-        const off0=720-DHg0+VOY; // band position INSIDE the bake (bake is drawn at -VOY)
-        const oc=document.createElement('canvas');oc.width=Math.round(DW);oc.height=Math.round(DH);
-        const o=oc.getContext('2d');o.imageSmoothingEnabled=true;
-        o.drawImage(bim,0,off0,DW,DHg0);
-        try{o.filter='blur(7px)'}catch(e){}
-        o.save();o.translate(0,off0);o.scale(1,-1); // top mirror of the sky
-        o.drawImage(bim,0,0,bim.naturalWidth,VOY/S0,0,0,DW,VOY);o.restore();
-        o.save();o.translate(0,720+VOY);o.scale(1,-1); // bottom mirror of the soil
-        o.drawImage(bim,0,bim.naturalHeight-(VOY+1)/S0,bim.naturalWidth,(VOY+1)/S0,0,-(VOY+1),DW,VOY+1);o.restore();
-        try{o.filter='none'}catch(e){}
-        ext={key,cv:oc};_bgEdge.set(bim,ext)}
-      cx.drawImage(ext.cv,0,-VOY,DW,DH);
+      const ext=ensureBgEdge(bim);
+      if(ext)cx.drawImage(ext.cv,0,-VOY,DW,DH);
       /* r35 FIX: there was a stray cx.restore() here (copied from the landscape path's
          balanced save/restore, but this branch never saves). It popped drawBattle's outer
          save mid-draw, so the whole HUD (unit cards / worker / Fire!! cannon) then rendered
