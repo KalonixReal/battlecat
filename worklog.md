@@ -2833,3 +2833,17 @@ Stage Summary:
 - New: automatic daily login stamp bonus (7-day cycle) + game-wide PONOS panel texturing.
 - No regressions: boot, screens, battle, memory policy all unchanged and verified.
 - Next: push main + redeploy gh-pages (v53) + live verify.
+
+---
+Task ID: r36-deploy
+Agent: Super Z (cron webDevReview round)
+Task: push r36 + redeploy + live verify.
+
+Work Log:
+- main pushed (8f7e687); gh-pages redeployed (808a1e4, 560MB, v53 scripts); .website-deploy removed after push.
+- LIVE verification (fresh single-load): index.html serves v=53; boot 1409/1409; the DAILY LOGIN BONUS modal opens automatically on the first tap (day 1) — confirmed on the live site.
+
+Stage Summary:
+- Live site fully on r36: daily login stamp bonus + PONOS panel texturing, all r35 fixes intact.
+- main: 8f7e687. gh-pages: 808a1e4 (v53).
+- Open ideas for next round: enemy-detail magnifier on the stage-modal lineup tiles; login-bonus confetti burst on claim; settings screen panel pass.
