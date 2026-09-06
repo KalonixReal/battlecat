@@ -2660,3 +2660,38 @@ Work Log:
 
 Stage Summary:
 - Ship state: every asset original, crisp, manifest-consistent, 342MB sprites + 40MB maps + official audio. Ready to push.
+
+---
+Task ID: r32
+Agent: main (Z.ai Code)
+Task: User round: fix "stuff doesn't load" bug (ART.catHead crash), split loading (first screen = cats/map/everything outside battles; battle loading screen = everything else), clear memory of battles that are finished/quit, replace remaining non-base-game drawings, upscale everything blurry (test at high resolution)
+
+Work Log:
+- Pulled from GitHub (KalonixReal/battlecat @ e24d344) into the workspace; dev server on :3000
+- ROOT-CAUSED the screenshot error "UI ERROR: ART.catHead is not a function": catMarker() (stage-select map marker) still called the painter deleted in r30 → whole map screen died. Fixed: marker now draws the REAL basic-cat icon via SPRIT.icon + bob/shadow. Static audit confirmed catHead was the ONLY missing ART method.
+- LOAD SPLIT implemented exactly as the original game divides data:
+  * boot.js pool = cats (all strips), every icon, ports atlas, UI chrome, real Earth map, menu soundtrack (AudioBakeProbe → menu BGM + UI SFX only)
+  * window.__BATTLE_POOL = enemy strips + battle bgs + castles (638 urls) — NOT touched at boot; battlePoolStart() enqueues it when the battle loading screen appears (fight-critical urls sorted first)
+  * audio.js: MENU_BGM/MENU_SFX vs BATTLE_BGM/BATTLE_SFX sets; AudioPreloadBattle(themes) decodes the battle set + combat SFX with the gate; AudioBattleReady() feeds the last 10% of the battle loading bar; generation guard stops stale decodes re-storing after release
+  * battle gate: also waits on the fight's BGM/boss themes + battle SFX decode
+- MEMORY RELEASE (battle finished or quit): releaseBattleMemory() hooked into result-Ok and pause-Retreat (NOT retry/continue) → drops enemy strip bitmaps (SPRIT.releaseEnemies, icons+cats stay), battle bg images, portrait bg bakes, castle decodes, battle BGM/SFX buffers; battlePoolStop() halts the deferred pool so it stops refilling battle memory out of battle; next battle re-fetches from HTTP cache + gates again (verified live: 216 strips + bgs + castles + audio released, map renders clean, 2nd battle re-enters instantly)
+- BATTLE GATE HARDENED (the other "stuff doesn't load" class): null images filtered; per-image error listener marks failed as ready (a 404 can never wedge the bar at 97% forever); 12s valve forces the fight open with a warning toast
+- NON-BASE-GAME DRAWINGS removed: parchScene (invented parchment continents/compass/galleon/serpent/"HERE BE CATS") DELETED — non-story maps (SoL/UL/Aku/Dojo/event) now draw a REAL in-game battle background (mapBackdrop: cover-fit + readability veil + chapter tint, own cache so battle release never blanks it); catMarker painter → real icon; battlePool enqueue bug fixed (urls were sorted but never queued)
+- UPSCALE EVERYTHING (measured at 2560x1440, SC=2): strips rendered 2.9x source, bgs 1.66x, icons 2.2x → wrote tools/r32_batch_upscale.py (ESPCN x2 via opencv-contrib dnn_superres + 2-iter back-projection + micro-unsharp, alpha-safe bicubic+retighten; tiled inference; wide sheets cut at frame boundaries into ≤15800px tiles the v2 renderer already understands; per-file subprocess isolation after in-process RSS hit 2.2GB → OOM on the 4GB box)
+  * 516 strips + 124 small icons + 167 battle bgs + 4 ui images x2; sprites.json frames/refH/tileW doubled (engine dest sizes unchanged); castles (256x512 vs 416px draw) + catbase (620px vs ~300px draw) + ports (4096) + eoc_map (2940) already ≥ draw size — skipped on purpose
+  * chunked runner + git-truth repair (r32_repair.py) fixed 35 tiles corrupted by a mid-run rerun + 2 truncated strips + rebuilt icon_witchen_0.png (was corrupt in git HEAD since r31) from its own walk strip; final audit: 863 files OK, 0 bad, 0 frames OOB
+  * cache-bust: ?v=50 baked into sprites.json values + preload.json maps + uiImg/bgImg/mapBackdrop constructors (files kept their names)
+- QA (agent-browser, 2560x1440): boot pool 668 items 0 failed; map screen no error overlay + real cat marker; SoL map on real bg art; battle gate opens, 0 console errors; VLM confirms x2 sprites/backgrounds noticeably sharper vs x1 at the same viewport; full screen sweep (16 screens) zero console errors; E2E victory→Ok→release→map→2nd battle all verified live; lint 0 errors
+- Pushed: bf34ad8 + 60dcd8f on main
+
+Stage Summary:
+- The reported loading bug (catHead crash) is fixed and audited — no other missing ART symbols exist
+- Loading is split like the original: boot owns everything outside battles, the battle loading screen owns enemy strips/bgs/castles/battle audio, and finished/quit battles are fully cleared from memory (verified with live counters)
+- All remaining invented scene art is gone (parchment → real game backgrounds); the marker uses the real cat icon
+- Everything that was being upscaled at render time is now shipped at x2 (ESPCN+IBP); assets verified sharp at 2560x1440
+
+Unresolved / next-phase priorities
+1. 560MB ship size (was 246MB at r31) — the x2 clarity costs disk; if needed, perceptual re-encode (q85 strips) could reclaim ~150MB with no visible loss
+2. gh-pages website branch needs a redeploy with the new assets (deploy-website-branch.sh)
+3. The gacha capsule machine is still a drawn in-style centerpiece (no clean base-game asset available without the APK — InstallPack.apk no longer on disk)
+4. PERF auto-tuner can now hold tier 0 at 2560x1440 on real GPUs (headless SwiftShader reports low fps — ignore)
