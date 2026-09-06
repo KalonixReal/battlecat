@@ -2918,3 +2918,24 @@ Stage Summary:
 - Live site fully on r39 (v57): https://kalonixreal.github.io/battlecat/
 - main: 1386ec9. gh-pages: 041f528 (v57).
 - Game state: feature-complete, all golden paths verified at both aspect ratios, zero console errors. The 15-min webDevReview cron (job 362566) continues autonomous rounds.
+
+---
+Task ID: r40
+Agent: Super Z (main)
+Task: user round — "very good, but still a lot of loading issues, how about just load everything on load, but decrease the amount needed, like maybe there are some unused assets or smth that can be deleted to save ram and stuff"
+
+Work Log:
+- ROOT-CAUSE ANALYSIS of the "still a lot of loading issues": (a) gh-pages serves every asset with Cache-Control max-age=600 — a revisit 10 min later RE-DOWNLOADED the whole 560MB game; (b) releaseBattleMemory dropped ALL battle decodes on <6GB devices (deviceMemory buckets 4 are common — the QA box itself reports 4) → every next battle re-decoded behind its gate; (c) the pool carried 271 unreachable files forever.
+- AUDIT (tools/r40_asset_diet.py, every rule backed by a call site): maps reachable = BG_PIC(13) + SOL_ROT(12) + ui.js MAP_BG + GAMATOTO expeditions → 24 files (eoc_map.png kept, art.js earthMap — the first script run deleted it by exact-name miss, caught + restored from git, script fixed). Castles reachable = castleImg rotation (eoc ec000-047, itf+cosmos sc000-047, world wc000-047, dark/zero/dojo rc000-047) → 192 of 288. Sprites: manifest(863) + catbase_*.webp(4, catbase.json) + ports.png — all reachable (cats render in roster/gacha/guide, enemies in pools/guide/enemyBig; the manifest's multi-file img arrays are ≤16kpx TILE SPLITS, not dupes); 31 true orphans (stale _t1_t1/dot-t1 naming variants) deleted. Audio/ui/castles ext tables: zero orphans. preload.json regenerated (maps 167→24, castles 288→192) + new 'mb' field = 504.
+- DIET RESULT: 271 files / ~80MB disk / ~380MB DECODED RAM removed; boot pool 1417→1178 files; gh-pages tree 561MB→484MB.
+- SERVICE WORKER (public/game/sw.js, VER bc-v58): cache-first for same-origin /assets/**, /js/**, /fonts/** (immutable or query-versioned); .json manifests always network (content changes land fast); versioned cache name, activate() purges older VERs wholesale; skipWaiting+clients.claim; every failure path falls back to network; quota-exceeded puts swallowed. Registered from index.html BEFORE the engine scripts (dev: /game/ scope, live: root scope — all path checks by substring). DEPLOY GOTCHA FIXED: deploy-website-branch.sh never copied sw.js (live 404'd) — added the cp line (r40b).
+- MEMORY POLICY (battle.js releaseBattleMemory): keep-everything threshold 6→2 — only ≤1GB phones (dm<2) still drop battle decodes; dm=4 (the common case, incl. the QA box and likely the user's) now keeps 24 bgs + 192 castles + 868 sprite decodes cached forever → next battles open instantly, zero mid-game loading.
+- LOADING BAR (boot.js): honest readout "Now Loading... 9% · 107 / 1178 · ~504 MB" + dim hint "first visit only — cached for instant restarts"; safety valve 90s→150s; comments updated; scripts v=58; page.tsx iframe v=34.
+- QA (agent-browser, fresh single-load discipline, 1280x720): DEV boot 1178/1178 @ 0 failed; SW registered/activated/controlling, 1177 cache entries; mid-load readout VLM-verified verbatim; full golden path via REAL button clicks (tap→login CLAIM +100CF+confetti→home→map→stage modal→Attack [live hit-rects: mb1=(646,621)]→battle card→field→deploy cat→cannon→VICTORY→OK→map) with ZERO console errors; post-victory memory check: _bgImgs=24, _castleImgs=192, SPRIT.imgs=868 ALL retained (the r40 fix live); dev cached reload READY ~14-18s. LIVE (fresh browser, cache-busted): v58 scripts + new preload.json served; sw.js HTTP 200; first visit 1178/1178 @ 0 failed (~60-90s); warm revisit READY @ 0 failed, SW-controlled, 1177 entries cached; live title + login modal VLM-clean. (Known QA-harness quirk: CDP Runtime.evaluate wedges if you poll-eval DURING a reload — close+reopen the session instead.)
+- bun run lint 0 errors; main pushed (24b3a4c + 98819bf); gh-pages redeployed twice (980d36d then dbf5265 with sw.js); .website-deploy cleaned.
+
+Stage Summary:
+- Live site fully on r40 (v58 + sw.js): https://kalonixreal.github.io/battlecat/
+- The three loading-issue roots are fixed: no more 500MB re-download per revisit (SW cache), no more between-battle re-decode on ≤4GB devices (memory policy), 271 fewer files/80MB less to load at all (asset diet).
+- Deploy ritual note for future rounds: when the asset set changes, bump sw.js VER (currently bc-v58) alongside the script cache-bust so old caches purge on activate.
+- Open ideas for next round: tile-split sprites could be re-packed to cut decode RAM further; gacha banner art (gatya_btn) still open from r38; the 15-min webDevReview cron (job 363064) continues autonomous rounds (currently platform rate-limited, auto-resumes).
