@@ -92,6 +92,12 @@ function preloadRun(){
   uiImgCache('title_bg_itf.png','assets/ui/title_bg_itf.webp?v=50');   // campaign-cleared title variants
   uiImgCache('title_bg_cotc.png','assets/ui/title_bg_cotc.webp?v=50');
   uiImgCache('play_button.png','assets/ui/play_button.png?v=50');
+  // r37: authentic home icon art (img007_en cuts) — Menu/GAMATOTO/Missions buttons + gacha tray icons
+  uiImgCache('basemenu_btn.png','assets/ui/basemenu_btn.png?v=54');
+  uiImgCache('gamatoto_btn.png','assets/ui/gamatoto_btn.png?v=54');
+  uiImgCache('missions_btn.png','assets/ui/missions_btn.png?v=54');
+  uiImgCache('gacha_icon_normal.png','assets/ui/gacha_icon_normal.png?v=54');
+  uiImgCache('gacha_icon_rare.png','assets/ui/gacha_icon_rare.png?v=54');
   uiImgCache('doors_home.png','assets/ui/doors_home.webp?v=50');
   preloadImg('assets/sprites/catbase_idle.webp');
   // catbase.json feeds the walking-cat animation metadata
@@ -319,7 +325,9 @@ function loop(ts){
   }else{
     const fn=SCREENS[G.screen]||drawTitle;
     try{fn(dt)}catch(err){console.error('SCREEN ERR',G.screen,err);cx.fillStyle='#300';cx.fillRect(-VOY,-VOY,DW,DH);txt(cx,'⚠ UI ERROR: '+err.message,DW/2,360,20,'#fff','center')}
-    modalDraw();toastDraw(dt); // toasts render ABOVE modals (in-modal action feedback stays visible)
+    // r37 HARDENING: an error inside modal/toast/confetti draw must NEVER kill the rAF
+    // chain (a modalDraw throw used to freeze the whole game silently) — log + continue.
+    try{modalDraw();toastDraw(dt);confettiDraw(dt)}catch(err){console.error('UI ERR',err)} // toasts render ABOVE modals (in-modal action feedback stays visible); r37 confetti on top of everything
     // screen-change transition: quick fade-from-black on push()/pop() (official-style cut)
     if(G.transT>0){G.transT-=dt;const ta=clamp(G.transT/0.30,0,1);
       cx.fillStyle='rgba(18,10,6,'+(ta*ta*0.92).toFixed(3)+')';cx.fillRect(0,-VOY,DW,DH);

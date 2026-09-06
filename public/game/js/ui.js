@@ -29,7 +29,7 @@ const G={screen:'title',screenPrev:[],hits:[],drags:[],toasts:[],modal:null,t:0,
 function push(s){G.screenPrev.push(G.screen);G.screen=s;G.hits=[];G.transT=0.30}
 function pop(){const p=G.screenPrev.pop();G.screen=p||'home';G.hits=[];G.transT=0.30}
 function toast(msg,col){G.toasts.push({msg,t:3.2,age:0,col:col||'#ffd94a'})}
-function openModal(title,lines,btns,drawExtra){G.modal={title,lines,btns:btns||[{n:'CLOSE',cb:()=>{}}],drawExtra}}
+function openModal(title,lines,btns,drawExtra){G.enemyZoom=null;G.modal={title,lines,btns:btns||[{n:'CLOSE',cb:()=>{}}],drawExtra}}
 function toDesign(e){return{x:(e.clientX-OX)/SC,y:(e.clientY-OY)/SC-VOY}}
 cv.addEventListener('pointerdown',e=>{const p=toDesign(e);AudioUnlock();G.pdown={x:p.x,y:p.y,moved:false,t:now()};
   if(G.flingCam)G.flingCam=null; // new grab kills any live camera fling
@@ -149,6 +149,16 @@ const PONOS_PANELS=true;function creamPanel(x,y,w,h,ln){
     [[x+11,y+11],[x+w-11,y+11],[x+11,y+h-11],[x+w-11,y+h-11]].forEach(p=>{cx.beginPath();cx.arc(p[0],p[1],2.6,0,TAU);cx.fill()});
     cx.fillStyle='rgba(255,255,255,.5)';
     [[x+10.2,y+10.2],[x+w-11.8,y+10.2],[x+10.2,y+h-11.8],[x+w-11.8,y+h-11.8]].forEach(p=>{cx.beginPath();cx.arc(p[0],p[1],0.9,0,TAU);cx.fill()})}}
+/* r37 settings section header: small gold ribbon chip with side notches — visually
+   divides the settings board into AUDIO / IDENTITY / SAVE DATA / INFO bands. */
+function sectionHeader(label,cy2,w2){
+  w2=w2||190;
+  cx.fillStyle='rgba(232,149,31,.14)';rr(cx,DW/2-w2/2,cy2-11,w2,22,11);cx.fill();
+  cx.lineWidth=2;cx.strokeStyle='#e8951f';rr(cx,DW/2-w2/2,cy2-11,w2,22,11);cx.stroke();
+  txt(cx,label,DW/2,cy2+0.5,11,'#b06a10','center',2.5,'#fff',700);
+  cx.fillStyle='#e8951f';
+  cx.beginPath();cx.moveTo(DW/2-w2/2-9,cy2);cx.lineTo(DW/2-w2/2-1,cy2-6.5);cx.lineTo(DW/2-w2/2-1,cy2+6.5);cx.closePath();cx.fill();
+  cx.beginPath();cx.moveTo(DW/2+w2/2+9,cy2);cx.lineTo(DW/2+w2/2+1,cy2-6.5);cx.lineTo(DW/2+w2/2+1,cy2+6.5);cx.closePath();cx.fill()}
 function glyph(c,kind,x,y,s,col,bg){c.save();c.translate(x,y);c.scale(s/10,s/10);c.strokeStyle=col;c.fillStyle=col;c.lineWidth=2.6;c.lineCap='round';c.lineJoin='round';
   if(kind==='swords'){c.beginPath();c.moveTo(-8,8);c.lineTo(6,-6);c.moveTo(-6,-6);c.lineTo(8,8);c.moveTo(-9,6);c.lineTo(-4,9);c.moveTo(4,9);c.lineTo(9,6);c.stroke()}
   else if(kind==='cat'){c.beginPath();c.arc(0,1.5,7,0,TAU);c.fill();c.beginPath();c.moveTo(-6.5,-3);c.lineTo(-8,-9);c.lineTo(-2.5,-5.5);c.closePath();c.fill();c.beginPath();c.moveTo(6.5,-3);c.lineTo(8,-9);c.lineTo(2.5,-5.5);c.closePath();c.fill();c.fillStyle=bg;c.beginPath();c.arc(-2.8,0.5,1.3,0,TAU);c.arc(2.8,0.5,1.3,0,TAU);c.fill()}
@@ -244,6 +254,39 @@ function toastDraw(dt){let y=70;for(const t of G.toasts){t.t-=dt;t.age=(t.age||0
   txt(cx,t.msg,bx+46,y+20,17,shade(t.col,.62),'left',3,'#fff',700);
   cx.restore();
   y+=48;cx.globalAlpha=1}G.toasts=G.toasts.filter(t=>t.t>0)}
+/* ---- r37 menu-level CELEBRATION CONFETTI (LOGIN BONUS claim, trophy/mission claims):
+   burst of gold/pink/white/blue streamers + tiny paw-print discs, gravity + drag + flutter
+   sway, ~2.4s life. Drawn in the main loop AFTER modals + toasts so it plays OVER the
+   closing card (the burst starts exactly where the CLAIM button was). ---- */
+function confettiBurst(x,y,n){
+  const cols=['#ffd23f','#ff9ad5','#fdfdf8','#7fd0ff','#c46adf','#f28a2a'];
+  G.confetti=G.confetti||[];
+  for(let i=0;i<(n||64);i++){
+    const a=Math.random()*TAU,sp=170+Math.random()*360;
+    G.confetti.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-250,
+      rot:Math.random()*TAU,vr:(Math.random()-0.5)*10,
+      w:6+Math.random()*7,h:3+Math.random()*4,ph:Math.random()*TAU,
+      t:1.5+Math.random()*0.9,age:0,paw:i%9===0,
+      col:cols[i%cols.length]})}
+}
+function confettiDraw(dt){
+  const C=G.confetti;if(!C||!C.length)return;
+  for(const p of C){
+    p.age+=dt;
+    p.vy+=760*dt;p.vx*=(1-0.9*dt); // gravity + air drag
+    p.x+=p.vx*dt+Math.sin(p.ph+p.age*6)*14*dt; // flutter sway
+    p.y+=p.vy*dt;p.rot+=p.vr*dt;
+    const a=Math.min(1,clamp((p.t-p.age)/0.45,0,1));
+    cx.globalAlpha=a;cx.save();cx.translate(p.x,p.y);cx.rotate(p.rot);
+    cx.fillStyle=p.col;
+    if(p.paw){ // tiny paw-print disc (every 9th piece)
+      cx.beginPath();cx.arc(0,0,4.6,0,TAU);cx.fill();
+      [[-3.2,-3.4],[3.2,-3.4],[-4.6,1.8],[4.6,1.8]].forEach(q=>{cx.beginPath();cx.arc(q[0],q[1],1.8,0,TAU);cx.fill()})}
+    else{cx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+      cx.fillStyle='rgba(255,255,255,.35)';cx.fillRect(-p.w/2,-p.h/2,p.w,1.4)} // glint edge
+    cx.restore()}
+  cx.globalAlpha=1;
+  G.confetti=C.filter(p=>p.age<p.t&&p.y<DH+60)}
 function modalDraw(){const m=G.modal;if(!m)return;
   m.age=(m.age||0)+1/60; // ~seconds since open (rAF-paced)
   const pop=Math.min(1,m.age/0.18); // quick pop-in (cubic out + tiny overshoot)
@@ -255,7 +298,7 @@ function modalDraw(){const m=G.modal;if(!m)return;
   if(m.title&&m.title.startsWith('DAILY MISSIONS'))h=612; // 6 mission rows need a taller board
   if(m.title&&m.title.startsWith('TREASURE RADAR'))h=612; // tab pills + 6 radar rows + digest footer
   if(m.title&&m.title.startsWith('FARM:'))h=560; // 5 stage-picker rows + footer
-  if(m.title&&m.title.startsWith('DAILY LOGIN BONUS'))h=520; // 7 stamp slots + footer (r36)
+  if(m.title&&m.title.startsWith('DAILY LOGIN BONUS'))h=420; // 7 stamp slots + footer, sized to content (r37: was 520 — 160px dead gap above the CLAIM button)
   const w=Math.min(760,1180);
   // pop-in: purely visual transform — all drawing/hit coords below stay in FINAL
   // (unscaled) design space so hit rects stay valid even mid-animation
@@ -363,6 +406,8 @@ function showLoginBonus(){
     if(st.cf){SV.cf+=st.cf}
     if(st.xp){addXP(st.xp)}
     persist();
+    confettiBurst(DW/2,340,86); // r37: celebration burst over the closing card (r36 open idea)
+    if(day===7){setTimeout(()=>confettiBurst(DW/2-180,300,40),260);setTimeout(()=>confettiBurst(DW/2+180,300,40),460)} // day-7 SUPER: triple bloom
     SFX.win2&&SFX.win2();SFX.click&&SFX.click();
     toast('LOGIN BONUS day '+day+(st.cf?' · +'+st.cf+' Cat Food!':'')+(st.xp?' · +'+fmt(st.xp)+' XP!':''),'#ffd23f');
     trophyCheckAll&&trophyCheckAll()};
@@ -381,11 +426,12 @@ function showLoginBonus(){
         rr(cx,sx-3,sy-3,sw+6,154,14);cx.stroke()}
       // day label (day 7 = SUPER reward slot)
       txt(cx,last?'DAY 7 ★':'DAY '+(i+1),sx+sw/2,sy+16,cur?12.5:(last?12:11.5),cur?'#d07000':(last?'#a87018':'#8a744c'),'center',2.5,'#fff',700);
-      // reward icon + value
-      if(rw.cf){drawCFCan(cx,sx+sw/2-21,sy+32,15);txt(cx,'+'+rw.cf,sx+sw/2+10,sy+48,15,'#2a8a4a','center',3,'#fff',700)}
-      else{cx.save();cx.translate(sx+sw/2,sy+38);
-        cx.fillStyle='#ffd23f';star(cx,0,0,13,5.6);cx.fill();cx.lineWidth=2.2;cx.strokeStyle='#8a5a10';star(cx,0,0,14.4,6.3);cx.stroke();cx.restore();
-        txt(cx,'+'+fmt(rw.xp),sx+sw/2,sy+70,12.5,'#c07a10','center',3,'#fff',700)}
+      // reward icon + value (r37: icons centered ~sy+46 — the CF can top no longer grazes
+      // the day label; both slot types share one vertical grid, value under/next to icon)
+      if(rw.cf){drawCFCan(cx,sx+sw/2-19,sy+46,14);txt(cx,'+'+rw.cf,sx+sw/2+12,sy+52,14,'#2a8a4a','center',3,'#fff',700)}
+      else{cx.save();cx.translate(sx+sw/2,sy+44);
+        cx.fillStyle='#ffd23f';star(cx,0,0,12,5.2);cx.fill();cx.lineWidth=2.2;cx.strokeStyle='#8a5a10';star(cx,0,0,13.4,6.0);cx.stroke();cx.restore();
+        txt(cx,'+'+fmt(rw.xp),sx+sw/2,sy+78,12.5,'#c07a10','center',3,'#fff',700)}
       // paw stamp on past days
       if(past){cx.save();cx.globalAlpha=0.85;cx.translate(sx+sw/2,sy+108);cx.rotate(-0.18);
         cx.fillStyle='#e8941f';cx.beginPath();cx.arc(0,0,11.5,0,TAU);cx.fill();
@@ -524,41 +570,51 @@ function drawHome(dt){
     txt(cx,label,0,64,14.5,'#fff','center',4.5,'rgba(50,30,10,.9)',700);
     cx.restore();
     BTN(id,cxp-52,344,104,128,cb,{flat:true,nohov:true})};
-  homeIcon('hbook',100,'Menu',()=>{ // open book with cat mark
+  homeIcon('hbook',100,'',()=>{ // r37: authentic ネコ基地メニューボタン (img007_en cut 27) — art has its own text
+    const im=uiImg('basemenu_btn.png');
     cx.save();cx.translate(0,-6);
-    cx.fillStyle='#fffdf5';cx.beginPath();
-    cx.moveTo(-34,-26);cx.quadraticCurveTo(-12,-34,0,-26);cx.quadraticCurveTo(12,-34,34,-26);
-    cx.lineTo(34,22);cx.quadraticCurveTo(12,30,0,22);cx.quadraticCurveTo(-12,30,-34,22);cx.closePath();cx.fill();
-    cx.lineWidth=3;cx.strokeStyle='#5a3b16';cx.stroke();
-    cx.beginPath();cx.moveTo(0,-26);cx.lineTo(0,22);cx.stroke();
-    cx.fillStyle='#e8951f';cx.beginPath();cx.arc(0,-2,9,0,TAU);cx.fill();
-    cx.lineWidth=1.8;cx.strokeStyle='#7a4a08';cx.stroke();
-    cx.fillStyle='#7a4a08';cx.beginPath();cx.arc(-3,-4,1.4,0,TAU);cx.arc(3,-4,1.4,0,TAU);cx.fill();
-    cx.strokeStyle='#7a4a08';cx.lineWidth=1.4;cx.beginPath();cx.arc(0,-1,3,0.2,Math.PI-0.2);cx.stroke();
+    if(im){const s=90/im.width;cx.drawImage(im,-im.width*s/2,-im.height*s/2,im.width*s,im.height*s)}
+    else{ // fallback painter (pre-r37): open book with cat mark
+      cx.fillStyle='#fffdf5';cx.beginPath();
+      cx.moveTo(-34,-26);cx.quadraticCurveTo(-12,-34,0,-26);cx.quadraticCurveTo(12,-34,34,-26);
+      cx.lineTo(34,22);cx.quadraticCurveTo(12,30,0,22);cx.quadraticCurveTo(-12,30,-34,22);cx.closePath();cx.fill();
+      cx.lineWidth=3;cx.strokeStyle='#5a3b16';cx.stroke();
+      cx.beginPath();cx.moveTo(0,-26);cx.lineTo(0,22);cx.stroke();
+      cx.fillStyle='#e8951f';cx.beginPath();cx.arc(0,-2,9,0,TAU);cx.fill();
+      cx.lineWidth=1.8;cx.strokeStyle='#7a4a08';cx.stroke();
+      cx.fillStyle='#7a4a08';cx.beginPath();cx.arc(-3,-4,1.4,0,TAU);cx.arc(3,-4,1.4,0,TAU);cx.fill();
+      cx.strokeStyle='#7a4a08';cx.lineWidth=1.4;cx.beginPath();cx.arc(0,-1,3,0.2,Math.PI-0.2);cx.stroke()}
     cx.restore()},'','#e84030',()=>{SFX.click();openBookMenu()},0);
-  homeIcon('hgamatoto',244,'GAMATOTO',()=>{ // pickaxe + white hard-hat with brim
+  homeIcon('hgamatoto',244,'',()=>{ // r37: authentic ガマトト button (img007_en cut 26) — cat in mining helmet, art has its own text
+    const im=uiImg('gamatoto_btn.png');
     cx.save();cx.translate(0,-6);
-    cx.strokeStyle='#8a5a20';cx.lineWidth=5;cx.lineCap='round';
-    cx.beginPath();cx.moveTo(-30,26);cx.lineTo(14,-22);cx.stroke();
-    cx.strokeStyle='#5a3b16';cx.lineWidth=5;
-    cx.beginPath();cx.moveTo(-36,-18);cx.quadraticCurveTo(-2,-42,34,-16);cx.stroke();
-    cx.fillStyle='#f2f4f8';cx.beginPath();cx.arc(14,0,15,Math.PI,0);cx.closePath();cx.fill();
-    cx.lineWidth=2.4;cx.strokeStyle='#7a7e88';cx.stroke();
-    cx.fillStyle='#d8dce4';rr(cx,-4,0,36,5,2.5);cx.fill();
-    cx.strokeStyle='#7a7e88';cx.lineWidth=1.6;rr(cx,-4,0,36,5,2.5);cx.stroke();
-    cx.fillStyle='#fff';cx.beginPath();cx.arc(9,-2,2,0,TAU);cx.arc(19,-2,2,0,TAU);cx.fill();
-    cx.strokeStyle='#9aa0aa';cx.lineWidth=1.4;cx.beginPath();cx.arc(14,1,3,0.2,Math.PI-0.2);cx.stroke();
+    if(im){const s=90/im.width;cx.drawImage(im,-im.width*s/2,-im.height*s/2,im.width*s,im.height*s)}
+    else{ // fallback painter (pre-r37): pickaxe + white hard-hat
+      cx.strokeStyle='#8a5a20';cx.lineWidth=5;cx.lineCap='round';
+      cx.beginPath();cx.moveTo(-30,26);cx.lineTo(14,-22);cx.stroke();
+      cx.strokeStyle='#5a3b16';cx.lineWidth=5;
+      cx.beginPath();cx.moveTo(-36,-18);cx.quadraticCurveTo(-2,-42,34,-16);cx.stroke();
+      cx.fillStyle='#f2f4f8';cx.beginPath();cx.arc(14,0,15,Math.PI,0);cx.closePath();cx.fill();
+      cx.lineWidth=2.4;cx.strokeStyle='#7a7e88';cx.stroke();
+      cx.fillStyle='#d8dce4';rr(cx,-4,0,36,5,2.5);cx.fill();
+      cx.strokeStyle='#7a7e88';cx.lineWidth=1.6;rr(cx,-4,0,36,5,2.5);cx.stroke();
+      cx.fillStyle='#fff';cx.beginPath();cx.arc(9,-2,2,0,TAU);cx.arc(19,-2,2,0,TAU);cx.fill();
+      cx.strokeStyle='#9aa0aa';cx.lineWidth=1.4;cx.beginPath();cx.arc(14,1,3,0.2,Math.PI-0.2);cx.stroke()}
     cx.restore()},expdAnyDone()?'!':'','#3abc6a',()=>{SFX.click();push('expedition')},0);
-  homeIcon('hmissions',388,'Missions',()=>{ // clipboard with red hearts
-    cx.save();cx.translate(0,-6);cx.rotate(0.06);
-    cx.fillStyle='#e8d8b8';rr(cx,-24,-30,48,60,6);cx.fill();
-    cx.lineWidth=3;cx.strokeStyle='#5a3b16';rr(cx,-24,-30,48,60,6);cx.stroke();
-    cx.fillStyle='#c8ccd4';rr(cx,-10,-36,20,12,4);cx.fill();
-    cx.lineWidth=2;cx.strokeStyle='#5a5e66';rr(cx,-10,-36,20,12,4);cx.stroke();
-    const heart=(hx,hy)=>{cx.fillStyle='#d83a2a';cx.save();cx.translate(hx,hy);cx.scale(1.15,1.15);
-      cx.beginPath();cx.moveTo(0,3);cx.bezierCurveTo(-6,-3,-3,-8,0,-4);cx.bezierCurveTo(3,-8,6,-3,0,3);cx.closePath();cx.fill();cx.restore()};
-    heart(-8,-12);heart(9,-12);heart(-8,4);heart(9,4);
-    cx.strokeStyle='#8a7a5a';cx.lineWidth=2;cx.beginPath();cx.moveTo(-14,20);cx.lineTo(14,20);cx.moveTo(-14,26);cx.lineTo(6,26);cx.stroke();
+  homeIcon('hmissions',388,'Missions',()=>{ // r37: authentic ミッションボタン scroll (img007_en cut 23)
+    const im=uiImg('missions_btn.png');
+    cx.save();cx.translate(0,-8);
+    if(im){cx.drawImage(im,-im.width/2,-im.height/2,im.width,im.height)}
+    else{ // fallback painter (pre-r37): clipboard with red hearts
+      cx.rotate(0.06);
+      cx.fillStyle='#e8d8b8';rr(cx,-24,-30,48,60,6);cx.fill();
+      cx.lineWidth=3;cx.strokeStyle='#5a3b16';rr(cx,-24,-30,48,60,6);cx.stroke();
+      cx.fillStyle='#c8ccd4';rr(cx,-10,-36,20,12,4);cx.fill();
+      cx.lineWidth=2;cx.strokeStyle='#5a5e66';rr(cx,-10,-36,20,12,4);cx.stroke();
+      const heart=(hx,hy)=>{cx.fillStyle='#d83a2a';cx.save();cx.translate(hx,hy);cx.scale(1.15,1.15);
+        cx.beginPath();cx.moveTo(0,3);cx.bezierCurveTo(-6,-3,-3,-8,0,-4);cx.bezierCurveTo(3,-8,6,-3,0,3);cx.closePath();cx.fill();cx.restore()};
+      heart(-8,-12);heart(9,-12);heart(-8,4);heart(9,4);
+      cx.strokeStyle='#8a7a5a';cx.lineWidth=2;cx.beginPath();cx.moveTo(-14,20);cx.lineTo(14,20);cx.moveTo(-14,26);cx.lineTo(6,26);cx.stroke()}
     cx.restore()},mDone||'','#e84030',()=>{SFX.click();openMissionsModal()},0);
 
   // back-to-title round arrow (bottom-left) — r35: raised so the FULL circle clears the
@@ -589,32 +645,31 @@ function drawHome(dt){
         const fruit=Object.entries(SV.fruit).filter(([,v])=>v>0).map(([k,v])=>k+' \u00d7'+v).join('  ')||'none yet';
         openModal('STORAGE',['Catfruit: '+fruit,'Tickets: '+SV.tickets.rare+' Rare \u00b7 '+SV.tickets.gold+' Gold \u00b7 '+SV.tickets.plat+' Platinum','NP: '+fmt(SV.np),'Leadership: '+(SV.leadership!=null?SV.leadership:'-')],
           [{n:'CLOSE',cb:()=>{}}])},{flat:true,nohov:true})}
-    // capsule buttons (green normal / yellow rare) — cat-face capsules like the original tray
-    const capBtn=(id,cxp,fill,rim,label,count,cb)=>{
-      cx.save();cx.translate(cxp,ty+44);
-      const bob=Math.sin(G.t*2.4+cxp)*2.5;cx.translate(0,bob);
-      const cg=cx.createRadialGradient(-8,-12,4,0,-6,34);cg.addColorStop(0,'#fff');cg.addColorStop(.35,fill);cg.addColorStop(1,rim);
-      cx.fillStyle=cg;cx.beginPath();cx.arc(0,0,26,0,TAU);cx.fill();
-      cx.lineWidth=3;cx.strokeStyle=shade(rim,.65);cx.stroke();
-      cx.fillStyle='rgba(255,255,255,.55)';cx.beginPath();cx.ellipse(-9,-9,8,5,-0.6,0,TAU);cx.fill();
-      cx.fillStyle='#3a2a1a';cx.beginPath();cx.arc(-8,-4,2.6,0,TAU);cx.arc(8,-4,2.6,0,TAU);cx.fill();
-      cx.strokeStyle='#3a2a1a';cx.lineWidth=2;cx.beginPath();cx.arc(0,0,4.4,0.15,Math.PI-0.15);cx.stroke();
-      cx.fillStyle=shade(rim,.7);cx.beginPath();cx.moveTo(-15,-18);cx.lineTo(-18,-29);cx.lineTo(-8,-21);cx.closePath();cx.fill();
-      cx.beginPath();cx.moveTo(15,-18);cx.lineTo(18,-29);cx.lineTo(8,-21);cx.closePath();cx.fill();
+    // capsule buttons — r37: REAL PONOS gacha icon art (img007_en cuts 9/10, text baked in),
+    // bob gently + ticket-count badge; painted capsule kept as image-missing fallback
+    const capBtn=(id,cxp,iconName,count,cb)=>{
+      const im=uiImg(iconName);
+      const bob=Math.sin(G.t*2.4+cxp)*2.5;
+      cx.save();cx.translate(cxp,ty+44+bob);
+      if(im){const s=Math.min(92/im.width,84/im.height);cx.drawImage(im,-im.width*s/2,-im.height*s/2,im.width*s,im.height*s)}
+      else{
+        const fill=iconName==='gacha_icon_rare.png'?'#ffe264':'#7fe89a',rim=iconName==='gacha_icon_rare.png'?'#e8940f':'#3a9a5a';
+        const cg=cx.createRadialGradient(-8,-12,4,0,-6,34);cg.addColorStop(0,'#fff');cg.addColorStop(.35,fill);cg.addColorStop(1,rim);
+        cx.fillStyle=cg;cx.beginPath();cx.arc(0,0,26,0,TAU);cx.fill();
+        cx.lineWidth=3;cx.strokeStyle=shade(rim,.65);cx.stroke();
+        cx.fillStyle='rgba(255,255,255,.55)';cx.beginPath();cx.ellipse(-9,-9,8,5,-0.6,0,TAU);cx.fill();
+        cx.fillStyle='#3a2a1a';cx.beginPath();cx.arc(-8,-4,2.6,0,TAU);cx.arc(8,-4,2.6,0,TAU);cx.fill();
+        cx.strokeStyle='#3a2a1a';cx.lineWidth=2;cx.beginPath();cx.arc(0,0,4.4,0.15,Math.PI-0.15);cx.stroke();
+        cx.fillStyle=shade(rim,.7);cx.beginPath();cx.moveTo(-15,-18);cx.lineTo(-18,-29);cx.lineTo(-8,-21);cx.closePath();cx.fill();
+        cx.beginPath();cx.moveTo(15,-18);cx.lineTo(18,-29);cx.lineTo(8,-21);cx.closePath();cx.fill()}
       cx.restore();
-      // label plate
-      cx.fillStyle='#fffdf5';rr(cx,cxp-52,ty+74,104,20,9);cx.fill();
-      cx.lineWidth=1.8;cx.strokeStyle='#8a5a20';rr(cx,cxp-52,ty+74,104,20,9);cx.stroke();
-      setFont(cx,FONT(9.5,700));
-      let lab=label;while(cx.measureText(lab).width>98&&lab.length>4)lab=lab.slice(0,-2);
-      txt(cx,lab+(lab===label?'':'\u2026'),cxp,ty+85,9.5,'#5a3b16','center',2.5,'#fff',700);
-      if(count!=null){cx.save();cx.translate(cxp+30,ty+18);
+      if(count!=null){cx.save();cx.translate(cxp+34,ty+16);
         cx.fillStyle='#e84030';cx.beginPath();cx.arc(0,0,12,0,TAU);cx.fill();
         cx.lineWidth=2;cx.strokeStyle='#7a1a10';cx.stroke();
         txt(cx,String(count),0,0.5,11,'#fff','center',2,'#7a1a10',700);cx.restore()}
       BTN(id,cxp-46,ty+6,92,92,cb,{flat:true,nohov:true})};
-    capBtn('hcapN',tx+140,'#7fe89a','#3a9a5a','Cat capsule',null,()=>{SFX.click();G.gachaSel=0;push('gacha')});
-    capBtn('hcapR',tx+248,'#ffe264','#e8940f','Rare Cat capsule',SV.tickets.rare,()=>{SFX.click();G.gachaSel=0;push('gacha')})}
+    capBtn('hcapN',tx+140,'gacha_icon_normal.png',null,()=>{SFX.click();G.gachaSel=0;push('gacha')});
+    capBtn('hcapR',tx+248,'gacha_icon_rare.png',SV.tickets.rare,()=>{SFX.click();G.gachaSel=0;push('gacha')})}
 
   /* ===== RIGHT door: event banners + (i) + speech bubble + the big Cat ===== */
   try{
@@ -1231,6 +1286,54 @@ function drawSubmap(dt){const c=CHMAP[G.chapter];const sub=c.kind==='sol'?SOL_SU
     if(cl){cx.fillStyle='#8a6a10';star(cx,x+160,y+118,7,4);cx.fill();txt(cx,'CLEARED',x+172,y+118,12,'#8a6a10','left')}
     cx.globalAlpha=1}
   brownBottomBar()}
+/* ---- r37 ENEMY ZOOM (stage-modal magnifier, r36 open idea): tap an enemy lineup
+   tile → official bestiary-style card floats over the modal with the REAL animated
+   unit sprite at collection scale + THIS STAGE'S magnified stats (the numbers you'll
+   actually face). Tap anywhere (or Cancel/Attack) closes it. ---- */
+function drawEnemyZoom(){
+  const z=G.enemyZoom;if(!z)return; // no zoom open — NEVER throw here (a crash in modalDraw kills the rAF loop)
+  const e=ENEMAP[z.eid];if(!e){G.enemyZoom=null;return}
+  z.age=(z.age||0)+1/60;
+  cx.fillStyle='rgba(30,20,10,.55)';cx.fillRect(0,-VOY,DW,DH+2*VOY);
+  const pw=690,ph=436,px=DW/2-pw/2,py=360-ph/2;
+  const pop=Math.min(1,z.age/0.16),sc=0.9+0.1*pop+Math.sin(pop*Math.PI)*0.02;
+  cx.save();cx.globalAlpha=Math.min(1,z.age/0.10);
+  cx.translate(DW/2,360);cx.scale(sc,sc);cx.translate(-DW/2,-360);
+  cx.fillStyle='rgba(24,24,28,.97)';rr(cx,px,py,pw,ph,16);cx.fill();
+  cx.lineWidth=4;cx.strokeStyle='#fdfdf8';rr(cx,px+2,py+2,pw-4,ph-4,14);cx.stroke();
+  cx.lineWidth=1.5;cx.strokeStyle='rgba(255,255,255,.22)';rr(cx,px+9,py+9,pw-18,ph-18,10);cx.stroke();
+  txt(cx,'ENEMY DETAIL · THIS STAGE',DW/2,py+34,15,'#ffd23f','center',4,'rgba(0,0,0,.6)',700);
+  // magnified real sprite on a shadow pool (left half)
+  cx.fillStyle='rgba(0,0,0,.45)';cx.beginPath();cx.ellipse(px+168,py+352,104,18,0,0,TAU);cx.fill();
+  ART.enemyBig(z.eid,px+168,py+232,2.9);
+  // name + trait chips (bestiary style)
+  txt(cx,e.n,px+306,py+78,23,'#fdfdf8','left',5,'rgba(0,0,0,.6)',700);
+  const traits=e.tr.length?e.tr:['traitless'];let tx=px+306;
+  traits.forEach(t=>{const tc=TRAIT_COL[t]||'#a89a78';setFont(cx,FONT(10.5,700));
+    const chw=cx.measureText(t.toUpperCase()).width+20;
+    cx.fillStyle=t==='traitless'?'#6a6a78':shade(tc,.85);rr(cx,tx,py+92,chw,23,12);cx.fill();
+    cx.lineWidth=2;cx.strokeStyle='rgba(255,255,255,.75)';rr(cx,tx,py+92,chw,23,12);cx.stroke();
+    txt(cx,t.toUpperCase(),tx+chw/2,py+104,10.5,'#fff','center',2.5,'rgba(0,0,0,.5)',700);
+    tx+=chw+8});
+  if(e.boss){cx.fillStyle='#e84030';rr(cx,tx,py+92,60,23,12);cx.fill();
+    cx.lineWidth=2;cx.strokeStyle='rgba(255,255,255,.75)';rr(cx,tx,py+92,60,23,12);cx.stroke();
+    txt(cx,'BOSS',tx+30,py+104,10.5,'#fff','center',2.5,'rgba(0,0,0,.5)',700)}
+  // stat rows: THIS STAGE magnification applied (what you'll actually face)
+  const rows=[['HP ×'+z.hp.toFixed(2),fmt(e.hp*z.hp)],['ATK ×'+z.atk.toFixed(2),fmt(e.atk*z.atk)],
+    ['Rate',e.rate+'s'],['Range',e.range],['Speed',e.speed],['KB',e.kb],
+    ['Money',e.money+'¢'],['Type',e.boss?'BOSS':'Normal']];
+  rows.forEach((r,i)=>{const rx=px+306+(i%2)*230,ry2=py+140+Math.floor(i/2)*40;
+    cx.fillStyle='rgba(255,255,255,.08)';rr(cx,rx-8,ry2-14,214,30,8);cx.fill();
+    txt(cx,r[0],rx,ry2,13,'#ffd23f','left',3,'rgba(0,0,0,.55)',700);
+    txt(cx,String(r[1]),rx+198,ry2,13,'#fdfdf8','right',3,'rgba(0,0,0,.55)',700)});
+  if(e.abil&&e.abil.length)txt(cx,'ABILITIES: '+e.abil.map(a=>abilStr(a)).join(', '),px+306,py+326,11.5,'#bfe0ff','left',3,'rgba(0,0,0,.6)',400);
+  if(e.shield)txt(cx,'AKU SHIELD: '+e.shield.hp+' (blocks until broken)',px+306,py+348,11.5,'#d8a8ff','left',3,'rgba(0,0,0,.6)',700);
+  if(e.revive)txt(cx,'ZOMBIE: revives '+e.revive.n+'× at '+e.revive.pct*100+'% HP (burrows back)',px+306,py+370,11.5,'#c0e8a8','left',3,'rgba(0,0,0,.6)',700);
+  if(e.burrow)txt(cx,'BURROWS underground on retreat',px+306,py+392,11.5,'#c0e8a8','left',3,'rgba(0,0,0,.6)',700);
+  txt(cx,'TAP ANYWHERE TO CLOSE',DW/2,py+ph-22,12.5,'#c8b890','center',3,'rgba(0,0,0,.6)',700);
+  cx.restore();
+  // closer: registered LAST so it wins the hit test over the tiles beneath it
+  BTN('ezclose',0,-VOY,DW,DH+2*VOY,()=>{G.enemyZoom=null;SFX.click()},{flat:true,modal:true})}
 function openStageModal(ch,idx){const c=CHMAP[ch];const st=genStage(ch,idx);SFX.click();
   const en=st.script.flatMap(w=>w.spawns.map(s=>s.e)).concat(st.boss?[st.boss]:[]);
   const crownsN=(c.kind==='story'&&SV.crowns[ch])?(SV.crowns[ch][String(idx)]||0):0;
@@ -1246,7 +1349,7 @@ function openStageModal(ch,idx){const c=CHMAP[ch];const st=genStage(ch,idx);SFX.
     'Reward: '+fmt(st.reward.xp)+' XP'+(st.reward.fruit?' + '+FRUIT_NAMES[st.reward.fruit]:'')+(st.reward.cf?' + '+st.reward.cf+' CF':''),
     ...(c.kind==='story'?['Crowns: '+crownsN+'/3 \u2014 win with base HP \u226580% for a PERFECT 3-crown clear!']:[]),
     ...(!treasureCard?['Treasure chance: ~'+Math.round(treasureChance(ch,idx%9,tCount(ch,idx%9))*100)+'% \u2014 farmable on repeat clears!']:[])],
-    [{n:'Cancel',cb:()=>{}},{n:'Attack!',col:'#ffd23f',cb:()=>tryStartBattle(ch,idx)}],(x,y,w,h)=>{
+    [{n:'Cancel',cb:()=>{G.enemyZoom=null}},{n:'Attack!',col:'#ffd23f',cb:()=>{G.enemyZoom=null;tryStartBattle(ch,idx)}}],(x,y,w,h)=>{
       /* ===== BATTLE ITEMS row (classic original items) — defined here, drawn LAST so it never hides under the treasure card ===== */
       const drawItems=()=>{
       const iy=y+h-46,iw=170,gap2=14,x2=x+(w-(iw*3+gap2*2))/2;
@@ -1269,9 +1372,9 @@ function openStageModal(ch,idx){const c=CHMAP[ch];const st=genStage(ch,idx);SFX.
         txt(cx,'BEST CROWNS',x+30,y+16,11.5,'#b06a10','left',3,'#fff',700);
         for(let i=0;i<3;i++)crownDraw(cx,x+150+i*46,y+16,13,i<crownsN?'#ffd23f':'#c8bca0',i<crownsN?'#8a5a10':'#8a7a5a',i>=crownsN);
         if(crownsN===3)txt(cx,'PERFECT!',x+w-30,y+16,13,'#e8951f','right',3,'#fff',700)}
-      // enemy lineup tiles with trait rings + boss ribbons
+      // enemy lineup tiles with trait rings + boss ribbons (r37: tap a tile → zoom detail card)
       const uni=[...new Set(en)];const shown=uni.slice(0,6);
-      txt(cx,'APPEARING ENEMIES',x+w/2,y+yOff+10,12.5,'#8a6a3a','center',3,'#fff',700);
+      txt(cx,'APPEARING ENEMIES — TAP ONE FOR DETAILS',x+w/2,y+yOff+10,12.5,'#8a6a3a','center',3,'#fff',700);
       const n=shown.length,tw=64,gap=16,x0=x+w/2-(n*tw+(n-1)*gap)/2;
       shown.forEach((eid,i2)=>{const e=ENEMAP[eid];const ex=x0+i2*(tw+gap),ey=y+yOff+24;
         cx.fillStyle='#fffdf5';rr(cx,ex,ey,tw,74,10);cx.fill();
@@ -1282,7 +1385,10 @@ function openStageModal(ch,idx){const c=CHMAP[ch];const st=genStage(ch,idx);SFX.
         while(cx.measureText(nl).width>tw-10&&nfs2>5.5){nfs2-=0.5;setFont(cx,FONT(nfs2,700))}
         txt(cx,nl,ex+tw/2,ey+56,nfs2,'#4a3a28','center',2,'#fff',700);
         if(e.tr.length)txt(cx,e.tr.map(t2=>t2.toUpperCase()).join('·'),ex+tw/2,ey+66,6.2,shade(tc,.6),'center',1.6,'#fff',700);
-        if(e.boss){cx.save();cx.translate(ex+tw/2,ey-1);cx.rotate(-0.08);cx.fillStyle='#e84030';rr(cx,-21,-8,42,15,4);cx.fill();txt(cx,'BOSS',0,-0.5,9,'#fff','center',2,'#7a1a10',700);cx.restore()}});
+        if(e.boss){cx.save();cx.translate(ex+tw/2,ey-1);cx.rotate(-0.08);cx.fillStyle='#e84030';rr(cx,-21,-8,42,15,4);cx.fill();txt(cx,'BOSS',0,-0.5,9,'#fff','center',2,'#7a1a10',700);cx.restore()}
+        // r37 magnifier: whole tile is a button (gold hover ring) → detail card
+        BTN('ez'+eid,ex,ey,tw,74,()=>{G.enemyZoom={eid,hp:st.mag.hp,atk:st.mag.atk};SFX.click()},
+          {flat:true,modal:true,draw:(cc,hov)=>{if(hov){cc.lineWidth=3;cc.strokeStyle='rgba(255,210,63,.95)';rr(cc,1,1,tw-2,72,9);cc.stroke()}}});});
       if(uni.length>6)txt(cx,'+'+(uni.length-6)+' more',x+w/2,y+yOff+112,11,'#a89878','center',2,'#fff',400);
       else if(!uni.length)txt(cx,'No enemies \u2014 destroy the base!',x+w/2,y+yOff+60,12,'#a89878','center',2,'#fff',400);
       // TREASURE SET CARD (story chapters with treasure): set name, tier pips + per-tier odds,
@@ -1314,14 +1420,14 @@ function openStageModal(ch,idx){const c=CHMAP[ch];const st=genStage(ch,idx);SFX.
           cx.save();cx.translate(cx2+ch2-92,cy2+29);cx.scale(pu,pu);
           cx.fillStyle='#e84030';rr(cx,-58,-13,116,26,13);cx.fill();
           txt(cx,'1 PIECE LEFT!',0,0.5,12,'#fff','center',2.5,'#7a1a10',700);cx.restore()}
-        else if(tcd.own===3)txt(cx,'SET COMPLETE \u2713',cx2+ch2-14,cy2+29,11,'#3a9a5a','right',2.5,'#fff',700)}drawItems();})}
+        else if(tcd.own===3)txt(cx,'SET COMPLETE \u2713',cx2+ch2-14,cy2+29,11,'#3a9a5a','right',2.5,'#fff',700)}drawItems();drawEnemyZoom()})}
 function openEventModal(ev){const s=ev.s;const uni=[...new Set(s.pool)];
   const wasCl=SV.eventsDone&&SV.eventsDone['clr:'+s.evtId];
   openModal(s.name,['Energy '+s.energy+'   ·   XP '+fmt(s.reward.xp),ev.desc,...(wasCl?['Already cleared today — replays pay 30% XP (fresh rewards tomorrow!)']:[])],
-    [{n:'Cancel',cb:()=>{}},{n:'BATTLE!',col:'#ffd94a',cb:()=>{G.pendingEvent=ev;tryStartBattle('event',-1)}}],
+    [{n:'Cancel',cb:()=>{G.enemyZoom=null}},{n:'BATTLE!',col:'#ffd94a',cb:()=>{G.enemyZoom=null;G.pendingEvent=ev;tryStartBattle('event',-1)}}],
     (x,y,w,h)=>{
-      // enemy lineup tiles (stage-modal style): trait rings + boss ribbons
-      txt(cx,'APPEARING ENEMIES',x+w/2,y+8,12.5,'#8a6a3a','center',3,'#fff',700);
+      // enemy lineup tiles (stage-modal style): trait rings + boss ribbons (r37 zoom magnifier)
+      txt(cx,'APPEARING ENEMIES — TAP ONE FOR DETAILS',x+w/2,y+8,12.5,'#8a6a3a','center',3,'#fff',700);
       const shown=uni.slice(0,6);const n=shown.length,tw=64,gap=16,x0=x+w/2-(n*tw+(n-1)*gap)/2;
       shown.forEach((eid,i2)=>{const e=ENEMAP[eid];const ex=x0+i2*(tw+gap),ey=y+22;
         cx.fillStyle='#fffdf5';rr(cx,ex,ey,tw,74,10);cx.fill();
@@ -1331,7 +1437,9 @@ function openEventModal(ev){const s=ev.s;const uni=[...new Set(s.pool)];
         while(cx.measureText(nl).width>tw-10&&nfs3>5.5){nfs3-=0.5;setFont(cx,FONT(nfs3,700))}
         txt(cx,nl,ex+tw/2,ey+56,nfs3,'#4a3a28','center',2,'#fff',700);
         if(e.tr.length)txt(cx,e.tr.map(t2=>t2.toUpperCase()).join('·'),ex+tw/2,ey+66,6.2,shade(tc,.6),'center',1.6,'#fff',700);
-        if(e.boss){cx.save();cx.translate(ex+tw/2,ey-1);cx.rotate(-0.08);cx.fillStyle='#e84030';rr(cx,-21,-8,42,15,4);cx.fill();txt(cx,'BOSS',0,-0.5,9,'#fff','center',2,'#7a1a10',700);cx.restore()}});
+        if(e.boss){cx.save();cx.translate(ex+tw/2,ey-1);cx.rotate(-0.08);cx.fillStyle='#e84030';rr(cx,-21,-8,42,15,4);cx.fill();txt(cx,'BOSS',0,-0.5,9,'#fff','center',2,'#7a1a10',700);cx.restore()}
+        BTN('evz'+eid,ex,ey,tw,74,()=>{G.enemyZoom={eid,hp:s.mag.hp,atk:s.mag.atk};SFX.click()},
+          {flat:true,modal:true,draw:(cc,hov)=>{if(hov){cc.lineWidth=3;cc.strokeStyle='rgba(255,210,63,.95)';rr(cc,1,1,tw-2,72,9);cc.stroke()}}});});
       if(uni.length>6)txt(cx,'+'+(uni.length-6)+' more',x+w/2,y+108,11,'#a89878','center',2,'#fff',400);
       else if(!uni.length)txt(cx,'No enemies \u2014 destroy the base!',x+w/2,y+56,12,'#a89878','center',2,'#fff',400);
       // stat strip: base HP + magnification
@@ -1342,7 +1450,7 @@ function openEventModal(ev){const s=ev.s;const uni=[...new Set(s.pool)];
       let rtxt='Reward: '+fmt(s.reward.xp)+' XP';let rcol='#b06a10';
       if(s.reward.fruit){rtxt+='  ·  Catfruit: '+FRUIT_NAMES[s.reward.fruit];rcol=shade(FRUIT_COL[s.reward.fruit],.7)}
       if(s.reward.ticket)rtxt+='  ·  Rare Ticket chance!';
-      txt(cx,rtxt,x+w/2,ry+15.5,12.5,rcol,'center',3,'#fff',700)})}
+      txt(cx,rtxt,x+w/2,ry+15.5,12.5,rcol,'center',3,'#fff',700);drawEnemyZoom()})}
 function tryStartBattle(ch,idx){const st=idx>=0?genStage(ch,idx):(G.pendingEvent?G.pendingEvent.s:null);if(!st)return;
   if(SV.energy<st.energy){ // blocking dialog (original behavior) — a toast was too easy to miss
     SFX.error();
@@ -2621,7 +2729,7 @@ function drawTrophies(dt){bgSky();drawTopBar('TROPHY STAND',true);
         cx.save();cx.shadowColor='rgba(232,64,48,'+(0.3+pu*0.4).toFixed(3)+')';cx.shadowBlur=8+pu*8;
         BTN('tcl'+t.id,x+colW-78,ry+6,66,30,()=>{
           const res=claimTrophy(t.id);
-          if(res)toast('TROPHY CLAIMED! '+t.n+' — +'+RW_TXT(t.rw),'#7fe8a0')},
+          if(res){confettiBurst(DW/2,320,64);toast('TROPHY CLAIMED! '+t.n+' — +'+RW_TXT(t.rw),'#7fe8a0')}},
           {col:'#e84030',outline:'#8a1a10',label:'CLAIM',fs:12,tcol:'#fff'});
         cx.restore()}
       else if(cl)txt(cx,'DONE',x+colW-45,ry+22,10.5,'#3a9a5a','center',2,'#fff',700);
@@ -2952,15 +3060,18 @@ function shrineStart(free){
 function drawSettings(dt){drawTopBar('SETTINGS',true);
   parchBody();
   creamPanel(DW/2-400,90,800,540,'#c8913a');
-  BTN('sbgm',280,130,340,60,()=>{SV.settings.bgm=!SV.settings.bgm;persist();AudioSetBgm(SV.settings.bgm)},{col:SV.settings.bgm?'#7fe8a0':'#e8d8b0',outline:'#8a5a20',label:'BGM: '+(SV.settings.bgm?'ON':'OFF'),fs:18});
-  BTN('ssfx',660,130,340,60,()=>{SV.settings.sfx=!SV.settings.sfx;persist()},{col:SV.settings.sfx?'#7fe8a0':'#e8d8b0',outline:'#8a5a20',label:'SFX: '+(SV.settings.sfx?'ON':'OFF'),fs:18});
+  // r37: section ribbon headers divide the board into readable bands
+  sectionHeader('♪ AUDIO',108);
+  glyph(cx,'gear',DW/2-118,108,9,'#b06a10','#ffd23f');
+  BTN('sbgm',280,126,340,60,()=>{SV.settings.bgm=!SV.settings.bgm;persist();AudioSetBgm(SV.settings.bgm)},{col:SV.settings.bgm?'#7fe8a0':'#e8d8b0',outline:'#8a5a20',label:'BGM: '+(SV.settings.bgm?'ON':'OFF'),fs:18});
+  BTN('ssfx',660,126,340,60,()=>{SV.settings.sfx=!SV.settings.sfx;persist()},{col:SV.settings.sfx?'#7fe8a0':'#e8d8b0',outline:'#8a5a20',label:'SFX: '+(SV.settings.sfx?'ON':'OFF'),fs:18});
   // ---- commander name (posted to the World Dojo Ranking) — left half ----
-  cx.fillStyle='#fff8e8';rr(cx,280,200,350,46,14);cx.fill();
-  cx.lineWidth=2.5;cx.strokeStyle='#a8845a';rr(cx,281.5,201.5,347,43,13);cx.stroke();
-  glyph(cx,'medal',308,223,10,'#b06a10','#ffd23f');
-  txt(cx,'COMMANDER NAME',328,213,10,'#a89878','left',2,'#fff',700);
-  txt(cx,(SV.cmdName||'CAT COMMANDER').slice(0,16),328,234,12.5,'#5a3b16','left',2.5,'#fff',700);
-  BTN('sname',552,206,72,34,()=>{G.nameBuf=SV.cmdName||'';
+  sectionHeader('IDENTITY',200);
+  creamPanel(280,212,350,46);
+  glyph(cx,'medal',308,235,10,'#b06a10','#ffd23f');
+  txt(cx,'COMMANDER NAME',328,225,10,'#a89878','left',2,'#fff',700);
+  txt(cx,(SV.cmdName||'CAT COMMANDER').slice(0,16),328,246,12.5,'#5a3b16','left',2.5,'#fff',700);
+  BTN('sname',552,218,72,34,()=>{G.nameBuf=SV.cmdName||'';
     openModal('COMMANDER NAME',['1–18 characters — signs your Dojo scores.'],[
       {n:'SAVE',col:'#ffd23f',cb:()=>{nameBlur();
         const v=String(G.nameBuf||'').replace(/[\u0000-\u001f<>]/g,'').trim().slice(0,18);
@@ -2975,12 +3086,11 @@ function drawSettings(dt){drawTopBar('SETTINGS',true);
         if(!G.nameBuf)txt(cx,'(tap and type)',bx+14,by+bh/2,13,'#6a7488','left');
         G.hits.push({id:'namefield',x:bx,y:by,w:bw,h:bh,cb:()=>{nameFocus(bx,by,bw,bh)},hidden:false,modal:true})})},{col:'#7fd0ff',outline:'#2a5a7a',label:'EDIT',fs:12});
   // ---- shrine keeper name (the cat who takes your coins) — right half ----
-  cx.fillStyle='#fff8e8';rr(cx,650,200,350,46,14);cx.fill();
-  cx.lineWidth=2.5;cx.strokeStyle='#a8845a';rr(cx,651.5,201.5,347,43,13);cx.stroke();
-  glyph(cx,'torii',678,223,10,'#b06a10','#ffd23f');
-  txt(cx,'SHRINE KEEPER',698,213,10,'#a89878','left',2,'#fff',700);
-  txt(cx,(SV.shrine.keeperName||'KEEPER').slice(0,16),698,234,12.5,'#5a3b16','left',2.5,'#fff',700);
-  BTN('skname',922,206,72,34,()=>{G.nameBuf=SV.shrine.keeperName||'';
+  creamPanel(650,212,350,46);
+  glyph(cx,'torii',678,235,10,'#b06a10','#ffd23f');
+  txt(cx,'SHRINE KEEPER',698,225,10,'#a89878','left',2,'#fff',700);
+  txt(cx,(SV.shrine.keeperName||'KEEPER').slice(0,16),698,246,12.5,'#5a3b16','left',2.5,'#fff',700);
+  BTN('skname',922,218,72,34,()=>{G.nameBuf=SV.shrine.keeperName||'';
     openModal('KEEPER NAME',['1–12 characters — the shrine cat who takes your coins.'],[
       {n:'SAVE',col:'#ffd23f',cb:()=>{nameBlur();
         const v=String(G.nameBuf||'').replace(/[\u0000-\u001f<>]/g,'').trim().slice(0,12);
@@ -2995,7 +3105,8 @@ function drawSettings(dt){drawTopBar('SETTINGS',true);
         if(!G.nameBuf)txt(cx,'(tap and type)',bx+14,by+bh/2,13,'#6a7488','left');
         G.hits.push({id:'knamefield',x:bx,y:by,w:bw,h:bh,cb:()=>{nameFocus(bx,by,bw,bh)},hidden:false,modal:true})})},{col:'#ffb95a',outline:'#8a4a10',label:'EDIT',fs:12});
   // ---- export: proper panel — download a file OR copy the clipboard code ----
-  BTN('sexp',280,290,340,60,()=>{openModal('EXPORT SAVE',['Back up your progress: download a save file,','or copy a restore code to the clipboard.'],[
+  sectionHeader('SAVE DATA',271);
+  BTN('sexp',280,284,340,60,()=>{openModal('EXPORT SAVE',['Back up your progress: download a save file,','or copy a restore code to the clipboard.'],[
     {n:'DOWNLOAD FILE',col:'#7fd0ff',cb:()=>{downloadSaveFile()}},
     {n:'COPY CODE',cb:()=>{try{navigator.clipboard.writeText(exportSave()).then(()=>toast('Save code copied!'),()=>toast('Copy blocked — use Download file','#ff7a7a'))}catch(e){toast('Copy blocked — use Download file','#ff7a7a')}}},
     {n:'CLOSE',cb:()=>{}}],(x,y,w,h)=>{
@@ -3005,7 +3116,7 @@ function drawSettings(dt){drawTopBar('SETTINGS',true);
       cx.fillStyle='#8a92a8';const d=new Date();const ds=d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
       cx.fillText('file: battle-cats-save-'+ds+'.txt  ·  pasted codes are accepted too',x+34,y+72)})},{col:'#ffd94a',outline:'#8a5a20',label:'EXPORT SAVE',fs:17});
   // ---- import: file picker + real in-canvas paste entry (hidden DOM textarea overlay) ----
-  BTN('simp',660,290,340,60,()=>{
+  BTN('simp',660,284,340,60,()=>{
     saveSetPaste('');
     const openImp=()=>{openModal('IMPORT SAVE',['Tap the box, then type or press Ctrl+V — or pick a save file.'],[
       {n:'CLEAR',col:'#e8d8b0',cb:()=>{saveSetPaste('');openImp()}},
@@ -3026,35 +3137,40 @@ function drawSettings(dt){drawTopBar('SETTINGS',true);
         G.hits.push({id:'imparea',x:bx,y:by,w:bw,h:bh,cb:()=>{saveFocusPasteArea(bx,by,bw,bh)},hidden:false,modal:true})})};
     openImp()},{col:'#ffd94a',outline:'#8a5a20',label:'IMPORT SAVE',fs:17});
   // ---- reset: double confirm (two modals) ----
-  BTN('sreset',280,370,340,60,()=>{openModal('RESET GAME?',['This deletes ALL progress permanently!'],[
+  BTN('sreset',280,356,340,60,()=>{openModal('RESET GAME?',['This deletes ALL progress permanently!'],[
     {n:'DELETE ALL',col:'#ff5a5a',cb:()=>{openModal('FINAL CONFIRM',['Every cat, XP, treasure and clear will be','wiped from this browser. There is no undo.'],[
       {n:'YES — WIPE SAVE',col:'#ff5a5a',cb:()=>{localStorage.removeItem(SAVE_KEY);localStorage.removeItem(SAVE_KEY_LEGACY);localStorage.removeItem(SAVE_KEY_BAK);loadSave();toast('Game reset');G.screen='title';G.screenPrev=[]}},
       {n:'KEEP MY SAVE',cb:()=>{}}])}},
     {n:'CANCEL',cb:()=>{}}])},{col:'#ff5a5a',outline:'#8a1a1a',label:'RESET SAVE',fs:16});
   // ---- dev-only DEMO BOOST (not part of normal progression UI) ----
   if(localStorage.getItem('bc_dev_boost')==='1'){ // enable: localStorage.setItem('bc_dev_boost','1') then reload
-    BTN('splus',660,370,340,60,()=>{SV.cf+=1500;SV.tickets.rare+=3;SV.xp+=10000;persist();toast('Demo boost: +1500 CF, +3 tickets, +10k XP','#7fe8a0')},{col:'#7a9a4a',outline:'#3a5a1a',label:'DEMO BOOST (DEV)',fs:15,tcol:'#fff'})}
+    BTN('splus',660,356,340,60,()=>{SV.cf+=1500;SV.tickets.rare+=3;SV.xp+=10000;persist();toast('Demo boost: +1500 CF, +3 tickets, +10k XP','#7fe8a0')},{col:'#7a9a4a',outline:'#3a5a1a',label:'DEMO BOOST (DEV)',fs:15,tcol:'#fff'})}
   else{ // harmless credits panel in its place
-    cx.fillStyle='#fff8e8';rr(cx,660,370,340,60,14);cx.fill();cx.lineWidth=2.5;cx.strokeStyle='#b08a50';rr(cx,661.5,371.5,337,57,13);cx.stroke();
-    txt(cx,'CREDITS',830,391,13.5,'#b06a10','center',3,'#fff',700);
-    txt(cx,'Fan tribute · original PONOS art & music · auto-saves',830,412,10.5,'#8a7a5a','center')}
+    creamPanel(660,356,340,60);
+    txt(cx,'CREDITS',830,377,13.5,'#b06a10','center',3,'#fff',700);
+    txt(cx,'Fan tribute · original PONOS art & music · auto-saves',830,398,10.5,'#8a7a5a','center')}
   // ---- storage info line + storage-failure banner (from SV.saveStats) ----
   try{const st=SV.saveStats||{writes:0,fails:0,lastWrite:0};
     const kb=(JSON.stringify(SV).length/1024).toFixed(1);
     const lw=st.lastWrite?new Date(st.lastWrite).toLocaleTimeString():'—';
     if(typeof SAVE_UNRELIABLE!=='undefined'&&SAVE_UNRELIABLE){
-      cx.fillStyle='rgba(255,90,90,.18)';rr(cx,260,458,760,30,10);cx.fill();
-      cx.lineWidth=2;cx.strokeStyle='#ff5a5a';rr(cx,260,458,760,30,10);cx.stroke();
-      txt(cx,'⚠ STORAGE WRITE FAILURES ('+st.fails+') — progress may not be saved. Check browser storage settings.',DW/2,473,12,'#ff7a7a','center',3,'#fff',700)}
-    else txt(cx,'SAVE: v'+SV.ver+' · '+kb+' KB · last write '+lw+' · '+st.writes+' writes · '+st.fails+' failed · auto-saves to this browser',DW/2,473,12.5,'#8a7a5a','center',3,'#fff',400);
+      cx.fillStyle='rgba(255,90,90,.18)';rr(cx,260,448,760,30,10);cx.fill();
+      cx.lineWidth=2;cx.strokeStyle='#ff5a5a';rr(cx,260,448,760,30,10);cx.stroke();
+      txt(cx,'⚠ STORAGE WRITE FAILURES ('+st.fails+') — progress may not be saved. Check browser storage settings.',DW/2,463,12,'#ff7a7a','center',3,'#fff',700)}
+    else txt(cx,'SAVE: v'+SV.ver+' · '+kb+' KB · last write '+lw+' · '+st.writes+' writes · '+st.fails+' failed · auto-saves to this browser',DW/2,463,12.5,'#8a7a5a','center',3,'#fff',400);
     // Cat Food balance with the official can, right of the storage line (Defect 2)
-    drawCFCan(cx,952,473,8);
-    txt(cx,fmt(SV.cf),970,473,12.5,'#8a5a10','left',3,'#fff',700);
+    drawCFCan(cx,952,463,8);
+    txt(cx,fmt(SV.cf),970,463,12.5,'#8a5a10','left',3,'#fff',700);
   }catch(e){}
-  txt(cx,'THE BATTLE CATS',DW/2,508,20,'#b06a10','center',4,'#fff',700);
-  txt(cx,'Story: EoC 1-3 · ItF 1-3 · CotC 1-3 · SoL · Uncanny Legends · Aku Realms · Dojo · Events',DW/2,542,14,'#6a5a3a','center');
-  txt(cx,'Units: '+CATS.length+' cats · Enemies: '+ENEMIES.length+' · Treasures: 27 sets · Cannons: 7 types',DW/2,568,14,'#6a5a3a','center');
-  txt(cx,'The Battle Cats © PONOS Corp.',DW/2,640,12,'#a89878','center');
+  // r37: info band — game identity + content summary inside the panel
+  cx.fillStyle='rgba(232,149,31,.10)';rr(cx,280,486,720,120,12);cx.fill();
+  cx.lineWidth=2;cx.strokeStyle='rgba(232,149,31,.45)';rr(cx,280,486,720,120,12);cx.stroke();
+  txt(cx,'THE BATTLE CATS',DW/2,514,20,'#b06a10','center',4,'#fff',700);
+  txt(cx,'Story: EoC 1-3 · ItF 1-3 · CotC 1-3 · SoL · Uncanny Legends · Aku Realms · Dojo · Events',DW/2,544,14,'#6a5a3a','center');
+  txt(cx,'Units: '+CATS.length+' cats · Enemies: '+ENEMIES.length+' · Treasures: 27 sets · Cannons: 7 types',DW/2,570,14,'#6a5a3a','center');
+  glyph(cx,'cat',330,570,14,'#b06a10','#ffd23f');
+  glyph(cx,'doge',950,570,14,'#b06a10','#ffd23f');
+  txt(cx,'The Battle Cats © PONOS Corp.',DW/2,596,12,'#a89878','center');
   brownBottomBar()}
 
 /* ============================== SCREEN: STORE ============================== */

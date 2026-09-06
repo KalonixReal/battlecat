@@ -278,7 +278,7 @@ function missionProg(id){return Math.min(SV.missions[id]||0,missionGoal(MISSIONS
 function missionDone(id){return (SV.missions[id]||0)>=missionGoal(MISSIONS.find(m=>m.id===id))}
 function missionClaimed(id){return !!SV.missions.claimed[id]}
 function claimMission(id){const m=MISSIONS.find(m=>m.id===id);if(!missionDone(id)||missionClaimed(id))return false;
-  const cf=missionCF(m);SV.missions.claimed[id]=true;SV.cf+=cf;persist();toast('MISSION COMPLETE! +'+cf+' CF','#7fe8a0');SFX.up();return true}
+  const cf=missionCF(m);SV.missions.claimed[id]=true;SV.cf+=cf;persist();toast('MISSION COMPLETE! +'+cf+' CF','#7fe8a0');confettiBurst(DW/2,320,54);SFX.up();return true}
 function energyMax(){return 90+Math.floor(SV.rank/4)*5+Math.floor(treasureMult('energy')*10-10)}
 function exportSave(){return btoa(unescape(encodeURIComponent(JSON.stringify(SV))))} // clipboard code (legacy-compat base64)
 function importSave(str){ // accepts: wrapped v2 file JSON ({app,v,data}), raw v1/v2 JSON, legacy base64 code.
