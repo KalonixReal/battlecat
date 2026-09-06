@@ -233,13 +233,14 @@ function modalDraw(){const m=G.modal;if(!m)return;
    the official MenuTitle logo, and the real Play button texture. Background swaps to
    ItF / CotC art as those campaigns are cleared (like the original). */
 const UIIMG={imgs:{}};
+const UI_V='?v=50'; // r32: cache-bust for the x2 re-encodes
 function uiImg(name){
   let im=UIIMG.imgs[name];
   if(im===undefined){
     im=new Image();
     im.onload=()=>{UIIMG.imgs[name]=im};
     im.onerror=()=>{UIIMG.imgs[name]=null};
-    im.src='assets/ui/'+name;
+    im.src='assets/ui/'+name+UI_V;
     UIIMG.imgs[name]=im;
   }
   return (im&&im.complete&&im.naturalWidth>0)?im:null;

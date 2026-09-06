@@ -58,7 +58,7 @@ function startBattle(st){
   B.load={need,ready:false,t:0,p:0,intro:0,started:false,failSet,themes,valve:12};
   // r32: battle loading screen owns the battle-side assets — start the deferred pool
   // (fight-critical urls first) + decode the battle soundtrack now
-  try{const bg=stageBgPic(st);if(bg)priUrls.push('assets/maps/'+bg+'.'+((typeof mapFileExt==='function')?mapFileExt(bg):'webp'));
+  try{const bg=stageBgPic(st);if(bg)priUrls.push('assets/maps/'+bg+'.'+((typeof mapFileExt==='function')?mapFileExt(bg):'webp')+'?v=50');
     if(typeof castleUrlFor==='function')priUrls.push(castleUrlFor(st));
     (typeof window.__MANIFEST!=='undefined'&&window.__MANIFEST.units?Object.keys(window.__MANIFEST.units):[]).forEach(k=>{
       if(k.split(':')[0]!=='enemy')return;const eid=k.split(':')[1];
@@ -564,6 +564,7 @@ function releaseBattleMemory(){
     if(typeof SPRIT!=='undefined'&&SPRIT.releaseEnemies){const n=SPRIT.releaseEnemies();
       if(typeof console!=='undefined')console.log('%c[MEM] battle cleared — '+n+' enemy strips + bgs + castles + battle audio released','color:#9fe89a')}
     if(typeof AudioReleaseBattle==='function')AudioReleaseBattle();
+    if(typeof battlePoolStop==='function')battlePoolStop(); // deferred pool stops refilling battle memory
     G.flingCam=null;
   }catch(e){}
 }
@@ -581,7 +582,7 @@ function bgImg(name,idx){
      ~4x smaller); the few photographic bgs that didn't hit the quality bar stay
      .jpg — preload.json's mapExt table lists those exceptions. */
   const ext=(typeof mapFileExt==='function')?mapFileExt(name):'webp';
-  return lazyImg(_bgImgs,name,'assets/maps/'+name+'.'+ext);
+  const MAP_V='?v=50';return lazyImg(_bgImgs,name,'assets/maps/'+name+'.'+ext+MAP_V);
 }
 /* battle asset registry: which map/castle images a given stage needs (the battle
    loading screen gates on exactly these — nothing pops in after the gate opens) */

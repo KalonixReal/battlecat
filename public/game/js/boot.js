@@ -77,12 +77,12 @@ function spriteUrlsFromManifest(sp,filter,withIcons){
 function preloadRun(){
   PRELOAD.phase='first-paint';
   // 1) PHASE 1: the files the loading screen + title + home need to look right
-  uiImgCache('title_logo.png','assets/ui/title_logo.webp');
-  uiImgCache('title_bg.png','assets/ui/title_bg.webp');
-  uiImgCache('title_bg_itf.png','assets/ui/title_bg_itf.webp');   // campaign-cleared title variants
-  uiImgCache('title_bg_cotc.png','assets/ui/title_bg_cotc.webp');
-  uiImgCache('play_button.png','assets/ui/play_button.png');
-  uiImgCache('doors_home.png','assets/ui/doors_home.webp');
+  uiImgCache('title_logo.png','assets/ui/title_logo.webp?v=50');
+  uiImgCache('title_bg.png','assets/ui/title_bg.webp?v=50');
+  uiImgCache('title_bg_itf.png','assets/ui/title_bg_itf.webp?v=50');   // campaign-cleared title variants
+  uiImgCache('title_bg_cotc.png','assets/ui/title_bg_cotc.webp?v=50');
+  uiImgCache('play_button.png','assets/ui/play_button.png?v=50');
+  uiImgCache('doors_home.png','assets/ui/doors_home.webp?v=50');
   preloadImg('assets/sprites/catbase_idle.webp');
   // catbase.json feeds the walking-cat animation metadata
   fetch('assets/sprites/catbase.json',{cache:'no-cache'}).then(r=>r.json()).then(j=>{cbMeta=j;try{_cbMeta=j}catch(e){}}).catch(()=>{});
@@ -125,7 +125,7 @@ function startBackgroundPool(sp,lists){
   spriteUrlsFromManifest(sp,(k)=>k.split(':')[0]!=='enemy',true).forEach(u=>add(q2,u)); // strips+icons for menu side
   add(q2,'assets/sprites/ports.png');
   // BUCKET 3 — world art for the menu screens: ui images + the real Earth map
-  (lists.ui||[]).forEach(n=>add(q3,'assets/ui/'+n));
+  (lists.ui||[]).forEach(n=>add(q3,'assets/ui/'+n+'?v=50'));
   add(q3,'assets/maps/eoc_map.png');
   [...q1,...q2,...q3].forEach(poolAdd);
   // ---- BATTLE POOL (deferred): enemy strips + battle backgrounds + castles.
@@ -153,8 +153,30 @@ function battlePoolStart(priorityUrls){
     const pri=(priorityUrls||[]);
     P.urls.sort((a,b)=>{const pa=pri.indexOf(a),pb=pri.indexOf(b);
       return (pa<0?1e9:pa)-(pb<0?1e9:pb)});
-  }
+    // enqueue everything (fight-critical first). Items already decoded/adopted are
+    // skipped by adopt(); duplicates in q are harmless (browser cache).
+    const seen=new Set();
+    _pool.q.forEach(u=>seen.add(u));
+    P.urls.forEach(u=>{if(!seen.has(u)){_pool.q.push(u);seen.add(u)}});
+  }else if(priorityUrls&&priorityUrls.length){
+    // already running: float the fight-critical urls to the FRONT of what's left
+    const pri=new Set(priorityUrls);
+    const hot=_pool.q.filter(u=>pri.has(u));
+    if(hot.length){_pool.q=_pool.q.filter(u=>!pri.has(u));_pool.q=hot.concat(_pool.q)}}
   poolPump();
+}
+/* r32: releaseBattleMemory calls this — the deferred battle pool must stop
+   refilling battle memory once we are out of the battle. Pending battle urls are
+   dropped from the queue (≤14 in-flight requests finish + adopt, bounded); the
+   next battle re-enqueues with its own fight-critical priorities. */
+function battlePoolStop(){
+  try{
+    const P=window.__BATTLE_POOL;
+    if(!P)return;
+    const set=new Set(P.urls);
+    _pool.q=_pool.q.filter(u=>!set.has(u));
+    P.started=false;
+  }catch(e){}
 }
 /* ui images go through ui.js's cache so drawTitle/drawHome use the SAME objects */
 function uiImgCache(name,url){

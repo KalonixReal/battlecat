@@ -9,18 +9,20 @@ Targets (measured at 2560x1440, SC=2):
   - castles (256x512 vs 416px draw) + catbase (620px vs ~300px draw): already >=
     draw size — SKIPPED.
 
-Alpha-safe path (strips/icons): RGB goes through ESPCN(+IBP+unsharp), alpha is
-bicubic-upscaled then re-tightened (alpha is coverage — blurring it would grow
-fringes). Wide strips (>16000px after x2) are split BETWEEN frames into tiles —
-the v2 renderer already understands manifest img:[...] + tileW:[...] tiling.
+Memory-safe on 2-core/4GB: ESPCN runs in horizontal tiles (replicate-padded),
+wide sheets are cut at FRAME boundaries BEFORE upscaling (each tile <=16000px
+after x2 — the v2 renderer understands manifest img:[...] + tileW:[...]).
 
-Manifest surgery: sprites.json frames [sx,sy,sw,sh,ax,ay] * 2, tileW * 2,
-refH * 2 (dest sizes in the engine are unchanged — only the source doubles).
+Alpha path: RGB through ESPCN(+IBP+unsharp); alpha bicubic + re-tighten
+(coverage alpha must not grow fringes).
+
+Manifest surgery: sprites.json frames [sx,sy,sw,sh,ax,ay]*2, tileW*2, refH*2
+(engine dest sizes unchanged — only the source resolution doubles).
 """
-import cv2, numpy as np, json, os, sys, glob, io
+import cv2, numpy as np, json, os, sys, glob
 from PIL import Image
 
-ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'public', 'game'))
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'public', 'game'))
 SPRITES = os.path.join(ROOT, 'assets', 'sprites')
 MAPS = os.path.join(ROOT, 'assets', 'maps')
 UI = os.path.join(ROOT, 'assets', 'ui')
@@ -32,15 +34,31 @@ _SR.readModel(MODEL)
 _SR.setModel('espcn', 2)
 
 WEBP_MAX = 16383
-TILE_TARGET = 16000
+TILE_TARGET = 15800   # x2-space cap per output tile
+ESP_TILE = 1024       # ESPCN inference tile width (source px)
+ESP_PAD = 12
+IBP_ITERS = 2
 
 
-def espcn(bgr):
-    out = _SR.upsample(bgr)
-    return out
+def espcn_tiled(bgr):
+    h, w = bgr.shape[:2]
+    if w <= ESP_TILE:
+        return _SR.upsample(bgr)
+    outs = []
+    x = 0
+    while x < w:
+        x2 = min(x + ESP_TILE, w)
+        x0 = max(0, x - ESP_PAD)
+        x1 = min(w, x2 + ESP_PAD)
+        up = _SR.upsample(bgr[:, x0:x1])
+        c0 = (x - x0) * 2
+        c1 = c0 + (x2 - x) * 2
+        outs.append(up[:, c0:c1])
+        x = x2
+    return np.hstack(outs)
 
 
-def ibp(up, orig_bgr, iters=4):
+def ibp(up, orig_bgr, iters=IBP_ITERS):
     """iterative back-projection: refine `up` so downscaling it reproduces `orig`."""
     cur = up.astype(np.float32)
     for _ in range(iters):
@@ -55,19 +73,16 @@ def unsharp(img, amount=0.28, radius=1.2):
     return cv2.addWeighted(img, 1 + amount, blur, -amount, 0)
 
 
-def upscale_rgb(bgr, ibp_iters=4):
-    up = espcn(bgr)
-    if ibp_iters:
-        up = ibp(up, bgr, ibp_iters)
-    up = unsharp(up)
-    return up
+def upscale_rgb(bgr):
+    up = espcn_tiled(bgr)
+    up = ibp(up, bgr)
+    return unsharp(up)
 
 
 def upscale_alpha(a):
     """coverage alpha: bicubic + keep the original hard 0/255 core (no fringe growth)"""
     up = cv2.resize(a, (a.shape[1] * 2, a.shape[0] * 2), interpolation=cv2.INTER_CUBIC)
     up = np.clip(up, 0, 255).astype(np.uint8)
-    # re-tighten: threshold the quarter-opacity mush toward the nearest strong value
     core = cv2.resize(a, (a.shape[1] * 2, a.shape[0] * 2), interpolation=cv2.INTER_NEAREST)
     strong = core >= 200
     up[strong & (up < 200)] = np.maximum(up, 128)[strong & (up < 200)]
@@ -79,7 +94,7 @@ def load_rgba(path):
     im.load()
     if im.mode != 'RGBA':
         im = im.convert('RGBA')
-    rgba = np.array(im)  # H,W,4 RGB order
+    rgba = np.array(im)
     bgr = cv2.cvtColor(rgba[:, :, :3], cv2.COLOR_RGB2BGR)
     return bgr, rgba[:, :, 3].copy()
 
@@ -89,36 +104,51 @@ def load_rgb(path):
     return cv2.cvtColor(np.array(im), cv2.COLOR_RGB2BGR)
 
 
-def save_webp(arr_bgr_or_rgba, path, quality=92, lossless=False):
-    if arr_bgr_or_rgba.ndim == 3 and arr_bgr_or_rgba.shape[2] == 4:
-        im = Image.fromarray(cv2.cvtColor(arr_bgr_or_rgba, cv2.COLOR_BGRA2RGBA))
+def save_webp(arr, path, quality=92):
+    if arr.ndim == 3 and arr.shape[2] == 4:
+        im = Image.fromarray(cv2.cvtColor(arr, cv2.COLOR_BGRA2RGBA))
     else:
-        im = Image.fromarray(cv2.cvtColor(arr_bgr_or_rgba, cv2.COLOR_BGR2RGB))
-    im.save(path, 'WEBP', quality=quality, method=6, lossless=lossless)
+        im = Image.fromarray(cv2.cvtColor(arr, cv2.COLOR_BGR2RGB))
+    im.save(path, 'WEBP', quality=quality, method=4)
+
+
+def upscale_rgba_array(bgr, a):
+    rgb2 = upscale_rgb(bgr)
+    a2 = upscale_alpha(a)
+    return cv2.merge([rgb2[:, :, 0], rgb2[:, :, 1], rgb2[:, :, 2], a2])
 
 
 def upscale_rgba_file(path, out_path=None, quality=92):
     bgr, a = load_rgba(path)
-    rgb2 = upscale_rgb(bgr)
-    a2 = upscale_alpha(a)
-    out = cv2.merge([rgb2[:, :, 0], rgb2[:, :, 1], rgb2[:, :, 2], a2])
-    save_webp(out, out_path or path, quality=quality)
+    out = upscale_rgba_array(bgr, a)
+    save_webp(out, out_path or path, quality)
     return out.shape[1], out.shape[0]
 
 
 def upscale_rgb_file(path, out_path=None, quality=87):
     bgr = load_rgb(path)
     out = upscale_rgb(bgr)
-    save_webp(out, out_path or path, quality=quality)
+    save_webp(out, out_path or path, quality)
     return out.shape[1], out.shape[0]
 
 
+def frame_cuts(frames, sheet_w, target=TILE_TARGET):
+    """cut positions (x2 space) at frame boundaries so every tile <= target"""
+    bounds = sorted(set([fr[0] * 2 for fr in frames] + [fr[0] * 2 + fr[2] * 2 for fr in frames] + [sheet_w * 2]))
+    cuts = [0]
+    for b in bounds:
+        if b - cuts[-1] > target:
+            cand = [x for x in bounds if cuts[-1] < x <= cuts[-1] + target]
+            cuts.append(cand[-1] if cand else b)
+    if cuts[-1] != sheet_w * 2:
+        cuts.append(sheet_w * 2)
+    return cuts
+
+
 def process_strips(dry=False):
-    """All unit strips x2 with tiling for wide sheets. Returns manifest updates."""
     manifest = json.load(open(os.path.join(SPRITES, 'sprites.json')))
     units = manifest.get('units', {})
-    # 1) collect every referenced strip file
-    files = {}  # filename -> entry list
+    files = {}
     for key, u in units.items():
         for f, fm in u['forms'].items():
             for anim in ('walk', 'atk', 'idle'):
@@ -128,68 +158,8 @@ def process_strips(dry=False):
                 imgs = en['img'] if isinstance(en['img'], list) else [en['img']]
                 for fn in imgs:
                     files.setdefault(fn, []).append((key, f, anim))
-    # 2) process each file once
-    results = {}  # filename -> {'img': [...], 'tileW':[...]}
-    for fn in sorted(files.keys()):
-        path = os.path.join(SPRITES, fn)
-        if not os.path.exists(path):
-            print('MISSING', fn)
-            continue
-        bgr, a = load_rgba(path)
-        h, w = bgr.shape[:2]
-        if w * 2 <= WEBP_MAX:
-            if dry:
-                results[fn] = {'img': [fn], 'tileW': [w * 2]}
-                continue
-            nw, nh = upscale_rgba_file(path)
-            results[fn] = {'img': [fn], 'tileW': [nw]}
-        else:
-            # wide sheet: split between frames after upscale → tiles <= TILE_TARGET
-            owners = files[fn]
-            frames = None
-            for (key, f, anim) in owners:
-                en = units[key]['forms'][f][anim]
-                imgs2 = en['img'] if isinstance(en['img'], list) else [en['img']]
-                if fn in imgs2:
-                    frames = en['frames']
-                    break
-            if frames is None:
-                print('no frames for', fn, '— skipping tile split (single img)')
-                if dry:
-                    results[fn] = {'img': [fn], 'tileW': [w * 2]}
-                    continue
-                nw, nh = upscale_rgba_file(path)
-                results[fn] = {'img': [fn], 'tileW': [nw]}
-                continue
-            # upscale whole sheet into memory
-            if not dry:
-                rgb2 = upscale_rgb(bgr)
-                a2 = upscale_alpha(a)
-            # choose split x positions (in x2 space) at frame boundaries
-            bounds = sorted(set([fr[0] * 2 for fr in frames] + [fr[0] * 2 + fr[2] * 2 for fr in frames]))
-            cuts = [0]
-            for b in bounds:
-                if b - cuts[-1] > TILE_TARGET:
-                    # walk back to the largest frame boundary <= b that fits
-                    cand = [x for x in bounds if cuts[-1] < x <= cuts[-1] + TILE_TARGET]
-                    cuts.append(cand[-1] if cand else b)
-            if cuts[-1] != w * 2:
-                cuts.append(w * 2)
-            tiles = []
-            base = os.path.splitext(fn)[0]
-            for i in range(len(cuts) - 1):
-                x0, x1 = cuts[i], cuts[i + 1]
-                if x1 - x0 < 2:
-                    continue
-                tfn = fn if i == 0 else base + '_t%d.webp' % i
-                if not dry:
-                    tile = cv2.merge([
-                        rgb2[:, x0:x1, 0], rgb2[:, x0:x1, 1], rgb2[:, x0:x1, 2], a2[:, x0:x1]])
-                    save_webp(tile, os.path.join(SPRITES, tfn), quality=92)
-                tiles.append((tfn, x1 - x0))
-            results[fn] = {'img': [t[0] for t in tiles], 'tileW': [t[1] for t in tiles]}
-        print(('DRY ' if dry else '') + 'strip', fn, '→', results[fn]['img'], results[fn]['tileW'])
-    # 3) rewrite manifest — merge per anim entry (handles existing multi-tile entries)
+    results = _supervise(sorted(files.keys()), 'strip', dry)
+    # manifest merge — per anim entry (handles pre-existing multi-tile entries)
     for key, u in units.items():
         for f, fm in u['forms'].items():
             for anim in ('walk', 'atk', 'idle'):
@@ -208,64 +178,145 @@ def process_strips(dry=False):
                 if ok and newimgs:
                     en['img'] = newimgs if len(newimgs) > 1 else newimgs[0]
                     en['tileW'] = newtileW
-                    # frames: sheet-space rects + anchors ×2
                     en['frames'] = [[v * 2 for v in fr] for fr in en['frames']]
                     if 'refH' in en:
                         en['refH'] = en['refH'] * 2
-                    # timings unchanged
     return manifest
 
 
-def process_icons():
-    """icons at 64/128 → x2 (256s stay). No coords in manifest for icons."""
-    n = 0
-    for path in sorted(glob.glob(os.path.join(SPRITES, 'icon_*.webp'))):
-        im = Image.open(path)
-        if max(im.size) >= 200:
+def _supervise(file_list, kind, dry=False):
+    """run ONE fresh subprocess per file — the in-process DNN/IBP memory never
+    returns to the OS (2.2GB RSS after 14 strips → OOM kill), so isolation is
+    mandatory on this 4GB box. Results accumulate in /tmp/r32_results.json."""
+    import subprocess
+    rpath = '/tmp/r32_results_%s.json' % kind
+    results = {}
+    if os.path.exists(rpath):
+        try:
+            results = json.load(open(rpath))
+        except Exception:
+            results = {}
+    total = len(file_list)
+    for idx, fn in enumerate(file_list):
+        if fn in results:
             continue
-        upscale_rgba_file(path, quality=94)
-        n += 1
-    print('icons upscaled:', n)
+        if dry:
+            continue
+        cmd = [sys.executable, os.path.abspath(__file__), 'file', fn, kind]
+        p = subprocess.run(cmd, capture_output=True, text=True)
+        line = (p.stdout or '').strip().splitlines()
+        got = None
+        for ln in line:
+            if ln.startswith('RESULT '):
+                got = json.loads(ln[7:])
+        if got is None:
+            print('[%d/%d] FAILED %s (%s)' % (idx + 1, total, fn, (p.stderr or '')[-200:]), flush=True)
+            continue
+        results[fn] = got
+        json.dump(results, open(rpath, 'w'))
+        print('[%d/%d] %s %s -> %s' % (idx + 1, total, kind, fn, got.get('img')), flush=True)
+    return results
+
+
+def worker(fn, kind):
+    """one file, one process. Prints 'RESULT {json}'."""
+    if kind == 'strip':
+        path = os.path.join(SPRITES, fn)
+        bgr, a = load_rgba(path)
+        h, w = bgr.shape[:2]
+        # split wide sheets at frame boundaries BEFORE upscaling
+        manifest = json.load(open(os.path.join(SPRITES, 'sprites.json')))
+        frames = None
+        for u in manifest['units'].values():
+            for fm in u['forms'].values():
+                for anim in ('walk', 'atk', 'idle'):
+                    en = fm.get(anim)
+                    if not en:
+                        continue
+                    imgs = en['img'] if isinstance(en['img'], list) else [en['img']]
+                    if fn in imgs:
+                        frames = en['frames']
+                        break
+            if frames:
+                break
+        need_split = (w * 2 > WEBP_MAX)
+        if need_split and frames is not None:
+            cuts = frame_cuts(frames, w)
+            if len(cuts) <= 1:
+                need_split = False
+        if not need_split:
+            out = upscale_rgba_array(bgr, a)
+            save_webp(out, path, 92)
+            print('RESULT ' + json.dumps({'img': [fn], 'tileW': [out.shape[1]]}))
+        else:
+            base = os.path.splitext(fn)[0]
+            tiles = []
+            for i in range(len(cuts) - 1):
+                x0, x1 = cuts[i] // 2, cuts[i + 1] // 2
+                if x1 - x0 < 2:
+                    continue
+                tfn = fn if i == 0 else base + '_t%d.webp' % i
+                out = upscale_rgba_array(bgr[:, x0:x1, :], a[:, x0:x1])
+                save_webp(out, os.path.join(SPRITES, tfn), 92)
+                tiles.append((tfn, out.shape[1]))
+            print('RESULT ' + json.dumps({'img': [t[0] for t in tiles], 'tileW': [t[1] for t in tiles]}))
+    elif kind == 'icon':
+        path = os.path.join(SPRITES, fn)
+        out = upscale_rgba_file(path, quality=94)
+        print('RESULT ' + json.dumps({'img': [fn], 'tileW': [out[0]]}))
+    elif kind == 'bg':
+        path = os.path.join(MAPS, fn)
+        out = upscale_rgb_file(path, quality=87)
+        print('RESULT ' + json.dumps({'img': [fn], 'tileW': [out[0]]}))
+    elif kind == 'ui':
+        path = os.path.join(UI, fn)
+        if Image.open(path).mode == 'RGBA':
+            out = upscale_rgba_file(path, quality=92)
+        else:
+            out = upscale_rgb_file(path, quality=90)
+        print('RESULT ' + json.dumps({'img': [fn], 'tileW': [out[0]]}))
+
+
+def process_icons():
+    fl = [os.path.basename(p) for p in sorted(glob.glob(os.path.join(SPRITES, 'icon_*.webp')))
+          if Image.open(p) and max(Image.open(p).size) < 200]
+    _supervise(fl, 'icon')
+    print('icons upscaled:', len(fl), flush=True)
 
 
 def process_bgs():
-    n = 0
-    for path in sorted(glob.glob(os.path.join(MAPS, 'Bg*.webp'))):
-        w, h = Image.open(path).size
-        if w >= 3000:
-            continue
-        upscale_rgb_file(path, quality=87)
-        n += 1
-    print('bgs upscaled:', n)
+    fl = [os.path.basename(p) for p in sorted(glob.glob(os.path.join(MAPS, 'Bg*.webp')))
+          if Image.open(p).size[0] < 3000]
+    _supervise(fl, 'bg')
+    print('bgs upscaled:', len(fl), flush=True)
 
 
 def process_ui():
-    for name in ('title_bg.webp', 'title_bg_itf.webp', 'title_bg_cotc.webp', 'doors_home.webp'):
-        path = os.path.join(UI, name)
-        if not os.path.exists(path):
-            continue
-        im = Image.open(path)
-        if im.mode == 'RGBA':
-            upscale_rgba_file(path, quality=92)
-        else:
-            upscale_rgb_file(path, quality=90)
-        print('ui', name)
+    fl = ['title_bg.webp', 'title_bg_itf.webp', 'title_bg_cotc.webp', 'doors_home.webp']
+    fl = [f for f in fl if os.path.exists(os.path.join(UI, f))]
+    _supervise(fl, 'ui')
 
 
 def main():
     mode = sys.argv[1] if len(sys.argv) > 1 else 'all'
-    if mode in ('all', 'dry'):
-        dry = mode == 'dry'
-        m = process_strips(dry=dry)
-        if not dry:
-            json.dump(m, open(os.path.join(SPRITES, 'sprites.json'), 'w'))
-            print('sprites.json updated (frames/refH/tileW ×2)')
+    if mode == 'file':
+        worker(sys.argv[2], sys.argv[3])
+        return
+    if mode == 'dry':
+        m = process_strips(dry=True)
+        print('dry run OK')
+        return
+    if mode in ('all', 'strips'):
+        m = process_strips()
+        json.dump(m, open(os.path.join(SPRITES, 'sprites.json'), 'w'))
+        print('sprites.json updated (frames/refH/tileW x2)', flush=True)
     if mode in ('all', 'icons'):
         process_icons()
     if mode in ('all', 'bgs'):
         process_bgs()
     if mode in ('all', 'ui'):
         process_ui()
+    print('DONE', flush=True)
 
 
 if __name__ == '__main__':

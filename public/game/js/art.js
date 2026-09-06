@@ -114,7 +114,7 @@ const CH_TINT={eoc1:null,eoc2:'rgba(40,16,60,.22)',eoc3:'rgba(140,16,10,.18)',it
 const _mapBgImgs={};
 function mapBackdrop(name,w,h,tint){
   const ext=(typeof mapFileExt==='function')?mapFileExt(name):'webp';
-  const im=lazyImg(_mapBgImgs,name,'assets/maps/'+name+'.'+ext);
+  const im=lazyImg(_mapBgImgs,name,'assets/maps/'+name+'.'+ext+'?v=50');
   const ready=imgReady(im);
   const key='mapbg|'+name+'|'+w+'x'+h+'|'+(tint||'')+(ready?'|r':'');
   if(!ready&&im.addEventListener&&!im._mbHook){ // still decoding: re-bake the moment it lands
