@@ -2870,3 +2870,32 @@ Stage Summary:
 - Live site fully on r37 (v54): https://kalonixreal.github.io/battlecat/
 - main: a93bfd1. gh-pages: 287f643.
 - Open ideas for next round: rank_bar.png (authentic rank bar cut from img007_en) could replace the home drawn rank bar; info_btn.png for (i) buttons; gacha screen banner could use the authentic gacha button art; missions "1 badge on rare capsule" is by-design ticket count (not a defect).
+
+---
+Task ID: r38
+Agent: Super Z (main)
+Task: cron webDevReview round — assess r37, QA via agent-browser (single-load discipline), fix bugs, then advance features + styling.
+
+Work Log:
+- STATUS: r37 (v54) stable; repo clean at 0d2d9cd; 1.8GB free RAM at start.
+- QA ROUND 1 (fresh single-load, 1280x720): boot 1414/1414, 0 failed; title clean; login-bonus claim → confetti ✓; home clean (peeking cat, authentic icons, capsule, gold buttons) ✓; map → stage modal → enemy-zoom card (Doge + magnified stats) ✓; battle E2E → deploy → VICTORY (rank 2, 105 XP, treasure drop) → OK → map, clear recorded, memory released. ZERO console errors anywhere.
+- BUG FOUND + FIXED (the r33→r34 leftover): the white cat map-marker still covered the current node's 'Energy -N' label (icon ~30px wide at px+27; label extends to ~px+45). Moved to px+66 (clamped to the visible window) — verified on Korea AND Japan nodes by zoomed VLM crops: label fully legible, cat stands beside the dot.
+- RESEARCH: battle field orientation — the r33 critique claimed the field was "mirrored vs original". Verified against the Battle Cats wiki (Fandom + Miraheze, authoritative): "All battles are won by destroying the enemy base on the LEFT side" — our layout (enemy base LEFT x=120, cat base RIGHT x=2480, cats march leftward, sprites match natively) is CORRECT. r33 claim closed as a VLM false positive; no code change.
+- AUTHENTIC ART (img007_en.imgcut survey — full PONOS menu-chrome rect map): cut + x2-Lanczos deployed rank_bar (326x56 wooden bar w/ baked 'User Rank' label + recessed slot x163..320), info_btn (official (i) button), menu_button (blank 212x80 gel plate). Phase-1 preloaded.
+- HOME: rank bar replaced the painted pill (rank number in the slot's left end — first cut placed it at +108 which overlapped the baked label 'R' → live VLM caught '1ank' → fixed to slot-left, XP digits at slot right, gold fill between; verified live). (i) button is now official art. Calendar shifted to x430.
+- MENU BOOK: redesigned from 9 painted gold circles → 10 authentic gel plates (3 cols, 4th row centered): CAT GUIDE, ENEMY GUIDE, TREASURES, CAT SHRINE, EXPEDITIONS, TROPHIES, CAT BASE, MISSIONS, CAT STORE (new — 10th item), SETTINGS; glyph medallion left + label right like the baked items; hover pop + gold ring; hot dots kept; modal h=560. All 10 items navigation-verified (treasure ✓ store ✓).
+- FEATURE — RANK-UP CELEBRATION: addXP (core.js) now queues G.rankup={from,to} on any rank gain → full-screen takeover (rankupDraw in the boot loop, above modals): rotating 12-wedge sunburst, cream plate + 'RANK UP!' ribbon, count-up big gold number, 'USER RANK x → y', next-rank target, orbiting stars, confettiBurst(80), SFX.reward fanfare; auto-dismiss 3.2s or tap (full-screen closer registered LAST with modal:true so it also intercepts over open modals — verified working over the MENU modal). Triggered naturally at battle victory (rank 1→2 verified) + injected test.
+- FEATURE — BATTLE UNIT INSPECTOR: tap (not drag) a unit on the field → dark stat card floats above it ~1.9s: name (form-aware), ALLIED/ENEMY/BOSS tag, LIVE HP bar + cur/max, ATK, RANGE. Wired via the field SCROLL region's onTap (endPointer now passes the tap point — only region using onTap). Cleared on battle start/unit death/empty tap. Verified live in battle (Doge: HP 26/30, ATK 8, RANGE 45).
+- One crash during dev (drawImage missing image arg → 'Overload resolution failed') — the r37 hardening caught it (error overlay, loop stayed alive); fixed immediately.
+- Cache-bust: scripts v=56 (v55 briefly live, superseded by the r38b rank-number fix), UI_V v=56, 3 new phase-1 images (boot now 1417 files).
+- QA ROUND 2 (fresh single-load): boot 1417/1417, 0 failed; full golden path re-verified (login → home → map → battle → unit inspector → victory → map); marker fix verified; lint 0 errors.
+- DEPLOY: main pushed (7435d5d + 68b4f08); gh-pages redeployed twice (eff8066 then 0103622, 561MB full tree, v56); .website-deploy removed after push (560MB freed).
+- LIVE verification (fresh single-load, cache-busted): v56 scripts served; boot 1417/1417 @ 0 failed; home rank bar reads cleanly (VLM: 'User Rank' + gold 1 in slot-left, XP 1,200 right, fill visible, no overlaps); RANK UP overlay confirmed; MENU 10 gel plates confirmed.
+
+Stage Summary:
+- One real bug fixed (map marker vs Energy label); one live-caught layout fix (rank number position); r33 'mirrored field' debunked via wiki (orientation is correct).
+- New: authentic rank bar + info button + menu plates (3 more PONOS chrome sprites in phase-1), RANK-UP celebration (full-screen, safe over modals/battle), battle unit inspector (tap-a-unit stat card), CAT STORE in the menu.
+- Live site fully on r38b (v56): https://kalonixreal.github.io/battlecat/
+- main: 68b4f08. gh-pages: 0103622 (v56).
+- Open ideas for next round: authentic gacha banner strips (gatya_btn00-29 are PONOS event banner art — 30 available; our 4 generic banners could adopt matched art but baked names/pools would conflict — needs a banner-content rethink); treasure-screen country plates (img019_en has 48 ItF treasure-name plates but our CHSETS use generated names — content-data change); battle item icons already authentic.
+- Known minor: agent-browser viewport resets to 577px on some loads (QA-harness quirk, not a game bug — the game handles it correctly via SC).
