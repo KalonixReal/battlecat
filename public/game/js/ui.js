@@ -84,7 +84,7 @@ cv.addEventListener('wheel',e=>{const p=toDesign(e);
 },{passive:false});
 function endPointer(e){if(G.dragScroll){const ds=G.dragScroll;
     if(!ds.moved){ // a tap (not a drag): fire the region's own onTap AND any button it swallowed
-      if(ds.h.tap)ds.h.tap();
+      try{if(ds.h.tap)ds.h.tap(e?toDesign(e):(G.pdown||G.mouse))}catch(e2){if(ds.h.tap)ds.h.tap()}
       if(ds.pendBtn&&ds.pendBtn.cb)ds.pendBtn.cb()}
     else if(ds.h.horiz&&ds.v){ // FLING: content keeps gliding in the finger's direction (grab-the-world momentum)
       if(now()-(ds.lt||0)<140&&Math.abs(ds.v)>380)G.flingCam={v:clamp(ds.v,-2600,2600)}}
@@ -287,6 +287,66 @@ function confettiDraw(dt){
     cx.restore()}
   cx.globalAlpha=1;
   G.confetti=C.filter(p=>p.age<p.t&&p.y<DH+60)}
+/* ---- r38 RANK-UP CELEBRATION (full-screen takeover, like the original's rank-up
+   moment): sunburst rays + wooden plate + big gold "RANK UP!" + count-up number +
+   star fanfare + confetti. Set G.rankup={t:0,from,to} from addXP(); auto-dismisses
+   after ~3.2s, or any tap. The closer BTN is registered LAST each frame so it wins
+   hit-test and swallows clicks while the takeover is up. ---- */
+function rankupDraw(dt){
+  const R=G.rankup;if(!R)return;
+  R.t+=dt;
+  const DUR=3.2;
+  const inT=clamp(R.t/0.22,0,1);           // pop-in
+  const outT=clamp((R.t-(DUR-0.35))/0.35,0,1); // fade-out
+  const a=inT*(1-outT);
+  if(R.t>=DUR){G.rankup=null;return}
+  const to=R.to,from=R.from;
+  const cnt=Math.round(from+(to-from)*clamp(R.t/0.9,0,1)); // count-up number
+  cx.save();cx.globalAlpha=a;
+  // vignette (deep enough that the underlying screen/modal reads as dimmed context)
+  cx.fillStyle='rgba(24,12,30,.85)';cx.fillRect(0,-VOY,DW,DH+2*VOY);
+  // rotating sunburst behind the plate (12 fat gold wedges)
+  const cxp=DW/2,cyp=352;
+  cx.save();cx.translate(cxp,cyp);cx.rotate(G.t*0.55);
+  if(!PERF_NOFX()){cx.globalAlpha=a*0.5}
+  for(let i=0;i<12;i++){cx.save();cx.rotate(i*TAU/12);
+    const g=cx.createLinearGradient(0,0,0,-560);g.addColorStop(0,'rgba(255,226,110,.9)');g.addColorStop(1,'rgba(255,190,40,0)');
+    cx.fillStyle=g;cx.beginPath();cx.moveTo(0,0);cx.lineTo(-66,-560);cx.lineTo(66,-560);cx.closePath();cx.fill();cx.restore()}
+  cx.restore();
+  // wooden plate (creamPanel style, wide)
+  const pw2=520,ph2=300,px2=cxp-pw2/2,py2=cyp-ph2/2;
+  const pop2=0.86+0.14*inT+Math.sin(Math.min(1,inT)*Math.PI)*0.03;
+  cx.save();cx.translate(cxp,cyp);cx.scale(pop2,pop2);cx.translate(-cxp,-cyp);
+  creamPanel(px2,py2,pw2,ph2,'#c8913a');cx.lineWidth=5;cx.strokeStyle='#8a5a20';rr(cx,px2,py2,pw2,ph2,18);cx.stroke();
+  // title banner ribbon
+  cx.save();cx.translate(cxp,py2+42);cx.rotate(-0.015);
+  ribbon(cx,0,0,360,56,'#e8951f','#8a5210');
+  txt(cx,'RANK UP!',0,2,36,'#fff','center',7,'#7a3a08',900);
+  cx.restore();
+  // the number: big gold digits with count-up + pulse ring
+  {const pu=1+Math.sin(G.t*6)*0.035;
+    cx.save();cx.translate(cxp,cyp+34);cx.scale(pu,pu);
+    cx.fillStyle='rgba(122,58,10,.18)';cx.beginPath();cx.ellipse(0,64,120,20,0,0,TAU);cx.fill();
+    txt(cx,String(cnt),0,0,110,'#ffd23f','center',10,'rgba(90,40,4,.95)',900);
+    cx.restore()}
+  // from → to + next-rank target line
+  const t1=800*Math.pow(to,1/0.55),t0=800*Math.pow(to-1,1/0.55);
+  const next2=Math.max(0,t1-SV.xpTotal);
+  txt(cx,'USER RANK '+from+' \u2192 '+to,cxp,py2+ph2-84,17,'#fff','center',4,'rgba(90,42,8,.95)',700);
+  txt(cx,to>=999?'MAX RANK REACHED!':'next rank in '+fmt(next2)+' XP',cxp,py2+ph2-54,15,'#ffd9a0','center',3.5,'rgba(90,42,8,.9)',700);
+  txt(cx,'rank rewards: +50 Cat Food every 5 ranks \u00b7 unlock cats at milestones',cxp,py2+ph2-26,11.5,'#c8b088','center',2.5,'#fff',400);
+  cx.restore();
+  // orbiting star sparkles
+  for(let i=0;i<7;i++){const ang=G.t*1.6+i*TAU/7,rx=cxp+Math.cos(ang)*320,ry=cyp+Math.sin(ang)*178;
+    const s2=5+Math.sin(G.t*4+i)*2.4;cx.globalAlpha=a*(0.55+0.45*Math.sin(G.t*3+i));
+    cx.fillStyle='#fff';star(cx,rx,ry,s2,s2*0.42);cx.fill();cx.globalAlpha=a}
+  // tap hint (late)
+  if(R.t>1.2){cx.globalAlpha=a*clamp((R.t-1.2)/0.3,0,1)*0.85;
+    txt(cx,'tap to continue',cxp,py2+ph2+38,14,'#fff','center',3,'rgba(20,10,26,.8)',700);cx.globalAlpha=a}
+  cx.restore();
+  // swallow input while the takeover is up (registered last → wins hit-test; modal:true
+  // so it also intercepts while a modal is open — a mission-claim rank-up covers its modal)
+  BTN('rkclose',0,-VOY,DW,DH+2*VOY,()=>{G.rankup=null;SFX.click()},{flat:true,nohov:true,modal:true})}
 function modalDraw(){const m=G.modal;if(!m)return;
   m.age=(m.age||0)+1/60; // ~seconds since open (rAF-paced)
   const pop=Math.min(1,m.age/0.18); // quick pop-in (cubic out + tiny overshoot)
@@ -299,6 +359,7 @@ function modalDraw(){const m=G.modal;if(!m)return;
   if(m.title&&m.title.startsWith('TREASURE RADAR'))h=612; // tab pills + 6 radar rows + digest footer
   if(m.title&&m.title.startsWith('FARM:'))h=560; // 5 stage-picker rows + footer
   if(m.title&&m.title.startsWith('DAILY LOGIN BONUS'))h=420; // 7 stamp slots + footer, sized to content (r37: was 520 — 160px dead gap above the CLAIM button)
+  if(m.title==='MENU')h=560; // r38: 4 rows of authentic 212x80 plates + footer hint
   const w=Math.min(760,1180);
   // pop-in: purely visual transform — all drawing/hit coords below stay in FINAL
   // (unscaled) design space so hit rects stay valid even mid-animation
@@ -321,7 +382,7 @@ function modalDraw(){const m=G.modal;if(!m)return;
    the official MenuTitle logo, and the real Play button texture. Background swaps to
    ItF / CotC art as those campaigns are cleared (like the original). */
 const UIIMG={imgs:{}};
-const UI_V='?v=50'; // r32: cache-bust for the x2 re-encodes
+const UI_V='?v=55'; // r32: cache-bust for the x2 re-encodes
 function uiImg(name){
   let im=UIIMG.imgs[name];
   if(im===undefined){
@@ -518,27 +579,35 @@ function drawHome(dt){
   // user-rank bar + (i) + calendar
   {const t1=800*Math.pow(SV.rank,1/0.55),t0=800*Math.pow(SV.rank-1,1/0.55);
     const fr=clamp((SV.xpTotal-t0)/Math.max(1,t1-t0),0,1);
-    // (i) round button
-    cx.fillStyle='#6a4416';cx.beginPath();cx.arc(42,86,17,0,TAU);cx.fill();
-    cx.lineWidth=2.5;cx.strokeStyle='#3a250a';cx.stroke();
-    cx.fillStyle='#e8d8b8';cx.beginPath();cx.arc(42,86,11.5,0,TAU);cx.fill();
-    txt(cx,'i',42,87,15,'#5a3b16','center',3,'#fff',700);
-    BTN('hinfo',25,69,34,34,()=>{SFX.click();openModal('THE BATTLE CATS',
+    // (i) round button — r38: the AUTHENTIC PONOS info button (img007_en cut)
+    const ib=uiImg('info_btn.png');
+    if(ib){cx.drawImage(ib,22,62,48,48)}
+    else{cx.fillStyle='#6a4416';cx.beginPath();cx.arc(46,86,17,0,TAU);cx.fill();
+      cx.lineWidth=2.5;cx.strokeStyle='#3a250a';cx.stroke();
+      cx.fillStyle='#e8d8b8';cx.beginPath();cx.arc(46,86,11.5,0,TAU);cx.fill();
+      txt(cx,'i',46,87,15,'#5a3b16','center',3,'#fff',700)}
+    BTN('hinfo',22,62,48,48,()=>{SFX.click();openModal('THE BATTLE CATS',
       ['Version 12.6.0 \u00b7 Browser Version',
        'User Rank '+SV.rank+' \u00b7 total XP '+fmt(SV.xpTotal)+' \u00b7 NP '+fmt(SV.np)],
       [{n:'CLOSE',cb:()=>{}}])},{flat:true,nohov:true});
-    // rank bar (dark leather pill + gold LED number + fill)
-    cx.fillStyle='#4a2e0e';rr(cx,68,68,252,36,18);cx.fill();
-    cx.lineWidth=2.5;cx.strokeStyle='#2a1a06';rr(cx,68,68,252,36,18);cx.stroke();
-    cx.fillStyle='rgba(0,0,0,.4)';rr(cx,150,76,158,20,10);cx.fill();
-    if(fr>0){const pg=cx.createLinearGradient(150,0,308,0);pg.addColorStop(0,'#ffe264');pg.addColorStop(1,'#e8a010');
-      cx.fillStyle=pg;rr(cx,150,76,Math.max(10,158*fr),20,10);cx.fill()}
-    cx.lineWidth=1.5;cx.strokeStyle='rgba(255,220,140,.4)';rr(cx,150,76,158,20,10);cx.stroke();
-    txt(cx,fmt(SV.xpTotal),229,87,19,'#ffd23f','center',4,'rgba(20,10,0,.9)',700);
-    txt(cx,'RANK '+SV.rank,109,87,13,'#e8d8b8','center',3,'rgba(20,10,0,.9)',700);
-    BTN('hrank',68,68,252,36,()=>{SFX.click();toast('User Rank '+SV.rank+' \u00b7 '+fmt(SV.xpTotal)+' XP collected','#ffd23f')},{flat:true,nohov:true});
-    // calendar with cat face
-    cx.save();cx.translate(356,86);
+    // rank bar — r38: the AUTHENTIC PONOS wooden rank bar (img007_en cut, 326x56;
+    // "User Rank" label is baked into the art) + gold LED rank number + recessed
+    // progress slot on the right half (the dark well in the sprite)
+    const rb=uiImg('rank_bar.png'),rbx=78,rby=58,rbw=326,rbh=56;
+    if(rb){cx.drawImage(rb,rbx,rby,rbw,rbh)}
+    else{cx.fillStyle='#4a2e0e';rr(cx,rbx,rby+10,rbw,36,18);cx.fill();
+      cx.lineWidth=2.5;cx.strokeStyle='#2a1a06';rr(cx,rbx,rby+10,rbw,36,18);cx.stroke()}
+    // rank number: gold LED digits in the badge zone right after the baked label
+    txt(cx,String(SV.rank),rbx+108,rby+rbh/2+2,24,'#ffd23f','center',4.5,'rgba(20,10,0,.9)',700);
+    // progress fill inside the recessed slot (bar-right half)
+    const sx=rbx+152,sw=rbw-162,sy=rby+17,sh=22;
+    if(fr>0){const pg=cx.createLinearGradient(sx,0,sx+sw,0);pg.addColorStop(0,'#ffe264');pg.addColorStop(1,'#e8a010');
+      cx.fillStyle=pg;rr(cx,sx,sy,Math.max(10,sw*fr),sh,11);cx.fill()}
+    cx.lineWidth=1.5;cx.strokeStyle='rgba(255,220,140,.35)';rr(cx,sx,sy,sw,sh,11);cx.stroke();
+    txt(cx,fmt(SV.xpTotal),sx+sw/2,sy+sh/2+1,17,'#ffd23f','center',3.5,'rgba(20,10,0,.9)',700);
+    BTN('hrank',rbx,rby,rbw,rbh,()=>{SFX.click();toast('User Rank '+SV.rank+' \u00b7 '+fmt(SV.xpTotal)+' XP collected','#ffd23f')},{flat:true,nohov:true});
+    // calendar with cat face (shifted right to clear the wider authentic bar)
+    cx.save();cx.translate(430,86);
     cx.fillStyle='#f4ede0';rr(cx,-21,-19,42,38,5);cx.fill();
     cx.lineWidth=2.4;cx.strokeStyle='#5a3b16';rr(cx,-21,-19,42,38,5);cx.stroke();
     cx.fillStyle='#d83a2a';rr(cx,-21,-19,42,10,4);cx.fill();
@@ -548,7 +617,7 @@ function drawHome(dt){
     cx.beginPath();cx.moveTo(-9,0);cx.lineTo(-6,-3);cx.lineTo(-3,0);cx.closePath();cx.fill();
     cx.beginPath();cx.moveTo(9,0);cx.lineTo(6,-3);cx.lineTo(3,0);cx.closePath();cx.fill();
     cx.restore();
-    BTN('hcal',335,63,42,46,()=>{SFX.click();const evs=eventStages();
+    BTN('hcal',409,63,42,46,()=>{SFX.click();const evs=eventStages();
       openModal('EVENT CALENDAR',evs.length?evs.slice(0,6).map(e=>e.s.name+' \u00b7 '+e.s.energy+' energy'):['No events today \u2014 check the Store for daily deals!'],
       [{n:'VIEW EVENT STAGES',cb:()=>{G.chapter='event';G.mapSub=0;push('chapters')}},{n:'CLOSE',cb:()=>{}}])},{flat:true,nohov:true})}
 
@@ -760,7 +829,9 @@ function drawHome(dt){
     BTN('hcf',DW-152,680,152,38,()=>{SFX.click();push('store')},{flat:true,nohov:true})}
 }
 
-/* ---- MENU BOOK overlay (the original's open-book menu: a grid of round gold buttons) ---- */
+/* ---- MENU BOOK overlay (the original's menu list) — r38: authentic PONOS plates.
+   Each row is the real img007_en blank gel button (menu_button 212x80) with our glyph +
+   label on top, exactly like the original's icon-left/text-right item layout. ---- */
 function openBookMenu(){SFX.click();
   openModal('MENU',[],
     [{n:'CLOSE',cb:()=>{}}],(mx,my,mw,mh)=>{
@@ -773,21 +844,41 @@ function openBookMenu(){SFX.click();
       ['trophy','TROPHIES',()=>push('trophies')],
       ['cannon','CAT BASE',()=>push('base')],
       ['scroll','MISSIONS',()=>openMissionsModal()],
+      ['cart','CAT STORE',()=>push('store')],
       ['gear','SETTINGS',()=>push('settings')]];
-    const cols=3,rows=Math.ceil(items.length/cols);
-    const cellW=(mw-36-(cols-1)*14)/cols,cellH=104;
+    const cols=3; // 10 items → 4 rows (last row centered)
+    const pw=212,ph=80,gap=14;
+    const gridW=cols*pw+(cols-1)*gap;
+    const gx=mx+(mw-gridW)/2;
+    const rowY=r=>my+8+r*(ph+10);
+    const plate=uiImg('menu_button.png');
     items.forEach((it,i)=>{
-      const cxr=mx+18+(i%cols)*(cellW+14),cyr=my+6+Math.floor(i/cols)*(cellH+8);
-      // round gold button with the icon + label UNDER it (original menu layout)
-      const bx=cxr+cellW/2,by=cyr+42;
-      if(!PERF_NOFX()){cx.save();cx.shadowColor='rgba(60,36,8,.45)';cx.shadowBlur=8;cx.shadowOffsetY=4;
-        cx.fillStyle='#f0b428';cx.beginPath();cx.arc(bx,by,34,0,TAU);cx.fill();cx.restore()}
-      else{cx.fillStyle='#f0b428';cx.beginPath();cx.arc(bx,by,34,0,TAU);cx.fill()}
-      cx.lineWidth=3.5;cx.strokeStyle='#8a5a20';cx.beginPath();cx.arc(bx,by,34,0,TAU);cx.stroke();
-      cx.fillStyle='rgba(255,255,255,.35)';cx.beginPath();cx.arc(bx,by-8,22,Math.PI,TAU);cx.fill();
-      cx.fillStyle='#c8913a';cx.beginPath();cx.arc(bx,by,25,0,TAU);cx.fill();
-      glyph(cx,it[0],bx,by,15,'#fff','#8a5a20');
-      txt(cx,it[1],bx,cyr+92,12.5,'#5a3b16','center',3,'#fff',700);
+      const row=Math.floor(i/cols),lastRow=row===Math.ceil(items.length/cols)-1;
+      const inRow=lastRow?items.length-row*cols:cols;
+      const colInRow=i-row*cols;
+      const rowW=inRow*pw+(inRow-1)*gap;
+      const px=(lastRow?mx+(mw-rowW)/2+colInRow*(pw+gap):gx+colInRow*(pw+gap));
+      const py=rowY(row);
+      const hov=G.hoverId==='bk'+i;
+      const pu=hov?1.045:1;
+      // authentic gel plate (fallback: painted replica of the same shape)
+      cx.save();cx.translate(px+pw/2,py+ph/2);cx.scale(pu,pu);cx.translate(-pw/2,-ph/2);
+      if(!PERF_NOFX()){cx.shadowColor='rgba(40,22,4,.5)';cx.shadowBlur=hov?12:6;cx.shadowOffsetY=hov?5:3}
+      if(plate)cx.drawImage(plate,0,0,pw,ph);
+      else{const g=cx.createLinearGradient(0,0,0,ph);g.addColorStop(0,'#ffe24a');g.addColorStop(1,'#ffb420');
+        cx.fillStyle=g;rr(cx,0,0,pw,ph,14);cx.fill()}
+      cx.restore();
+      if(hov){cx.lineWidth=3.5;cx.strokeStyle='rgba(255,246,200,.95)';
+        rr(cx,px+2,py+2,pw-4,ph-4,12);cx.stroke();
+        if(!PERF_NOFX()){cx.save();cx.globalAlpha=.5;cx.strokeStyle='#ffd23f';cx.lineWidth=7;
+          rr(cx,px+2,py+2,pw-4,ph-4,12);cx.stroke();cx.restore()}}
+      // glyph medallion (left, like the baked authentic items) + label
+      const mcx2=px+40,mcy=py+ph/2;
+      cx.fillStyle='rgba(122,58,10,.35)';cx.beginPath();cx.arc(mcx2,mcy,26,0,TAU);cx.fill();
+      cx.lineWidth=2.5;cx.strokeStyle='rgba(90,42,8,.55)';cx.beginPath();cx.arc(mcx2,mcy,26,0,TAU);cx.stroke();
+      glyph(cx,it[0],mcx2,mcy,17,'#fff','#8a5210');
+      let nm=it[1];setFont(cx,FONT(15.5,700));while(cx.measureText(nm).width>pw-86&&nm.length>4)nm=nm.slice(0,nm.length-2);
+      txt(cx,nm+(nm===it[1]?'':'\u2026'),px+74,py+ph/2+1,15.5,'#fff','left',3.5,'rgba(90,42,8,.95)',700);
       // hot dots
       let hot=null,hotCol='#e84030';
       if(it[0]==='chest')hot=radarHotCount()||null;
@@ -795,11 +886,12 @@ function openBookMenu(){SFX.click();
       if(it[0]==='compass'&&expdAnyDone()){hot='!';hotCol='#3abc6a'}
       if(it[0]==='trophy'){const tc2=trophyClaimCount();hot=tc2||null;hotCol='#c46adf'}
       if(it[0]==='scroll')hot=MISSIONS.filter(m=>missionDone(m.id)&&!missionClaimed(m.id)).length||null;
-      if(hot){cx.save();cx.translate(bx+28,by-28);cx.rotate(Math.sin(G.t*5)*0.12);
-        cx.fillStyle=hotCol;cx.beginPath();cx.arc(0,0,10,0,TAU);cx.fill();
-        cx.lineWidth=2;cx.strokeStyle='rgba(60,20,10,.6)';cx.stroke();
-        txt(cx,String(hot),0,0.5,10,'#fff','center',2,'rgba(60,20,10,.6)',700);cx.restore()}
-      BTN('bk'+i,cxr,cyr,cellW,cellH,()=>{G.modal=null;it[2]()},{flat:true,nohov:true,modal:true})})})}
+      if(hot){cx.save();cx.translate(px+pw-22,py+20);cx.rotate(Math.sin(G.t*5)*0.12);
+        cx.fillStyle=hotCol;cx.beginPath();cx.arc(0,0,11,0,TAU);cx.fill();
+        cx.lineWidth=2.2;cx.strokeStyle='rgba(60,20,10,.6)';cx.stroke();
+        txt(cx,String(hot),0,0.5,10.5,'#fff','center',2,'rgba(60,20,10,.6)',700);cx.restore()}
+      BTN('bk'+i,px,py,pw,ph,()=>{G.modal=null;it[2]()},{flat:true,nohov:true,modal:true})});
+    txt(cx,'tap an item to open it',mx+mw/2,rowY(Math.ceil(items.length/cols))-6,11.5,'#8a6a3a','center',2.5,'#fff',400)})}
 function catOwnedCount(){return CATS.filter(c=>catOwned(c.id)).length}
 
 /* ============================== MODAL: DAILY MISSIONS ============================== */
@@ -1094,8 +1186,11 @@ function drawMap(dt){const c=CHMAP[G.chapter];
         cx.lineWidth=1.4;cx.strokeStyle='rgba(138,90,16,.5)';cx.stroke();cx.restore()}}
     // (padlocks removed from the map — original shows dots only)
     cx.restore()}
-  // white cat marker stands on the current node
-  if(markerNode)catMarker(cx,markerNode.p.x+27,markerNode.p.y-12,24,G.t); // stands BESIDE the dot — the node's Energy label (py-21) stays fully legible
+  // white cat marker stands at the current node's side
+  // r38: the icon is ~30px wide (r=12 ×1.24) and the 'Energy -N' label extends to ~px+45 —
+  // the old +27 offset put the cat ON the label's tail digits ("E□5" misread). +66 clears
+  // the label with margin in BOTH directions and stays clear of the 2/3-treasure diamond (px+34).
+  if(markerNode)catMarker(cx,Math.min(markerNode.p.x+66,G.mapCam.x+1248-22),markerNode.p.y-11,23,G.t); // clamped so the cat never leaves the visible window
   cx.restore(); // un-clip + un-translate
   // ---- FARM TARGET banner (from the treasure screen FARM SET jump): dismissible overlay chip ----
   if(G.mapFocusIdx!=null&&c.kind==='story'&&CHSETS[c.id]){const fs2=CHSETS[c.id][G.mapFocusIdx%9];

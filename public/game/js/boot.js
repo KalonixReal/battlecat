@@ -98,6 +98,10 @@ function preloadRun(){
   uiImgCache('missions_btn.png','assets/ui/missions_btn.png?v=54');
   uiImgCache('gacha_icon_normal.png','assets/ui/gacha_icon_normal.png?v=54');
   uiImgCache('gacha_icon_rare.png','assets/ui/gacha_icon_rare.png?v=54');
+  // r38: authentic rank bar + info button + menu plates (img007_en cuts)
+  uiImgCache('rank_bar.png','assets/ui/rank_bar.png?v=55');
+  uiImgCache('info_btn.png','assets/ui/info_btn.png?v=55');
+  uiImgCache('menu_button.png','assets/ui/menu_button.png?v=55');
   uiImgCache('doors_home.png','assets/ui/doors_home.webp?v=50');
   preloadImg('assets/sprites/catbase_idle.webp');
   // catbase.json feeds the walking-cat animation metadata
@@ -328,6 +332,8 @@ function loop(ts){
     // r37 HARDENING: an error inside modal/toast/confetti draw must NEVER kill the rAF
     // chain (a modalDraw throw used to freeze the whole game silently) — log + continue.
     try{modalDraw();toastDraw(dt);confettiDraw(dt)}catch(err){console.error('UI ERR',err)} // toasts render ABOVE modals (in-modal action feedback stays visible); r37 confetti on top of everything
+    // r38: RANK-UP celebration draws above everything and swallows input while up
+    try{rankupDraw(dt)}catch(err){console.error('RK ERR',err)}
     // screen-change transition: quick fade-from-black on push()/pop() (official-style cut)
     if(G.transT>0){G.transT-=dt;const ta=clamp(G.transT/0.30,0,1);
       cx.fillStyle='rgba(18,10,6,'+(ta*ta*0.92).toFixed(3)+')';cx.fillRect(0,-VOY,DW,DH);

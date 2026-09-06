@@ -238,7 +238,13 @@ function persistNow(){return persist()} // explicit flush alias (boot.js keeps i
 function regenEnergy(){const max=energyMax(),t=now();let e=SV.energy+Math.floor((t-SV.energyTs)/60000);if(e>=max){SV.energy=max;SV.energyTs=t}else{SV.energy=e;SV.energyTs=t-(t-SV.energyTs)%60000}} // partial regen must actually commit (was: only capped at max, energy never refilled below it)
 function spendEnergy(n){if(SV.energy<n)return false;SV.energy-=n;persist();return true}
 function addCF(n){SV.cf+=n;persist()}
-function addXP(n){SV.xp+=n;SV.xpTotal+=n;const r=rankOf(SV.xpTotal);if(r>SV.rank){for(let k=SV.rank+1;k<=r;k++){if(k%5===0){SV.cf+=50;toast('USER RANK '+k+'! +50 Cat Food')}
+function addXP(n){SV.xp+=n;SV.xpTotal+=n;const r=rankOf(SV.xpTotal);if(r>SV.rank){
+  // r38 RANK-UP CELEBRATION: queue the full-screen takeover (rankupDraw, ui.js —
+  // drawn above everything in the boot loop; guarded: addXP can run before ui.js loads)
+  try{if(typeof G!=='undefined'&&G&&typeof rankupDraw==='function'){G.rankup={t:0,from:SV.rank,to:r};
+    try{SFX.reward&&SFX.reward()}catch(e2){}
+    try{confettiBurst(typeof DW!=='undefined'?DW/2:640,330,80)}catch(e2){}}}catch(e){}
+  for(let k=SV.rank+1;k<=r;k++){if(k%5===0){SV.cf+=50;toast('USER RANK '+k+'! +50 Cat Food')}
     // rank-reward cats (Moneko @4, Neneko @12) — unlock automatically at the milestone
     const RU=CATS.filter(c=>c.unlock&&c.unlock.rank===k);
     for(const c of RU){if(!catOwned(c.id)){unlockCat(c.id);toast('RANK '+k+'! "'+c.forms[0].n+'" joined your army!','#7fd0ff')}}}

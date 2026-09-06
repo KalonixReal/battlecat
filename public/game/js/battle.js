@@ -11,6 +11,7 @@ let B=null;
 const WORKER_COST=[40,120,280,560,1000,1600,2400],WORKER_MUL=[1,1.35,1.7,2.1,2.6,3.2,3.9,4.7];
 const WALLET_COST=[30,90,160,240,320,420,520],WALLET_MAX=[1,2,3,4,5,6,8,10]; // gentle ~original curve (levels cost 30..520¢, not exponential)
 function startBattle(st){
+  G.unitInspect=null; // r38: no stale inspector card across battles
   const teamIds=SV.teams[SV.teamSel].filter(id=>id&&CATMAP[id]); // tolerate invalid ids (imported/hand-edited saves)
   const combo=comboBonuses(teamIds);
   const items=G.battleItems||{}; // classic battle items (original): Sniper the Cat / Cat Jobs / Cat CPU
@@ -541,6 +542,41 @@ function drawBattle(dt){
   for(const p of b.pops){cx.globalAlpha=clamp(p.t*2,0,1);txt(cx,p.s,p.x,p.y,p.big,p.col,'center',4,'#101018',700);cx.globalAlpha=1}
   cx.restore();
   cx.restore();
+  /* r38 UNIT INSPECTOR card: floats over the inspected unit, live HP, fades out */
+  if(G.unitInspect){
+    const I=G.unitInspect,u=I.u;
+    const alive=u&&B&&B.units&&B.units.indexOf(u)>=0&&u.state!=='die';
+    if(!alive){G.unitInspect=null}
+    else{I.t-=dt;
+      if(I.t<=0)G.unitInspect=null;
+      else{
+        const fa=Math.min(1,clamp((I.t-0.3)/0.3,0,1),clamp((1.9-I.t)/0.15,0,1));
+        const nm=u.side==='cat'?((typeof CATMAP!=='undefined'&&CATMAP[u.id]&&(typeof catForm==='function'?CATMAP[u.id].forms[catForm(u.id)].n:CATMAP[u.id].forms[0].n))||u.id):((typeof ENEMAP!=='undefined'&&ENEMAP[u.id]&&ENEMAP[u.id].n)||u.id);
+        const cw=236,chh=96;
+        let ix=clamp(u.x-b.cam-cw/2,12,DW-cw-12);
+        const iy=Math.max(120,GROUND_Y-236);
+        cx.save();cx.globalAlpha=fa;
+        // pointer wedge down to the unit
+        cx.fillStyle='rgba(16,14,26,.92)';
+        const ax=clamp(u.x-b.cam,ix+26,ix+cw-26);
+        cx.beginPath();cx.moveTo(ax-11,iy+chh);cx.lineTo(ax+11,iy+chh);cx.lineTo(ax,iy+chh+13);cx.closePath();cx.fill();
+        rr(cx,ix,iy,cw,chh,12);cx.fill();
+        cx.lineWidth=2.5;cx.strokeStyle='rgba(255,255,255,.85)';rr(cx,ix,iy,cw,chh,12);cx.stroke();
+        // name + side tag (BOSS badge for boss enemies)
+        txt(cx,nm,ix+12,iy+20,15,u.side==='cat'?'#9fe8a8':'#ff9a8a','left',3,'#0a0812',700);
+        if(u.side==='enemy'&&u.def&&u.def.boss){cx.fillStyle='#e84030';rr(cx,ix+cw-58,iy+8,46,18,9);cx.fill();txt(cx,'BOSS',ix+cw-35,iy+17.5,10,'#fff','center',2,'#7a1a10',700)}
+        else if(u.side==='cat')txt(cx,'ALLIED',ix+cw-38,iy+17.5,10,'#9fe8a8','center',2,'#0a0812',700);
+        else txt(cx,'ENEMY',ix+cw-34,iy+17.5,10,'#ff9a8a','center',2,'#0a0812',700);
+        // live HP bar
+        const hpr=clamp(u.hp/Math.max(1,u.maxHp),0,1);
+        cx.fillStyle='rgba(255,255,255,.14)';rr(cx,ix+12,iy+32,cw-24,12,6);cx.fill();
+        if(hpr>0){cx.fillStyle=u.side==='cat'?'#7fe8a0':'#ff7a7a';rr(cx,ix+12,iy+32,Math.max(8,(cw-24)*hpr),12,6);cx.fill();
+          cx.fillStyle='rgba(255,255,255,.3)';rr(cx,ix+13,iy+33.5,Math.max(6,(cw-24)*hpr-2),4,2);cx.fill()}
+        txt(cx,fmt(Math.max(0,Math.ceil(u.hp)))+' / '+fmt(u.maxHp),ix+cw/2,iy+56,12.5,'#fff','center',2.5,'#0a0812',700);
+        // ATK / range row
+        txt(cx,'ATK '+fmt(Math.round(u.atk)),ix+12,iy+78,12.5,'#ffd23f','left',2.5,'#0a0812',700);
+        txt(cx,'RANGE '+fmt(u.range),ix+cw-12,iy+78,12.5,'#7fd0ff','right',2.5,'#0a0812',700);
+        cx.restore()}}}
   // HUD fades away under the result overlay (original clears the battle HUD on result)
   const hudA=b.result?clamp(1-b.resultT/0.45,0,1):1;
   if(hudA>0){cx.globalAlpha=hudA;drawBattleHUD(b,dt);cx.globalAlpha=1}
@@ -986,7 +1022,17 @@ function drawBattleHUD(b,dt){
   //   top-left pause + gold stage name · speed under it · top-right yellow 'cur/max¢' digits ·
   //   bottom-left Worker Cat button (official face art) · row of official-art unit cards ·
   //   bottom-right Fire!! cannon button (official face art).
-  SCROLL('field',0,110,DW,470,()=>b.cam,v=>{b.cam=clamp(v,0,Math.max(0,FIELD_W-DW))},Math.max(0,FIELD_W-DW),null).horiz=true;
+  SCROLL('field',0,110,DW,470,()=>b.cam,v=>{b.cam=clamp(v,0,Math.max(0,FIELD_W-DW))},Math.max(0,FIELD_W-DW),p=>{
+    /* r38 UNIT INSPECTOR (original behavior): tap a unit on the field to pop its live
+       stat card. Tap-without-drag lands here (endPointer → region tap). Nearest living
+       unit within 90 world-px of the tap column opens the card; empty field taps clear it. */
+    G.unitInspect=null;
+    if(!B||B.result)return;
+    const wx=p.x+b.cam;
+    let best=null,bd=90;
+    for(const u of B.units){if(u.state==='die'||u.state==='burrow')continue;
+      const d=Math.abs(u.x-wx);if(d<bd){bd=d;best=u}}
+    if(best){G.unitInspect={u:best,t:1.9};SFX.click&&SFX.click()}}).horiz=true;
   /* ===== TOP-LEFT: pause (official option_btn sprite) + stage name, like the original ===== */
   {
     const pb=uiImg('option_btn.png');
