@@ -2899,3 +2899,22 @@ Stage Summary:
 - main: 68b4f08. gh-pages: 0103622 (v56).
 - Open ideas for next round: authentic gacha banner strips (gatya_btn00-29 are PONOS event banner art — 30 available; our 4 generic banners could adopt matched art but baked names/pools would conflict — needs a banner-content rethink); treasure-screen country plates (img019_en has 48 ItF treasure-name plates but our CHSETS use generated names — content-data change); battle item icons already authentic.
 - Known minor: agent-browser viewport resets to 577px on some loads (QA-harness quirk, not a game bug — the game handles it correctly via SC).
+
+---
+Task ID: r39
+Agent: Super Z (main)
+Task: user round — "test visually, still see bugs; there can be a loading screen before the battle to load the towers and enemies and cats if needed; otherwise its pretty good, finalize the whole thing."
+
+Work Log:
+- VISUAL QA (agent-browser, fresh single-load discipline, user viewport 388x446 + landscape 802x486, VLM + pixel row-analysis): boot 1417/1417 @ 0 failed; login modal → CLAIM (+100 CF, confetti) → home (structurally clean, no missing/black areas) → map (Attack fully visible) → stage modal → battle → deploy → 3× speed → VICTORY → OK → map; pause → Retreat (memory released) verified. Several VLM claims pixel-verified as FALSE POSITIVES (cannon button present; cards complete; base HP labels fine — all confirmed on zoomed crops).
+- REAL BUG FOUND + FIXED — portrait terrain seam: below the play band, the letterbox backfill MIRRORED the bg image's bottom rows — the grass/soil structure re-appeared as a clearly recognizable upside-down terrain copy (VLM: "duplicated/repeated band with visible seam"; pixel rows showed green re-appearing below the dirt). Fix (battle.js ensureBgEdge, extracted from drawBattleBG): bottom strip is now a VERTICALLY-STRETCHED soil band (bottom ~10% of the photo stretched ~9× — reads as soft foreground streaks, seamless at the seam since its first row IS the field's last dirt), blur scaled to strip size (10–26px, was fixed 7px), depth vignette on BOTH strips (fade toward screen edges, bottom 0→.3→.66). Top sky mirror kept (low-frequency, mirrors invisibly) + slight dark vignette. Verified: pixel rows now monotonically darken (136,99,63)→(31,25,21), VLM confirms "smooth dark out-of-focus foreground, no duplicated band, no seam".
+- FEATURE (user request) — BATTLE LOADING SCREEN: the r32 gate existed but never showed on full preload (everything decoded → instant flip → battles hard-cut in with no transition). Now: the card ALWAYS shows for a 1.15s minimum (like the original's brief NOW LOADING) — chapter plate, big stage name, BOSS banner, walking cat base, progress bar with EASED fill + moving sheen + "Get ready!" at 100% (an instantly-full static bar looked broken), and a rotating gameplay TIP line (10 authentic tips, e.g. "The Fire!! cannon recharges over time — save it for a rush!"). The portrait bg bake (1280×1472 canvas + blurs) is pre-built BEHIND the card (ensureBgEdge warmup) so the reveal frame never hitches. 12s valve + failed-asset tolerance unchanged. On low-RAM devices (battle decodes released between fights) the gate genuinely tracks the re-decode as before.
+- Cache-bust scripts v=57; bun run lint 0 errors.
+- DEPLOY: main pushed 1386ec9; gh-pages redeployed 041f528 (561MB full tree, v57); .website-deploy removed after push.
+- LIVE verification (fresh browser, cache-busted query after the 10-min CDN edge max-age on index.html): v57 scripts served; boot 1417/1417 @ 0 failed; login → home → map → Attack → battle loading card VISIBLE (t 0.67s hold, VLM-verified layout) → field reveals with the seam fix confirmed by pixel analysis on the live deploy; zero console errors.
+
+Stage Summary:
+- The last visible portrait bug (mirrored-terrain seam under the battle field / victory screen) is fixed at the root, and every battle now opens with an authentic brief NOW LOADING card (also covers real re-decode time on lean devices).
+- Live site fully on r39 (v57): https://kalonixreal.github.io/battlecat/
+- main: 1386ec9. gh-pages: 041f528 (v57).
+- Game state: feature-complete, all golden paths verified at both aspect ratios, zero console errors. The 15-min webDevReview cron (job 362566) continues autonomous rounds.
