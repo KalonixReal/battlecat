@@ -38,7 +38,7 @@ export GIT_INDEX_FILE="$IDX"
 git --git-dir="$MAIN/.git" --work-tree="$DEPLOY" read-tree --empty
 git --git-dir="$MAIN/.git" --work-tree="$DEPLOY" add -A -- .
 TREE=$(git --git-dir="$MAIN/.git" --work-tree="$DEPLOY" write-tree)
-COMMIT=$(git --git-dir="$MAIN/.git" commit-tree "$TREE" -m "website: r34 — full-preload Battle Cats browser port (index.html at root)")
+COMMIT=$(git --git-dir="$MAIN/.git" commit-tree "$TREE" -m "website: r40 — asset-diet full-preload Battle Cats browser port (index.html at root)")
 echo "tree=$TREE commit=$COMMIT"
 
 # --- push the raw commit to gh-pages via the main repo's credentials ---

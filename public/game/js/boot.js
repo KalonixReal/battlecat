@@ -3,7 +3,9 @@
    AUTHENTIC LOADING SCREEN: black screen + official logo + walking cat base +
    "Now Loading" progress bar — preloads EVERYTHING (UI, castle sprites, cat base
    animations, battle backgrounds, every unit strip, the full original soundtrack)
-   so nothing ever pops in mid-game. After the bar fills: TAP TO START (browser
+   so nothing ever pops in mid-game. r40: the asset diet trimmed the pool to the
+   reachable set (~1146 files / ~504MB) and a service worker caches it all — the
+   first visit is the only slow one. After the bar fills: TAP TO START (browser
    audio-unlock gesture) → title screen with the real menu theme.
 ================================================================================= */
 const SCREENS={title:drawTitle,home:drawHome,chapters:drawChapters,map:drawMap,submap:drawSubmap,equip:drawEquip,upgrade:drawUpgrade,gacha:drawGacha,treasure:drawTreasure,guide:drawGuide,base:drawBase,settings:drawSettings,store:drawStore,battle:drawBattle,expedition:drawExpedition,leaderboard:drawLeaderboard,trophies:drawTrophies,shrine:drawShrine};
@@ -16,7 +18,7 @@ let lastTs=0,persistT=0,energyT=0;
    tracks the real byte-level progress of all ~900 files, and battles therefore
    open instantly (their loading gate passes on the first frame). Low-memory
    devices (<2GB deviceMemory) still release battle decodes after a fight. */
-const PRELOAD={total:0,done:0,ready:false,tap:false,failed:[],phase:'',walking:0,disp:0,bgTotal:0,bgDone:0};
+const PRELOAD={total:0,done:0,ready:false,tap:false,failed:[],phase:'',walking:0,disp:0,bgTotal:0,bgDone:0,mb:0};
 function _pAdd(wt){PRELOAD.total+=wt}
 function _pDone(wt){PRELOAD.done+=wt;if(!PRELOAD.ready&&PRELOAD.total>0&&PRELOAD.done>=PRELOAD.total)finishPreload()}
 function finishPreload(){
@@ -63,7 +65,11 @@ function preloadImg(url){
    r34: pool completions count toward the SAME total/done counters the loading bar
    reads — the bar now reflects the REAL full preload (it used to finish after the
    7 phase-1 images while half a GB still streamed silently — players tapped in and
-   hit half-loaded screens; that was the "stuff doesn't load" experience). ---- */
+   hit half-loaded screens; that was the "stuff doesn't load" experience).
+   r40: the asset diet cut the pool from ~1417 files / 560MB to ~1146 / ~504MB
+   (143 unreachable battle bgs, 96 castles, 31 orphan strips deleted) and a
+   cache-first service worker keeps the whole set local after the FIRST visit —
+   every later boot fills this bar in seconds. ---- */
 const _pool={q:[],active:0,MAX:16,started:false};
 function poolAdd(url){_pool.q.push(url);PRELOAD.bgTotal++;_pAdd(1);poolPump()}
 function poolPump(){
@@ -118,15 +124,16 @@ function preloadRun(){
     window.__MANIFEST=sp;window.__LISTS=lists;
     startBackgroundPool(sp,lists);
   }).catch(()=>{_pDone(1);/* offline/dev: renderers lazy-load as before */});
-  // safety valve: a stalled connection can never wedge the boot forever — after 90s
+  // safety valve: a stalled connection can never wedge the boot forever — after 150s
+  // (r40: was 90s — the pool is smaller now but slow first visits still need room)
   // the bar eases to full and TAP TO START shows while remaining files keep streaming
-  // (battles still gate on their own asset decodes). 90s (was 12s) because the pool is
-  // now the FULL ~500MB, not just the menu set.
-  setTimeout(finishPreload,90000);
+  // (battles still gate on their own asset decodes).
+  setTimeout(finishPreload,150000);
 }
 function startBackgroundPool(sp,lists){
   if(_pool.started)return;_pool.started=true;
   PRELOAD.phase='background';
+  PRELOAD.mb=lists.mb||0; // r40: byte estimate for the honest loading readout
   const q1=[],q2=[],q3=[]; // priority buckets
   const seen=new Set();
   const add=(bucket,url)=>{if(seen.has(url))return;seen.add(url);bucket.push(url)};
@@ -298,7 +305,10 @@ function drawLoading(dt){
     cx.fillStyle='rgba(255,255,255,.25)';rr(cx,bx,by,Math.max(14,bw*p),6,4);cx.fill()}
   const barDone=p>=0.999;
   const filesTxt=(PRELOAD.total>10&&!PRELOAD.ready)?' · '+Math.min(PRELOAD.done,PRELOAD.total)+' / '+PRELOAD.total:'';
-  txt(cx,PRELOAD.ready?(barDone?'READY':'Now Loading... '+Math.round(p*100)+'%'):('Now Loading... '+Math.round(p*100)+'%'+filesTxt),w/2,by+42,17,'#e8dfc8','center');
+  const mbTxt=PRELOAD.mb?' · ~'+PRELOAD.mb+' MB':'';
+  txt(cx,PRELOAD.ready?(barDone?'READY':'Now Loading... '+Math.round(p*100)+'%'):('Now Loading... '+Math.round(p*100)+'%'+filesTxt+mbTxt),w/2,by+42,17,'#e8dfc8','center');
+  // r40: honest expectation-setting — the wait buys a cache that makes every NEXT boot fast
+  if(!PRELOAD.ready&&PRELOAD.mb)txt(cx,'first visit only — cached for instant restarts',w/2,by+66,12,'rgba(255,255,255,.42)','center');
   txt(cx,'The Battle Cats — Browser Version',w/2,h-26,12,'rgba(255,255,255,.35)','center');
   // READY + TAP TO START only once the bar has VISUALLY reached the end
   if(PRELOAD.ready&&barDone){

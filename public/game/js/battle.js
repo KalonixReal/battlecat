@@ -622,15 +622,17 @@ function drawBattle(dt){
   if(b.load&&b.load.intro>0){b.load.intro-=dt;const a=clamp(b.load.intro/0.45,0,1);
     cx.fillStyle='rgba(13,13,18,'+(a*a*0.98).toFixed(3)+')';cx.fillRect(0,-VOY,DW,DH)}
   if(b.result)drawResult(b)}
-/* r34 MEMORY POLICY — "load all 500MB at startup": on roomy devices (≥6GB RAM,
-   navigator.deviceMemory default 8 when unreported) battle decodes STAY cached
-   after a battle ends, so every next battle opens instantly from RAM. Leaner
-   machines (<6GB) release battle-only decodes when a fight ends (same r32 list) —
-   the next battle re-decodes from the warm HTTP cache behind its loading gate. */
+/* r40 MEMORY POLICY — "just load everything on load": after the r40 asset diet
+   (~380MB less decoded RAM: 143 unreachable battle bgs, 96 castles, 31 orphan
+   strips deleted) battle decodes STAY cached after a fight on every realistic
+   device (≥2GB reported RAM; navigator.deviceMemory buckets are 0.25/0.5/1/2/
+   4/8, unreported defaults to 8). Next battles open instantly from RAM — zero
+   mid-game re-loading. Only true ≤1GB phones (dm<2) still drop decodes to
+   survive; their re-decode runs behind the battle loading gate as before. */
 function releaseBattleMemory(){
   try{
     const dm=(typeof navigator!=='undefined'&&navigator.deviceMemory)||8;
-    if(dm>=6){G.flingCam=null;return} // full-preload experience: nothing is dropped
+    if(dm>=2){G.flingCam=null;return} // keep-everything experience (r40 mandate)
     for(const k in _bgImgs)delete _bgImgs[k];        // battle backgrounds
     for(const k in _castleImgs)delete _castleImgs[k];// enemy castles
     if(typeof _bgEdge!=='undefined'&&_bgEdge.clear)_bgEdge.clear(); // portrait bakes of those bgs
