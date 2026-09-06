@@ -2847,3 +2847,26 @@ Stage Summary:
 - Live site fully on r36: daily login stamp bonus + PONOS panel texturing, all r35 fixes intact.
 - main: 8f7e687. gh-pages: 808a1e4 (v53).
 - Open ideas for next round: enemy-detail magnifier on the stage-modal lineup tiles; login-bonus confetti burst on claim; settings screen panel pass.
+
+---
+Task ID: r37
+Agent: Super Z (main)
+Task: cron webDevReview round — assess r36 build, QA via agent-browser, then advance features + styling (r36 open ideas + VLM-verified polish).
+
+Work Log:
+- STATUS: r36 stable (boot 1409/1409, 0 console errors, full battle loop verified E2E in QA round 1: login modal → claim → home → map → battle deploy → combat → victory → OK → memory release).
+- QA findings (VLM-verified, pixel-checked): login card CF-can icon grazed the DAY label; login modal had a 160px dead gap above CLAIM (h=520 vs content); home Menu/GAMATOTO/Missions icons + capsule tray buttons were canvas-painted sketches ("invented art" per the standing mandate); "Speciat Sale" was a VLM misread (code spells "Special Sale!").
+- FEATURE — ENEMY ZOOM MAGNIFIER (r36 open idea, both stage modal + event modal): every lineup tile is now a button (gold hover ring) → official bestiary-style dark card floats over the modal with the REAL animated unit sprite (ART.enemyBig ~2.9×, shadow pool), name, trait chips, boss ribbon, and THIS STAGE'S magnified stats (HP ×mag / ATK ×mag etc. — the numbers you'll actually face) + Aku/Zombie/Burrow ability lines; full-screen closer registered last (wins hit-test), Cancel/Attack clear the zoom too, openModal clears it as catch-all. Header now reads "APPEARING ENEMIES — TAP ONE FOR DETAILS".
+- FEATURE — CELEBRATION CONFETTI (r36 open idea): menu-level confettiBurst/confettiDraw in ui.js (streamers + paw-print discs, gravity/drag/flutter, ~2.4s), drawn after toasts in the boot loop. Fired on LOGIN BONUS claim (86 pieces; day-7 SUPER = triple bloom via timed secondary bursts), MISSION claim (54), TROPHY claim (64).
+- FIX — login card layout: icons on a shared vertical grid centered ~sy+46 (CF can top no longer touches the label), modal h 520→420 (content-sized, gap gone) — VLM re-verified: comfortable spacing, no clipping.
+- FEATURE — authentic PONOS home art: cut from the decrypted img007_en.png sheet (download/apk/ex + menu_chrome) — basemenu_btn (ネコ基地メニューボタン 101×94), gamatoto_btn (ガマトト 101×94 cat in mining helmet), missions_btn (ミッションボタン 76×66 scroll), gacha_icon_normal/rare (92×84, text baked in) → public/game/assets/ui/ + boot phase-1 preload; home icons draw the real art (painted versions kept only as image-missing fallbacks); capsule tray buttons now the real gacha icons (bob + ticket badge kept, painted circle only as fallback); duplicate labels dropped where art has text. VLM-verified on dev + LIVE.
+- STYLING — settings PONOS panel pass (r36 open idea): gold section-header ribbons (♪ AUDIO / IDENTITY / SAVE DATA, notched sides + gear glyph), name cards + credits box upgraded to creamPanel texture, info band (THE BATTLE CATS + story/units summary + cat/doge glyphs + PONOS line) inside a bordered band; row spacing re-flowed to fit. VLM-verified: ribbons/textured panels/no overlaps.
+- BUG FOUND + FIXED (critical, found by live QA): drawEnemyZoom dereferenced z.eid BEFORE the null guard → threw whenever a stage modal opened → modalDraw exception KILLED the rAF chain → whole game silently froze (canvas frozen, no error overlay). Fixed the guard; ALSO hardened boot.js loop: modalDraw/toastDraw/confettiDraw now wrapped in try/catch (log + continue) so ANY UI-draw error can never freeze the game again (same class as the r35 stray-restore freeze).
+- QA (agent-browser, fresh single-load discipline): boot 1414/1414 (5 new icons), 0 failed; login modal → CLAIM → confetti 86→77 alive, VLM confirms burst; home authentic icons verified; settings verified; stage modal renders + loop stays alive; tile tap → zoom card (VLM: dark popup + Doge sprite + stat rows + hint); closer works; Attack → battle (units fighting, HUD complete, 0 console errors) → victory → OK → map. bun run lint: 0 errors.
+- DEPLOY: main a93bfd1 pushed; gh-pages redeployed 287f643 (full 560MB standalone tree, v54 scripts); LIVE verified with fresh session + cache-busted URL: v54 scripts served, boot 1414/1414 @ 0 failed (~100s from CDN), claim confetti fired, home icons + zoom magnifier confirmed live by VLM. .website-deploy temp dir removed. (Note: gh-pages Pages CDN serves index.html with 10-min max-age — a recently-visited browser may briefly serve the v53 index; the ?nocache= query or waiting clears it.)
+
+Stage Summary:
+- All three r36 open ideas shipped (enemy magnifier, login confetti, settings panel pass) plus the login-card layout fix, authentic home icon art, and the loop-freeze hardening.
+- Live site fully on r37 (v54): https://kalonixreal.github.io/battlecat/
+- main: a93bfd1. gh-pages: 287f643.
+- Open ideas for next round: rank_bar.png (authentic rank bar cut from img007_en) could replace the home drawn rank bar; info_btn.png for (i) buttons; gacha screen banner could use the authentic gacha button art; missions "1 badge on rare capsule" is by-design ticket count (not a defect).
