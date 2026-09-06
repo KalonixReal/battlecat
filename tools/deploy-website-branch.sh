@@ -15,6 +15,7 @@ mkdir -p "$DEPLOY"
 
 # --- copy website content ---
 cp "$SRC/index.html" "$DEPLOY/"
+cp "$SRC/sw.js" "$DEPLOY/"   # r40: cache-first service worker (must sit next to index.html)
 cp -r "$SRC/js" "$DEPLOY/js"
 cp -r "$SRC/fonts" "$DEPLOY/fonts"
 mkdir -p "$DEPLOY/assets"
